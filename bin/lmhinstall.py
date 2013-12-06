@@ -39,7 +39,7 @@ def installNoCycles(user, project, tried):
   print "Checking dependencies for project "+project
 
   try:
-    with open (project+"/META-INF/MANIFEST.MF", "r") as metafile:
+    with open (user+"/"+project+"/META-INF/MANIFEST.MF", "r") as metafile:
       for line in metafile:
         if line.startswith("dependencies: "):
           for dep in re.findall(repoRegEx, line):
