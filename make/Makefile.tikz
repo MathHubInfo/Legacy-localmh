@@ -1,0 +1,43 @@
+TIKZ = $(filter-out all.tex $(BUTFILES), $(shell ls *.tex))
+TIKZ4all  ?= $(TIKZ:%.tex=%)
+PDF = $(TIKZ:%.tex=%.pdf)
+PDFcrop = $(TIKZ:%.tex=%-crop.pdf)
+PNG = $(TIKZ:%.tex=%.png)
+MODS.pre = $(STCDIR)/slides/lib/pre.tex
+MODS.post = $(STCDIR)/slides/lib/post.tex
+all pdf: $(PNG) all.pdf
+mpdf mods omdoc: $(PNG)
+sms: 
+errlog: 
+cleanup:
+
+ci:
+	svn $@ -m'draining'
+ 
+driver: all.tex
+all.tex: $(TIKZ) $(MODS.pre) $(MODS.post)
+	cat $(MODS.pre) > $@
+	@echo '\\begin{document}' >> $@
+	@for d in $(TIKZ4all); do (echo "\\\begin{center}\\LARGE File: \\\url{$$d.tex}\\end{center}" >>$@; echo "\\input{$$d}\\\newpage" >>$@) done
+	cat $(MODS.post) >> $@
+	echo '\\end{document}' >> $@
+
+
+$(PDF): %.pdf: %.tex
+	pdflatex -interaction batchmode $<
+
+all.pdf: all.tex $(TIKZ)
+	pdflatex -interaction batchmode $<
+
+$(PDFcrop): %-crop.pdf: %.pdf
+	pdfcrop $< $@
+
+$(PNG): %.png: %-crop.pdf
+	convert $< $@
+
+clean: 
+	rm $(PDFcrop) $(PDF)
+
+echo: 
+	echo $(PNG)
+
