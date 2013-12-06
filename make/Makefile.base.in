@@ -18,10 +18,10 @@ $(DRIVER): $(MODS) $(MODS.pre) $(MODS.post) localpaths.tex
 
 localpaths.tex: 
 	@echo '% this file defines root path local repository' > $@ 
-	@echo "\defpath{MathHub}{$(MHDIR)}" >>$@
+	@echo "\defpath{MathHub}{$(MHDIR)/MathHub}" >>$@
 	@echo "\defpath{thisrepos}{$(MHDIR)/MathHub/$(GROUP)/$(REPOS)/source}" >>$@
 	@echo "\defpath{SMGloM}{$(MHDIR)/MathHub/SMGloM/SMGLoM/source}" >>$@
-	@echo "\input{$(MHDIR)/MathHub/$(GROUP)/$(REPOS)/lib/WApersons}}" >>$@
+	@echo "\input{$(MHDIR)/MathHub/$(GROUP)/$(REPOS)/lib/WApersons}" >>$@
 
 graph:	
 	$(GRAPHPROG) -o graph -f pdf $(SNIPPATHS) all.tex 
