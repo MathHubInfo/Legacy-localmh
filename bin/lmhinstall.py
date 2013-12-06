@@ -47,6 +47,8 @@ def installNoCycles(user, project, tried):
     print e
 
 def installrepo(repoName):
+  root = lmhconfig.lmh_root()+"/MathHub"
+  os.chdir(root)
   [user, project] = parseRepoName(repoName)
   installNoCycles(user, project, {})
 

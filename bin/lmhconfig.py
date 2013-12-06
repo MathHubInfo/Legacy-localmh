@@ -1,4 +1,18 @@
 #!/usr/bin/python
+import subprocess
+import os
+
+def lmh_root():
+    mypath = os.path.dirname(os.path.realpath(__file__))+"/.."
+    return os.path.realpath(mypath)
+
+def git_root_dir(dir = "."):
+    rootdir = subprocess.Popen([which("git"), "rev-parse", "--show-toplevel"], 
+                                stdout=subprocess.PIPE,
+                                cwd=dir,
+                               ).communicate()[0]
+    rootdir = rootdir.strip()
+    return rootdir
 
 def which(program):
     import os
@@ -17,10 +31,3 @@ def which(program):
                 return exe_file
 
     return None
-
-progs = ["git", "latexmlc", "bogus"];
-
-def checkreq():
-  for prog in progs:
-    if which(prog) == None:
-      print prog, "was not found on your system"

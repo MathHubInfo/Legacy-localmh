@@ -2,6 +2,7 @@
 
 import argparse
 import lmhconfig
+import lmhsetup
 import lmhinstall
 import subprocess
 import os
@@ -16,9 +17,11 @@ args, rest = parser.parse_known_args()
 if args.action == "install":
   lmhinstall.installrepo(rest[0])
 
+if args.action == "setup":
+  lmhsetup.setup();  
+
 if args.action == "init":
-  rootdir = subprocess.Popen([lmhconfig.which("git"), "rev-parse", "--show-toplevel"], stdout=subprocess.PIPE).communicate()[0]
-  rootdir = rootdir.strip()
+  rootdir = lmhconfig.git_root_dir()
   metadir = rootdir+"/META-INF"
 
   if not os.path.exists(metadir):
