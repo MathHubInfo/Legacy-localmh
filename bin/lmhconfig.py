@@ -39,15 +39,17 @@ def git_root_dir(dir = "."):
 
 def get_dependencies(dir):
     res = [];
-    dir = git_root_dir(dir);
     try:
+        dir = git_root_dir(dir);
         with open (dir+"/META-INF/MANIFEST.MF", "r") as metafile:
           for line in metafile:
             if line.startswith("dependencies: "):
               for dep in re.findall(repoRegEx, line):
-                res.push(dep)
+                res.append(dep)
 
     except IOError, e:
+        print e
+    except OSError, e:
         print e
 
     return res
