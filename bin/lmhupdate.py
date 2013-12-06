@@ -3,11 +3,11 @@ import glob,os.path
 import lmhconfig
 from subprocess import call
 
-def updateRepo(dir):
+def updateRepo(dir, op):
   print "updating {0}".format(dir) 
   call([lmhconfig.which("git"), "pull"], cwd=dir);
 
-def do(rest):
+def do(rest, op):
   parser = argparse.ArgumentParser(description='MathHub repository update tool')
   parser.add_argument('repository', metavar='reps', default=False, nargs='*', help="Repositories to update")
 
@@ -18,8 +18,8 @@ def do(rest):
     for file in glob.glob(root+"/*/*"):
       if os.path.isfile(file):
         continue
-      updateRepo(file);
+      updateRepo(file, op);
 
   else:
     for rep in args.repository:
-      updateRepo(root+"/"+rep);
+      updateRepo(root+"/"+rep, op);

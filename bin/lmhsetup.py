@@ -7,7 +7,9 @@ def setup():
   os.chdir(root)
 
   gitpath = lmhconfig.which("git")
+  svnpath = lmhconfig.which("svn")
 
   print "cloning LaTeXML"
-  call([gitpath, "clone", "git@github.com:KWARC/LaTeXML.git"])
+  call([gitpath, "clone", "https://github.com/KWARC/LaTeXML.git"])
+  call([svnpath, "co", "https://svn.kwarc.info/repos/stex/"])
   

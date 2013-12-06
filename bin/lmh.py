@@ -9,7 +9,7 @@ import os
 
 parser = argparse.ArgumentParser(description='Local MathHub tool.')
 
-init_choises = ['setup', 'install', 'update', 'drain', 'delete', 'init', 'root', 'depscrawl', 'path', 'update'];
+init_choises = ['setup', 'install', 'update', 'drain', 'delete', 'init', 'root', 'depscrawl', 'path', 'update', 'drain'];
 
 parser.add_argument('action', metavar='action', choices=init_choises, 
                    help="action to be performed. Can be one of the following: "+", ".join(init_choises), nargs="?")
@@ -38,7 +38,12 @@ if args.action == "path":
 
 if args.action == "update":
   import lmhupdate
-  lmhupdate.do(rest)
+  lmhupdate.do(rest, "pull")
+
+if args.action == "drain":
+  import lmhupdate
+  lmhupdate.do(rest, "push")
+
 
 if args.action == "init":
   import lmhinit
