@@ -7,12 +7,17 @@ import lmhinstall
 import subprocess
 import os
 
-parser = argparse.ArgumentParser(description='Local Math Hub tool.')
+parser = argparse.ArgumentParser(description='Local MathHub tool.')
 
-parser.add_argument('action', metavar='action', choices=['setup', 'install', 'update', 'drain', 'delete', 'init', 'root', 'depscrawl', 'path'], 
-                   help="action to be performed. Can be either 'setup', 'init', install', 'update', 'drain' or 'delete' ")
+init_choises = ['setup', 'install', 'update', 'drain', 'delete', 'init', 'root', 'depscrawl', 'path', 'update'];
+
+parser.add_argument('action', metavar='action', choices=init_choises, 
+                   help="action to be performed. Can be one of the following: "+", ".join(init_choises), nargs="?")
 
 args, rest = parser.parse_known_args()
+
+if args.action == None:
+  parser.print_help()
 
 if args.action == "install":
   lmhinstall.installrepo(rest[0])
@@ -25,11 +30,15 @@ if args.action == "root":
 
 if args.action == "depscrawl":
   import lmhdepcrawler
-  print lmhdepcrawler.getDeps();
+  lmhdepcrawler.do(rest);
 
 if args.action == "path":
-  import lmhmove
-  lmhmove.do(rest)
+  import lmhpath
+  lmhpath.do(rest)
+
+if args.action == "update":
+  import lmhupdate
+  lmhupdate.do(rest)
 
 if args.action == "init":
   import lmhinit

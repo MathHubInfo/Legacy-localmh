@@ -1,16 +1,22 @@
 #!/usr/bin/python
 import subprocess
 import os
+import re
+
+repoRegEx = '(\w+)/(\w+)';
+
 
 def get_file(filePath):
     return open(filePath).read()
 
 def set_file(filePath, fileContent):
     return open(filePath, "w").write(fileContent)
-
     
 def get_template(name):
     return get_file(os.path.dirname(os.path.realpath(__file__)) + "/templates/" + name);
+
+def git_push(dir):
+    pass
 
 def lmh_root():
     mypath = os.path.dirname(os.path.realpath(__file__))+"/.."
@@ -30,6 +36,22 @@ def git_root_dir(dir = "."):
                                ).communicate()[0]
     rootdir = rootdir.strip()
     return rootdir
+
+def get_dependencies(dir):
+    res = [];
+    dir = git_root_dir(dir);
+    try:
+        with open (dir+"/META-INF/MANIFEST.MF", "r") as metafile:
+          for line in metafile:
+            if line.startswith("dependencies: "):
+              for dep in re.findall(repoRegEx, line):
+                res.push(dep)
+
+    except IOError, e:
+        print e
+
+    return res
+
 
 def which(program):
     import os

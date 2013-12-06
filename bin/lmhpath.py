@@ -46,6 +46,9 @@ def do(rest):
   parser.add_argument('replace', metavar='replace', nargs="?", help="Replace string")
   parser.add_argument('--apply', metavar='apply', const=True, default=False, nargs="?", help="Option specifying that files should be changed")
 
+  if len(rest) == 0:
+    return parser.print_help()
+
   args, _ = parser.parse_known_args(rest)
 
   if len(args.replace) == None:

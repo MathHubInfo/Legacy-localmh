@@ -38,14 +38,14 @@ def installNoCycles(user, project, tried):
 
   print "Checking dependencies for project "+project
 
-  try:
-    with open (user+"/"+project+"/META-INF/MANIFEST.MF", "r") as metafile:
-      for line in metafile:
-        if line.startswith("dependencies: "):
-          for dep in re.findall(repoRegEx, line):
-            installNoCycles(dep[0], dep[1], tried)
-  except IOError, e:
-    print e
+  deps = lmhconfig.get_dependencies(user+"/"+project);
+  if deps == None:
+    print("Error: META-INF/MANIFEST.MF file missing or invalid.")
+    return
+
+  for dep in deps:
+    installNoCycles(dep[0], dep[1], tried)
+
 
 def installrepo(repoName):
   root = lmhconfig.lmh_root()+"/MathHub"

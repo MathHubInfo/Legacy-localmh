@@ -1,7 +1,13 @@
 import os
 import re
+import argparse
+import lmhconfig
 
-def getDeps(dir="."):
+def calcDeps(dir="."):
+  currentdeps = {};
+  for dep in lmhconfig.get_dependencies(dir):
+    currentdeps["/".join(dep)] = True
+
   paths = {};
   for root, dirs, files in os.walk("."):
       path = root.split('/')
@@ -22,7 +28,16 @@ def getDeps(dir="."):
       continue
     repos[comps[0]+"/"+comps[1]] = True
 
-  deps = "dependencies: ";
+  toAdd = [];
   for rep in repos:
-    deps+=rep+" "
-  return deps
+    if rep not in currentdeps:
+      toAdd.append(rep);
+
+  return " ".join(toAdd);
+
+def do(rest):
+  parser = argparse.ArgumentParser(description='MathHub repository dependency crawler.')
+  parser.add_argument('--apply', metavar='apply', const=True, default=False, nargs="?", help="Dependencies should be updated")
+
+  args, _ = parser.parse_known_args(rest)
+  print calcDeps()
