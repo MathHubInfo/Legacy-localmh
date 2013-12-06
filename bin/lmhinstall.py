@@ -13,6 +13,7 @@ def parseRepoName(repoName):
 
 def getURL(user, project):
   return "git@mathhub.info:"+user+"/"+project
+#  return "/home/costea/tmp/GenCS"
 
 def cloneRepository(user, project):
   try:
@@ -20,7 +21,7 @@ def cloneRepository(user, project):
     repoURL = getURL(user, project)
     print "cloning " + repoURL
     
-    call([gitpath, "clone", repoURL])
+    call([gitpath, "clone", repoURL, user+"/"+project])
   except Exception, e:
     print e
     pass
