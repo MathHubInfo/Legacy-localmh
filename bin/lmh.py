@@ -32,16 +32,5 @@ if args.action == "path":
   lmhmove.do(rest)
 
 if args.action == "init":
-  rootdir = lmhconfig.git_root_dir()
-  metadir = rootdir+"/META-INF"
-
-  if not os.path.exists(metadir):
-    os.makedirs(metadir)
-
-  if not os.path.exists(metadir+"/MANIFEST.MF"):
-    f = open(metadir+"/MANIFEST.MF", 'w')
-    f.write("id: \n")
-    f.write("source-base: \n")
-    f.write("narration-base: \n")
-    f.write("dependencies: \n")
-    f.close()
+  import lmhinit
+  lmhinit.init()

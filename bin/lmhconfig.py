@@ -2,9 +2,26 @@
 import subprocess
 import os
 
+def get_file(filePath):
+    return open(filePath).read()
+
+def set_file(filePath, fileContent):
+    return open(filePath, "w").write(fileContent)
+
+    
+def get_template(name):
+    return get_file(os.path.dirname(os.path.realpath(__file__)) + "/templates/" + name);
+
 def lmh_root():
     mypath = os.path.dirname(os.path.realpath(__file__))+"/.."
     return os.path.realpath(mypath)
+
+def git_origin(rootdir="."):
+    return subprocess.Popen([which("git"), "remote", "show", "origin", "-n"], 
+                                stdout=subprocess.PIPE,
+                                cwd=rootdir,
+                               ).communicate()[0]
+
 
 def git_root_dir(dir = "."):
     rootdir = subprocess.Popen([which("git"), "rev-parse", "--show-toplevel"], 
