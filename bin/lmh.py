@@ -9,7 +9,7 @@ import os
 
 parser = argparse.ArgumentParser(description='Local Math Hub tool.')
 
-parser.add_argument('action', metavar='action', choices=['setup', 'install', 'update', 'drain', 'delete', 'init'], 
+parser.add_argument('action', metavar='action', choices=['setup', 'install', 'update', 'drain', 'delete', 'init', 'root'], 
                    help="action to be performed. Can be either 'setup', 'init', install', 'update', 'drain' or 'delete' ")
 
 args, rest = parser.parse_known_args()
@@ -19,6 +19,9 @@ if args.action == "install":
 
 if args.action == "setup":
   lmhsetup.setup();  
+
+if args.action == "root":
+  print lmhconfig.lmh_root();
 
 if args.action == "init":
   rootdir = lmhconfig.git_root_dir()
