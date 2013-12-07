@@ -4,8 +4,15 @@ import lmhconfig
 from subprocess import call
 
 def updateRepo(dir, op):
-  print "updating {0}".format(dir) 
-  call([lmhconfig.which("git"), op], cwd=dir);
+  if op == "pull" or op == "push":
+    print "{1}ing repository {0}".format(dir, op) 
+    call([lmhconfig.which("git"), op], cwd=dir);
+    return
+  if op == "upgen":
+    try:
+      call([lmhconfig.which("make"), "sms", "driver"], cwd=dir+"/source/");
+    except Exception as e:
+      print e
 
 def do(rest, op):
   parser = argparse.ArgumentParser(description='MathHub repository update tool')
