@@ -5,7 +5,7 @@ from subprocess import call
 
 def updateRepo(dir, op):
   print "updating {0}".format(dir) 
-  call([lmhconfig.which("git"), "pull"], cwd=dir);
+  call([lmhconfig.which("git"), op], cwd=dir);
 
 def do(rest, op):
   parser = argparse.ArgumentParser(description='MathHub repository update tool')
