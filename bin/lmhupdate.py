@@ -14,9 +14,21 @@ def updateRepo(dir, op):
     except Exception as e:
       print e
 
+def updatelmh():
+  root = lmhconfig.lmh_root()+"/MathHub"
+  try:
+    call([lmhconfig.which("git"), "pull"], cwd=root);
+  except Exception as e:
+    print e
+
+
 def do(rest, op):
   parser = argparse.ArgumentParser(description='MathHub repository update tool')
   parser.add_argument('repository', metavar='reps', default=False, nargs='*', help="Repositories to update")
+
+  if op == "pull":
+    print "Updating Local MathHub repository"
+    updatelmh();
 
   args, _ = parser.parse_known_args(rest)
   root = lmhconfig.lmh_root()+"/MathHub"
