@@ -2,9 +2,7 @@ import lmhconfig
 import os
 import re
 
-repoRegEx = '(\w+)/(\w+)';
-
-
+repoRegEx = lmhconfig.repoRegEx;
 
 def init():
   rootdir = lmhconfig.git_root_dir()

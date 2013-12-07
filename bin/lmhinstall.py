@@ -5,7 +5,7 @@ import re
 import os
 from subprocess import call
 
-repoRegEx = '(\w+)/(\w+)';
+repoRegEx = lmhconfig.repoRegEx;
 
 def parseRepoName(repoName):
   m = re.search(repoRegEx, repoName)

@@ -3,8 +3,7 @@ import subprocess
 import os
 import re
 
-repoRegEx = '(\w+)/(\w+)';
-
+repoRegEx = '([\w-]+)/([\w-]+)';
 
 def get_file(filePath):
     return open(filePath).read()
