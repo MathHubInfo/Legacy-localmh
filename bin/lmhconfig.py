@@ -5,6 +5,16 @@ import re
 
 repoRegEx = '([\w-]+)/([\w-]+)';
 
+def lmh_repos():
+  t = os.path.realpath(os.getcwd());
+  root = lmh_root()+"/MathHub";
+  if not t.startswith(root):
+    return None
+  comp = t[len(root)+1:].split("/")
+  if len(comp) < 2:
+    return None
+  return "/".join(comp[:2]);
+
 def validRepoName(name):
   if name.find("..") != -1:
     return False

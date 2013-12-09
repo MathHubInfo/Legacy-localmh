@@ -6,10 +6,11 @@ import lmhsetup
 import lmhinstall
 import subprocess
 import os
+import sys
 
 parser = argparse.ArgumentParser(description='Local MathHub tool.')
 
-init_choises = ['setup', 'install', 'update', 'drain', 'delete', 'init', 'root', 'depscrawl', 'path', 'update', 'drain', 'upgen', 'checkpaths', 'status'];
+init_choises = ['setup', 'install', 'update', 'drain', 'delete', 'init', 'root', 'depscrawl', 'path', 'update', 'drain', 'upgen', 'checkpaths', 'status', 'repos'];
 
 parser.add_argument('action', metavar='action', choices=init_choises, 
                    help="action to be performed. Can be one of the following: "+", ".join(init_choises), nargs="?")
@@ -31,6 +32,13 @@ if args.action == "root":
 if args.action == "status":
   import lmhstatus
   lmhstatus.do(rest);
+
+if args.action == "repos":
+  rep = lmhconfig.lmh_repos();
+  if rep:
+    print rep
+  else:
+    sys.exit(os.EX_DATAERR)
 
 if args.action == "depscrawl":
   import lmhdepcrawler
