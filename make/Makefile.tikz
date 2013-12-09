@@ -1,10 +1,13 @@
+MHDIR = $(shell lmh root)
+REPOS = $(shell lmh repos)
 TIKZ = $(filter-out all.tex $(BUTFILES), $(shell ls *.tex))
 TIKZ4all  ?= $(TIKZ:%.tex=%)
 PDF = $(TIKZ:%.tex=%.pdf)
 PDFcrop = $(TIKZ:%.tex=%-crop.pdf)
 PNG = $(TIKZ:%.tex=%.png)
-MODS.pre = $(STCDIR)/slides/lib/pre.tex
-MODS.post = $(STCDIR)/slides/lib/post.tex
+MODSLIBDIR    ?=  $(MHDIR)/MathHub/$(REPOS)/lib
+MODS.pre 	?= $(MODSLIBDIR)/pre.tex
+MODS.post 	?= $(MODSLIBDIR)/post.tex
 all pdf: $(PNG) all.pdf
 mpdf mods omdoc: $(PNG)
 sms: 
