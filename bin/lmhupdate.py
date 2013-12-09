@@ -10,7 +10,7 @@ def updateRepo(dir, op):
     return
   if op == "upgen":
     try:
-      call([lmhconfig.which("make"), "sms", "driver"], cwd=dir+"/source/");
+      call([lmhconfig.which("make"), "-w", "sms", "driver"], cwd=dir+"/source/");
     except Exception as e:
       print e
 
