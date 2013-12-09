@@ -1,0 +1,22 @@
+# -*- CPERL -*-
+# /=======================================================\ #
+# |  stc-smglom.sty - Implementation for LaTeXML          | #
+# |                                                       | #
+# |=======================================================| #
+# | Not Part of LaTeXML : http://dlmf.nist.gov/LaTeXML/   | #
+# | Copyright (c) 2006 arXMLiv group                      | #
+# | Released under the GNU Public License                 | #
+# \=======================================================/ #
+
+package LaTeXML::Package::Pool;
+use strict;
+use LaTeXML::Package;
+
+RawTeX('
+\newcommand\gimport[2][]{\importmodule[load=\SMGloM{#2}]{#2}}
+\newcommand\guse[2][]{\usemodule[load=\SMGloM{#2}]{#2}}
+\newcommand\gadopt[2][]{\adoptmodule[load=\SMGloM{#2}]{#2}}
+');
+
+#**********************************************************************
+1;
