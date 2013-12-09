@@ -3,31 +3,31 @@ import re
 import functools
 import argparse
 
+
 def doNothing(fullPath, m):
   print fullPath + "->" + m.group(1)
   return m.group(0)
 
 def replacePath(dir=".", replaceFnc = doNothing, readonly=True):
-  print readonly
-  for root, dirs, files in os.walk("."):
-      path = root.split('/')
-      for file in files:
-        fileName, fileExtension = os.path.splitext(file)
-        if fileExtension != ".tex":
-          continue
-        fullpath = root+"/"+file;
-        if not readonly:
-          ft = open(fullpath+".tmp", "w")
-        replaceContext = functools.partial(replaceFnc, fullpath)
-        for line in open(fullpath, "r"):
-          newLine = re.sub("\\MathHub{([\w/]+)}", replaceContext, line)
-          if newLine != line:
-            print fullpath + ": " + newLine;
+  for root, dirs, files in os.walk(dir):
+    path = root.split('/')
+    for file in files:
+      fileName, fileExtension = os.path.splitext(file)
+      if fileExtension != ".tex":
+        continue
+      fullpath = root+"/"+file;
+      if not readonly:
+        ft = open(fullpath+".tmp", "w")
+      replaceContext = functools.partial(replaceFnc, fullpath)
+      for line in open(fullpath, "r"):
+        newLine = re.sub("\\MathHub{([\w\-/]+)}", replaceContext, line)
+        if newLine != line:
+          print fullpath + ": " + newLine;
 
-          if not readonly:
-            ft.write(newLine)
         if not readonly:
-          os.rename(fullpath+".tmp", fullpath)
+          ft.write(newLine)
+      if not readonly:
+        os.rename(fullpath+".tmp", fullpath)
 
 def repl(search, replace, fullPath, m):
   p = re.sub(search, replace, m.group(1));
