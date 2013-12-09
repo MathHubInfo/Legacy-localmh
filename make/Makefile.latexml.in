@@ -6,7 +6,7 @@ $(TARGET.omdoc): %.omdoc: %.tex $(TARGET.parts) $(LTSTY) $(STEXOXSL)
 		export STEXSTYDIR=$(STEXSTYDIR); $(STEXML) --profile stex $(LTXPATHS) $(LTXTIMEOUT) $< --destination=$@ --log=$(basename $<).ltxlog
 
 $(MODS.omdoc): %.omdoc: %.tex $(LTSTY) $(STEXOXSL) 
-		$(STEXML) --profile stex-module $(LTXPREPOST) $(LTXPATHS) $(LTXTIMEOUT) $<  --destination=$@ --log=$(basename $<).ltxlog
+		$(STEXML) --profile stex-module $(LTXPATHS) $(LTXPREPOST) $(LTXTIMEOUT) $<  --destination=$@ --log=$(basename $<).ltxlog
 
 $(LTARGET.xhtml): %.xhtml: %.tex $(TARGET.parts) $(LTSTY)
 		latexmlc --profile=stex-migration $< --destination=$@ --log=$(basename $<).ltxlog
