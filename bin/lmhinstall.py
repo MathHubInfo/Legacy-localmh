@@ -1,12 +1,12 @@
 #!/usr/bin/python
 
-import lmhconfig;
+import lmhutil;
 import re
 import os
 import sys
 from subprocess import call
 
-repoRegEx = lmhconfig.repoRegEx;
+repoRegEx = lmhutil.repoRegEx;
 
 def parseRepoName(repoName):
   m = re.search(repoRegEx, repoName)
@@ -17,11 +17,10 @@ def parseRepoName(repoName):
 
 def getURL(user, project):
   return "git@mathhub.info:"+user+"/"+project
-#  return "/home/costea/tmp/GenCS"
 
 def cloneRepository(user, project):
   try:
-    gitpath = lmhconfig.which("git")
+    gitpath = lmhutil.which("git")
     if os.path.exists(user+"/"+project):
       return
     repoURL = getURL(user, project)
@@ -41,7 +40,7 @@ def installNoCycles(user, project, tried):
 
   print "Checking dependencies for project "+project
 
-  deps = lmhconfig.get_dependencies(user+"/"+project);
+  deps = lmhutil.get_dependencies(user+"/"+project);
   if deps == None:
     print("Error: META-INF/MANIFEST.MF file missing or invalid.")
     return
@@ -51,7 +50,7 @@ def installNoCycles(user, project, tried):
 
 
 def installrepo(repoName):
-  root = lmhconfig.lmh_root()+"/MathHub"
+  root = lmhutil.lmh_root()+"/MathHub"
   os.chdir(root)
   [user, project] = parseRepoName(repoName)
   installNoCycles(user, project, {})

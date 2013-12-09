@@ -1,11 +1,11 @@
 import os
 import re
 import argparse
-import lmhconfig
+import lmhutil
 
 def calcDeps(dir="."):
   currentdeps = {};
-  for dep in lmhconfig.get_dependencies(dir):
+  for dep in lmhutil.get_dependencies(dir):
     currentdeps["/".join(dep)] = True
 
   paths = {};

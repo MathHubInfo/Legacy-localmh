@@ -1,10 +1,10 @@
 import lmhpath;
-import lmhconfig;
+import lmhutil;
 import os;
 import difflib;
 import fileinput
 
-mathroot = lmhconfig.lmh_root()+"/MathHub";
+mathroot = lmhutil.lmh_root()+"/MathHub";
 fileIndex = {};
 remChoices = {};
 

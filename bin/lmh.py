@@ -1,7 +1,7 @@
 #!/usr/bin/python 
 
 import argparse
-import lmhconfig
+import lmhutil
 import lmhsetup
 import lmhinstall
 import subprocess
@@ -27,14 +27,14 @@ if args.action == "setup":
   lmhsetup.setup();  
 
 if args.action == "root":
-  print lmhconfig.lmh_root();
+  print lmhutil.lmh_root();
 
 if args.action == "status":
   import lmhstatus
   lmhstatus.do(rest);
 
 if args.action == "repos":
-  rep = lmhconfig.lmh_repos();
+  rep = lmhutil.lmh_repos();
   if rep:
     print rep
   else:

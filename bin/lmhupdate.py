@@ -1,23 +1,23 @@
 import argparse
 import glob,os.path
-import lmhconfig
+import lmhutil
 from subprocess import call
 
 def updateRepo(dir, op):
   if op == "pull" or op == "push":
     print "{1}ing repository {0}".format(dir, op) 
-    call([lmhconfig.which("git"), op], cwd=dir);
+    call([lmhutil.which("git"), op], cwd=dir);
     return
   if op == "upgen":
     try:
-      call([lmhconfig.which("make"), "-w", "sms", "driver"], cwd=dir+"/source/");
+      call([lmhutil.which("make"), "-w", "sms", "driver"], cwd=dir+"/source/");
     except Exception as e:
       print e
 
 def updatelmh():
-  root = lmhconfig.lmh_root()+"/MathHub"
+  root = lmhutil.lmh_root()+"/MathHub"
   try:
-    call([lmhconfig.which("git"), "pull"], cwd=root);
+    call([lmhutil.which("git"), "pull"], cwd=root);
   except Exception as e:
     print e
 
@@ -31,7 +31,7 @@ def do(rest, op):
     updatelmh();
 
   args, _ = parser.parse_known_args(rest)
-  root = lmhconfig.lmh_root()+"/MathHub"
+  root = lmhutil.lmh_root()+"/MathHub"
 
   if not args.repository:
     for file in glob.glob(root+"/*/*"):

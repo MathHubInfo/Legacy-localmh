@@ -1,13 +1,13 @@
-import lmhconfig
+import lmhutil
 import re
 import os
-import lmhconfig
+import lmhutil
 import glob
 import subprocess 
 
 
 def do_status(rep):
-  cmd = [lmhconfig.which("git"), "status", "-u", "-s"];
+  cmd = [lmhutil.which("git"), "status", "-u", "-s"];
   result = subprocess.Popen(cmd, 
                                 stdout=subprocess.PIPE,
                                 cwd=rep
@@ -23,6 +23,6 @@ def do(rest):
     rest.append("*/*");
 
   for repo in rest:
-    path = lmhconfig.parseRepo(repo);
+    path = lmhutil.parseRepo(repo);
     for rep in glob.glob(path):
       do_status(rep);

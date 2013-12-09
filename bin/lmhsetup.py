@@ -1,12 +1,12 @@
-import lmhconfig
+import lmhutil
 import os
 from subprocess import call
 
 def setup():
-  root = lmhconfig.lmh_root()+"/ext"
+  root = lmhutil.lmh_root()+"/ext"
   os.chdir(root)
 
-  gitpath = lmhconfig.which("git")
+  gitpath = lmhutil.which("git")
 
   print "cloning LaTeXML"
   call([gitpath, "clone", "https://github.com/KWARC/LaTeXML.git"])
