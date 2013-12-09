@@ -3,12 +3,16 @@
 import lmhconfig;
 import re
 import os
+import sys
 from subprocess import call
 
 repoRegEx = lmhconfig.repoRegEx;
 
 def parseRepoName(repoName):
   m = re.search(repoRegEx, repoName)
+  if not m:
+    print repoName + " is not a valid repository name"
+    sys.exit(os.EX_DATAERR)
   return [m.group(1), m.group(2)]
 
 def getURL(user, project):
@@ -18,6 +22,8 @@ def getURL(user, project):
 def cloneRepository(user, project):
   try:
     gitpath = lmhconfig.which("git")
+    if os.path.exists(user+"/"+project):
+      return
     repoURL = getURL(user, project)
     print "cloning " + repoURL
     
@@ -31,10 +37,7 @@ def installNoCycles(user, project, tried):
     return
 
   tried[user+"/"+project] = True
-  if not os.path.exists(project):
-    cloneRepository(user, project)
-  else:
-    print "Project "+project+" already exist."
+  cloneRepository(user, project)
 
   print "Checking dependencies for project "+project
 
