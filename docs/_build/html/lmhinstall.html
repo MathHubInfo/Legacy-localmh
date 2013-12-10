@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>lmhinstall module &mdash; Local MathHub  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Local MathHub  documentation" href="index.html" />
+    <link rel="next" title="lmhpath module" href="lmhpath.html" />
+    <link rel="prev" title="lmhinit module" href="lmhinit.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lmhpath.html" title="lmhpath module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="lmhinit.html" title="lmhinit module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Local MathHub  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-lmhinstall">
+<span id="lmhinstall-module"></span><h1>lmhinstall module<a class="headerlink" href="#module-lmhinstall" title="Permalink to this headline">¶</a></h1>
+<p>Local Math Hub repository installer</p>
+<pre class="literal-block">
+usage: lmhinstall [-h] [repository [repository ...]]
+
+</pre>
+<dl class="docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of remote repositories to fetch locally. Should have form mygroup/myproject. No wildcards allowed. </td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<dl class="function">
+<dt id="lmhinstall.add_parser">
+<tt class="descclassname">lmhinstall.</tt><tt class="descname">add_parser</tt><big>(</big><em>subparsers</em><big>)</big><a class="headerlink" href="#lmhinstall.add_parser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lmhinstall.add_parser_args">
+<tt class="descclassname">lmhinstall.</tt><tt class="descname">add_parser_args</tt><big>(</big><em>parser</em><big>)</big><a class="headerlink" href="#lmhinstall.add_parser_args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lmhinstall.cloneRepository">
+<tt class="descclassname">lmhinstall.</tt><tt class="descname">cloneRepository</tt><big>(</big><em>repoName</em><big>)</big><a class="reference internal" href="_modules/lmhinstall.html#cloneRepository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lmhinstall.cloneRepository" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lmhinstall.create_parser">
+<tt class="descclassname">lmhinstall.</tt><tt class="descname">create_parser</tt><big>(</big><big>)</big><a class="headerlink" href="#lmhinstall.create_parser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lmhinstall.do">
+<tt class="descclassname">lmhinstall.</tt><tt class="descname">do</tt><big>(</big><em>args</em><big>)</big><a class="headerlink" href="#lmhinstall.do" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lmhinstall.getURL">
+<tt class="descclassname">lmhinstall.</tt><tt class="descname">getURL</tt><big>(</big><em>repoName</em><big>)</big><a class="reference internal" href="_modules/lmhinstall.html#getURL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lmhinstall.getURL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lmhinstall.installNoCycles">
+<tt class="descclassname">lmhinstall.</tt><tt class="descname">installNoCycles</tt><big>(</big><em>repoName</em>, <em>tried</em><big>)</big><a class="reference internal" href="_modules/lmhinstall.html#installNoCycles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lmhinstall.installNoCycles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lmhinstall.installrepo">
+<tt class="descclassname">lmhinstall.</tt><tt class="descname">installrepo</tt><big>(</big><em>repoName</em><big>)</big><a class="reference internal" href="_modules/lmhinstall.html#installrepo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lmhinstall.installrepo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="lmhinit.html"
+                        title="previous chapter">lmhinit module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="lmhpath.html"
+                        title="next chapter">lmhpath module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/lmhinstall.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lmhpath.html" title="lmhpath module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="lmhinit.html" title="lmhinit module"
+             >previous</a> |</li>
+        <li><a href="index.html">Local MathHub  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Constantin Jucovschi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>
