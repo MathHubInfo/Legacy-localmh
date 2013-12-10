@@ -1,57 +1,76 @@
 #!/usr/bin/python
 
+"""
+Local Math Hub repository installer
+
+.. argparse::
+   :module: lmhinstall
+   :func: create_parser
+   :prog: lmhinstall
+
+"""
+
 import lmhutil;
 import re
 import os
 import sys
+import argparse
 from subprocess import call
 
 repoRegEx = lmhutil.repoRegEx;
 
-def parseRepoName(repoName):
-  m = re.search(repoRegEx, repoName)
-  if not m:
-    print repoName + " is not a valid repository name"
-    sys.exit(os.EX_DATAERR)
-  return [m.group(1), m.group(2)]
+def create_parser():
+  parser = argparse.ArgumentParser(description='Local MathHub Install tool.')
+  add_parser_args(parser)
+  return parser
 
-def getURL(user, project):
-  return "git@mathhub.info:"+user+"/"+project
+def add_parser(subparsers):
+  parser_status = subparsers.add_parser('install', help='fetches a MathHub repository and its dependencies')
+  add_parser_args(parser_status)
 
-def cloneRepository(user, project):
+def add_parser_args(parser):
+  parser.add_argument('repository', default=[lmhutil.parseRepo("*/*")], type=lmhutil.parseSimpleRepo, nargs='*', help="a list of remote repositories to fetch locally. Should have form mygroup/myproject. No wildcards allowed. ")
+
+def do(args):
+  for rep in args.repository:
+    installrepo(rep)
+
+def getURL(repoName):
+  return "git@mathhub.info:"+repoName
+
+def cloneRepository(repoName):
   try:
     gitpath = lmhutil.which("git")
-    if os.path.exists(user+"/"+project):
+    if os.path.exists(repoName):
       return
-    repoURL = getURL(user, project)
+    repoURL = getURL(repoName)
     print "cloning " + repoURL
     
-    call([gitpath, "clone", repoURL, user+"/"+project])
+    call([gitpath, "clone", repoURL, repoName])
   except Exception, e:
     print e
     pass
 
-def installNoCycles(user, project, tried):
-  if (user+"/"+project) in tried:
+def installNoCycles(repoName, tried):
+  if (repoName) in tried:
     return
 
-  tried[user+"/"+project] = True
-  cloneRepository(user, project)
+  tried[repoName] = True
+  cloneRepository(repoName)
 
-  print "Checking dependencies for project "+project
+  print "Checking dependencies for project "+repoName
 
-  deps = lmhutil.get_dependencies(user+"/"+project);
+  deps = lmhutil.get_dependencies(repoName);
   if deps == None:
     print("Error: META-INF/MANIFEST.MF file missing or invalid.")
     return
 
   for dep in deps:
-    installNoCycles(dep[0], dep[1], tried)
+    installNoCycles(dep, tried)
 
 
 def installrepo(repoName):
   root = lmhutil.lmh_root()+"/MathHub"
   os.chdir(root)
-  [user, project] = parseRepoName(repoName)
-  installNoCycles(user, project, {})
+  installNoCycles(repoName, {})
 

@@ -64,19 +64,24 @@ def replaceFnc(fullPath, m):
   if remember == 'y':
     remChoices[m.group(0)] = result;
 
-  return m.group(0);
+  return result;
 
-def checkpaths(dir="."):
-  print "creating index";
+def createIndex():
   for root, dirs, files in os.walk(mathroot):
+    if root == "/home/costea/kwarc/localmh/MathHub/MathHub/physics/source/units/en":
+      print files
     for file in files:
       if not file.endswith(".tex"):
-        break;
+        continue;
 
       if file not in fileIndex:
         fileIndex[file]=[];
 
       fileIndex[file].append(root[len(mathroot)+1:]+"/"+file);
+
+def checkpaths(dir="."):
+  print "creating index";
+  createIndex()
 
   lmhpath.replacePath(dir, replaceFnc, False);
 

@@ -1,69 +1,85 @@
+#!/usr/bin/python
+
+"""
+This is the entry point for the Local Math Hub utility. 
+
+.. argparse::
+   :module: lmh
+   :func: create_parser
+   :prog: lmh
+
+"""
+
 #!/usr/bin/python 
 
 import argparse
 import lmhutil
 import lmhsetup
+import lmhstatus
 import lmhinstall
 import subprocess
 import os
 import sys
 
-parser = argparse.ArgumentParser(description='Local MathHub tool.')
+submods = {};
 
-init_choises = ['setup', 'install', 'update', 'drain', 'delete', 'init', 'root', 'depscrawl', 'path', 'update', 'drain', 'upgen', 'checkpaths', 'status', 'repos'];
+def create_parser():
+  parser = argparse.ArgumentParser(description='Local MathHub tool.')
 
-parser.add_argument('action', metavar='action', choices=init_choises, 
-                   help="action to be performed. Can be one of the following: "+", ".join(init_choises), nargs="?")
+  subparsers = parser.add_subparsers(help='valid actions are:', dest="action", metavar='action')
 
-args, rest = parser.parse_known_args()
+  submodules = ["status", "install", "setup", "init", "drain", "update", "upgen", "path", "depcrawl"];
+  for mod in submodules:
+    _mod = __import__("lmh"+mod)
+    submods[mod] = _mod
+    _mod.add_parser(subparsers)
 
-if args.action == None:
-  parser.print_help()
+  subparsers.add_parser('repos', help='prints the group/repository of the current  Math Hub repository')
+  subparsers.add_parser('root', help='prints the root directory of the Local Math Hub repository')
 
-if args.action == "install":
-  lmhinstall.installrepo(rest[0])
+  return parser
 
-if args.action == "setup":
-  lmhsetup.setup();  
+def main():
+  parser = create_parser()
+  if len(sys.argv) == 1:
+    parser.print_help();
+    return
 
-if args.action == "root":
-  print lmhutil.lmh_root();
+  args = parser.parse_args()
 
-if args.action == "status":
-  import lmhstatus
-  lmhstatus.do(rest);
+  if args.action == None:
+    parser.print_help()
+    return
 
-if args.action == "repos":
-  rep = lmhutil.lmh_repos();
-  if rep:
-    print rep
-  else:
-    sys.exit(os.EX_DATAERR)
+  if args.action == "root":
+    print lmhutil.lmh_root();
+    return
 
-if args.action == "depscrawl":
-  import lmhdepcrawler
-  lmhdepcrawler.do(rest);
+  if args.action == "repos":
+    rep = lmhutil.lmh_repos();
+    if rep:
+      print rep
+    else:
+      sys.exit(os.EX_DATAERR)
+    return
 
-if args.action == "checkpaths":
-  import lmhpathchecker
-  lmhpathchecker.do(rest)
+  submods[args.action].do(args)
 
-if args.action == "path":
-  import lmhpath
-  lmhpath.do(rest)
+"""
 
-if args.action == "update":
-  import lmhupdate
-  lmhupdate.do(rest, "pull")
+  if args.action == "depscrawl":
+    import lmhdepcrawler
+    lmhdepcrawler.do(rest);
 
-if args.action == "upgen":
-  import lmhupdate
-  lmhupdate.do(rest, "upgen")
+  if args.action == "checkpaths":
+    import lmhpathchecker
+    lmhpathchecker.do(rest)
 
-if args.action == "drain":
-  import lmhupdate
-  lmhupdate.do(rest, "push")
+  if args.action == "path":
+    import lmhpath
+    lmhpath.do(rest)
 
-if args.action == "init":
-  import lmhinit
-  lmhinit.init()
+"""
+
+if __name__ == "__main__":
+    main()

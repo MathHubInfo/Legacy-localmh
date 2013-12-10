@@ -1,7 +1,30 @@
+"""
+This is the entry point for the Local Math Hub utility. 
+
+.. argparse::
+   :module: lmhdepcrawl
+   :func: create_parser
+   :prog: lmhdepcrawl
+
+"""
+
 import os
 import re
 import argparse
 import lmhutil
+
+def create_parser():
+  parser = argparse.ArgumentParser(description='Local MathHub Path Management tool.')
+  add_parser_args(parser)
+  return parser
+
+def add_parser(subparsers):
+  parser_status = subparsers.add_parser('depcrawl', formatter_class=argparse.RawTextHelpFormatter, help='crawls current repository for dependencies')
+  add_parser_args(parser_status)
+
+
+def add_parser_args(parser):
+  parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Option specifying that files should be changed")
 
 def calcDeps(dir="."):
   currentdeps = {};
@@ -36,8 +59,4 @@ def calcDeps(dir="."):
   return " ".join(toAdd);
 
 def do(rest):
-  parser = argparse.ArgumentParser(description='MathHub repository dependency crawler.')
-  parser.add_argument('--apply', metavar='apply', const=True, default=False, nargs="?", help="Dependencies should be updated")
-
-  args, _ = parser.parse_known_args(rest)
   print calcDeps()

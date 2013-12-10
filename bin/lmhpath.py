@@ -1,8 +1,34 @@
+"""
+This is the entry point for the Local Math Hub utility. 
+
+.. argparse::
+   :module: lmhpath
+   :func: create_parser
+   :prog: lmhpath
+
+"""
+
 import os
 import re
 import functools
 import argparse
 
+
+def create_parser():
+  parser = argparse.ArgumentParser(description='Local MathHub Path Management tool.')
+  add_parser_args(parser)
+  return parser
+
+def add_parser(subparsers):
+  parser_status = subparsers.add_parser('path', formatter_class=argparse.RawTextHelpFormatter, help='path management')
+  add_parser_args(parser_status)
+
+
+def add_parser_args(parser):
+  parser.add_argument('matcher', metavar='matcher', help="RegEx matcher on the path of the module")
+  parser.add_argument('replace', metavar='replace', nargs="?", help="Replace string")
+  parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Option specifying that files should be changed")
+  
 
 def doNothing(fullPath, m):
   print fullPath + "->" + m.group(1)
@@ -39,18 +65,7 @@ def list(match, fullPath, m):
   return m.group(0)
 
 
-def do(rest):
-  parser = argparse.ArgumentParser(description='MathHub path management tool.')
-
-  parser.add_argument('matcher', metavar='matcher', help="RegEx matcher on the path of the module")
-  parser.add_argument('replace', metavar='replace', nargs="?", help="Replace string")
-  parser.add_argument('--apply', metavar='apply', const=True, default=False, nargs="?", help="Option specifying that files should be changed")
-
-  if len(rest) == 0:
-    return parser.print_help()
-
-  args, _ = parser.parse_known_args(rest)
-
+def do(args):
   if len(args.replace) == None:
     replacePath(".", functools.partial(list, args.matcher))
     return

@@ -2,29 +2,26 @@
 This is the entry point for the Local Math Hub utility. 
 
 .. argparse::
-   :module: lmhstatus
+   :module: lmhupgen
    :func: create_parser
-   :prog: lmhstatus
+   :prog: lmhupgen
 
 """
 
-import lmhutil
-import re
-import os
-import lmhutil
-import glob
-import subprocess
 import argparse
+import lmhutil
+import os
+import glob
+from subprocess import call
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub Status tool.')
+  parser = argparse.ArgumentParser(description='Local MathHub UpGen tool.')
   add_parser_args(parser)
   return parser
 
 def add_parser(subparsers):
-  parser_status = subparsers.add_parser('status', formatter_class=argparse.RawTextHelpFormatter, help='shows the working tree status of repositories')
+  parser_status = subparsers.add_parser('upgen', formatter_class=argparse.RawTextHelpFormatter, help='updates generated content')
   add_parser_args(parser_status)
-
 
 def add_parser_args(parser):
   parser.add_argument('repository', default=[lmhutil.parseRepo("*/*")], type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ")
@@ -36,19 +33,11 @@ Repository names allow using the wildcard '*' to match any repository. It allows
     .         - would be equivalent to "git status ."
 """;
 
-def do_status(rep):
-  cmd = [lmhutil.which("git"), "status", "-u", "-s"];
-  result = subprocess.Popen(cmd, 
-                                stdout=subprocess.PIPE,
-                                cwd=rep
-                               ).communicate()[0]
-  if len(result) == 0:
-    return
-
-  print rep
-  print result
+def do_upgen(rep):
+  print "generating in %r"%rep
+  call([lmhutil.which("make"), "-w", "sms", "driver"], cwd=rep+"/source");
 
 def do(args):
   for repo in args.repository:
     for rep in glob.glob(repo):
-      do_status(rep);
+      do_upgen(rep);

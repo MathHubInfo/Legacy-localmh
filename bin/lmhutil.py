@@ -2,8 +2,9 @@
 import subprocess
 import os
 import re
+import argparse
 
-repoRegEx = '([\w-]+)/([\w-]+)';
+repoRegEx = '[\w-]+/[\w-]+';
 
 def lmh_repos():
   t = os.path.realpath(os.getcwd());
@@ -23,6 +24,13 @@ def validRepoName(name):
   if len(name) == 0:
     return False
   return True
+
+def parseSimpleRepo(repoName):
+  m = re.match(repoRegEx, repoName);
+  if m and len(m.group(0)) == len(repoName):
+    return repoName;
+  else:
+    raise argparse.ArgumentTypeError("%r is not a valid repository name"%repoName)
 
 def parseRepo(repoName):
   r = repoName.split("/");
