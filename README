@@ -1,0 +1,15 @@
+LocalMH is an infrastructure for local (in a working tree) management of the content in http://MathHub.info. 
+
+The infrastructure consists of set of resources (Makefiles, LaTeX Packages, LaTeXML, sTeX) and a management tool lmh. 
+
+Resources/directory structure:
+
+MathHub: 	the content of MathHub.info
+bin: 		    	the programs, mainly lmh
+ext: 			external Software
+make: 		Makefiles for offline automation
+sty: 			LaTeX packages used in MathHub.info
+
+
+
+
