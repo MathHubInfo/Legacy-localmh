@@ -13,9 +13,9 @@
 % \mhcurrentrepos is used to initialize the current repository. 
 \newcommand\mhcurrentrepos[1]{\def\mh@currentrepos{#1}}
 % and a convenience macro for \importmodule
-\newcommand\importmhmodule[3][]{\def\@repos{#1}%
+\newcommand\importmhmodule[3][]{{\def\@repos{#1}%
 \ifx\@repos\@empty\else\mhcurrentrepos{#1}\fi%
-\importmodule[load=\MathHub{\mh@currentrepos/source/#2}]{#3}}
+\importmodule[load=\MathHub{\mh@currentrepos/source/#2}]{#3}}}
 \newcommand\usemhmodule[3][]{\def\@repos{#1}%
 \ifx\@repos\@empty\else\mhcurrentrepos{#1}\fi%
 \usemodule[load=\MathHub{\mh@currentrepos/source/#2}]{#3}}

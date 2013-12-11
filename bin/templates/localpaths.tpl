@@ -1,5 +1,4 @@
 % this file defines root path local repository
 \defpath{MathHub}{$mathhub/MathHub}
-\defpath{thisrepos}{$repo/source}
-\defpath{SMGloM}{$mathhub/MathHub/smglom/smglom/source}
+\mhcurrentrepos{$repo_name}
 \input{$repo/lib/WApersons}
