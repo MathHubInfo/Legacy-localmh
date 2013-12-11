@@ -27,7 +27,7 @@ def add_parser(subparsers):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', default=["."], type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
   parser.add_argument('--omdoc', nargs="*", help="generate omdoc files")
   parser.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
   parser.epilog = """
@@ -94,10 +94,10 @@ def genAllTex(dest, files, preFileContent, postFileContent):
   output.write(all_textpl.substitute(pre_tex=preFileContent, post_tex=postFileContent, mods="\n".join(mods)))
   output.close()
 
-def genLocalPaths(dest, repo):
+def genLocalPaths(dest, repo, repo_name):
   print "generating %r"%dest
   output = open(dest, "w")
-  output.write(all_pathstpl.substitute(mathhub=lmh_root, repo=repo))
+  output.write(all_pathstpl.substitute(mathhub=lmh_root, repo=repo, repo_name=repo_name))
   output.close()
 
 def get_modules(root, files):
@@ -114,6 +114,7 @@ def do_gen(rep, args):
   print "generating in repository %r"%rep
   rep_root = lmhutil.git_root_dir(rep);
 
+  repo_name = lmhutil.lmh_repos(rep)
   preFilePath = rep_root+"/lib/pre.tex"
   postFilePath = rep_root+"/lib/post.tex"
  
@@ -146,7 +147,7 @@ def do_gen(rep, args):
     if args.force or not os.path.exists(allTex) or youngest > os.path.getmtime(allTex):
       genAllTex(allTex, files, preFileContent, postFileContent);
     if args.force or not os.path.exists(localPathTex) or youngest > os.path.getmtime(localPathTex):
-      genLocalPaths(localPathTex, rep_root);
+      genLocalPaths(localPathTex, rep_root, repo_name);
 
     if args.omdoc != None:
       if len(args.omdoc) == 0:
@@ -164,6 +165,8 @@ def do_gen(rep, args):
           genOMDoc(root, omdoc[:-6], preFilePath)
 
 def do(args):
+  if len(args.repository) == 0:
+    args.repository = [lmhutil.parseRepo(".")]
   for repo in args.repository:
     for rep in glob.glob(repo):
       do_gen(rep, args);
