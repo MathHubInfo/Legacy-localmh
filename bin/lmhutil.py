@@ -86,8 +86,8 @@ def autocomplete_mathhub_repository(prefix, parsed_args, **kwargs):
   return results
 
 
-def lmh_repos():
-  t = os.path.realpath(os.getcwd());
+def lmh_repos(dir=os.getcwd()):
+  t = os.path.realpath(dir);
   root = _lmh_root+"/MathHub";
   if not t.startswith(root):
     return None
@@ -112,9 +112,6 @@ def parseSimpleRepo(repoName):
   else:
     raise argparse.ArgumentTypeError("%r is not a valid repository name"%repoName)
 
-def lmh_relative(path):
-  pass
-
 def parseRepo(repoName):
   # if repoName looks like the user meant to write a whole repository
   r = repoName.split("/");
@@ -135,6 +132,9 @@ def parseRepo(repoName):
 
   if len(relPath) == 2 and relPath[0]=="MathHub":
     return _lmh_root+"/MathHub/"+relPath[1]+"/*";
+
+  if len(relPath) > 2:
+    return fullPath
 
   raise argparse.ArgumentTypeError("%r is not a valid repository name"%repoName)
 

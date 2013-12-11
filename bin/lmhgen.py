@@ -27,7 +27,7 @@ def add_parser(subparsers):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', default=[lmhutil.parseRepo(".")], type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', default=["."], type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
   parser.add_argument('--omdoc', nargs="*", help="generate omdoc files")
   parser.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
   parser.epilog = """

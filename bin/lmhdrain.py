@@ -24,7 +24,7 @@ def add_parser(subparsers):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', default=[lmhutil.parseRepo(".")], type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', default=["."], type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
   parser.add_argument('--autocommit', "-f", default=False, const=True, action="store_const", help="should autocommit changes", metavar="")
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
@@ -37,7 +37,7 @@ Repository names allow using the wildcard '*' to match any repository. It allows
 def do_drain(rep, force = False):
   print "draining %r"%rep
   if force:
-    call([lmhutil.which("git"), "-am", "autocommiting"], cwd=rep);    
+    call([lmhutil.which("git"), "-a", "-m", "autocommiting"], cwd=rep);    
   call([lmhutil.which("git"), "push"], cwd=rep);
 
 def do(args):

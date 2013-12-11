@@ -29,7 +29,7 @@ def add_parser(subparsers):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', default=[lmhutil.parseRepo(".")], type=lmhutil.parseSimpleRepo, nargs='*', help="a list of remote repositories to fetch locally. Should have form mygroup/myproject. No wildcards allowed. ")
+  parser.add_argument('repository', default=["."], type=lmhutil.parseSimpleRepo, nargs='*', help="a list of remote repositories to fetch locally. Should have form mygroup/myproject. No wildcards allowed. ")
 
 def do(args):
   for rep in args.repository:
