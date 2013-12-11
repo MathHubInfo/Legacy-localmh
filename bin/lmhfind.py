@@ -36,8 +36,10 @@ def add_parser_args(parser):
   parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Option specifying that files should be changed")
   
 
-def doReplace(fullPath, replacer, replace_args, m):
+def doReplace(replacer, replace_args, fullPath, m):
   print "replacing at %r"%fullPath
+  if replacer == None:
+    return m.group(0)
   for idx, g in enumerate(m.groups()):
     replace_args["g"+str(idx)] = g
 
@@ -45,7 +47,7 @@ def doReplace(fullPath, replacer, replace_args, m):
 
   return res
 
-def replacePath(dir, matcher, replacer, replace_args, apply=False):
+def replacePath(dir, matcher, replaceFnc, apply=False):
   try:
     compMatch = re.compile(matcher)
   except Exception, e:
@@ -60,18 +62,23 @@ def replacePath(dir, matcher, replacer, replace_args, apply=False):
       if fileExtension != ".tex":
         continue
       fullpath = root+"/"+file;
+      changes = False
       if apply:
         ft = open(fullpath+".tmp", "w")
-      replaceContext = functools.partial(doReplace, fullpath, replacer, replace_args)
+      replaceContext = functools.partial(replaceFnc, fullpath)
       for line in open(fullpath, "r"):
         newLine = compMatch.sub(replaceContext, line)
         if newLine != line:
+          changes = True          
           print fullpath + ": \n " + line + newLine;
 
         if apply:
           ft.write(newLine)
       if apply:
-        os.rename(fullpath+".tmp", fullpath)
+        if changes:
+          os.rename(fullpath+".tmp", fullpath)
+        else:
+          os.remove(fullpath+".tmp")
 
 def do_find(rep, args):
   replacer = None  
@@ -83,7 +90,10 @@ def do_find(rep, args):
     replacer = args.replace[0]
 
   replace_args = {"repo" : repname}
-  replacePath(rep, matcher, replacer, replace_args, args.apply)
+
+  replaceFnc = functools.partial(doReplace, replacer, replace_args)
+
+  replacePath(rep, matcher, replaceFnc, args.apply)
 
 def do(args):
   if len(args.repository) == 0:

@@ -8,13 +8,14 @@ This is the entry point for the Local Math Hub utility.
 
 """
 
-import lmhpath;
+import lmhfind;
 import lmhutil;
 import os;
 import glob
 import difflib;
 import fileinput
 import argparse
+import functools
 
 mathroot = lmhutil.lmh_root()+"/MathHub";
 fileIndex = {};
@@ -32,6 +33,7 @@ def add_parser(subparsers):
 
 def add_parser_args(parser):
   parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('--interactive', metavar='interactive', const=True, default=False, action="store_const", help="Should check paths be interactive")
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
   Example:  
@@ -40,11 +42,17 @@ Repository names allow using the wildcard '*' to match any repository. It allows
     .         - would run on local directory
 """;
 
-def replaceFnc(fullPath, m):
+def replaceFnc(args, fullPath, m):
   if os.path.exists(mathroot+"/"+m.group(1)+".tex"):  # link is ok
     return m.group(0);
 
-  print "in ",fullPath, ": path ", m.group(1), "is invalid";
+  if args.interactive:
+    print "Following path is invalid "
+
+  print fullPath, ": ", m.group(1);
+
+  if not args.interactive:
+    return m.group(0)
 
   if m.group(0) in remChoices:
     print "Remembered replacement to "+remChoices[m.group(0)];
@@ -100,8 +108,6 @@ def replaceFnc(fullPath, m):
 
 def createIndex():
   for root, dirs, files in os.walk(mathroot):
-    if root == "/home/costea/kwarc/localmh/MathHub/MathHub/physics/source/units/en":
-      print files
     for file in files:
       if not file.endswith(".tex"):
         continue;
@@ -111,15 +117,14 @@ def createIndex():
 
       fileIndex[file].append(root[len(mathroot)+1:]+"/"+file);
 
-def checkpaths(dir="."):
-  print "creating index";
-
-  lmhpath.replacePath(dir, replaceFnc, False);
+def checkpaths(dir, args):
+  lmhfind.replacePath(dir, r"\\MathHub{([^}]*)", functools.partial(replaceFnc, args), True);
 
 def do(args):
   if len(args.repository) == 0:
     args.repository = [lmhutil.parseRepo(".")]  
+
   createIndex()
   for repo in args.repository:
     for rep in glob.glob(repo):
-      checkpaths(rep);
+      checkpaths(rep, args);
