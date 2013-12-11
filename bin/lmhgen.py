@@ -29,6 +29,7 @@ def add_parser(subparsers):
 def add_parser_args(parser):
   parser.add_argument('repository', default=[lmhutil.parseRepo(".")], type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
   parser.add_argument('--omdoc', nargs="*", help="generate omdoc files")
+  parser.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
   Example:  
@@ -110,6 +111,7 @@ def get_modules(root, files):
   return mods
 
 def do_gen(rep, args):
+  print "generating in repository %r"%rep
   rep_root = lmhutil.git_root_dir(rep);
 
   preFilePath = rep_root+"/lib/pre.tex"
@@ -135,15 +137,15 @@ def do_gen(rep, args):
     for mod in mods:
       smsfileName = root+"/"+mod["modName"]+".sms";
 
-      if not os.path.exists(smsfileName) or mod["date"] > os.path.getmtime(smsfileName):
+      if args.force or not os.path.exists(smsfileName) or mod["date"] > os.path.getmtime(smsfileName):
         genSMS(mod["file"], smsfileName)
         continue
 
     allTex = root+"/all.tex";
     localPathTex = root+"/localpaths.tex"
-    if not os.path.exists(allTex) or youngest > os.path.getmtime(allTex):
+    if args.force or not os.path.exists(allTex) or youngest > os.path.getmtime(allTex):
       genAllTex(allTex, files, preFileContent, postFileContent);
-    if not os.path.exists(localPathTex) or youngest > os.path.getmtime(localPathTex):
+    if args.force or not os.path.exists(localPathTex) or youngest > os.path.getmtime(localPathTex):
       genLocalPaths(localPathTex, rep_root);
 
     if args.omdoc != None:
@@ -152,7 +154,7 @@ def do_gen(rep, args):
           modName = mod["modName"]
           modFile = root+"/"+modName+".omdoc";
 
-          if not os.path.exists(modFile) or os.path.getmtime(mod["file"]) > os.path.getmtime(modFile):
+          if args.force or not os.path.exists(modFile) or os.path.getmtime(mod["file"]) > os.path.getmtime(modFile):
             genOMDoc(root, mod["modName"], preFilePath)
       else:
         for omdoc in args.omdoc:

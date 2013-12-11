@@ -110,7 +110,8 @@ def parseSimpleRepo(repoName):
 def parseRepo(repoName):
   r = repoName.split("/");
   if len(r) == 2 and validRepoName(r[0]) and validRepoName(r[1]):
-    return "/".join([lmh_root()+"/MathHub", r[0], r[1]]);
+    repoPath = "/".join([lmh_root()+"/MathHub", r[0], r[1]]);
+    return repoPath
   return os.path.normpath(os.path.realpath(repoName))
 
 def get_file(filePath):
