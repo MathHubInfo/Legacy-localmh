@@ -16,11 +16,11 @@ $(DRIVER): $(MODS) $(MODS.pre) $(MODS.post) localpaths.tex
 	cat $(MODS.post) >> $@
 	echo '\\end{document}' >> $@
 
-localpaths.tex: 
+localpaths.tex: $(MHDIR)/make/Makefile.base.in
 	@echo '% this file defines root path local repository' > $@ 
 	@echo "\defpath{MathHub}{$(MHDIR)/MathHub}" >>$@
 	@echo "\defpath{thisrepos}{$(MHDIR)/MathHub/$(REPOS)/source}" >>$@
-	@echo "\defpath{SMGloM}{$(MHDIR)/MathHub/SMGloM/SMGLoM/source}" >>$@
+	@echo "\defpath{SMGloM}{$(MHDIR)/MathHub/smglom/smglom/source}" >>$@
 	@echo "\input{$(MHDIR)/MathHub/$(REPOS)/lib/WApersons}" >>$@
 
 graph:	
