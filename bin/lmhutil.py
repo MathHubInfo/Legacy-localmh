@@ -8,27 +8,9 @@ import urllib2
 import json
 import glob
 
-repoRegEx = '[\w-]+/[\w-]+';
-
-def set_setting(key,  value):
-  root = lmh_root();
-
-  config = ConfigParser.ConfigParser()
-  config.read(root+"/bin/lmh.cfg")
-  if not config.has_section("lmh"):
-    config.add_section("lmh");
-
-  config.set("lmh", key, value)
-
-  with open(root+"/bin/lmh.cfg", 'wb') as configfile:
-    config.write(configfile)
-
-def get_setting(key):
-  root = lmh_root();
-
-  config = ConfigParser.ConfigParser()
-  config.read(root+"/bin/lmh.cfg")
-  return config.get("lmh", key)
+def lmh_root():
+    mypath = os.path.dirname(os.path.realpath(__file__))+"/.."
+    return os.path.realpath(mypath)
 
 def which(program):
     import os
@@ -48,7 +30,30 @@ def which(program):
 
     return None
 
+repoRegEx = '[\w-]+/[\w-]+';
+_lmh_root = lmh_root();
 gitexec = which("git")
+
+def set_setting(key,  value):
+  root = _lmh_root
+
+  config = ConfigParser.ConfigParser()
+  config.read(root+"/bin/lmh.cfg")
+  if not config.has_section("lmh"):
+    config.add_section("lmh");
+
+  config.set("lmh", key, value)
+
+  with open(root+"/bin/lmh.cfg", 'wb') as configfile:
+    config.write(configfile)
+
+def get_setting(key):
+  root = _lmh_root;
+
+  config = ConfigParser.ConfigParser()
+  config.read(root+"/bin/lmh.cfg")
+  return config.get("lmh", key)
+
 
 def module_exists(module_name):
     try:
@@ -73,7 +78,7 @@ def autocomplete_remote_mathhub_repository(prefix, parsed_args, **kwargs):
 
 def autocomplete_mathhub_repository(prefix, parsed_args, **kwargs):
   results = [];
-  root = lmh_root()+"/MathHub"
+  root = _lmh_root+"/MathHub"
   for rep in glob.glob(root+"/*/*"):
     names = rep[len(root)+1:]
     results.append(names)
@@ -83,7 +88,7 @@ def autocomplete_mathhub_repository(prefix, parsed_args, **kwargs):
 
 def lmh_repos():
   t = os.path.realpath(os.getcwd());
-  root = lmh_root()+"/MathHub";
+  root = _lmh_root+"/MathHub";
   if not t.startswith(root):
     return None
   comp = t[len(root)+1:].split("/")
@@ -107,12 +112,31 @@ def parseSimpleRepo(repoName):
   else:
     raise argparse.ArgumentTypeError("%r is not a valid repository name"%repoName)
 
+def lmh_relative(path):
+  pass
+
 def parseRepo(repoName):
+  # if repoName looks like the user meant to write a whole repository
   r = repoName.split("/");
   if len(r) == 2 and validRepoName(r[0]) and validRepoName(r[1]):
-    repoPath = "/".join([lmh_root()+"/MathHub", r[0], r[1]]);
-    return repoPath
-  return os.path.normpath(os.path.realpath(repoName))
+    repoPath = "/".join([_lmh_root+"/MathHub", r[0], r[1]]);
+    if os.path.exists(repoPath):
+      return repoPath
+
+  fullPath = os.path.normpath(os.path.realpath(repoName))
+
+  if not fullPath.startswith(_lmh_root):
+    raise argparse.ArgumentTypeError("%r is not a valid repository"%fullPath)
+
+  relPath = filter(len, fullPath[len(_lmh_root)+1:].split(os.sep))
+
+  if len(relPath) == 0 or (len(relPath)==1 and relPath[0]=="MathHub"):
+    return _lmh_root+"/MathHub/*/*";
+
+  if len(relPath) == 2 and relPath[0]=="MathHub":
+    return _lmh_root+"/MathHub/"+relPath[1]+"/*";
+
+  raise argparse.ArgumentTypeError("%r is not a valid repository name"%repoName)
 
 def get_file(filePath):
     return open(filePath).read()
@@ -132,10 +156,6 @@ def git_clone(dest, *arg):
     return
 
   print err
-
-def lmh_root():
-    mypath = os.path.dirname(os.path.realpath(__file__))+"/.."
-    return os.path.realpath(mypath)
 
 def git_origin(rootdir="."):
     return subprocess.Popen([which("git"), "remote", "show", "origin", "-n"], 
