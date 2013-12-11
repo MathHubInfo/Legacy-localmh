@@ -1,12 +1,44 @@
+"""
+This is the entry point for the Local Math Hub utility. 
+
+.. argparse::
+   :module: lmhcheckpaths
+   :func: create_parser
+   :prog: lmhcheckpaths
+
+"""
+
 import lmhpath;
 import lmhutil;
 import os;
+import glob
 import difflib;
 import fileinput
+import argparse
 
 mathroot = lmhutil.lmh_root()+"/MathHub";
 fileIndex = {};
 remChoices = {};
+
+def create_parser():
+  parser = argparse.ArgumentParser(description='Local MathHub Path Checking tool.')
+  add_parser_args(parser)
+  return parser
+
+def add_parser(subparsers):
+  parser_status = subparsers.add_parser('checkpaths', formatter_class=argparse.RawTextHelpFormatter, help='check paths for validity')
+  add_parser_args(parser_status)
+
+
+def add_parser_args(parser):
+  parser.add_argument('repository', default=[lmhutil.parseRepo("*/*")], type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ")
+  parser.epilog = """
+Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
+  Example:  
+    */*       - would match all repositories from all groups. 
+    mygroup/* - would match all repositories from group mygroup
+    .         - would run on local directory
+""";
 
 def replaceFnc(fullPath, m):
   if os.path.exists(mathroot+"/"+m.group(1)+".tex"):  # link is ok
@@ -81,12 +113,11 @@ def createIndex():
 
 def checkpaths(dir="."):
   print "creating index";
-  createIndex()
 
   lmhpath.replacePath(dir, replaceFnc, False);
 
-def do(rest):
-  if len(rest) == 0:
-    checkpaths(mathroot)
-
-  checkpaths(rest[0])  
+def do(args):
+  createIndex()
+  for repo in args.repository:
+    for rep in glob.glob(repo):
+      checkpaths(rep);

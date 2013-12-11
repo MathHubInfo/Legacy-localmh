@@ -1,3 +1,4 @@
 MathHub/*
 *.pyc
 ext/*
+*.cfg

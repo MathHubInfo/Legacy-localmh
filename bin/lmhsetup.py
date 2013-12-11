@@ -12,6 +12,10 @@ import argparse
 import lmhutil
 import os
 from subprocess import call
+import ConfigParser
+
+gitpath = lmhutil.which("git")
+python = lmhutil.which("python")
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Setup tool.')
@@ -23,16 +27,25 @@ def add_parser(subparsers):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
+  parser.add_argument('--autocomplete', default=False, const=True, action="store_const", help="should install autocomplete for bash", metavar="")
+  parser.add_argument('--add-private-token', nargs=1, help="add private token to use advanced MathHub functionality")
   pass
+
+def install_autocomplete():
+  root = lmhutil.lmh_root()+"/ext"
+  lmhutil.git_clone(root, "https://github.com/kislyuk/argcomplete.git", "arginstall")
+  call([python, "setup.py", "install", "--user"], cwd=root+"/arginstall")
+  activatecmd = root+"/arginstall/scripts/activate-global-python-argcomplete";
+  print "running %r"%(activatecmd)
+  call([root+"/arginstall/scripts/activate-global-python-argcomplete"])
 
 def do(args):
   root = lmhutil.lmh_root()+"/ext"
-  os.chdir(root)
+  lmhutil.git_clone(root, "https://github.com/KWARC/LaTeXML.git")
+  lmhutil.git_clone(root, "https://github.com/KWARC/sTeX.git")
 
-  gitpath = lmhutil.which("git")
+  if args.autocomplete:
+    install_autocomplete()
 
-  print "cloning LaTeXML"
-  call([gitpath, "clone", "https://github.com/KWARC/LaTeXML.git"])
-  print "cloning sTeX"
-  call([gitpath, "clone", "https://github.com/KWARC/sTeX.git"])
-  
+  if len(args.add_private_token) == 1:
+    lmhutil.set_setting("private_token", args.add_private_token[0])

@@ -3,8 +3,83 @@ import subprocess
 import os
 import re
 import argparse
+import ConfigParser
+import urllib2
+import json
+import glob
 
 repoRegEx = '[\w-]+/[\w-]+';
+
+def set_setting(key,  value):
+  root = lmh_root();
+
+  config = ConfigParser.ConfigParser()
+  config.read(root+"/bin/lmh.cfg")
+  if not config.has_section("lmh"):
+    config.add_section("lmh");
+
+  config.set("lmh", key, value)
+
+  with open(root+"/bin/lmh.cfg", 'wb') as configfile:
+    config.write(configfile)
+
+def get_setting(key):
+  root = lmh_root();
+
+  config = ConfigParser.ConfigParser()
+  config.read(root+"/bin/lmh.cfg")
+  return config.get("lmh", key)
+
+def which(program):
+    import os
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+
+    return None
+
+gitexec = which("git")
+
+def module_exists(module_name):
+    try:
+        __import__(module_name)
+    except ImportError:
+        return False
+    else:
+        return True
+
+def autocomplete_remote_mathhub_repository(prefix, parsed_args, **kwargs):
+  key = get_setting("private_token")
+  results = [];
+
+  if key:
+    resource = "http://mathhub.info/api/v3/groups?private_token={token}".format(token=key)
+    json_data = json.loads(urllib2.urlopen(resource).read())
+    for rec in json_data:
+      if rec["name"].startswith(prefix):
+        results.append(rec["name"])
+
+  return results
+
+def autocomplete_mathhub_repository(prefix, parsed_args, **kwargs):
+  results = [];
+  root = lmh_root()+"/MathHub"
+  for rep in glob.glob(root+"/*/*"):
+    names = rep[len(root)+1:]
+    results.append(names)
+
+  return results
+
 
 def lmh_repos():
   t = os.path.realpath(os.getcwd());
@@ -47,8 +122,15 @@ def set_file(filePath, fileContent):
 def get_template(name):
     return get_file(os.path.dirname(os.path.realpath(__file__)) + "/templates/" + name);
 
-def git_push(dir):
-    pass
+def git_clone(dest, *arg):
+  args = [gitexec, "clone"];
+  args.extend(arg);
+  err = subprocess.Popen(args, stderr=subprocess.PIPE, cwd=dest).communicate()[1]
+
+  if err.find("already exists") != -1:
+    return
+
+  print err
 
 def lmh_root():
     mypath = os.path.dirname(os.path.realpath(__file__))+"/.."
@@ -87,20 +169,4 @@ def get_dependencies(dir):
     return res
 
 
-def which(program):
-    import os
-    def is_exe(fpath):
-        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
-
-    fpath, fname = os.path.split(program)
-    if fpath:
-        if is_exe(program):
-            return program
-    else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            path = path.strip('"')
-            exe_file = os.path.join(path, program)
-            if is_exe(exe_file):
-                return exe_file
-
-    return None
+autocomplete_mathhub_repository("K", "")

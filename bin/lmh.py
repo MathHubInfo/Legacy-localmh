@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# PYTHON_ARGCOMPLETE_OK
 
 """
 This is the entry point for the Local Math Hub utility. 
@@ -28,7 +29,7 @@ def create_parser():
 
   subparsers = parser.add_subparsers(help='valid actions are:', dest="action", metavar='action')
 
-  submodules = ["status", "install", "setup", "init", "drain", "update", "upgen", "path", "depcrawl"];
+  submodules = ["status", "install", "setup", "init", "drain", "update", "upgen", "path", "depcrawl", "checkpaths"];
   for mod in submodules:
     _mod = __import__("lmh"+mod)
     submods[mod] = _mod
@@ -36,6 +37,9 @@ def create_parser():
 
   subparsers.add_parser('repos', help='prints the group/repository of the current  Math Hub repository')
   subparsers.add_parser('root', help='prints the root directory of the Local Math Hub repository')
+
+  if lmhutil.module_exists("argcomplete"):
+    __import__("argcomplete").autocomplete(parser)
 
   return parser
 
