@@ -8,6 +8,8 @@ This is the entry point for the Local Math Hub utility.
 
 """
 
+# lmh find '\\importmodule\[load=\\MathHub{$repo/source/([^\]]*)\]' --replace '\importmhmodule{$g0' --apply
+
 import os
 import re
 import functools
@@ -34,11 +36,16 @@ def add_parser_args(parser):
   parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Option specifying that files should be changed")
   
 
-def doReplace(fullPath, replacer, m):
-  print fullPath + "->" + m.group(0)
-  return m.group(0)
+def doReplace(fullPath, replacer, replace_args, m):
+  print "replacing at %r"%fullPath
+  for idx, g in enumerate(m.groups()):
+    replace_args["g"+str(idx)] = g
 
-def replacePath(dir, matcher, replacer, apply=False):
+  res = Template(replacer).substitute(replace_args)
+
+  return res
+
+def replacePath(dir, matcher, replacer, replace_args, apply=False):
   try:
     compMatch = re.compile(matcher)
   except Exception, e:
@@ -53,14 +60,13 @@ def replacePath(dir, matcher, replacer, apply=False):
       if fileExtension != ".tex":
         continue
       fullpath = root+"/"+file;
-      print fullpath
       if apply:
         ft = open(fullpath+".tmp", "w")
-      replaceContext = functools.partial(doReplace, fullpath, replacer)
+      replaceContext = functools.partial(doReplace, fullpath, replacer, replace_args)
       for line in open(fullpath, "r"):
         newLine = compMatch.sub(replaceContext, line)
         if newLine != line:
-          print fullpath + ": " + newLine;
+          print fullpath + ": \n " + line + newLine;
 
         if apply:
           ft.write(newLine)
@@ -70,11 +76,14 @@ def replacePath(dir, matcher, replacer, apply=False):
 def do_find(rep, args):
   replacer = None  
   repname = lmhutil.lmh_repos(rep);
-  matcher = Template(args.matcher).substitute(repo=repname)
-  if args.replace:
-    replacer = Template(args.replace[0]).substitute(repo=repname)
 
-  replacePath(rep, matcher, replacer, args.apply)
+  matcher = Template(args.matcher).substitute(repo=repname)
+
+  if args.replace:
+    replacer = args.replace[0]
+
+  replace_args = {"repo" : repname}
+  replacePath(rep, matcher, replacer, replace_args, args.apply)
 
 def do(args):
   if len(args.repository) == 0:
