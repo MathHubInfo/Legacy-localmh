@@ -27,7 +27,7 @@ def add_parser(subparsers):
 
 
 def add_parser_args(parser):
-  parser.add_argument('repository', default=["."], type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
 
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
@@ -50,6 +50,8 @@ def do_status(rep):
   print result
 
 def do(args):
+  if len(args.repository) == 0:
+    args.repository = [lmhutil.parseRepo(".")]
   for repo in args.repository:
     for rep in glob.glob(repo):
       do_status(rep);

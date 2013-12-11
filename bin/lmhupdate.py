@@ -24,7 +24,7 @@ def add_parser(subparsers):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', default=["MathHub/*/*"], type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
   Example:  
@@ -38,6 +38,8 @@ def do_pull(rep):
   call([lmhutil.which("git"), "pull"], cwd=rep);
 
 def do(args):
+  if len(args.repository) == 0:
+    args.repository = [lmhutil.parseRepo(".")]
   for repo in args.repository:
     for rep in glob.glob(repo):
       do_pull(rep);
