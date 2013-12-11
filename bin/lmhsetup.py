@@ -47,5 +47,5 @@ def do(args):
   if args.autocomplete:
     install_autocomplete()
 
-  if len(args.add_private_token) == 1:
+  if args.add_private_token and len(args.add_private_token) == 1:
     lmhutil.set_setting("private_token", args.add_private_token[0])
