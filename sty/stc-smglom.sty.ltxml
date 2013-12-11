@@ -12,11 +12,7 @@ package LaTeXML::Package::Pool;
 use strict;
 use LaTeXML::Package;
 
-RawTeX('
-\newcommand\gimport[2][]{\importmodule[load=\SMGloM{#2}]{#2}}
-\newcommand\guse[2][]{\usemodule[load=\SMGloM{#2}]{#2}}
-\newcommand\gadopt[2][]{\adoptmodule[load=\SMGloM{#2}]{#2}}
-');
+InputDefinitions('stc-smglom',type=>'sty',noltxml=>1); 
 
 #**********************************************************************
 1;

@@ -14,14 +14,13 @@ $(DRIVER): $(MODS) $(MODS.pre) $(MODS.post) localpaths.tex
 #	@for d in $(MODS4all); do (echo "\\\begin{omgroup}{File: $$d.tex}  \n\\input{$$d}\n\\\end{omgroup}\n\\\newpage\n" >>$@) done
 	@for d in $(MODS4all); do (echo "\\\begin{center}\\LARGE File: \\\url{$$d.tex}\\end{center}" >>$@; echo "\\input{$$d}\\\newpage" >>$@) done
 	cat $(MODS.post) >> $@
-	echo '\\end{document}' >> $@
+	@echo '\\end{document}' >> $@
 
 localpaths.tex: $(MHDIR)/make/Makefile.base.in
 	@echo '% this file defines root path local repository' > $@ 
 	@echo "\defpath{MathHub}{$(MHDIR)/MathHub}" >>$@
-	@echo "\defpath{thisrepos}{$(MHDIR)/MathHub/$(REPOS)/source}" >>$@
-	@echo "\defpath{SMGloM}{$(MHDIR)/MathHub/smglom/smglom/source}" >>$@
-	@echo "\input{$(MHDIR)/MathHub/$(REPOS)/lib/WApersons}" >>$@
+	@echo "\mhcurrentrepos{$(REPOS)}" >>$@
+	@echo "\input{\thismhrepos{lib/WApersons}}" >>$@
 
 graph:	
 	$(GRAPHPROG) -o graph -f pdf $(SNIPPATHS) all.tex 
