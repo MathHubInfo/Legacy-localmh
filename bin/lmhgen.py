@@ -15,7 +15,11 @@ import glob
 from subprocess import call
 import re
 import time
+import datetime
 from string import Template
+
+from multiprocessing import Pool
+import multiprocessing 
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Generation tool.')
@@ -67,9 +71,9 @@ latexmlc = lmhutil.which("latexmlc")
 stexstydir = lmh_root+"/ext/sTeX/sty";
 stydir = lmh_root+"/sty";
 
-def genOMDoc(root, mod, pre_path):
+def genOMDoc(root, mod, pre_path, port=3354):
   print "generating %r"%(mod+".omdoc")
-  args = [latexmlc,"--expire=120", "--profile", "stex-module", "--path="+stydir, "--preload="+pre_path, mod+".tex", "--destination="+mod+".omdoc", "--log="+mod+".ltxlog"];
+  args = [latexmlc,"--expire=120", "--port="+str(port), "--profile", "stex-module", "--path="+stydir, "--preload="+pre_path, mod+".tex", "--destination="+mod+".omdoc", "--log="+mod+".ltxlog"];
   call(args, cwd=root, env={"STEXSTYDIR" : stexstydir})
 
 def genSMS(input, output):
@@ -110,6 +114,24 @@ def get_modules(root, files):
     mods.append({ "modName" : file[:-4], "file": fullFile, "date": os.path.getmtime(fullFile)})
   return mods
 
+def do_compute(omdoc):
+  current = multiprocessing.current_process()
+  wid = current._identity[0]
+  print str(datetime.datetime.now().time())+" worker "+str(wid)+": "+omdoc["modName"]+" "
+  genOMDoc(omdoc["root"], omdoc["modName"], omdoc["pre"], 3353+wid)
+
+def do_bulk_omdoc(omdocs):
+  if len(omdocs) < 10:
+    for omdoc in omdocs:
+      genOMDoc(omdoc["root"], omdoc["modName"], omdoc["pre"])
+    return
+
+  processes = 8;
+
+  pool = Pool(processes=processes)
+  result = pool.map(do_compute, omdocs)
+
+
 def do_gen(rep, args):
   print "generating in repository %r"%rep
   rep_root = lmhutil.git_root_dir(rep);
@@ -120,6 +142,7 @@ def do_gen(rep, args):
  
   preFileContent = lmhutil.get_file(preFilePath);
   postFileContent = lmhutil.get_file(postFilePath);
+  omdocToDo = [];
 
   if rep == rep_root:
     rep = rep + "/source";
@@ -156,13 +179,15 @@ def do_gen(rep, args):
           modFile = root+"/"+modName+".omdoc";
 
           if args.force or not os.path.exists(modFile) or os.path.getmtime(mod["file"]) > os.path.getmtime(modFile):
-            genOMDoc(root, mod["modName"], preFilePath)
+            omdocToDo.append({"root": root, "modName": mod["modName"], "pre" : preFilePath})
       else:
         for omdoc in args.omdoc:
           if not omdoc.endswith(".omdoc"):
             print "%r is not a vaid omdoc file name"%omdoc
             continue
-          genOMDoc(root, omdoc[:-6], preFilePath)
+          omdocToDo.append({"root": root, "modName": omdoc[:-6], "pre" : preFilePath })
+      
+  do_bulk_omdoc(omdocToDo)
 
 def do(args):
   if len(args.repository) == 0:
