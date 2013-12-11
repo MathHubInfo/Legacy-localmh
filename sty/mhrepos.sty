@@ -7,37 +7,22 @@
 % the \mhrepos takes two argument. The MathHub repository as the first one, and the path
 % in this repository as the second.  The internal macro \@curentrepos is set to the
 % repository given for all future invocations
-\newcommand\mhrepos[2]{\def\@currentrepos{#1}\thismhrepos{#2}}
+\newcommand\mhrepos[2]{\def\mh@currentrepos{#1}\thismhrepos{#2}}
 % \thismhrepos is a variant of \mhrepos, where the current repos is used 
-\newcommand\thismhrepos[1]{\MathHub{\@currentrepos/source/#1}}
+\newcommand\thismhrepos[1]{\MathHub{\mh@currentrepos/source/#1}}
 % \mhcurrentrepos is used to initialize the current repository. 
-\newcommand\mhcurrentrepos[1]{\def\@currentrepos{#1}}
+\newcommand\mhcurrentrepos[1]{\def\mh@currentrepos{#1}}
 % and a convenience macro for \importmodule
 \newcommand\importmhmodule[3][]{\def\@repos{#1}%
 \ifx\@repos\@empty\else\mhcurrentrepos{#1}\fi%
-%\edef\@path{\MathHub{\@currentrepos/source/#2}}%
-\importmodule[load=\MathHub{\@currentrepos/source/#2}]{#3}}
-
+\importmodule[load=\MathHub{\mh@currentrepos/source/#2}]{#3}}
 \newcommand\usemhmodule[3][]{\def\@repos{#1}%
 \ifx\@repos\@empty\else\mhcurrentrepos{#1}\fi%
-%\edef\@path{\MathHub{\@currentrepos/source/#2}}%
-\usemodule[load=\MathHub{\@currentrepos/source/#2}]{#3}}
-
+\usemodule[load=\MathHub{\mh@currentrepos/source/#2}]{#3}}
 \newcommand\adoptmhmodule[3][]{\def\@repos{#1}%
 \ifx\@repos\@empty\else\mhcurrentrepos{#1}\fi%
-%\edef\@path{\MathHub{\@currentrepos/source/#2}}%
-\adoptmodule[load=\MathHub{\@currentrepos/source/#2}]{#3}}
-
+\adoptmodule[load=\MathHub{\mh@currentrepos/source/#2}]{#3}}
 % the following commands are special provisions for the SMGloM repository
 \newcommand\gimport[1]{\importmhmodule[smglom/smglom]{#1}{#1}}
 \newcommand\guse[1]{\usemhmodule[smglom/smglom]{#1}{#1}}
 \newcommand\gadopt[1]{\adoptmhmodule[smglom/smglom]{#1}{#1}}
-% \newcommand\gimport[2][]{\def\@test{#1}%
-% \ifx\@test\@empty\importmodule[load=\mhrepos{smglom/smglom}{#2}]{#2}%
-% \else\importmodule[#1,load=\mhrepos{smglom/smglom}{#2}]{#2}\fi}
-% \newcommand\guse[2][]{\def\@test{#1}%
-% \ifx\@test\@empty\usemodule[load=\mhrepos{smglom/smglom}{#2}]{#2}%
-% \else\usemodule[#1,load=\mhrepos{smglom/smglom}{#2}]{#2}\fi}
-% \newcommand\gadopt[2][]{\def\@test{#1}%
-% \ifx\@test\@empty\gadoptmodule[load=\mhrepos{smglom/smglom}{#2}]{#2}%
-% \else\gadoptmodule[#1,load=\mhrepos{smglom/smglom}{#2}]{#2}\fi}
