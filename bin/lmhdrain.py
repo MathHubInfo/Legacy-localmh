@@ -37,7 +37,7 @@ Repository names allow using the wildcard '*' to match any repository. It allows
 def do_drain(rep, force = False):
   print "draining %r"%rep
   if force:
-    call([lmhutil.which("git"), "-a", "-m", "autocommiting"], cwd=rep);    
+    call([lmhutil.which("git"), "commit", "-a", "-m", "autocommiting"], cwd=rep);    
   call([lmhutil.which("git"), "push"], cwd=rep);
 
 def do(args):
