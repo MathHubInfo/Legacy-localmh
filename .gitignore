@@ -2,3 +2,6 @@ MathHub/*
 *.pyc
 ext/*
 *.cfg
+auto
+*.log
+test.*
