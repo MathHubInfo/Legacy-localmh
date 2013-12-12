@@ -17,6 +17,7 @@ import re
 import time
 import datetime
 from string import Template
+import ConfigParser
 
 from multiprocessing import Pool
 import multiprocessing 
@@ -87,18 +88,19 @@ def genSMS(input, output):
         break
   output.close()
 
-def genAllTex(dest, files, preFileContent, postFileContent):
-  if preFileContent == None or postFileContent == None:
+def genAllTex(dest, mods, config):
+  if not config.has_option("DEFAULT", "pre_content") or not config.has_option("DEFAULT", "post_content"):
     return
   print "generating %r"%dest
-  mods = [];
-  for file in files:
-    if not file.endswith(".tex") or file == "all.tex":
-      continue
-    mods.append(all_modtpl.substitute(file=file[:-4]));
+
+  preFileContent = config.get("DEFAULT", "pre_content")
+  postFileContent = config.get("DEFAULT", "post_content")
+  content = [];
+  for mod in mods:
+    content.append(all_modtpl.substitute(file=mod["modName"]));
 
   output = open(dest, "w")
-  output.write(all_textpl.substitute(pre_tex=preFileContent, post_tex=postFileContent, mods="\n".join(mods)))
+  output.write(all_textpl.substitute(pre_tex=preFileContent, post_tex=postFileContent, mods="\n".join(content)))
   output.close()
 
 def genLocalPaths(dest, repo, repo_name):
@@ -134,74 +136,76 @@ def do_bulk_omdoc(omdocs):
   pool = Pool(processes=processes)
   result = pool.map(do_compute, omdocs)
 
+def gen_sms(root, mods, args):
+  # Generate all SMS files
+  for mod in mods:
+    smsfileName = root+"/"+mod["modName"]+".sms";
+
+    if args.force or not os.path.exists(smsfileName) or mod["date"] > os.path.getmtime(smsfileName):
+      genSMS(mod["file"], smsfileName)
+
 
 def do_gen(rep, args):
   print "generating in repository %r"%rep
   rep_root = lmhutil.git_root_dir(rep);
-
   repo_name = lmhutil.lmh_repos(rep)
-
-  preFilePath = rep_root+"/lib/pre.tex"
-  postFilePath = rep_root+"/lib/post.tex"
-
   omdocToDo = [];
-  preFileContent = postFileContent = None
+  #cfg = ConfigParser();
 
-  if not os.path.exists(preFilePath):
-    print "Warning: could not find pre file. Only limited generation will occur"
-  else :
-    preFileContent = lmhutil.get_file(preFilePath);
+  def traverse(root, config):
+    files = os.listdir(root)
+    if any(".lmh" in s for s in files):
+      #newCfg = ConfigParser.ConfigParser(root+"/.lmh")
+      #print newCfg
+      pass
 
-  if not os.path.exists(postFilePath):
-    print "Warning: could not find post file. Only limited generation will occur"
-  else:
-   postFileContent = lmhutil.get_file(postFilePath);
+    mods = get_modules(root, files)
+    if len(mods) > 0:
+      youngest = max(map(lambda x : x["date"], mods))
+      gen_sms(root, mods, args)
+
+      allTex = root+"/all.tex";
+      localPathTex = root+"/localpaths.tex"
+       
+      if args.force or not os.path.exists(localPathTex) or youngest > os.path.getmtime(localPathTex):
+        genLocalPaths(localPathTex, rep_root, repo_name);
+
+      if args.force or not os.path.exists(allTex) or youngest > os.path.getmtime(allTex):
+        genAllTex(allTex, mods, config);
+
+      if args.omdoc != None and config.has_option("DEFAULT", "pre_content"):
+        if len(args.omdoc) == 0:
+          for mod in mods:
+            modName = mod["modName"]
+            modFile = root+"/"+modName+".omdoc";
+
+            if args.force or not os.path.exists(modFile) or os.path.getmtime(mod["file"]) > os.path.getmtime(modFile):
+              omdocToDo.append({"root": root, "modName": mod["modName"], "pre" : config.get("DEFAULT", "pre")})
+        else:
+          for omdoc in args.omdoc:
+            if not omdoc.endswith(".omdoc"):
+              print "%r is not a vaid omdoc file name"%omdoc
+              continue
+            omdocToDo.append({"root": root, "modName": omdoc[:-6], "pre" : config.get("DEFAULT", "pre") })
+    
+    for dir in filter(os.path.isdir, files):
+      print traverse(root+"/"+filter)
 
   if rep == rep_root:
     rep = rep + "/source";
 
-  for root, dirs, files in os.walk(rep):
-    mods = get_modules(root, files)
-    if len(mods) == 0:
-      continue
+  if not os.path.exists(rep):
+    return
 
-    youngest = mods[0]["date"]
-    for mod in mods:
-      if mod["date"] > youngest:
-        youngest = mod["date"]
+  initConfig = ConfigParser.ConfigParser();
 
-    # Generate all SMS files
-    for mod in mods:
-      smsfileName = root+"/"+mod["modName"]+".sms";
+  for fl in ["pre", "post"]:
+    if os.path.exists(rep_root+"/lib/%s.tex"%fl):
+      initConfig.set("DEFAULT", fl, rep_root+"/lib/%s.tex"%fl);
+      initConfig.set("DEFAULT", "%s_content"%fl, lmhutil.get_file(rep_root+"/lib/%s.tex"%fl));
 
-      if args.force or not os.path.exists(smsfileName) or mod["date"] > os.path.getmtime(smsfileName):
-        genSMS(mod["file"], smsfileName)
-        continue
+  traverse(rep, initConfig)
 
-    allTex = root+"/all.tex";
-    localPathTex = root+"/localpaths.tex"
- 
-    if args.force or not os.path.exists(localPathTex) or youngest > os.path.getmtime(localPathTex):
-      genLocalPaths(localPathTex, rep_root, repo_name);
-
-    if args.force or not os.path.exists(allTex) or youngest > os.path.getmtime(allTex):
-      genAllTex(allTex, files, preFileContent, postFileContent);
-
-    if args.omdoc != None and preFileContent != None:
-      if len(args.omdoc) == 0:
-        for mod in mods:
-          modName = mod["modName"]
-          modFile = root+"/"+modName+".omdoc";
-
-          if args.force or not os.path.exists(modFile) or os.path.getmtime(mod["file"]) > os.path.getmtime(modFile):
-            omdocToDo.append({"root": root, "modName": mod["modName"], "pre" : preFilePath})
-      else:
-        for omdoc in args.omdoc:
-          if not omdoc.endswith(".omdoc"):
-            print "%r is not a vaid omdoc file name"%omdoc
-            continue
-          omdocToDo.append({"root": root, "modName": omdoc[:-6], "pre" : preFilePath })
-      
   do_bulk_omdoc(omdocToDo)
 
 def do(args):
