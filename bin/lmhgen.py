@@ -144,6 +144,11 @@ def gen_sms(root, mods, args):
     if args.force or not os.path.exists(smsfileName) or mod["date"] > os.path.getmtime(smsfileName):
       genSMS(mod["file"], smsfileName)
 
+def config_load_content(root, config):
+  for fl in ["pre", "post"]:
+    if config.has_option("gen", fl):
+      file_path = os.path.realpath(os.path.join(root, config.get("gen", fl)))
+      config.set("gen", "%s_content"%fl, lmhutil.get_file(file_path));
 
 def do_gen(rep, args):
   print "generating in repository %r"%rep
@@ -157,6 +162,8 @@ def do_gen(rep, args):
       newCfg = ConfigParser.ConfigParser()
       newCfg.read(root+"/.lmh")
       config = newCfg
+      print "loading config at %s"%root
+      config_load_content(root, config)
 
     mods = get_modules(root, files)
     if len(mods) > 0:
@@ -202,7 +209,7 @@ def do_gen(rep, args):
   for fl in ["pre", "post"]:
     if os.path.exists(rep_root+"/lib/%s.tex"%fl):
       initConfig.set("gen", fl, rep_root+"/lib/%s.tex"%fl);
-      initConfig.set("gen", "%s_content"%fl, lmhutil.get_file(rep_root+"/lib/%s.tex"%fl));
+  config_load_content(rep, initConfig);
 
   traverse(rep, initConfig)
 
