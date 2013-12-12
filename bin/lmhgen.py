@@ -33,6 +33,7 @@ def add_parser(subparsers):
 def add_parser_args(parser):
   parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
   parser.add_argument('--omdoc', nargs="*", help="generate omdoc files")
+  # parser.add_argument('--pdf', nargs="*", help="generate pdf files")
   parser.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
@@ -87,6 +88,8 @@ def genSMS(input, output):
   output.close()
 
 def genAllTex(dest, files, preFileContent, postFileContent):
+  if preFileContent == None or postFileContent == None:
+    return
   print "generating %r"%dest
   mods = [];
   for file in files:
@@ -137,12 +140,22 @@ def do_gen(rep, args):
   rep_root = lmhutil.git_root_dir(rep);
 
   repo_name = lmhutil.lmh_repos(rep)
+
   preFilePath = rep_root+"/lib/pre.tex"
   postFilePath = rep_root+"/lib/post.tex"
- 
-  preFileContent = lmhutil.get_file(preFilePath);
-  postFileContent = lmhutil.get_file(postFilePath);
+
   omdocToDo = [];
+  preFileContent = postFileContent = None
+
+  if not os.path.exists(preFilePath):
+    print "Warning: could not find pre file. Only limited generation will occur"
+  else :
+    preFileContent = lmhutil.get_file(preFilePath);
+
+  if not os.path.exists(postFilePath):
+    print "Warning: could not find post file. Only limited generation will occur"
+  else:
+   postFileContent = lmhutil.get_file(postFilePath);
 
   if rep == rep_root:
     rep = rep + "/source";
@@ -167,12 +180,14 @@ def do_gen(rep, args):
 
     allTex = root+"/all.tex";
     localPathTex = root+"/localpaths.tex"
-    if args.force or not os.path.exists(allTex) or youngest > os.path.getmtime(allTex):
-      genAllTex(allTex, files, preFileContent, postFileContent);
+ 
     if args.force or not os.path.exists(localPathTex) or youngest > os.path.getmtime(localPathTex):
       genLocalPaths(localPathTex, rep_root, repo_name);
 
-    if args.omdoc != None:
+    if args.force or not os.path.exists(allTex) or youngest > os.path.getmtime(allTex):
+      genAllTex(allTex, files, preFileContent, postFileContent);
+
+    if args.omdoc != None and preFileContent != None:
       if len(args.omdoc) == 0:
         for mod in mods:
           modName = mod["modName"]
