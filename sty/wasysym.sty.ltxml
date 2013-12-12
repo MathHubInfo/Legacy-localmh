@@ -1,0 +1,20 @@
+# -*- CPERL -*-
+# /=======================================================\ #
+# |  wasysym.sty - Implementation for LaTeXML             | #
+# |                                                       | #
+# |=======================================================| #
+# |  Part of LaTeXML : http://dlmf.nist.gov/LaTeXML/      | #
+# | Copyright (c) 2006 arXMLiv group                      | #
+# | Released under the GNU Public License                 | #
+# \=======================================================/ #
+
+package LaTeXML::Package::Pool;
+use strict;
+use LaTeXML::Package;
+
+DefMacro('\cent', UTF(0xA2));
+DefMacro('\Join', "\x{2A1D}");
+DefMacro('\lightning',"\x{21AF}");
+DefMacro('\smiley',"\x{263A}");
+#**********************************************************************
+1;

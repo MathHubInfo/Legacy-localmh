@@ -11,7 +11,8 @@
 % \thismhrepos is a variant of \mhrepos, where the current repos is used 
 \newcommand\thismhrepos[1]{\MathHub{\mh@currentrepos/source/#1}}
 % \mhcurrentrepos is used to initialize the current repository. 
-\newcommand\mhcurrentrepos[1]{\def\mh@currentrepos{#1}}
+\newcommand\mhcurrentrepos[1]{\@mhcurrentrepos{#1}\protected@write\@auxout{}{\string\@mhcurrentrepos{#1}}}
+\newcommand\@mhcurrentrepos[1]{\def\mh@currentrepos{#1}}
 
 % the following commands are special provisions for the SMGloM repository
 \newcommand\gimport[1]{\importmhmodule[smglom/smglom]{#1}{#1}}
