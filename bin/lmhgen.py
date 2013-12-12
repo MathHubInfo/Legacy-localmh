@@ -89,12 +89,12 @@ def genSMS(input, output):
   output.close()
 
 def genAllTex(dest, mods, config):
-  if not config.has_option("DEFAULT", "pre_content") or not config.has_option("DEFAULT", "post_content"):
+  if not config.has_option("gen", "pre_content") or not config.has_option("gen", "post_content"):
     return
   print "generating %r"%dest
 
-  preFileContent = config.get("DEFAULT", "pre_content")
-  postFileContent = config.get("DEFAULT", "post_content")
+  preFileContent = config.get("gen", "pre_content")
+  postFileContent = config.get("gen", "post_content")
   content = [];
   for mod in mods:
     content.append(all_modtpl.substitute(file=mod["modName"]));
@@ -150,14 +150,13 @@ def do_gen(rep, args):
   rep_root = lmhutil.git_root_dir(rep);
   repo_name = lmhutil.lmh_repos(rep)
   omdocToDo = [];
-  #cfg = ConfigParser();
 
   def traverse(root, config):
     files = os.listdir(root)
     if any(".lmh" in s for s in files):
-      #newCfg = ConfigParser.ConfigParser(root+"/.lmh")
-      #print newCfg
-      pass
+      newCfg = ConfigParser.ConfigParser()
+      newCfg.read(root+"/.lmh")
+      config = newCfg
 
     mods = get_modules(root, files)
     if len(mods) > 0:
@@ -173,20 +172,20 @@ def do_gen(rep, args):
       if args.force or not os.path.exists(allTex) or youngest > os.path.getmtime(allTex):
         genAllTex(allTex, mods, config);
 
-      if args.omdoc != None and config.has_option("DEFAULT", "pre_content"):
+      if args.omdoc != None and config.has_option("gen", "pre_content"):
         if len(args.omdoc) == 0:
           for mod in mods:
             modName = mod["modName"]
             modFile = root+"/"+modName+".omdoc";
 
             if args.force or not os.path.exists(modFile) or os.path.getmtime(mod["file"]) > os.path.getmtime(modFile):
-              omdocToDo.append({"root": root, "modName": mod["modName"], "pre" : config.get("DEFAULT", "pre")})
+              omdocToDo.append({"root": root, "modName": mod["modName"], "pre" : config.get("gen", "pre")})
         else:
           for omdoc in args.omdoc:
             if not omdoc.endswith(".omdoc"):
               print "%r is not a vaid omdoc file name"%omdoc
               continue
-            omdocToDo.append({"root": root, "modName": omdoc[:-6], "pre" : config.get("DEFAULT", "pre") })
+            omdocToDo.append({"root": root, "modName": omdoc[:-6], "pre" : config.get("gen", "pre") })
     
     for dir in filter(os.path.isdir, files):
       print traverse(root+"/"+filter)
@@ -198,11 +197,12 @@ def do_gen(rep, args):
     return
 
   initConfig = ConfigParser.ConfigParser();
+  initConfig.add_section("gen");
 
   for fl in ["pre", "post"]:
     if os.path.exists(rep_root+"/lib/%s.tex"%fl):
-      initConfig.set("DEFAULT", fl, rep_root+"/lib/%s.tex"%fl);
-      initConfig.set("DEFAULT", "%s_content"%fl, lmhutil.get_file(rep_root+"/lib/%s.tex"%fl));
+      initConfig.set("gen", fl, rep_root+"/lib/%s.tex"%fl);
+      initConfig.set("gen", "%s_content"%fl, lmhutil.get_file(rep_root+"/lib/%s.tex"%fl));
 
   traverse(rep, initConfig)
 
