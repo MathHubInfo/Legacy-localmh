@@ -13,24 +13,10 @@
 % \mhcurrentrepos is used to initialize the current repository. 
 \newcommand\mhcurrentrepos[1]{\def\mh@currentrepos{#1}}
 
-% and some convenience macro for \importmodule, it saves the current value of
-% \mh@currentrepos in a local macro \@@repos, resets \mh@currentrepos to the new value if
-% one is given in the optional argugment, and after importing resets \mh@currentrepos to
-% the old value in \@@repos.
-\newcommand\importmhmodule[3][]{\def\@repos{#1}%
+\newcommand\includemhproblem[3][]{\def\@repos{#1}%
 \edef\mh@@repos{\mh@currentrepos}%
 \ifx\@repos\@empty\else\mhcurrentrepos{#1}\fi%
 \importmodule[load=\MathHub{\mh@currentrepos/source/#2}]{#3}%
-\mhcurrentrepos\mh@@repos}
-\newcommand\usemhmodule[3][]{\def\@repos{#1}%
-\edef\mh@@repos{\mh@currentrepos}%
-\ifx\@repos\@empty\else\mhcurrentrepos{#1}\fi%
-\usemodule[load=\MathHub{\mh@currentrepos/source/#2}]{#3}%
-\mhcurrentrepos\mh@@repos}
-\newcommand\adoptmhmodule[3][]{\def\@repos{#1}%
-\edef\mh@@repos{\mh@currentrepos}%
-\ifx\@repos\@empty\else\mhcurrentrepos{#1}\fi%
-\adoptmodule[load=\MathHub{\mh@currentrepos/source/#2}]{#3}%
 \mhcurrentrepos\mh@@repos}
 
 % the following commands are special provisions for the SMGloM repository
