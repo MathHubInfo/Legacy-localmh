@@ -1,0 +1,17 @@
+\usetikzlibrary{arrows}
+\newcommand{\mmtarrowtip}{angle 45}
+\newcommand{\mmtreversearrowtip}{angle 45 reversed}
+\newcommand{\mmtarrowtipepi}{triangle 45}
+\newcommand{\mmtarrowtipmono}{right hook}
+\newcommand\mmtthy[3]{\def\@test{#3}%
+\begin{array}{l}\textsf{#1}\\\hline #2\ifx\@test\@empty\message{empty!}\else\message{nonempty!}\\\hline #3\fi\end{array}}
+\tikzstyle{thy}=[draw,outer sep=.6mm,rounded corners]
+\tikzstyle{thygraph}=[draw,outer sep=1mm,rounded corners,dashed]
+\tikzstyle{include}=[\mmtarrowtipmono-\mmtarrowtip,thick]
+\tikzstyle{view}=[dashed,-\mmtarrowtip,thick]
+\tikzstyle{struct}=[-\mmtarrowtip,thick]
+\tikzstyle{meta}=[dotted,-\mmtarrowtip,thick]
+\tikzstyle{morph}=[-\mmtarrowtip] % any morphism
+\tikzstyle{mapsto}=[|-\mmtarrowtip] % any morphism
+\tikzstyle{conservative}=[-\mmtarrowtip,dashdotted] % any morphism
+
