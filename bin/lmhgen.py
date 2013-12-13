@@ -193,9 +193,8 @@ def do_gen(rep, args):
               print "%r is not a vaid omdoc file name"%omdoc
               continue
             omdocToDo.append({"root": root, "modName": omdoc[:-6], "pre" : config.get("gen", "pre") })
-    
-    for dir in filter(os.path.isdir, files):
-      print traverse(root+"/"+filter)
+    for dir in filter((lambda x: os.path.isdir(root+"/"+x)), files):
+      traverse(root+"/"+dir, config)
 
   if rep == rep_root:
     rep = rep + "/source";
