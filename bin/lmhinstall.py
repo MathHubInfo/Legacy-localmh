@@ -36,7 +36,7 @@ def do(args):
     installrepo(rep)
 
 def getURL(repoName):
-  return "git@mathhub.info:"+repoName
+  return "git@gl.mathhub.info:"+repoName
 
 def cloneRepository(repoName):
   try:

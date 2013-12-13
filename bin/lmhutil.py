@@ -68,7 +68,7 @@ def autocomplete_remote_mathhub_repository(prefix, parsed_args, **kwargs):
   results = [];
 
   if key:
-    resource = "http://mathhub.info/api/v3/groups?private_token={token}".format(token=key)
+    resource = "http://gl.mathhub.info/api/v3/groups?private_token={token}".format(token=key)
     json_data = json.loads(urllib2.urlopen(resource).read())
     for rec in json_data:
       if rec["name"].startswith(prefix):
