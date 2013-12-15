@@ -90,7 +90,9 @@ TEXINPUTS = genTEXInputs()
 def genOMDoc(root, mod, pre_path, post_path, port=3354):
   print "generating %r"%(mod+".omdoc")
   args = [latexmlc,"--expire=120", "--port="+str(port), "--profile", "stex-module", "--path="+stydir, "--preload="+pre_path, mod+".tex", "--destination="+mod+".omdoc", "--log="+mod+".ltxlog"];
-  call(args, cwd=root, env={"STEXSTYDIR" : stexstydir})
+  _env = os.environ;
+  _env["STEXSTYDIR"]=stexstydir;
+  call(args, cwd=root, env=_env)
 
 def genPDF(root, mod, pre_path, post_path, port=None):
   print "generating %r"%(mod+".pdf")
