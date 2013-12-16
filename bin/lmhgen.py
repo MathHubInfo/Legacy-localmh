@@ -81,7 +81,7 @@ stexstydir = lmh_root+"/ext/sTeX/sty";
 stydir = lmh_root+"/sty";
 
 def genTEXInputs():
-  res = ".:";
+  res = ".:"+stydir+":";
   for (root, files, dirs) in os.walk(stexstydir):
     res += root+":"
   return res
