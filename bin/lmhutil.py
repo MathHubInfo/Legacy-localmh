@@ -114,7 +114,7 @@ def parseSimpleRepo(repoName):
 
 def tryRepo(repoName, default):
   try:
-    return parseRepo()
+    return parseRepo(repoName)
   except Exception, e:
     return default
 
@@ -194,6 +194,3 @@ def get_dependencies(dir):
         print e
 
     return res
-
-
-autocomplete_mathhub_repository("K", "")

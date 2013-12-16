@@ -150,7 +150,7 @@ def do_compute(fnc, args, omdoc):
   current = multiprocessing.current_process()
   wid = current._identity[0]
   print str(datetime.datetime.now().time())+" worker "+str(wid)+": "+omdoc["modName"]+" "
-  fnc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], 3353+wid, args=args)
+  fnc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], port=3353+wid, args=args)
 
 def do_bulk_generation(docs, fnc, args):
   if len(docs) < 10:
