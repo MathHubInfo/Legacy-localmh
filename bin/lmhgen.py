@@ -37,9 +37,10 @@ def add_parser(subparsers):
 
 def add_parser_args(parser):
   parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
+  parser.add_argument('-v', '--verbose', const=True, default=False, action="store_const", help="verbose mode")
   parser.add_argument('--omdoc', nargs="*", help="generate omdoc files")
   parser.add_argument('--pdf', nargs="*", help="generate pdf files")
-  parser.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
   Example:  
@@ -87,19 +88,21 @@ def genTEXInputs():
 
 TEXINPUTS = genTEXInputs()
 
-def genOMDoc(root, mod, pre_path, post_path, port=3354):
+def genOMDoc(root, mod, pre_path, post_path, args=None, port=3354):
   print "generating %r"%(mod+".omdoc")
   args = [latexmlc,"--expire=120", "--port="+str(port), "--profile", "stex-module", "--path="+stydir, "--preload="+pre_path, mod+".tex", "--destination="+mod+".omdoc", "--log="+mod+".ltxlog"];
   _env = os.environ;
   _env["STEXSTYDIR"]=stexstydir;
   call(args, cwd=root, env=_env)
 
-def genPDF(root, mod, pre_path, post_path, port=None):
+def genPDF(root, mod, pre_path, post_path, args=None, port=None):
   print "generating %r"%(mod+".pdf")
   p0 = Popen(["echo", "\\begin{document}"], stdout=PIPE);
   p1 = Popen(["cat", pre_path, "-", root+"/"+mod+".tex", post_path], stdin=p0.stdout, stdout=PIPE);
   p2 = Popen([pdflatex, "-jobname", mod], stdin=p1.stdout, stdout=PIPE, env = {"TEXINPUTS" : TEXINPUTS})
   output = p2.communicate()[0]
+  if args and args.verbose:
+    print output
   lmhutil.set_file(root+"/"+mod+".clog", output)
 
 def genSMS(input, output):
@@ -143,22 +146,22 @@ def get_modules(root, files):
     mods.append({ "modName" : file[:-4], "file": fullFile, "date": os.path.getmtime(fullFile)})
   return mods
 
-def do_compute(fnc, omdoc):
+def do_compute(fnc, args, omdoc):
   current = multiprocessing.current_process()
   wid = current._identity[0]
   print str(datetime.datetime.now().time())+" worker "+str(wid)+": "+omdoc["modName"]+" "
-  fnc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], 3353+wid)
+  fnc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], 3353+wid, args=args)
 
-def do_bulk_generation(docs, fnc):
+def do_bulk_generation(docs, fnc, args):
   if len(docs) < 10:
     for doc in docs:
-      fnc(doc["root"], doc["modName"], doc["pre"], doc["post"])
+      fnc(doc["root"], doc["modName"], doc["pre"], doc["post"], args=args)
     return
 
   processes = 8;
 
   pool = Pool(processes=processes)
-  result = pool.map(functools.partial(do_compute, fnc), docs)
+  result = pool.map(functools.partial(do_compute, fnc, args), docs)
 
 def gen_sms(root, mods, args):
   # Generate all SMS files
@@ -244,8 +247,8 @@ def do_gen(rep, args):
 
   traverse(rep, initConfig)
 
-  do_bulk_generation(omdocToDo, genOMDoc)
-  do_bulk_generation(pdfToDo, genPDF)
+  do_bulk_generation(omdocToDo, genOMDoc, args)
+  do_bulk_generation(pdfToDo, genPDF, args)
 
 def do(args):
   if len(args.repository) == 0:
