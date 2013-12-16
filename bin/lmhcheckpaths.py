@@ -122,7 +122,7 @@ def checkpaths(dir, args):
 
 def do(args):
   if len(args.repository) == 0:
-    args.repository = [lmhutil.parseRepo(".")]  
+    args.repository = [lmhutil.tryRepo(".", lmhutil.lmh_root()+"/MathHub/*/*")]
 
   createIndex()
   for repo in args.repository:

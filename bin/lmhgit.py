@@ -42,7 +42,7 @@ def do_git(rep, cmd):
 
 def do(args):
   if len(args.repository) == 0:
-    args.repository = [lmhutil.parseRepo(".")]
+    args.repository = [lmhutil.tryRepo(".", lmhutil.lmh_root()+"/MathHub/*/*")]
   for repo in args.repository:
     for rep in glob.glob(repo):
       do_git(rep, args.cmd[0]);

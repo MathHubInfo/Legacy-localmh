@@ -112,6 +112,12 @@ def parseSimpleRepo(repoName):
   else:
     raise argparse.ArgumentTypeError("%r is not a valid repository name"%repoName)
 
+def tryRepo(repoName, default):
+  try:
+    return parseRepo()
+  except Exception, e:
+    return default
+
 def parseRepo(repoName):
   # if repoName looks like the user meant to write a whole repository
   r = repoName.split("/");
