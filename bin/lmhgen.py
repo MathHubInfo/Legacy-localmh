@@ -97,13 +97,16 @@ def genOMDoc(root, mod, pre_path, post_path, args=None, port=3354):
 
 def genPDF(root, mod, pre_path, post_path, args=None, port=None):
   print "generating %r"%(mod+".pdf")
-  p0 = Popen(["echo", "\\begin{document}"], stdout=PIPE);
-  p1 = Popen(["cat", pre_path, "-", root+"/"+mod+".tex", post_path], stdin=p0.stdout, stdout=PIPE);
-  p2 = Popen([pdflatex, "-jobname", mod], stdin=p1.stdout, stdout=PIPE, env = {"TEXINPUTS" : TEXINPUTS})
+  modPath = os.path.join(root, mod);
+  p0 = Popen(["echo", "\\begin{document}\n"], stdout=PIPE);
+  c1 = ["cat", pre_path, "-", modPath+".tex", post_path];
+  print c1
+  p1 = Popen(c1, cwd=root, stdin=p0.stdout, stdout=PIPE);
+  p2 = Popen([pdflatex, "-jobname", mod], cwd=root, stdin=p1.stdout, stdout=PIPE, env = {"TEXINPUTS" : TEXINPUTS})
   output = p2.communicate()[0]
   if args and args.verbose:
     print output
-  lmhutil.set_file(root+"/"+mod+".clog", output)
+  lmhutil.set_file(modPath+".clog", output)
 
 def genSMS(input, output):
   print "generating %r"%output
@@ -187,10 +190,10 @@ def gen_ext(extension, root, mods, config, args, todo, force):
         todo.append({"root": root, "modName": mod["modName"], "pre" : config.get("gen", "pre"), "post" : config.get("gen", "post")})
   else:
     for omdoc in args:
-      if not omdoc.endswith("."+extension):
-        print "%r is not a valid omdoc file name"%omdoc
-        continue
-      todo.append({"root": root, "modName": omdoc[:-len(extension)-1], "pre" : config.get("gen", "pre"), "post" : config.get("gen", "post") })
+      if omdoc.endswith("."+extension):
+        omdoc = omdoc[:-len(extension)-1];
+      print omdoc
+      todo.append({"root": root, "modName": omdoc, "pre" : config.get("gen", "pre"), "post" : config.get("gen", "post") })
 
 def do_gen(rep, args):
   print "generating in repository %r"%rep

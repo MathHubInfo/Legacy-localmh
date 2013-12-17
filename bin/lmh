@@ -30,7 +30,7 @@ def create_parser():
 
   subparsers = parser.add_subparsers(help='valid actions are:', dest="action", metavar='action')
 
-  submodules = ["status", "install", "setup", "init", "drain", "update", "gen", "git", "find", "depcrawl", "checkpaths"];
+  submodules = ["status", "install", "setup", "init", "drain", "update", "gen", "clean", "git", "find", "depcrawl", "checkpaths"];
   for mod in submodules:
     _mod = __import__("lmh"+mod)
     submods[mod] = _mod
@@ -90,7 +90,9 @@ def main():
 
   if args.action == "pdf":
     import lmhgen
-    cmd = ["gen", "--verbose", "--pdf",  "all.pdf"]; cmd.extend(args.repository);
+    if (len(args.repository) == 0):
+      args.repository.append("all");
+    cmd = ["gen", "--verbose", "--pdf"]; cmd.extend(args.repository);
     lmhgen.do(parser.parse_args(cmd));
     return    
 
