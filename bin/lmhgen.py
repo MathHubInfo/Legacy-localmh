@@ -100,7 +100,6 @@ def genPDF(root, mod, pre_path, post_path, args=None, port=None):
   modPath = os.path.join(root, mod);
   p0 = Popen(["echo", "\\begin{document}\n"], stdout=PIPE);
   c1 = ["cat", pre_path, "-", modPath+".tex", post_path];
-  print c1
   p1 = Popen(c1, cwd=root, stdin=p0.stdout, stdout=PIPE);
   p2 = Popen([pdflatex, "-jobname", mod], cwd=root, stdin=p1.stdout, stdout=PIPE, env = {"TEXINPUTS" : TEXINPUTS})
   output = p2.communicate()[0]
@@ -192,7 +191,9 @@ def gen_ext(extension, root, mods, config, args, todo, force):
     for omdoc in args:
       if omdoc.endswith("."+extension):
         omdoc = omdoc[:-len(extension)-1];
-      print omdoc
+      if omdoc.endswith(".tex"):
+        omdoc = omdoc[:-4];
+      omdoc = os.path.basename(omdoc)
       todo.append({"root": root, "modName": omdoc, "pre" : config.get("gen", "pre"), "post" : config.get("gen", "post") })
 
 def do_gen(rep, args):
