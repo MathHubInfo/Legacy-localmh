@@ -65,6 +65,8 @@ Repository names allow using the wildcard '*' to match any repository. It allows
 #\importmhmodule
 #\adoptmhmodule
 
+ignore = re.compile(r'%|\\verb')
+
 regStrings = [r'\\(symdef|abbrdef|symvariant|keydef|listkeydef|importmodule|gimport|adoptmodule|importmhmodule|adoptmhmodule)', r'\\begin{(module|importmodulevia)}', r'\\end{(module|importmodulevia)}']
 regs = map(re.compile, regStrings)
 
@@ -111,6 +113,9 @@ def genSMS(input, output):
   print "generating %r"%output
   output = open(output, "w")
   for line in open(input):
+    if ignore.search(line):
+      continue
+
     for reg in regs:
       if reg.search(line):
         output.write(line.strip()+"%\n")
