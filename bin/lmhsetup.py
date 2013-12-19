@@ -43,6 +43,7 @@ def do(args):
   root = lmhutil.lmh_root()+"/ext"
   lmhutil.git_clone(root, "https://github.com/KWARC/LaTeXML.git")
   lmhutil.git_clone(root, "https://github.com/KWARC/sTeX.git")
+  lmhutil.svn_clone(root, "https://svn.kwarc.info/repos/MMT/deploy/", "MMT")
 
   if args.autocomplete:
     install_autocomplete()

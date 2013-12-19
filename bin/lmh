@@ -21,8 +21,25 @@ import lmhinstall
 import subprocess
 import os
 import sys
+import traceback
+import time
 
 submods = {};
+
+def install_excepthook():
+  cwd = os.getcwd();
+  def my_excepthook(exctype, value, tb):
+    if exctype == KeyboardInterrupt:
+      return
+    err = ''.join(traceback.format_exception(exctype, value, tb));
+    print err;
+    print "lmh seems to have crashed with %s"%exctype
+    print "a report will be generated in "
+    s = "cwd = {0}\n args = {1}\n".format(cwd, sys.argv)
+    s = s + err 
+    lmhutil.set_file(lmhutil.lmh_root()+"/logs/"+time.strftime("%Y-%m-%d-%H-%M-%S.log"), s)
+
+  sys.excepthook = my_excepthook
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub tool.')
@@ -55,6 +72,7 @@ def create_parser():
   return parser
 
 def main():
+  install_excepthook()
   parser = create_parser()
   if len(sys.argv) == 1:
     parser.print_help();
@@ -84,7 +102,9 @@ def main():
 
   if args.action == "omdoc":
     import lmhgen
-    cmd = ["gen", "--omdoc", "all.omdoc"]; cmd.extend(args.repository);
+    if (len(args.repository) == 0):
+      args.repository.append("all");
+    cmd = ["gen", "--verbose", "--omdoc"]; cmd.extend(args.repository);
     lmhgen.do(parser.parse_args(cmd));
     return    
 
@@ -98,7 +118,7 @@ def main():
 
   if args.action == "modspdf":
     import lmhgen
-    cmd = ["gen", "--pdf"]; cmd.extend(args.repository);
+    cmd = ["gen", "--verbose", "--pdf"]; cmd.extend(args.repository);
     lmhgen.do(parser.parse_args(cmd));
     return    
 

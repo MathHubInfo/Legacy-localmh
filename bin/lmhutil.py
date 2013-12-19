@@ -33,6 +33,7 @@ def which(program):
 repoRegEx = '[\w-]+/[\w-]+';
 _lmh_root = lmh_root();
 gitexec = which("git")
+svnexec = which("svn")
 
 def set_setting(key,  value):
   root = _lmh_root
@@ -156,6 +157,17 @@ def get_template(name):
 def git_clone(dest, *arg):
   args = [gitexec, "clone"];
   args.extend(arg);
+  err = subprocess.Popen(args, stderr=subprocess.PIPE, cwd=dest).communicate()[1]
+
+  if err.find("already exists") != -1:
+    return
+
+  print err
+
+def svn_clone(dest, *arg):
+  args = [svnexec, "co"];
+  args.extend(arg);
+  
   err = subprocess.Popen(args, stderr=subprocess.PIPE, cwd=dest).communicate()[1]
 
   if err.find("already exists") != -1:
