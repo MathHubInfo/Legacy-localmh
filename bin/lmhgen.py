@@ -67,7 +67,7 @@ Repository names allow using the wildcard '*' to match any repository. It allows
 
 ignore = re.compile(r'\\verb')
 
-regStrings = [r'\\(symdef|abbrdef|symvariant|keydef|listkeydef|importmodule|gimport|adoptmodule|importmhmodule|adoptmhmodule)', r'\\begin{(module|importmodulevia)}', r'\\end{(module|importmodulevia)}']
+regStrings = [r'\\(guse|gadopt|symdef|abbrdef|symvariant|keydef|listkeydef|importmodule|gimport|adoptmodule|importmhmodule|adoptmhmodule)', r'\\begin{(module|importmodulevia)}', r'\\end{(module|importmodulevia)}']
 regs = map(re.compile, regStrings)
 
 all_textpl = Template(lmhutil.get_template("alltex_struct.tpl"))
