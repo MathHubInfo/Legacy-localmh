@@ -1,3 +1,0 @@
-include $(MHDIR)/make/Makefile.base.in
-include $(MHDIR)/make/Makefile.latex.in
-include $(MHDIR)/make/Makefile.latexml.in
