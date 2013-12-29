@@ -29,6 +29,9 @@ def add_parser(subparsers):
 def add_parser_args(parser):
   parser.add_argument('--autocomplete', default=False, const=True, action="store_const", help="should install autocomplete for bash", metavar="")
   parser.add_argument('--add-private-token', nargs=1, help="add private token to use advanced MathHub functionality")
+  parser.epilog = """
+    lmh setup --- downloads additional software it requires to run correctly  
+  """;
   pass
 
 def install_autocomplete():

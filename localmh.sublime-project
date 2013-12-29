@@ -1,0 +1,34 @@
+{
+	"folders":
+	[
+		{
+			"path": "bin"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.sms",
+				"*.omdoc",
+				"*.log",
+				".gitignore"
+			],
+			"folder_exclude_patterns":
+			[
+				"*/*/compiled",
+				"*/*/content",
+				"*/*/narration",
+				"*/*/narration_present_html",
+				"*/*/relational",
+				"*/*/META-INF"
+			],
+			"path": "MathHub"
+		},
+		{
+			"path": "/home/costea/.config/sublime-text-2/Packages/LMH"
+		}
+	],
+	"settings":
+	{
+		"tab_size": 2
+	}
+}

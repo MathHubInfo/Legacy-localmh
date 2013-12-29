@@ -42,12 +42,12 @@ def install_excepthook():
   sys.excepthook = my_excepthook
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub tool.')
+  parser = argparse.ArgumentParser(description='Local MathHub XHTML conversion tool.')
   reps = [];
 
   subparsers = parser.add_subparsers(help='valid actions are:', dest="action", metavar='action')
 
-  submodules = ["status", "install", "setup", "init", "drain", "update", "gen", "clean", "git", "find", "depcrawl", "checkpaths"];
+  submodules = ["status", "install", "setup", "init", "drain", "update", "gen", "xhtml", "clean", "git", "find", "depcrawl", "checkpaths"];
   for mod in submodules:
     _mod = __import__("lmh"+mod)
     submods[mod] = _mod
