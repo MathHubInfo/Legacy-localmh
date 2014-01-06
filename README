@@ -7,9 +7,9 @@ Resources/directory structure:
 MathHub: 	the content of MathHub.info
 bin: 		    	the programs, mainly lmh
 ext: 			external Software
-make: 		Makefiles for offline automation
 sty: 			LaTeX packages used in MathHub.info
-
+logs: 		crash reports that will help developers improve lmh.
+styles:  	        for the notation definitions MMT uses for generating XHTML from OMDoc
 
 
 
