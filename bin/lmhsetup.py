@@ -42,6 +42,13 @@ def install_autocomplete():
   print "running %r"%(activatecmd)
   call([root+"/arginstall/scripts/activate-global-python-argcomplete"])
 
+def update():
+  print "Updating LMH dependencies"
+  root = lmhutil.lmh_root()+"/ext"
+  lmhutil.git_pull(root+"/LaTeXML")
+  lmhutil.git_pull(root+"/sTeX")
+  lmhutil.svn_pull(root+"/MMT")
+
 def do(args):
   root = lmhutil.lmh_root()+"/ext"
   lmhutil.git_clone(root, "https://github.com/KWARC/LaTeXML.git")

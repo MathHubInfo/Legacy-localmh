@@ -164,6 +164,13 @@ def git_clone(dest, *arg):
 
   print err
 
+def git_pull(dest, *arg):
+  args = [gitexec, "pull"];
+  args.extend(arg);
+  err = subprocess.Popen(args, stderr=subprocess.PIPE, cwd=dest).communicate()[1]
+
+  print err
+
 def svn_clone(dest, *arg):
   args = [svnexec, "co"];
   args.extend(arg);
@@ -172,6 +179,14 @@ def svn_clone(dest, *arg):
 
   if err.find("already exists") != -1:
     return
+
+  print err
+
+def svn_pull(dest, *arg):
+  args = [svnexec, "up"];
+  args.extend(arg);
+  
+  err = subprocess.Popen(args, stderr=subprocess.PIPE, cwd=dest).communicate()[1]
 
   print err
 
