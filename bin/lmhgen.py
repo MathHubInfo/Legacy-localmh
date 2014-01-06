@@ -235,11 +235,17 @@ def do_gen(rep, args):
       if args.force or not os.path.exists(allTex) or youngest > os.path.getmtime(allTex):
         genAllTex(allTex, mods, config);
 
-      if args.omdoc != None and config.has_option("gen", "pre_content"):
-        gen_ext("omdoc", root, mods, config, args.omdoc, omdocToDo, args.force);
+      if args.omdoc != None:
+        if config.has_option("gen", "pre_content"):
+          gen_ext("omdoc", root, mods, config, args.omdoc, omdocToDo, args.force);
+        else:
+          print "WARNING: OMDoc generation desired but could not find preamble and/or postamble - skipping generation"
 
-      if args.pdf != None and config.has_option("gen", "pre_content"):
-        gen_ext("pdf", root, mods, config, args.pdf, pdfToDo, args.force);
+      if args.pdf != None:
+        if config.has_option("gen", "pre_content"):
+          gen_ext("pdf", root, mods, config, args.pdf, pdfToDo, args.force);
+        else:
+          print "WARNING: PDF generation desired but could not find preamble and/or postamble - skipping generation"
 
     for dir in filter((lambda x: os.path.isdir(root+"/"+x)), files):
       traverse(root+"/"+dir, config)

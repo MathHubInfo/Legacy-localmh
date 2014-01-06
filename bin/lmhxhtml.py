@@ -14,7 +14,12 @@ import os
 from subprocess import call
 import ConfigParser
 import glob
-from lmhgen import do as do_gen
+from lmhgen import do_gen
+from lmhgen import create_parser as gen_parser
+from lmhmmt import compile
+
+p = gen_parser()
+attr = p.parse_args(["--omdoc"]);
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub XHTML tool.')
@@ -22,22 +27,17 @@ def create_parser():
   return parser
 
 def add_parser(subparsers):
-  parser_status = subparsers.add_parser('xhtml', formatter_class=argparse.RawTextHelpFormatter, help='sets up local math hub and fetches external requirements')
+  parser_status = subparsers.add_parser('xhtml', formatter_class=argparse.RawTextHelpFormatter, help='generate XHTML ')
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to generate XHTML").completer = lmhutil.autocomplete_mathhub_repository
   pass
 
-def install_autocomplete():
-  root = lmhutil.lmh_root()+"/ext"
-  lmhutil.git_clone(root, "https://github.com/kislyuk/argcomplete.git", "arginstall")
-  call([python, "XHTML.py", "install", "--user"], cwd=root+"/arginstall")
-  activatecmd = root+"/arginstall/scripts/activate-global-python-argcomplete";
-  print "running %r"%(activatecmd)
-  call([root+"/arginstall/scripts/activate-global-python-argcomplete"])
-
 def do_xhtml(rep):
+  rep_root = lmhutil.git_root_dir(rep);
+  do_gen(rep, attr)
+  compile(rep_root)
   pass
 
 def do(args):

@@ -2,7 +2,7 @@ import socket
 import lmhutil
 import subprocess
 import glob
-
+import os
 
 
 initScript = """
@@ -38,15 +38,18 @@ def runMMTScript(src, path):
   cp = "{dir}/lib/*:{dir}/mmt/branches/informal/*:{dir}/lfcatalog/*:{dir}/mmt/*".format(dir=mmt_root)
   args = ["java", "-Xmx2048m", "-cp", cp, "info.kwarc.mmt.api.frontend.Run"];
   try:
-    print src
-    out = subprocess.Popen(args, cwd=path, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=src)[0];
-    print out
+    print src 
+    comm = subprocess.Popen(args, cwd=path, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=src);
+    print comm[0]
+    print comm[1]
   except OSError, o:
     print o
 
 def compile(repository):
-  repoName = repository.split("/")[1];
-  repoPath = "%s/MathHub/%s"%(lmh_root, repository)
+  print "Generating XHTML in %s"%repository
+  repoName = lmhutil.lmh_repos(repository)
+  repoPath = lmhutil.git_root_dir(repository);
+
   src = repoPath+"/source"
   script = initScript.format(lmhRoot=lmh_root)+"\n"+buildScript.format(repoName=repoName)
   runMMTScript(script, repoPath)
