@@ -1,0 +1,578 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>lmh module &mdash; Local MathHub  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Local MathHub  documentation" href="index.html" />
+    <link rel="prev" title="Welcome to Local MathHub’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Local MathHub’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Local MathHub  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-lmh">
+<span id="lmh-module"></span><h1>lmh module<a class="headerlink" href="#module-lmh" title="Permalink to this headline">¶</a></h1>
+<p>This is the entry point for the Local Math Hub utility.</p>
+<pre class="literal-block">
+usage: lmh [-h] action ...
+
+</pre>
+<dl class="docutils">
+<dt>Sub-commands:</dt>
+<dd><dl class="first last docutils">
+<dt><strong>status</strong></dt>
+<dd><p class="first">shows the working tree status of repositories</p>
+<pre class="literal-block">
+usage: lmh status [-h] [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories for which to show the status. </td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>install</strong></dt>
+<dd><p class="first">fetches a MathHub repository and its dependencies</p>
+<pre class="literal-block">
+usage: lmh install [-h] [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of remote repositories to fetch locally. Should have form mygroup/myproject. No wildcards allowed. </td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>setup</strong></dt>
+<dd><p class="first">sets up local math hub and fetches external requirements</p>
+<pre class="literal-block">
+usage: lmh setup [-h] [--autocomplete] [--add-private-token ADD_PRIVATE_TOKEN]
+
+</pre>
+<dl class="last docutils">
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--autocomplete=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>should install autocomplete for bash</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--add-private-token</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>add private token to use advanced MathHub functionality</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>xhtml</strong></dt>
+<dd><p class="first">generate XHTML </p>
+<pre class="literal-block">
+usage: lmh xhtml [-h] [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories for which to generate XHTML</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>init</strong></dt>
+<dd><p class="first">initialize repository with MathHub repository structure</p>
+<pre class="literal-block">
+usage: lmh init [-h]
+
+</pre>
+<dl class="last docutils">
+</dl>
+</dd>
+<dt><strong>drain</strong></dt>
+<dd><p class="first">send changes to mathhub</p>
+<pre class="literal-block">
+usage: lmh drain [-h] [--autocommit] [--message MESSAGE]
+                 [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories for which to show the status. </td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--autocommit=False</span>, <span class="option">-f=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>should autocommit changes</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--message=autocommit</span>, <span class="option">-m=autocommit</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>message to be used for commits</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>update</strong></dt>
+<dd><p class="first">get repository and tool updates</p>
+<pre class="literal-block">
+usage: lmh update [-h] [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories for which to show the status. </td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>gen</strong></dt>
+<dd><p class="first">updates generated content</p>
+<pre class="literal-block">
+usage: lmh gen [-h] [-f] [-v] [--omdoc [OMDOC [OMDOC ...]]]
+               [--pdf [PDF [PDF ...]]]
+               [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories for which to show the status. </td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-f=False</span>, <span class="option">--force=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>force all regeneration</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-v=False</span>, <span class="option">--verbose=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>verbose mode</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--omdoc</span></kbd></td>
+<td>generate omdoc files</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--pdf</span></kbd></td>
+<td>generate pdf files</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>clean</strong></dt>
+<dd><p class="first">clean repositories of generated files</p>
+<pre class="literal-block">
+usage: lmh clean [-h] [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories for which to show the clean. </td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>git</strong></dt>
+<dd><p class="first">run git command on multiple repositories</p>
+<pre class="literal-block">
+usage: lmh git [-h] cmd [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>cmd</kbd></td>
+<td>a git command to be run.</td></tr>
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories for which to run the git command.</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>find</strong></dt>
+<dd><p class="first">find tool</p>
+<pre class="literal-block">
+usage: lmh find [-h] [--replace REPLACE] [--apply]
+                matcher [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>matcher</kbd></td>
+<td>RegEx matcher on the path of the module</td></tr>
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories for which to show the status. </td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">--replace</span></kbd></td>
+<td>Replace string</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--apply=False</span></kbd></td>
+<td>Option specifying that files should be changed</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>depcrawl</strong></dt>
+<dd><p class="first">crawls current repository for dependencies</p>
+<pre class="literal-block">
+usage: lmh depcrawl [-h] [--apply]
+
+</pre>
+<dl class="last docutils">
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">--apply=False</span></kbd></td>
+<td>Option specifying that files should be changed</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>checkpaths</strong></dt>
+<dd><p class="first">check paths for validity</p>
+<pre class="literal-block">
+usage: lmh checkpaths [-h] [--interactive] [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories for which to show the status. </td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--interactive=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Should check paths be interactive</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>repos</strong></dt>
+<dd><p class="first">prints the group/repository of the current  Math Hub repository</p>
+<pre class="literal-block">
+usage: lmh repos [-h]
+
+</pre>
+<dl class="last docutils">
+</dl>
+</dd>
+<dt><strong>root</strong></dt>
+<dd><p class="first">prints the root directory of the Local Math Hub repository</p>
+<pre class="literal-block">
+usage: lmh root [-h]
+
+</pre>
+<dl class="last docutils">
+</dl>
+</dd>
+<dt><strong>sms</strong></dt>
+<dd><p class="first">generates sms files</p>
+<pre class="literal-block">
+usage: lmh sms [-h] [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories. </td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>mods</strong></dt>
+<dd><p class="first">generates omdoc module files</p>
+<pre class="literal-block">
+usage: lmh mods [-h] [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories. </td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>omdoc</strong></dt>
+<dd><p class="first">generates omdoc for targets</p>
+<pre class="literal-block">
+usage: lmh omdoc [-h] [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories. </td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>pdf</strong></dt>
+<dd><p class="first">generates pdf for targets</p>
+<pre class="literal-block">
+usage: lmh pdf [-h] [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories. </td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>modspdf</strong></dt>
+<dd><p class="first">generates omdoc module files</p>
+<pre class="literal-block">
+usage: lmh modspdf [-h] [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories. </td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="function">
+<dt id="lmh.create_parser">
+<tt class="descclassname">lmh.</tt><tt class="descname">create_parser</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lmh.html#create_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lmh.create_parser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lmh.install_excepthook">
+<tt class="descclassname">lmh.</tt><tt class="descname">install_excepthook</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lmh.html#install_excepthook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lmh.install_excepthook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lmh.main">
+<tt class="descclassname">lmh.</tt><tt class="descname">main</tt><big>(</big><em>argv=['-b', 'html', '-d', './doctrees', '.', './html']</em><big>)</big><a class="reference internal" href="_modules/lmh.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lmh.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Local MathHub&#8217;s documentation!</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/lmh.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Local MathHub’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">Local MathHub  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Constantin Jucovschi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>
