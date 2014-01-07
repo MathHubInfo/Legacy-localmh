@@ -152,6 +152,8 @@ def get_modules(root, files):
   for file in files:
     if not file.endswith(".tex") or file in special_files:
       continue
+    if not os.access(file, os.R_OK): # ignoring files I cannot read
+      continue
     
     fullFile = root+"/"+file;
     mods.append({ "modName" : file[:-4], "file": fullFile, "date": os.path.getmtime(fullFile)})
