@@ -5,3 +5,4 @@ ext/*
 auto
 *.log
 test.*
+.DS_Store
