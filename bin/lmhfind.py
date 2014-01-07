@@ -62,6 +62,8 @@ def replacePath(dir, matcher, replaceFnc, apply=False):
       if fileExtension != ".tex":
         continue
       fullpath = root+"/"+file;
+      if not os.access(fullPath, os.R_OK): # ignoring files I cannot read
+        continue
       changes = False
       if apply:
         ft = open(fullpath+".tmp", "w")
