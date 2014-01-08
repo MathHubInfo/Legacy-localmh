@@ -62,7 +62,7 @@ def installNoCycles(repoName, tried):
 
   deps = lmhutil.get_dependencies(repoName);
   if deps == None:
-    print("Error: META-INF/MANIFEST.MF file missing or invalid.")
+    print("Error: META-INF/MANIFEST.MF file missing or invalid.\n You should consider running lmh init.")
     return
 
   for dep in deps:
