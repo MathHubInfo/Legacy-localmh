@@ -81,11 +81,11 @@ TEXINPUTS = genTEXInputs()
 errorMsg = re.compile("Error:(.*)")
 fatalMsg = re.compile("Fatal:(.*)")
 
-def parseLateXMLOutput(file, stderr):
+def parseLateXMLOutput(file):
   mod = file[:-4];
   logfile = mod+".ltxlog";
-  if not os.access(logfile, os.R_OK):
-    lmhagg.log_error(["compile", "omdoc", "error"], file, "No log generated. ------ LATEXML Err --------- \n%s\n"%stderr)
+  #if not os.access(logfile, os.R_OK):
+  #  lmhagg.log_error(["compile", "omdoc", "error"], file, "No log generated. ------ LATEXML Err --------- \n%s\n"%stderr)
 
   print logfile
   for idx, line in enumerate(open(logfile)):
@@ -108,8 +108,8 @@ def genOMDoc(root, mod, pre_path, post_path, args=None, port=3354):
     
   _env = os.environ;
   _env["STEXSTYDIR"]=stexstydir;
-  latexmlres = Popen(args, cwd=root, env=_env, stderr=PIPE).communicate()
-  parseLateXMLOutput(root+"/"+mod+".tex", latexmlres[1])
+  call(args, cwd=root, env=_env, stderr=PIPE)
+  parseLateXMLOutput(root+"/"+mod+".tex")
 
 def genPDF(root, mod, pre_path, post_path, args=None, port=None):
   print "generating %r"%(mod+".pdf")
