@@ -35,8 +35,18 @@ def do(args):
   tBuild = lmhutil.get_template("build.tpl")
   tServe = lmhutil.get_template("serve.tpl")
 
-  if not os.path.exists(metadir):
-    os.makedirs(metadir)
+  emptyrepo = lmhutil.lmh_root()+"/bin/emptyrepo";
+  for root, dirs, files in os.walk(emptyrepo):
+    relpath = root[len(emptyrepo):]
+    if not os.path.exists("%s%s"%(rootdir,relpath)):
+      os.makedirs("%s%s"%(rootdir,relpath))
+
+    for file in files:
+      if file == "empty":
+        continue
+      content = lmhutil.get_file("%s/%s"%(root,file))
+      lmhutil.set_file("%s%s/%s"%(rootdir,relpath,file), content)
+
 
   originProp = lmhutil.git_origin()
   m = re.search(repoRegEx, originProp)
@@ -54,3 +64,9 @@ def do(args):
 
   if not os.path.exists(rootdir+"/serve.msl"):
     lmhutil.set_file(rootdir+"/serve.msl", tServe.format(group, name, lmhutil.lmh_root()))
+
+  print """
+If the new repository depends on other MathHub repositories, we can add them in the line starting with "dependencies:" in META-INF/MANIFEST.MF.
+Note that any changes have to be committed and pushed before the repository can be used by others.
+"""
+  
