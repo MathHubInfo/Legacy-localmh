@@ -84,10 +84,7 @@ fatalMsg = re.compile("Fatal:(.*)")
 def parseLateXMLOutput(file):
   mod = file[:-4];
   logfile = mod+".ltxlog";
-  #if not os.access(logfile, os.R_OK):
-  #  lmhagg.log_error(["compile", "omdoc", "error"], file, "No log generated. ------ LATEXML Err --------- \n%s\n"%stderr)
 
-  print logfile
   for idx, line in enumerate(open(logfile)):
     m = errorMsg.match(line)
     if m:
@@ -105,7 +102,7 @@ def genOMDoc(root, mod, pre_path, post_path, args=None, port=3354):
 
   if needsPreamble(root+"/"+mod+".tex"):
     args.append("--preload="+pre_path)
-    
+
   _env = os.environ;
   _env["STEXSTYDIR"]=stexstydir;
   call(args, cwd=root, env=_env, stderr=PIPE)
