@@ -21,15 +21,16 @@ def print_summary():
   for ev in events:
     if not ev["file"] in files:
       files[ev["file"]] = [];
+    if ev["type"] == "error":
+      errors = errors + 1
     files[ev["file"]].append(ev);
 
-  for file, events in files.items():
-    print file
-    print events
-    for ev in events:
-      print ev
+  print "Errors = %d"%errors
+  for file, fileEv in files.iteritems():
+    print "%s:"%file
+    for ev in fileEv:
       if ev["type"] == "error":
-        print "%s:\n%s"%(ev["file"], ev["msg"])
+        print "%s"%ev["msg"]
 
 def log_error(tags, file, msg):
   events.append({"type": "error", "tags": tags, "file" : file, "msg": msg})

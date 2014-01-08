@@ -93,12 +93,6 @@ def main(argv = sys.argv[1:]):
     lmhgen.do(parser.parse_args(cmd));
     return    
 
-  if args.action == "mods":
-    import lmhgen
-    cmd = ["gen", "--omdoc"]; cmd.extend(args.repository);
-    lmhgen.do(parser.parse_args(cmd));
-    return    
-
   if args.action == "omdoc":
     import lmhgen
     if (len(args.repository) == 0):
@@ -111,12 +105,6 @@ def main(argv = sys.argv[1:]):
     import lmhgen
     if (len(args.repository) == 0):
       args.repository.append("all");
-    cmd = ["gen", "--verbose", "--pdf"]; cmd.extend(args.repository);
-    lmhgen.do(parser.parse_args(cmd));
-    return    
-
-  if args.action == "modspdf":
-    import lmhgen
     cmd = ["gen", "--verbose", "--pdf"]; cmd.extend(args.repository);
     lmhgen.do(parser.parse_args(cmd));
     return    

@@ -42,8 +42,6 @@ def do(args):
       os.makedirs("%s%s"%(rootdir,relpath))
 
     for file in files:
-      if file == "empty":
-        continue
       content = lmhutil.get_file("%s/%s"%(root,file))
       lmhutil.set_file("%s%s/%s"%(rootdir,relpath,file), content)
 

@@ -81,7 +81,7 @@ TEXINPUTS = genTEXInputs()
 errorMsg = re.compile("Error:(.*)")
 fatalMsg = re.compile("Fatal:(.*)")
 
-def parseLateXMLOutput(file, stdout, stderr):
+def parseLateXMLOutput(file, stderr):
   mod = file[:-4];
   logfile = mod+".ltxlog";
   if not os.access(logfile, os.R_OK):
@@ -96,21 +96,32 @@ def parseLateXMLOutput(file, stdout, stderr):
     if m:
       lmhagg.log_error(["compile", "omdoc", "error"], file, m.group(1))
 
+def needsPreamble(file):
+  return re.search(r"\\begin(\w)*{document}", lmhutil.get_file(file)) == None 
+
 def genOMDoc(root, mod, pre_path, post_path, args=None, port=3354):
   print "generating %r"%(mod+".omdoc")
-  args = [latexmlc,"--expire=120", "--port="+str(port), "--profile", "stex-module", "--path="+stydir, "--preload="+pre_path, mod+".tex", "--destination="+mod+".omdoc", "--log="+mod+".ltxlog"];
+  args = [latexmlc,"--expire=120", "--port="+str(port), "--profile", "stex-module", "--path="+stydir, mod+".tex", "--destination="+mod+".omdoc", "--log="+mod+".ltxlog"];
+
+  if needsPreamble(root+"/"+mod+".tex"):
+    args.append("--preload="+pre_path)
+    
   _env = os.environ;
   _env["STEXSTYDIR"]=stexstydir;
-  latexmlres = Popen(args, cwd=root, env=_env, stdout=PIPE, stderr=PIPE).communicate()
-  parseLateXMLOutput(root+"/"+mod+".tex", latexmlres[0], latexmlres[1])
+  latexmlres = Popen(args, cwd=root, env=_env, stderr=PIPE).communicate()
+  parseLateXMLOutput(root+"/"+mod+".tex", latexmlres[1])
 
 def genPDF(root, mod, pre_path, post_path, args=None, port=None):
   print "generating %r"%(mod+".pdf")
   modPath = os.path.join(root, mod);
-  p0 = Popen(["echo", "\\begin{document}\n"], stdout=PIPE);
-  c1 = ["cat", pre_path, "-", modPath+".tex", post_path];
-  p1 = Popen(c1, cwd=root, stdin=p0.stdout, stdout=PIPE);
-  p2 = Popen([pdflatex, "-jobname", mod], cwd=root, stdin=p1.stdout, stdout=PIPE, env = {"TEXINPUTS" : TEXINPUTS})
+  if needsPreamble(root+"/"+mod+".tex"):
+    p0 = Popen(["echo", "\\begin{document}\n"], stdout=PIPE);
+    c1 = ["cat", pre_path, "-", modPath+".tex", post_path];
+    p1 = Popen(c1, cwd=root, stdin=p0.stdout, stdout=PIPE);
+    p2 = Popen([pdflatex, "-jobname", mod], cwd=root, stdin=p1.stdout, stdout=PIPE, env = {"TEXINPUTS" : TEXINPUTS})
+  else:
+    p2 = Popen([pdflatex, mod+".tex"], cwd=root, stdout=PIPE, env = {"TEXINPUTS" : TEXINPUTS})
+
   output = p2.communicate()[0]
   if args and args.verbose:
     print output
