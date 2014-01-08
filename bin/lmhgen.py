@@ -12,6 +12,7 @@ import argparse
 import lmhutil
 import os
 import glob
+import lmhagg
 import functools
 from subprocess import call
 from subprocess import Popen
@@ -41,6 +42,7 @@ def add_parser_args(parser):
   parser.add_argument('-v', '--verbose', const=True, default=False, action="store_const", help="verbose mode")
   parser.add_argument('--omdoc', nargs="*", help="generate omdoc files")
   parser.add_argument('--pdf', nargs="*", help="generate pdf files")
+  parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs status on all repositories currently in lmh")
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
   Example:  
@@ -49,21 +51,6 @@ Repository names allow using the wildcard '*' to match any repository. It allows
     .         - would be equivalent to "git status ."
 """;
 
-#\begin{module}....
-#\end{module}
-#\begin{importmodulevia}...
-#\end{importmodulevia}
-
-#\symdef...
-#\abbrdef...
-#\symvariant...
-#keydef
-#\listkeydef
-#\importmodule...
-#\gimport...
-#\adoptmodule...
-#\importmhmodule
-#\adoptmhmodule
 
 ignore = re.compile(r'\\verb')
 
@@ -90,12 +77,32 @@ def genTEXInputs():
 
 TEXINPUTS = genTEXInputs()
 
+# ---------------- OMDOC generation -----------------------------
+errorMsg = re.compile("Error:(.*)")
+fatalMsg = re.compile("Fatal:(.*)")
+
+def parseLateXMLOutput(file, stdout, stderr):
+  mod = file[:-4];
+  logfile = mod+".ltxlog";
+  if not os.access(logfile, os.R_OK):
+    lmhagg.log_error(["compile", "omdoc", "error"], file, "No log generated. ------ LATEXML Err --------- \n%s\n"%stderr)
+
+  print logfile
+  for idx, line in enumerate(open(logfile)):
+    m = errorMsg.match(line)
+    if m:
+      lmhagg.log_error(["compile", "omdoc", "error"], file, m.group(1))
+    m = fatalMsg.match(line)
+    if m:
+      lmhagg.log_error(["compile", "omdoc", "error"], file, m.group(1))
+
 def genOMDoc(root, mod, pre_path, post_path, args=None, port=3354):
   print "generating %r"%(mod+".omdoc")
   args = [latexmlc,"--expire=120", "--port="+str(port), "--profile", "stex-module", "--path="+stydir, "--preload="+pre_path, mod+".tex", "--destination="+mod+".omdoc", "--log="+mod+".ltxlog"];
   _env = os.environ;
   _env["STEXSTYDIR"]=stexstydir;
-  call(args, cwd=root, env=_env)
+  latexmlres = Popen(args, cwd=root, env=_env, stdout=PIPE, stderr=PIPE).communicate()
+  parseLateXMLOutput(root+"/"+mod+".tex", latexmlres[0], latexmlres[1])
 
 def genPDF(root, mod, pre_path, post_path, args=None, port=None):
   print "generating %r"%(mod+".pdf")
@@ -274,6 +281,10 @@ def do_gen(rep, args):
 def do(args):
   if len(args.repository) == 0:
     args.repository = [lmhutil.tryRepo(".", lmhutil.lmh_root()+"/MathHub/*/*")]
+  if args.all:
+    args.repository = [lmhutil.tryRepo(lmhutil.lmh_root()+"/MathHub", lmhutil.lmh_root()+"/MathHub")]  
+
   for repo in args.repository:
     for rep in glob.glob(repo):
       do_gen(rep, args);
+  lmhagg.print_summary()

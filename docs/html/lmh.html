@@ -24,6 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Local MathHub  documentation" href="index.html" />
+    <link rel="next" title="lmherror module" href="lmherror.html" />
     <link rel="prev" title="Welcome to Local MathHub’s documentation!" href="index.html" /> 
   </head>
   <body>
@@ -36,6 +37,9 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="lmherror.html" title="lmherror module"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to Local MathHub’s documentation!"
              accesskey="P">previous</a> |</li>
@@ -61,7 +65,7 @@ usage: lmh [-h] action ...
 <dt><strong>status</strong></dt>
 <dd><p class="first">shows the working tree status of repositories</p>
 <pre class="literal-block">
-usage: lmh status [-h] [repository [repository ...]]
+usage: lmh status [-h] [--all] [repository [repository ...]]
 
 </pre>
 <dl class="last docutils">
@@ -73,6 +77,18 @@ usage: lmh status [-h] [repository [repository ...]]
 <tr><td class="option-group">
 <kbd>repository</kbd></td>
 <td>a list of repositories for which to show the status. </td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>runs status on all repositories currently in lmh</td></tr>
 </tbody>
 </table>
 </dd>
@@ -126,7 +142,7 @@ usage: lmh setup [-h] [--autocomplete] [--add-private-token ADD_PRIVATE_TOKEN]
 <dt><strong>xhtml</strong></dt>
 <dd><p class="first">generate XHTML </p>
 <pre class="literal-block">
-usage: lmh xhtml [-h] [repository [repository ...]]
+usage: lmh xhtml [-h] [--all] [repository [repository ...]]
 
 </pre>
 <dl class="last docutils">
@@ -141,6 +157,18 @@ usage: lmh xhtml [-h] [repository [repository ...]]
 </tbody>
 </table>
 </dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>runs status on all repositories currently in lmh</td></tr>
+</tbody>
+</table>
+</dd>
 </dl>
 </dd>
 <dt><strong>init</strong></dt>
@@ -152,10 +180,47 @@ usage: lmh init [-h]
 <dl class="last docutils">
 </dl>
 </dd>
+<dt><strong>commit</strong></dt>
+<dd><p class="first">commits all changed files</p>
+<pre class="literal-block">
+usage: lmh commit [-h] [--message MESSAGE] [--all]
+                  [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories for which to show the status. </td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--message=autocommit</span>, <span class="option">-m=autocommit</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>message to be used for commits</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>runs commit on all repositories currently in lmh</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
 <dt><strong>drain</strong></dt>
 <dd><p class="first">send changes to mathhub</p>
 <pre class="literal-block">
-usage: lmh drain [-h] [--autocommit] [--message MESSAGE]
+usage: lmh drain [-h] [--autocommit] [--message MESSAGE] [--all]
                  [repository [repository ...]]
 
 </pre>
@@ -184,6 +249,10 @@ usage: lmh drain [-h] [--autocommit] [--message MESSAGE]
 <kbd><span class="option">--message=autocommit</span>, <span class="option">-m=autocommit</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td>message to be used for commits</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>runs status on all repositories currently in lmh</td></tr>
 </tbody>
 </table>
 </dd>
@@ -192,7 +261,7 @@ usage: lmh drain [-h] [--autocommit] [--message MESSAGE]
 <dt><strong>update</strong></dt>
 <dd><p class="first">get repository and tool updates</p>
 <pre class="literal-block">
-usage: lmh update [-h] [repository [repository ...]]
+usage: lmh update [-h] [--all] [repository [repository ...]]
 
 </pre>
 <dl class="last docutils">
@@ -207,13 +276,25 @@ usage: lmh update [-h] [repository [repository ...]]
 </tbody>
 </table>
 </dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>drains all repositories currently in lmh</td></tr>
+</tbody>
+</table>
+</dd>
 </dl>
 </dd>
 <dt><strong>gen</strong></dt>
 <dd><p class="first">updates generated content</p>
 <pre class="literal-block">
 usage: lmh gen [-h] [-f] [-v] [--omdoc [OMDOC [OMDOC ...]]]
-               [--pdf [PDF [PDF ...]]]
+               [--pdf [PDF [PDF ...]]] [--all]
                [repository [repository ...]]
 
 </pre>
@@ -248,6 +329,10 @@ usage: lmh gen [-h] [-f] [-v] [--omdoc [OMDOC [OMDOC ...]]]
 <tr><td class="option-group">
 <kbd><span class="option">--pdf</span></kbd></td>
 <td>generate pdf files</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>runs status on all repositories currently in lmh</td></tr>
 </tbody>
 </table>
 </dd>
@@ -256,7 +341,7 @@ usage: lmh gen [-h] [-f] [-v] [--omdoc [OMDOC [OMDOC ...]]]
 <dt><strong>clean</strong></dt>
 <dd><p class="first">clean repositories of generated files</p>
 <pre class="literal-block">
-usage: lmh clean [-h] [repository [repository ...]]
+usage: lmh clean [-h] [--all] [repository [repository ...]]
 
 </pre>
 <dl class="last docutils">
@@ -271,12 +356,24 @@ usage: lmh clean [-h] [repository [repository ...]]
 </tbody>
 </table>
 </dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>runs status on all repositories currently in lmh</td></tr>
+</tbody>
+</table>
+</dd>
 </dl>
 </dd>
 <dt><strong>git</strong></dt>
 <dd><p class="first">run git command on multiple repositories</p>
 <pre class="literal-block">
-usage: lmh git [-h] cmd [repository [repository ...]]
+usage: lmh git [-h] [--all] cmd [repository [repository ...]]
 
 </pre>
 <dl class="last docutils">
@@ -291,6 +388,18 @@ usage: lmh git [-h] cmd [repository [repository ...]]
 <tr><td class="option-group">
 <kbd>repository</kbd></td>
 <td>a list of repositories for which to run the git command.</td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>runs status on all repositories currently in lmh</td></tr>
 </tbody>
 </table>
 </dd>
@@ -533,6 +642,9 @@ usage: lmh modspdf [-h] [repository [repository ...]]
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
                         title="previous chapter">Welcome to Local MathHub&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="lmherror.html"
+                        title="next chapter">lmherror module</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/lmh.txt"
@@ -564,6 +676,9 @@ usage: lmh modspdf [-h] [repository [repository ...]]
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="lmherror.html" title="lmherror module"
+             >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to Local MathHub’s documentation!"
              >previous</a> |</li>

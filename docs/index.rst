@@ -12,16 +12,7 @@ Contents:
    :maxdepth: 4
 
    lmh
-   lmhdepcrawler
-   lmhinit
-   lmhinstall
-   lmhpath
-   lmhpathchecker
-   lmhsetup
-   lmhstatus
-   lmhupdate
-   lmhutil
-
+   lmherror
 
 Indices and tables
 ==================
