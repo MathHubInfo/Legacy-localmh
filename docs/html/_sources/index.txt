@@ -12,7 +12,6 @@ Contents:
    :maxdepth: 4
 
    lmh
-   lmherror
 
 Indices and tables
 ==================
