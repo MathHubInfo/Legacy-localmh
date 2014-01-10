@@ -22,6 +22,8 @@ def create_parser():
 def add_parser(subparsers):
   parser_status = subparsers.add_parser('update', formatter_class=argparse.RawTextHelpFormatter, help='get repository and tool updates')
   add_parser_args(parser_status)
+  parser_status = subparsers.add_parser('up', formatter_class=argparse.RawTextHelpFormatter, help='short form for update')
+  add_parser_args(parser_status)
 
 def add_parser_args(parser):
   parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories which should be updated. ").completer = lmhutil.autocomplete_mathhub_repository

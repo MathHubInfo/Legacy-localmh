@@ -22,6 +22,8 @@ def create_parser():
 def add_parser(subparsers):
   parser_status = subparsers.add_parser('commit', formatter_class=argparse.RawTextHelpFormatter, help='commits all changed files')
   add_parser_args(parser_status)
+  parser_status = subparsers.add_parser('ci', formatter_class=argparse.RawTextHelpFormatter, help='short form for commit')
+  add_parser_args(parser_status)
 
 def add_parser_args(parser):
   parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository

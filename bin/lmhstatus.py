@@ -24,6 +24,8 @@ def create_parser():
 def add_parser(subparsers):
   parser_status = subparsers.add_parser('status', formatter_class=argparse.RawTextHelpFormatter, help='shows the working tree status of repositories')
   add_parser_args(parser_status)
+  parser_status = subparsers.add_parser('st', formatter_class=argparse.RawTextHelpFormatter, help='short form for status')
+  add_parser_args(parser_status)
 
 
 def add_parser_args(parser):
