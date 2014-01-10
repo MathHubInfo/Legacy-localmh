@@ -67,7 +67,7 @@ latexmlc = lmhutil.which("latexmlc")
 pdflatex = lmhutil.which("pdflatex")
 
 stexstydir = lmh_root+"/ext/sTeX/sty";
-latexmlstydir = lmh_root+"/ext/sTeX/LaTeXML/blib/lib/LaTeXML/texmf";
+latexmlstydir = lmh_root+"/ext/sTeX/LaTeXML/lib/LaTeXML/texmf";
 stydir = lmh_root+"/sty";
 
 def genTEXInputs():
