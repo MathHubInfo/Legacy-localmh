@@ -24,8 +24,8 @@ def add_parser(subparsers):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
-  parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="drains all repositories currently in lmh")
+  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories which should be updated. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="updates all repositories currently in lmh")
   parser.epilog = """
 Note: LMH will check for tool updates only if run at the root of the LMH folder 
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 

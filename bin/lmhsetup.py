@@ -49,7 +49,56 @@ def update():
   lmhutil.git_pull(root+"/sTeX")
   lmhutil.svn_pull(root+"/MMT")
 
+def check_deps():
+  # Checks depencies as in issue #63
+
+  islinux = os.name == "posix"
+  iswin = os.name == "nt"
+
+  if lmhutil.which("svn") == None:
+    print "Unable to locate the subversion executable 'svn'. "
+    print "Please make sure it is in the $PATH environment variable. "
+    if islinux: 
+      print "On a typical Ubuntu system you may install this with:"
+      print "    sudo apt-get install subversion"
+    if iswin:
+      print "On Windows, you can install the command line client from TortoiseSVN. Please see: "
+      print "    http://tortoisesvn.net/"
+    return False
+
+  if lmhutil.which("git") == None:
+    print "Unable to locate the git executable. "
+    print "Please make sure it is in the $PATH environment variable. "
+    if islinux: 
+      print "On a typical Ubuntu system you may install this with:"
+      print "    sudo apt-get install git"
+    if iswin:
+      print "On Windows, you can install Git for Windows. Please see: "
+      print "    http://msysgit.github.io/"
+    return False
+
+  if lmhutil.which("pdflatex") == None:
+    print "Unable to locate latex executable 'pdflatex'. "
+    print "Please make sure it is in the $PATH environment variable. "
+    print "It is recommened to use TeXLive 2013 or later. "
+    if islinux: 
+      print "On Ubtuntu 13.10 or later you can install this with: "
+      print "    sudo apt-get install texlive"
+      print "For older Ubtuntu versions please see: "
+      print "    http://askubuntu.com/a/163683"
+    if iswin:
+      print "For Windows, find installation instructions at: "
+      print "    https://www.tug.org/texlive/windows.html"
+    return False
+
+  return True
+
+
+
 def do(args):
+  if not check_deps():
+    return
+
   root = lmhutil.lmh_root()+"/ext"
   lmhutil.git_clone(root, "https://github.com/KWARC/LaTeXML.git")
   lmhutil.git_clone(root, "https://github.com/KWARC/sTeX.git")

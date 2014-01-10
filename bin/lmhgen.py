@@ -189,7 +189,7 @@ def do_bulk_generation(docs, fnc, args):
       fnc(doc["root"], doc["modName"], doc["pre"], doc["post"], args=args)
     return
 
-  processes = 8;
+  processes = 8; #TODO: Make this configurable
 
   pool = Pool(processes=processes)
   result = pool.map(functools.partial(do_compute, fnc, args), docs)

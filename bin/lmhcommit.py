@@ -36,8 +36,8 @@ Repository names allow using the wildcard '*' to match any repository. It allows
     .         - would be equivalent to "git status ."
 """;
 
-def do_drain(rep, msg):
-  print "draining %r"%rep
+def do_commit(rep, msg):
+  print "committing %r"%rep
   call([lmhutil.which("git"), "commit", "-a", "-m", msg], cwd=rep);    
 
 def do(args):
@@ -47,4 +47,4 @@ def do(args):
     args.repository = [lmhutil.tryRepo(lmhutil.lmh_root()+"/MathHub", lmhutil.lmh_root()+"/MathHub")]
   for repo in args.repository:
     for rep in glob.glob(repo):
-      do_drain(rep, args.message[0]);
+      do_commit(rep, args.message[0]);
