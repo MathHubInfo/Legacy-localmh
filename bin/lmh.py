@@ -59,7 +59,7 @@ def create_parser():
   reps.append(subparsers.add_parser('sms', help='generates sms files'))
   reps.append(subparsers.add_parser('mods', help='generates omdoc module files'))
   reps.append(subparsers.add_parser('omdoc', help='generates omdoc for targets'))
-  reps.append(subparsers.add_parser('pdf', help='generates pdf for targets'))
+  reps.append(subparsers.add_parser('pdf', help='generates pdf for targets, alias for \'{1} gen --pdf\''))
   reps.append(subparsers.add_parser('modspdf', help='generates omdoc module files'))
 
   for rep in reps:
@@ -95,16 +95,12 @@ def main(argv = sys.argv[1:]):
 
   if args.action == "omdoc":
     import lmhgen
-    if (len(args.repository) == 0):
-      args.repository.append("all");
     cmd = ["gen", "--verbose", "--omdoc"]; cmd.extend(args.repository);
     lmhgen.do(parser.parse_args(cmd));
     return    
 
   if args.action == "pdf":
     import lmhgen
-    if (len(args.repository) == 0):
-      args.repository.append("all");
     cmd = ["gen", "--verbose", "--pdf"]; cmd.extend(args.repository);
     lmhgen.do(parser.parse_args(cmd));
     return    
