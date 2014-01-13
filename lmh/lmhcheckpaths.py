@@ -8,14 +8,16 @@ This is the entry point for the Local Math Hub utility.
 
 """
 
-import lmhfind;
-import lmhutil;
-import os;
+import os
 import glob
-import difflib;
+import difflib
 import fileinput
 import argparse
 import functools
+
+from . import lmhutil
+from . import lmhfind
+
 
 mathroot = lmhutil.lmh_root()+"/MathHub";
 fileIndex = {};

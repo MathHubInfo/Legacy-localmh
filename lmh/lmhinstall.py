@@ -10,12 +10,14 @@ Local Math Hub repository installer
 
 """
 
-import lmhutil;
+
 import re
 import os
 import sys
 import argparse
 from subprocess import call
+
+from . import lmhutil
 
 repoRegEx = lmhutil.repoRegEx;
 

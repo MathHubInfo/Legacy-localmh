@@ -8,11 +8,15 @@ This is the entry point for the Local Math Hub utility.
 
 """
 
-import argparse
-import lmhutil
 import os
-from subprocess import call
+import argparse
 import ConfigParser
+from subprocess import call
+
+
+import argparse
+
+from . import lmhutil
 
 gitpath = lmhutil.which("git")
 python = lmhutil.which("python")

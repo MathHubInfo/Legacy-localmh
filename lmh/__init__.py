@@ -1,7 +1,6 @@
-
-
+#!/usr/bin/env python
 """
-This is the entry point for the Local Math Hub utility. 
+Local Math Hub utility main parser. 
 
 .. argparse::
    :module: lmh
@@ -10,29 +9,29 @@ This is the entry point for the Local Math Hub utility.
 
 """
 
-#!/usr/bin/python 
-
-import argparse
-import lmhutil
-import lmhsetup
-import lmhstatus
-import lmhinstall
-import subprocess
 import os
 import sys
-import traceback
 import time
-import lmhagg
+import argparse
+import subprocess
+import traceback
+
+from . import lmhutil
+from . import lmhsetup
+from . import lmhstatus
+from . import lmhinstall
+from . import lmhagg
+
 
 submods = {};
 
 def install_excepthook():
-  cwd = os.getcwd();
+  cwd = os.getcwd()
   def my_excepthook(exctype, value, tb):
     if exctype == KeyboardInterrupt:
       return
-    err = ''.join(traceback.format_exception(exctype, value, tb));
-    print err;
+    err = ''.join(traceback.format_exception(exctype, value, tb))
+    print err
     print "lmh seems to have crashed with %s"%exctype
     print "a report will be generated in "
     s = "cwd = {0}\n args = {1}\n".format(cwd, sys.argv)
@@ -47,9 +46,9 @@ def create_parser():
 
   subparsers = parser.add_subparsers(help='valid actions are:', dest="action", metavar='action')
 
-  submodules = ["status", "log", "install", "setup", "xhtml", "init", "commit", "push", "update", "gen", "clean", "git", "find", "depcrawl", "checkpaths"];
+  submodules = ["find", "status", "log", "install", "setup", "xhtml", "init", "commit", "push", "update", "gen", "clean", "git", "depcrawl", "checkpaths"];
   for mod in submodules:
-    _mod = __import__("lmh"+mod)
+    _mod = getattr(__import__("lmh.lmh"+mod), "lmh"+mod)
     submods[mod] = _mod
     _mod.add_parser(subparsers)
 
@@ -59,8 +58,8 @@ def create_parser():
   reps.append(subparsers.add_parser('sms', help='generates sms files'))
   reps.append(subparsers.add_parser('mods', help='generates omdoc module files'))
   reps.append(subparsers.add_parser('omdoc', help='generates omdoc for targets'))
-  reps.append(subparsers.add_parser('pdf', help='generates pdf for targets, alias for \'{1} gen --pdf\''))
-  reps.append(subparsers.add_parser('modspdf', help='generates omdoc module files'))
+  reps.append(subparsers.add_parser('pdf', help='generates pdf for targets, short form for lmh gen --pdf'))
+  reps.append(subparsers.add_parser('modspdf', help='generates omdoc module files, short form for lmh gen --omdoc'))
 
   for rep in reps:
     rep.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories. ").completer = lmhutil.autocomplete_mathhub_repository
@@ -72,6 +71,7 @@ def create_parser():
   return parser
 
 def main(argv = sys.argv[1:]):
+  """Calls the main program with given arguments. """
   parser = create_parser()
   if len(argv) == 0:
     parser.print_help();
@@ -115,3 +115,6 @@ def main(argv = sys.argv[1:]):
 
   submods[args.action].do(args)
 
+def run(argv = sys.argv[1:]):
+  install_excepthook()
+  main(argv)

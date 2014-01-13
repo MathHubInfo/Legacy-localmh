@@ -11,7 +11,8 @@ This is the entry point for the Local Math Hub utility.
 import os
 import re
 import argparse
-import lmhutil
+
+from . import lmhutil
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Path Management tool.')

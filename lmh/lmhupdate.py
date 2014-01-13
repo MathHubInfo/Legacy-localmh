@@ -14,6 +14,7 @@ import glob
 from subprocess import call
 from lmhsetup import update as setup_update
 
+
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Update tool.')
   add_parser_args(parser)

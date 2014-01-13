@@ -8,11 +8,13 @@ This is the entry point for the Local Math Hub utility.
 
 """
 
-import argparse
-import lmhutil
+
 import os
 import glob
+import argparse
 from subprocess import call
+
+from . import lmhutil
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Git Wrapper.')

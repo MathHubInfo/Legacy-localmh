@@ -8,13 +8,13 @@ This is the entry point for the Local Math Hub utility.
 
 """
 
-import lmhutil
 import re
 import os
-import lmhutil
 import glob
 import subprocess
 import argparse
+
+from . import lmhutil
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Status tool.')

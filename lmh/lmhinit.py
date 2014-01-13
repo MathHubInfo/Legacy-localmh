@@ -8,10 +8,12 @@ This is the entry point for the Local Math Hub utility.
 
 """
 
-import argparse
-import lmhutil
+
 import os
 import re
+import argparse
+
+from . import lmhutil
 
 repoRegEx = '([\w-]+)/([\w-]+)';
 

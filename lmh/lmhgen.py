@@ -8,24 +8,25 @@ This is the entry point for the Local Math Hub utility.
 
 """
 
-import argparse
-import lmhutil
+
+
 import os
+import re
 import glob
-import lmhagg
+import time
+import argparse
+import datetime
 import functools
+import ConfigParser
+import multiprocessing
+
+from string import Template
 from subprocess import call
 from subprocess import Popen
 from subprocess import PIPE
 
-import re
-import time
-import datetime
-from string import Template
-import ConfigParser
-
-from multiprocessing import Pool
-import multiprocessing 
+from . import lmhagg
+from . import lmhutil
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Generation tool.')
@@ -40,6 +41,8 @@ def add_parser_args(parser):
   parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
   parser.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
   parser.add_argument('-v', '--verbose', const=True, default=False, action="store_const", help="verbose mode")
+  parser.add_argument('-w', '--workers',  metavar='number', default=8, type=int,
+                   help='number of worker processes to use')
   parser.add_argument('--omdoc', nargs="*", help="generate omdoc files")
   parser.add_argument('--pdf', nargs="*", help="generate pdf files")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs status on all repositories currently in lmh")
@@ -168,20 +171,21 @@ def genLocalPaths(dest, repo, repo_name):
 def get_modules(root, files):
   mods = [];
   for file in files:
+    fullFile = root+"/"+file
     if not file.endswith(".tex") or file in special_files:
       continue
-    if not os.access(file, os.R_OK): # ignoring files I cannot read
+    if not os.access(fullFile, os.R_OK): # ignoring files I cannot read
       continue
-    
-    fullFile = root+"/"+file;
+
     mods.append({ "modName" : file[:-4], "file": fullFile, "date": os.path.getmtime(fullFile)})
   return mods
 
 def do_compute(fnc, args, omdoc):
-  current = multiprocessing.current_process()
-  wid = current._identity[0]
-  print str(datetime.datetime.now().time())+" worker "+str(wid)+": "+omdoc["modName"]+" "
-  fnc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], port=3353+wid, args=args)
+    current = multiprocessing.current_process()
+    wid = current._identity[0]
+    print str(datetime.datetime.now().time())+" worker "+str(wid)+": "+omdoc["modName"]+" "
+    fnc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], port=3353+wid, args=args)
+
 
 def do_bulk_generation(docs, fnc, args):
   if len(docs) < 10:
@@ -189,10 +193,8 @@ def do_bulk_generation(docs, fnc, args):
       fnc(doc["root"], doc["modName"], doc["pre"], doc["post"], args=args)
     return
 
-  processes = 8; #TODO: Make this configurable
-
-  pool = Pool(processes=processes)
-  result = pool.map(functools.partial(do_compute, fnc, args), docs)
+  pool = multiprocessing.Pool(processes=args.workers)
+  result = pool.map_async(functools.partial(do_compute, fnc, args), docs)
 
 def gen_sms(root, mods, args):
   # Generate all SMS files

@@ -1,6 +1,7 @@
 import ConfigParser
 import os
-import lmhutil
+
+from . import lmhutil
 
 def config_load_content(root, config):
   for fl in ["pre", "post"]:

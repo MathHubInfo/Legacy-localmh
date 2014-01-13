@@ -152,7 +152,7 @@ def set_file(filePath, fileContent):
     return open(filePath, "w").write(fileContent)
     
 def get_template(name):
-    return get_file(os.path.dirname(os.path.realpath(__file__)) + "/templates/" + name);
+    return get_file(_lmh_root + "/bin/templates/" + name);
 
 def git_clone(dest, *arg):
   args = [gitexec, "clone"];

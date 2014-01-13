@@ -1,8 +1,15 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
 
-import lmh
+import sys
+import os
+
+
+
+
 
 if __name__ == "__main__":
-  lmh.install_excepthook()
-  lmh.main()
+	pth = os.path.realpath(os.path.dirname(sys.argv[0])+ "/../")
+	sys.path.append(pth)
+	import lmh
+	lmh.run(sys.argv[1:])

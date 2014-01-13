@@ -8,15 +8,14 @@ This is the entry point for the Local Math Hub utility.
 
 """
 
-# lmh find '\\importmodule\[load=\\MathHub{$repo/source/([^\]]*)\]' --replace '\importmhmodule{$g0' --apply
-
 import os
 import re
 import functools
 import argparse
-import lmhutil
 import glob
 from string import Template
+
+from . import lmhutil
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Find tool.')
@@ -62,7 +61,7 @@ def replacePath(dir, matcher, replaceFnc, apply=False):
       if fileExtension != ".tex":
         continue
       fullpath = root+"/"+file;
-      if not os.access(fullPath, os.R_OK): # ignoring files I cannot read
+      if not os.access(fullpath, os.R_OK): # ignoring files I cannot read
         continue
       changes = False
       if apply:
