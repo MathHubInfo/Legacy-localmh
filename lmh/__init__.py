@@ -22,7 +22,6 @@ from . import lmhstatus
 from . import lmhinstall
 from . import lmhagg
 
-
 submods = {};
 
 def install_excepthook():
