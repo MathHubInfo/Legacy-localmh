@@ -13,5 +13,4 @@ sty:		LaTeX packages used in MathHub.info
 logs:		crash reports that will help developers improve lmh.
 styles:		for the notation definitions MMT uses for generating XHTML from OMDoc
 
-
-
+License: GPL
