@@ -283,7 +283,13 @@ usage: lmh install [-h] [repository [repository ...]]
 <dt><strong>setup</strong></dt>
 <dd><p class="first">sets up local math hub and fetches external requirements</p>
 <pre class="literal-block">
-usage: lmh setup [-h] [--autocomplete] [--add-private-token ADD_PRIVATE_TOKEN]
+usage: lmh setup [-h] [--install | --update | --reinstall | --skip] [-f]
+                 [--autocomplete] [--add-private-token ADD_PRIVATE_TOKEN]
+                 [--latexml-source source&#64;refspec]
+                 [--stex-source source&#64;refspec] [--mmt-source source&#64;refspec]
+                 [--install-latexml | --update-latexml | --reinstall-latexml | --skip-latexml]
+                 [--install-stex | --update-stex | --reinstall-stex | --skip-stex]
+                 [--install-mmt | --update-mmt | --reinstall-mmt | --skip-mmt]
 
 </pre>
 <dl class="last docutils">
@@ -292,6 +298,22 @@ usage: lmh setup [-h] [--autocomplete] [--add-private-token ADD_PRIVATE_TOKEN]
 <col class="option" />
 <col class="description" />
 <tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">--install=in</span></kbd></td>
+<td>Perform initial setup of dependencies. Default. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--update</span></kbd></td>
+<td>Update existing versions of dependencies. Implies &#8211;update-* arguments. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--reinstall</span></kbd></td>
+<td>Perform initial setup of dependencies. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--skip</span></kbd></td>
+<td>Skip everything which is not specific explicitly. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-f=False</span>, <span class="option">--force=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Skip checking for lmh core requirements. </td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--autocomplete=False</span></kbd></td>
 </tr>
@@ -300,6 +322,58 @@ usage: lmh setup [-h] [--autocomplete] [--add-private-token ADD_PRIVATE_TOKEN]
 <kbd><span class="option">--add-private-token</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td>add private token to use advanced MathHub functionality</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--latexml-source=</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Get LaTeXML from the given source. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--stex-source=</span></kbd></td>
+<td>Get sTex from the given source. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--mmt-source=</span></kbd></td>
+<td>Get MMT from the given source. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--install-latexml=</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Install LaTexML. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--update-latexml</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Update LaTeXML. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--reinstall-latexml</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Reinstall LaTeXML. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--skip-latexml</span></kbd></td>
+<td>Leave LaTeXML untouched. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--install-stex=</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Install sTeX. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--update-stex</span></kbd></td>
+<td>Update sTeX. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--reinstall-stex</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Reinstall sTeX. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--skip-stex</span></kbd></td>
+<td>Leave sTeX untouched. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--install-mmt=</span></kbd></td>
+<td>Install MMT. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--update-mmt</span></kbd></td>
+<td>Update MMT. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--reinstall-mmt</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Reinstall MMT. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--skip-mmt</span></kbd></td>
+<td>Leave MMT untouched. </td></tr>
 </tbody>
 </table>
 </dd>
@@ -878,7 +952,7 @@ usage: lmh modspdf [-h] [repository [repository ...]]
     </div>
     <div class="footer">
         &copy; Copyright 2013-14, The KWARC Group &lt;kwarc.info&gt;.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
     </div>
   </body>
 </html>
