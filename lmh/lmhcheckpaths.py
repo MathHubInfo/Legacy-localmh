@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 This is the entry point for the Local Math Hub utility. 
 

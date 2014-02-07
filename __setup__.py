@@ -24,7 +24,8 @@ submodules = [
 	"lmhupdate", 
 	"lmhutil", 
 	"lmhxhtml", 
-	"lmhabout"
+	"lmhabout", 
+	"lmhconfig"
 ]
 
 packs = ["lmh"]

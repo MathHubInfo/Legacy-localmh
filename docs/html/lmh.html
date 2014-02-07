@@ -59,6 +59,69 @@ usage: lmh [-h] action ...
 <dl class="docutils">
 <dt>Sub-commands:</dt>
 <dd><dl class="first last docutils">
+<dt><strong>config</strong></dt>
+<dd><p class="first">configures this lmh installation. </p>
+<pre class="literal-block">
+usage: lmh config [-h] [-a] [--reset] [setting] [value]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>setting</kbd></td>
+<td>Setting to show or edit. </td></tr>
+<tr><td class="option-group">
+<kbd>value</kbd></td>
+<td>New value for setting. </td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-a=False</span>, <span class="option">--all=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Shows all available settings. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--reset=False</span></kbd></td>
+<td>Resets the given setting or all settings. </td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>about</strong></dt>
+<dd><p class="first">shows version and general information. </p>
+<pre class="literal-block">
+usage: lmh about [-h] [--version] [--license]
+
+</pre>
+<dl class="last docutils">
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--version=False</span>, <span class="option">-v=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>show version and exit</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--license=False</span>, <span class="option">-l=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>show license and exit</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
 <dt><strong>find</strong></dt>
 <dd><p class="first">find tool</p>
 <pre class="literal-block">
@@ -815,7 +878,7 @@ usage: lmh modspdf [-h] [repository [repository ...]]
     </div>
     <div class="footer">
         &copy; Copyright 2013-14, The KWARC Group &lt;kwarc.info&gt;.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
     </div>
   </body>
 </html>
