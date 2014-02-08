@@ -4,9 +4,9 @@
 This is the entry point for the Local Math Hub utility. 
 
 .. argparse::
-   :module: lhmpush
+   :module: xhtml
    :func: create_parser
-   :prog: lmhpush
+   :prog: xhtml
 
 """
 
@@ -27,43 +27,47 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
-import glob
 import argparse
-from subprocess import call
 
-from . import lmhutil
+import os
+from subprocess import call
+import ConfigParser
+import glob
+
+from lmh.commands.gen import do_gen
+from lmh.commands.gen import create_parser as gen_parser
+from lmh.mmt import compile
+from lmh import util
+
+p = gen_parser()
+attr = p.parse_args(["--omdoc"]);
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub Push tool.')
+  parser = argparse.ArgumentParser(description='Local MathHub XHTML tool.')
   add_parser_args(parser)
   return parser
 
-def add_parser(subparsers):
-  parser_status = subparsers.add_parser('push', formatter_class=argparse.RawTextHelpFormatter, help='send changes to mathhub')
+def add_parser(subparsers, name="xhtml"):
+  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='generate XHTML ')
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to generate XHTML").completer = util.autocomplete_mathhub_repository
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs status on all repositories currently in lmh")
+  pass
 
-  parser.epilog = """
-Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
-  Example:  
-    */*       - would match all repositories from all groups. 
-    mygroup/* - would match all repositories from group mygroup
-    .         - would be equivalent to "git status ."
-""";
-
-def do_push(rep):
-  print "pushing %r"%rep    
-  call([lmhutil.which("git"), "push"], cwd=rep);
+def do_xhtml(rep):
+  rep_root = util.git_root_dir(rep);
+  do_gen(rep, attr)
+  compile(rep_root)
+  pass
 
 def do(args):
   if len(args.repository) == 0:
-    args.repository = [lmhutil.tryRepo(".", lmhutil.lmh_root()+"/MathHub/*/*")]
+    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
   if args.all:
-    args.repository = [lmhutil.tryRepo(lmhutil.lmh_root()+"/MathHub", lmhutil.lmh_root()+"/MathHub")]  
+    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]  
+
   for repo in args.repository:
     for rep in glob.glob(repo):
-      do_push(rep);
+      do_xhtml(rep);

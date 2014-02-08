@@ -192,38 +192,6 @@ usage: lmh status [-h] [--all] [repository [repository ...]]
 </dd>
 </dl>
 </dd>
-<dt><strong>st</strong></dt>
-<dd><p class="first">short form for status</p>
-<pre class="literal-block">
-usage: lmh st [-h] [--all] [repository [repository ...]]
-
-</pre>
-<dl class="last docutils">
-<dt>Positional arguments:</dt>
-<dd><table class="first last docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>repository</kbd></td>
-<td>a list of repositories for which to show the status. </td></tr>
-</tbody>
-</table>
-</dd>
-<dt>Options:</dt>
-<dd><table class="first last docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>runs status on all repositories currently in lmh</td></tr>
-</tbody>
-</table>
-</dd>
-</dl>
-</dd>
 <dt><strong>log</strong></dt>
 <dd><p class="first">shows recent commits in all repositories</p>
 <pre class="literal-block">
@@ -299,8 +267,8 @@ usage: lmh setup [-h] [--install | --update | --reinstall | --skip] [-f]
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd><span class="option">--install=in</span></kbd></td>
-<td>Perform initial setup of dependencies. Default. </td></tr>
+<kbd><span class="option">--install=</span></kbd></td>
+<td>Perform initial setup of dependencies. Default if no other arguments are given. </td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--update</span></kbd></td>
 <td>Update existing versions of dependencies. Implies &#8211;update-* arguments. </td></tr>
@@ -309,7 +277,7 @@ usage: lmh setup [-h] [--install | --update | --reinstall | --skip] [-f]
 <td>Perform initial setup of dependencies. </td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--skip</span></kbd></td>
-<td>Skip everything which is not specific explicitly. </td></tr>
+<td>Skip everything which is not specified explicitly. </td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-f=False</span>, <span class="option">--force=False</span></kbd></td>
 </tr>
@@ -457,42 +425,6 @@ usage: lmh commit [-h] [--message MESSAGE] [--all]
 </dd>
 </dl>
 </dd>
-<dt><strong>ci</strong></dt>
-<dd><p class="first">short form for commit</p>
-<pre class="literal-block">
-usage: lmh ci [-h] [--message MESSAGE] [--all] [repository [repository ...]]
-
-</pre>
-<dl class="last docutils">
-<dt>Positional arguments:</dt>
-<dd><table class="first last docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>repository</kbd></td>
-<td>a list of repositories for which to show the status. </td></tr>
-</tbody>
-</table>
-</dd>
-<dt>Options:</dt>
-<dd><table class="first last docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--message=autocommit</span>, <span class="option">-m=autocommit</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>message to be used for commits</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>runs commit on all repositories currently in lmh</td></tr>
-</tbody>
-</table>
-</dd>
-</dl>
-</dd>
 <dt><strong>push</strong></dt>
 <dd><p class="first">send changes to mathhub</p>
 <pre class="literal-block">
@@ -529,38 +461,6 @@ usage: lmh push [-h] [--all] [repository [repository ...]]
 <dd><p class="first">get repository and tool updates</p>
 <pre class="literal-block">
 usage: lmh update [-h] [--all] [repository [repository ...]]
-
-</pre>
-<dl class="last docutils">
-<dt>Positional arguments:</dt>
-<dd><table class="first last docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>repository</kbd></td>
-<td>a list of repositories which should be updated. </td></tr>
-</tbody>
-</table>
-</dd>
-<dt>Options:</dt>
-<dd><table class="first last docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>updates all repositories currently in lmh</td></tr>
-</tbody>
-</table>
-</dd>
-</dl>
-</dd>
-<dt><strong>up</strong></dt>
-<dd><p class="first">short form for update</p>
-<pre class="literal-block">
-usage: lmh up [-h] [--all] [repository [repository ...]]
 
 </pre>
 <dl class="last docutils">
@@ -760,6 +660,106 @@ usage: lmh checkpaths [-h] [--interactive] [repository [repository ...]]
 </dd>
 </dl>
 </dd>
+<dt><strong>st</strong></dt>
+<dd><p class="first">shows the working tree status of repositories</p>
+<pre class="literal-block">
+usage: lmh st [-h] [--all] [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories for which to show the status. </td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>runs status on all repositories currently in lmh</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>ci</strong></dt>
+<dd><p class="first">commits all changed files</p>
+<pre class="literal-block">
+usage: lmh ci [-h] [--message MESSAGE] [--all] [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories for which to show the status. </td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--message=autocommit</span>, <span class="option">-m=autocommit</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>message to be used for commits</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>runs commit on all repositories currently in lmh</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>up</strong></dt>
+<dd><p class="first">get repository and tool updates</p>
+<pre class="literal-block">
+usage: lmh up [-h] [--all] [repository [repository ...]]
+
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>repository</kbd></td>
+<td>a list of repositories which should be updated. </td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>updates all repositories currently in lmh</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
 <dt><strong>repos</strong></dt>
 <dd><p class="first">prints the group/repository of the current  Math Hub repository</p>
 <pre class="literal-block">
@@ -881,11 +881,6 @@ usage: lmh modspdf [-h] [repository [repository ...]]
 </dl>
 </dd>
 </dl>
-<dl class="function">
-<dt id="lmh.create_parser">
-<tt class="descclassname">lmh.</tt><tt class="descname">create_parser</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lmh.html#create_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lmh.create_parser" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="function">
 <dt id="lmh.install_excepthook">
 <tt class="descclassname">lmh.</tt><tt class="descname">install_excepthook</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lmh.html#install_excepthook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lmh.install_excepthook" title="Permalink to this definition">¶</a></dt>

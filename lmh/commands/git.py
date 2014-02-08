@@ -4,9 +4,9 @@
 This is the entry point for the Local Math Hub utility. 
 
 .. argparse::
-   :module: lmhgit
+   :module: git
    :func: create_parser
-   :prog: lmhgit
+   :prog: git
 
 """
 
@@ -33,21 +33,21 @@ import glob
 import argparse
 from subprocess import call
 
-from . import lmhutil
+from lmh import util
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Git Wrapper.')
   add_parser_args(parser)
   return parser
 
-def add_parser(subparsers):
-  parser_status = subparsers.add_parser('git', formatter_class=argparse.RawTextHelpFormatter, help='run git command on multiple repositories')
+def add_parser(subparsers, name="git"):
+  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='run git command on multiple repositories')
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
   parser.add_argument('cmd', nargs=1, help="a git command to be run.")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs a git command on all repositories currently in lmh")
-  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to run the git command.").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to run the git command.").completer = util.autocomplete_mathhub_repository
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
   Example:  
@@ -58,15 +58,15 @@ Repository names allow using the wildcard '*' to match any repository. It allows
 
 def do_git(rep, cmd):
   print "doing git {cmd} on {rep}".format(cmd=cmd, rep=rep)
-  cmd_lst = [lmhutil.which("git")];
+  cmd_lst = [util.which("git")];
   cmd_lst.extend(cmd.split(" "))
   call(cmd_lst, cwd=rep);
 
 def do(args):
   if len(args.repository) == 0:
-    args.repository = [lmhutil.tryRepo(".", lmhutil.lmh_root()+"/MathHub/*/*")]
+    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
   if args.all:
-    args.repository = [lmhutil.tryRepo(lmhutil.lmh_root()+"/MathHub", lmhutil.lmh_root()+"/MathHub")]  
+    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]  
 
   for repo in args.repository:
     for rep in glob.glob(repo):

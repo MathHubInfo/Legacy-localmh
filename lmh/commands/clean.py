@@ -4,9 +4,9 @@
 This is the entry point for the Local Math Hub utility. 
 
 .. argparse::
-   :module: lmhclean
+   :module: clean
    :func: create_parser
-   :prog: lmhclean
+   :prog: clean
 
 """
 
@@ -33,20 +33,19 @@ import glob
 import argparse
 import subprocess
 
-
-from . import lmhutil
+from lmh import util
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Clean tool.')
   add_parser_args(parser)
   return parser
 
-def add_parser(subparsers):
-  parser_clean = subparsers.add_parser('clean', formatter_class=argparse.RawTextHelpFormatter, help='clean repositories of generated files')
+def add_parser(subparsers, name="clean"):
+  parser_clean = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='clean repositories of generated files')
   add_parser_args(parser_clean)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the clean. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to show the clean. ").completer = util.autocomplete_mathhub_repository
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs status on all repositories currently in lmh")
 
   parser.epilog = """
@@ -59,7 +58,7 @@ Repository names allow using the wildcard '*' to match any repository. It allows
 
 def do_clean(rep):
   remove = [];
-  rep_root = lmhutil.git_root_dir(rep);
+  rep_root = util.git_root_dir(rep);
   ignoreFile = rep_root+"/.gitignore";
   if not os.path.exists(ignoreFile):
     print "No .gitignore file found in %s"%rep_root
@@ -76,9 +75,9 @@ def do_clean(rep):
 
 def do(args):
   if len(args.repository) == 0:
-    args.repository = [lmhutil.tryRepo(".", lmhutil.lmh_root()+"/MathHub/*/*")]
+    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
   if args.all:
-    args.repository = [lmhutil.tryRepo(lmhutil.lmh_root()+"/MathHub", lmhutil.lmh_root()+"/MathHub")]  
+    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]  
   for repo in args.repository:
     for rep in glob.glob(repo):
       do_clean(rep);

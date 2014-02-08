@@ -30,15 +30,11 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import sys
 import time
-import argparse
 import subprocess
 import traceback
 
-from . import lmhutil
-from . import lmhsetup
-from . import lmhstatus
-from . import lmhinstall
-from . import lmhagg
+from lmh import util
+from lmh.commands import create_parser
 
 submods = {};
 
@@ -53,43 +49,13 @@ def install_excepthook():
     print "a report will be generated in "
     s = "cwd = {0}\n args = {1}\n".format(cwd, sys.argv)
     s = s + err 
-    lmhutil.set_file(lmhutil.lmh_root()+"/logs/"+time.strftime("%Y-%m-%d-%H-%M-%S.log"), s)
+    util.set_file(util.lmh_root()+"/logs/"+time.strftime("%Y-%m-%d-%H-%M-%S.log"), s)
 
   sys.excepthook = my_excepthook
 
-def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub XHTML conversion tool.')
-  reps = [];
-
-  subparsers = parser.add_subparsers(help='valid actions are:', dest="action", metavar='action')
-
-  submodules = ["config", "about", "find", "status", "log", "install", "setup", "xhtml", "init", "commit", "push", "update", "gen", "clean", "git", "depcrawl", "checkpaths"];
-  for mod in submodules:
-    _mod = getattr(__import__("lmh.lmh"+mod), "lmh"+mod)
-    submods[mod] = _mod
-    _mod.add_parser(subparsers)
-
-  subparsers.add_parser('repos', help='prints the group/repository of the current  Math Hub repository')
-  subparsers.add_parser('root', help='prints the root directory of the Local Math Hub repository')
-
-  reps.append(subparsers.add_parser('sms', help='generates sms files'))
-  reps.append(subparsers.add_parser('mods', help='generates omdoc module files'))
-  reps.append(subparsers.add_parser('omdoc', help='generates omdoc for targets'))
-  reps.append(subparsers.add_parser('pdf', help='generates pdf for targets, short form for lmh gen --pdf'))
-  reps.append(subparsers.add_parser('modspdf', help='generates omdoc module files, short form for lmh gen --omdoc'))
-
-  for rep in reps:
-    rep.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories. ").completer = lmhutil.autocomplete_mathhub_repository
-
-
-  if lmhutil.module_exists("argcomplete"):
-    __import__("argcomplete").autocomplete(parser)
-
-  return parser
-
 def main(argv = sys.argv[1:]):
   """Calls the main program with given arguments. """
-  parser = create_parser()
+  parser = create_parser(submods)
   if len(argv) == 0:
     parser.print_help();
     return
@@ -101,7 +67,7 @@ def main(argv = sys.argv[1:]):
     return
 
   if args.action == "root":
-    print lmhutil.lmh_root();
+    print util.lmh_root();
     return
 
   if args.action == "sms":
@@ -123,7 +89,7 @@ def main(argv = sys.argv[1:]):
     return    
 
   if args.action == "repos":
-    rep = lmhutil.lmh_repos();
+    rep = util.lmh_repos();
     if rep:
       print rep
     else:

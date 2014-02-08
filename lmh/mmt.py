@@ -18,10 +18,12 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import socket
-import lmhutil
 import subprocess
 import glob
 import os
+
+from lmh import util
+
 
 
 initScript = """
@@ -50,7 +52,7 @@ mathpath fs http://cds.omdoc.org/styles {lmhRoot}/styles
 base http://docs.omdoc.org/mmt
 """;
 
-lmh_root = lmhutil.lmh_root();
+lmh_root = util.lmh_root();
 mmt_root = lmh_root+"/ext/MMT";
 
 def runMMTScript(src, path):
@@ -66,8 +68,8 @@ def runMMTScript(src, path):
 
 def compile(repository):
   print "Generating XHTML in %s"%repository
-  repoName = lmhutil.lmh_repos(repository)
-  repoPath = lmhutil.git_root_dir(repository);
+  repoName = util.lmh_repos(repository)
+  repoPath = util.git_root_dir(repository);
 
   src = repoPath+"/source"
   script = initScript.format(lmhRoot=lmh_root)+"\n"+buildScript.format(repoName=repoName)

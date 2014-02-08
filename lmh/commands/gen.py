@@ -4,9 +4,9 @@
 This is the entry point for the Local Math Hub utility. 
 
 .. argparse::
-   :module: lmhgen
+   :module: gen
    :func: create_parser
-   :prog: lmhgen
+   :prog: gen
 
 """
 
@@ -44,20 +44,20 @@ from subprocess import call
 from subprocess import Popen
 from subprocess import PIPE
 
-from . import lmhagg
-from . import lmhutil
+from lmh import agg
+from lmh import util
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Generation tool.')
   add_parser_args(parser)
   return parser
 
-def add_parser(subparsers):
-  parser_status = subparsers.add_parser('gen', formatter_class=argparse.RawTextHelpFormatter, help='updates generated content')
+def add_parser(subparsers, name="gen"):
+  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='updates generated content')
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = util.autocomplete_mathhub_repository
   parser.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
   parser.add_argument('-v', '--verbose', const=True, default=False, action="store_const", help="verbose mode")
   parser.add_argument('-w', '--workers',  metavar='number', default=8, type=int,
@@ -79,14 +79,14 @@ ignore = re.compile(r'\\verb')
 regStrings = [r'\\(guse|gadopt|symdef|abbrdef|symvariant|keydef|listkeydef|importmodule|gimport|adoptmodule|importmhmodule|adoptmhmodule)', r'\\begin{(module|importmodulevia)}', r'\\end{(module|importmodulevia)}']
 regs = map(re.compile, regStrings)
 
-all_textpl = Template(lmhutil.get_template("alltex_struct.tpl"))
-all_modtpl = Template(lmhutil.get_template("alltex_mod.tpl"))
-all_pathstpl = Template(lmhutil.get_template("localpaths.tpl"))
-lmh_root = lmhutil.lmh_root()
+all_textpl = Template(util.get_template("alltex_struct.tpl"))
+all_modtpl = Template(util.get_template("alltex_mod.tpl"))
+all_pathstpl = Template(util.get_template("localpaths.tpl"))
+lmh_root = util.lmh_root()
 special_files = {"all.tex":True, "localpaths.tex": True};
 
-latexmlc = lmhutil.which("latexmlc")
-pdflatex = lmhutil.which("pdflatex")
+latexmlc = util.which("latexmlc")
+pdflatex = util.which("pdflatex")
 
 stexstydir = lmh_root+"/ext/sTeX/sty";
 latexmlstydir = lmh_root+"/ext/sTeX/LaTeXML/lib/LaTeXML/texmf";
@@ -113,13 +113,13 @@ def parseLateXMLOutput(file):
   for idx, line in enumerate(open(logfile)):
     m = errorMsg.match(line)
     if m:
-      lmhagg.log_error(["compile", "omdoc", "error"], file, m.group(1))
+      agg.log_error(["compile", "omdoc", "error"], file, m.group(1))
     m = fatalMsg.match(line)
     if m:
-      lmhagg.log_error(["compile", "omdoc", "error"], file, m.group(1))
+      agg.log_error(["compile", "omdoc", "error"], file, m.group(1))
 
 def needsPreamble(file):
-  return re.search(r"\\begin(\w)*{document}", lmhutil.get_file(file)) == None 
+  return re.search(r"\\begin(\w)*{document}", util.get_file(file)) == None 
 
 def genOMDoc(root, mod, pre_path, post_path, args=None, port=3354):
   print "generating %r"%(mod+".omdoc")
@@ -147,7 +147,7 @@ def genPDF(root, mod, pre_path, post_path, args=None, port=None):
   output = p2.communicate()[0]
   if args and args.verbose:
     print output
-  lmhutil.set_file(modPath+".clog", output)
+  util.set_file(modPath+".clog", output)
 
 def genSMS(input, output):
   print "generating %r"%output
@@ -227,7 +227,7 @@ def config_load_content(root, config):
   for fl in ["pre", "post"]:
     if config.has_option("gen", fl):
       file_path = os.path.realpath(os.path.join(root, config.get("gen", fl)))
-      config.set("gen", "%s_content"%fl, lmhutil.get_file(file_path));
+      config.set("gen", "%s_content"%fl, util.get_file(file_path));
 
 def gen_ext(extension, root, mods, config, args, todo, force):
   if len(args) == 0:
@@ -248,8 +248,8 @@ def gen_ext(extension, root, mods, config, args, todo, force):
 
 def do_gen(rep, args):
   print "generating in repository %r"%rep
-  rep_root = lmhutil.git_root_dir(rep);
-  repo_name = lmhutil.lmh_repos(rep)
+  rep_root = util.git_root_dir(rep);
+  repo_name = util.lmh_repos(rep)
   omdocToDo = [];
   pdfToDo = [];
 
@@ -312,11 +312,11 @@ def do_gen(rep, args):
 
 def do(args):
   if len(args.repository) == 0:
-    args.repository = [lmhutil.tryRepo(".", lmhutil.lmh_root()+"/MathHub/*/*")]
+    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
   if args.all:
-    args.repository = [lmhutil.tryRepo(lmhutil.lmh_root()+"/MathHub", lmhutil.lmh_root()+"/MathHub")]  
+    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]  
 
   for repo in args.repository:
     for rep in glob.glob(repo):
       do_gen(rep, args);
-  lmhagg.print_summary()
+  agg.print_summary()

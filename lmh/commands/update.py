@@ -3,9 +3,9 @@
 """
 
 .. argparse::
-   :module: lmhupdate
+   :module: update
    :func: create_parser
-   :prog: lmhupdate
+   :prog: update
 
 """
 
@@ -27,26 +27,24 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import argparse
-import lmhutil
 import os
 import glob
 from subprocess import call
-from lmhsetup import update as setup_update
 
+from lmh.commands.setup import update as setup_update
+from lmh import util
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Update tool.')
   add_parser_args(parser)
   return parser
 
-def add_parser(subparsers):
-  parser_status = subparsers.add_parser('update', formatter_class=argparse.RawTextHelpFormatter, help='get repository and tool updates')
-  add_parser_args(parser_status)
-  parser_status = subparsers.add_parser('up', formatter_class=argparse.RawTextHelpFormatter, help='short form for update')
+def add_parser(subparsers, name="update"):
+  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='get repository and tool updates')
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories which should be updated. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories which should be updated. ").completer = util.autocomplete_mathhub_repository
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="updates all repositories currently in lmh")
   parser.epilog = """
 Note: LMH will check for tool updates only if run at the root of the LMH folder 
@@ -59,18 +57,18 @@ Repository names allow using the wildcard '*' to match any repository. It allows
 
 def do_pull(rep):
   print "pulling %r"%rep
-  call([lmhutil.which("git"), "pull"], cwd=rep);
+  call([util.which("git"), "pull"], cwd=rep);
 
 def do(args):
   if len(args.repository) == 0:
-    if os.getcwd() == lmhutil.lmh_root()+"/ext":
+    if os.getcwd() == util.lmh_root()+"/ext":
       return setup_update();
-    if os.getcwd() == lmhutil.lmh_root():
+    if os.getcwd() == util.lmh_root():
       setup_update();
-    args.repository = [lmhutil.tryRepo(".", lmhutil.lmh_root()+"/MathHub/*/*")]
+    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
 
   if args.all:
-    args.repository = [lmhutil.tryRepo(lmhutil.lmh_root()+"/MathHub", lmhutil.lmh_root()+"/MathHub")]
+    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]
 
   for repo in args.repository:
     for rep in glob.glob(repo):

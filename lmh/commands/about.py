@@ -4,9 +4,9 @@
 This is the entry point for the Local Math Hub utility. 
 
 .. argparse::
-   :module: lmhabout
+   :module: about
    :func: create_parser
-   :prog: lmhabout
+   :prog: about
 
 """
 
@@ -36,15 +36,13 @@ import subprocess
 import pkg_resources
 
 
-from . import lmhutil
-
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub About information. ')
   add_parser_args(parser)
   return parser
 
-def add_parser(subparsers):
-  about_parser = subparsers.add_parser('about', formatter_class=argparse.RawTextHelpFormatter, help='shows version and general information. ')
+def add_parser(subparsers, name="about"):
+  about_parser = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='shows version and general information. ')
   add_parser_args(about_parser)
 
 def add_parser_args(parser):

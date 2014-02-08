@@ -4,9 +4,9 @@
 This is the entry point for the Local Math Hub utility. 
 
 .. argparse::
-   :module: lmhsetup
+   :module: setup
    :func: create_parser
-   :prog: lmhsetup
+   :prog: setup
 
 """
 
@@ -33,27 +33,24 @@ import ConfigParser
 import shutil
 from subprocess import call
 
+from lmh import util
 
-import argparse
-
-from . import lmhutil
-
-gitpath = lmhutil.which("git")
-python = lmhutil.which("python")
+gitpath = util.which("git")
+python = util.which("python")
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Setup tool.')
   add_parser_args(parser)
   return parser
 
-def add_parser(subparsers):
+def add_parser(subparsers, name="setup"):
   parser_status = subparsers.add_parser('setup', formatter_class=argparse.RawTextHelpFormatter, help='sets up local math hub and fetches external requirements')
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
 
   action = parser.add_argument_group('Setup actions').add_mutually_exclusive_group()
-  action.add_argument('--install', action="store_const", dest="m_action", const="in", default="in", help='Perform initial setup of dependencies. Default. ')
+  action.add_argument('--install', action="store_const", dest="m_action", const="in", default="", help='Perform initial setup of dependencies. Default if no other arguments are given. ')
   action.add_argument('--update', action="store_const", dest="m_action", const="up", help='Update existing versions of dependencies. Implies --update-* arguments. ')
   action.add_argument('--reinstall', action="store_const", dest="m_action", const="re", help='Perform initial setup of dependencies. ')
   action.add_argument('--skip', action="store_const", dest="m_action", const="sk", help='Skip everything which is not specified explicitly. ')
@@ -92,25 +89,32 @@ def add_parser_args(parser):
   pass
 
 def install_autocomplete():
-  root = lmhutil.lmh_root()+"/ext"
-  lmhutil.git_clone(root, "https://github.com/kislyuk/argcomplete.git", "arginstall")
+  root = util.lmh_root()+"/ext"
+  util.git_clone(root, "https://github.com/kislyuk/argcomplete.git", "arginstall")
   call([python, "setup.py", "install", "--user"], cwd=root+"/arginstall")
   activatecmd = root+"/arginstall/scripts/activate-global-python-argcomplete";
   print "running %r"%(activatecmd)
   call([root+"/arginstall/scripts/activate-global-python-argcomplete"])
 
 def update():
-  print "Updating LMH dependencies"
-  root = lmhutil.lmh_root()+"/ext"
-  lmhutil.git_pull(root+"/LaTeXML")
-  lmhutil.git_pull(root+"/sTeX")
-  lmhutil.svn_pull(root+"/MMT")
+  print "Updating LMH dependencies ..."
+  do({
+    "m_action": "up", 
+    "force": True, 
+    "autocomplete": False, 
+    "latexml_source": "", 
+    "stex_source": "", 
+    "mmt_source": "",
+    "latexml_action": "", 
+    "stex_action": "", 
+    "mmt_action": ""
+  })
 
 def check_deps():
   islinux = os.name == "posix"
   iswin = os.name == "nt"
 
-  if lmhutil.which("svn") == None:
+  if util.which("svn") == None:
     print "Unable to locate the subversion executable 'svn'. "
     print "Please make sure it is in the $PATH environment variable. "
     if islinux: 
@@ -121,7 +125,7 @@ def check_deps():
       print "    http://tortoisesvn.net/"
     return False
 
-  if lmhutil.which("git") == None:
+  if util.which("git") == None:
     print "Unable to locate the git executable. "
     print "Please make sure it is in the $PATH environment variable. "
     if islinux: 
@@ -132,7 +136,7 @@ def check_deps():
       print "    http://msysgit.github.io/"
     return False
 
-  if lmhutil.which("pdflatex") == None:
+  if util.which("pdflatex") == None:
     print "Unable to locate latex executable 'pdflatex'. "
     print "Please make sure it is in the $PATH environment variable. "
     print "It is recommened to use TeXLive 2013 or later. "
@@ -151,14 +155,14 @@ def check_deps():
 def latexml_install(root, source, branch):
   try:
     if branch == "":
-      lmhutil.git_clone(root, source, "LaTeXML")
+      util.git_clone(root, source, "LaTeXML")
     else:
-      lmhutil.git_clone(root, source, "-t", branch, "LaTeXML")
+      util.git_clone(root, source, "-t", branch, "LaTeXML")
   except:
     print "Failed to install LaTeXML (is the source available? )"
 def latexml_update(root, source, branch):
   try:
-    lmhutil.git_pull(root + "/LaTeXML")
+    util.git_pull(root + "/LaTeXML")
   except:
     print "Failed to update LaTeXML (is it present? )"
 def latexml_remove(root, source, branch):
@@ -170,15 +174,15 @@ def latexml_remove(root, source, branch):
 def stex_install(root, source, branch):
   try:
     if branch == "":
-      lmhutil.git_clone(root, source, "sTeX")
+      util.git_clone(root, source, "sTeX")
     else:
-      lmhutil.git_clone(root, source, "-t", branch, "sTeX")
+      util.git_clone(root, source, "-t", branch, "sTeX")
   except:
     print "Failed to install sTex (is the source available? )"
  
 def stex_update(root, source, branch):
   try:
-    lmhutil.git_pull(root + "/sTeX")
+    util.git_pull(root + "/sTeX")
   except:
     print "Failed to update sTex (is it present? )"
 def stex_remove(root, source, branch):
@@ -191,14 +195,14 @@ def stex_remove(root, source, branch):
 def mmt_install(root, source, branch):
   try:
     if branch == "":
-      lmhutil.svn_clone(root, source, "MMT")
+      util.svn_clone(root, source, "MMT")
     else:
-      lmhutil.svn_clone(root, source + "@" + branch, "MMT")
+      util.svn_clone(root, source + "@" + branch, "MMT")
   except:
     print "Failed to install MMT (is it present? )"
 def mmt_update(root, source, branch):
   try:
-    lmhutil.svn_pull(root + "/MMT")
+    util.svn_pull(root + "/MMT")
   except:
     print "Failed to update MMT (is it present? )"
 def mmt_remove(root, source, branch):
@@ -215,8 +219,13 @@ def do(args):
     print "or use --force to ignore dependency checks. "
     return
 
-  root = lmhutil.lmh_root()+"/ext"
+  root = util.lmh_root()+"/ext"
   action = args.m_action
+  if action == "":
+    if args.latexml_action == "" and args.stex_action == "" and args.mmt_action == "":
+      action = "in"
+    else:
+      action = "sk"
 
   # LaTeXML
   latexml_action = args.latexml_action or action
@@ -310,4 +319,4 @@ def do(args):
 
   if args.add_private_token and len(args.add_private_token) == 1:
     print "Adding private token ..."
-    lmhutil.set_setting("private_token", args.add_private_token[0])
+    util.set_setting("private_token", args.add_private_token[0])

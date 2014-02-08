@@ -4,9 +4,9 @@
 This is the entry point for the Local Math Hub utility. 
 
 .. argparse::
-   :module: lmhstatus
+   :module: status
    :func: create_parser
-   :prog: lmhstatus
+   :prog: status
 
 """
 
@@ -27,26 +27,27 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import lmhutil
 import re
 import os
 import glob
 import subprocess
 import argparse
 
+from lmh import util
+
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Log tool.')
   add_parser_args(parser)
   return parser
 
-def add_parser(subparsers):
-  parser_status = subparsers.add_parser('log', formatter_class=argparse.RawTextHelpFormatter, help='shows recent commits in all repositories')
+def add_parser(subparsers, name="log"):
+  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='shows recent commits in all repositories')
   add_parser_args(parser_status)
 
 
 def add_parser_args(parser):
   parser.add_argument('--ordered', "-o", default=False, const=True, action="store_const", help="Orders log output by time (instead of by repository). ")
-  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the log. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to show the log. ").completer = util.autocomplete_mathhub_repository
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs log on all repositories currently in lmh")
 
   parser.epilog = """
@@ -59,11 +60,11 @@ Repository names allow using the wildcard '*' to match any repository. It allows
 
 def get_log(rep):
 
-  repshort = rep[len(lmhutil.lmh_root()+"/MathHub/"):]
+  repshort = rep[len(util.lmh_root()+"/MathHub/"):]
 
   def get_format(frm):
     cmd = [
-      lmhutil.which("git"), "log", "--pretty=format:"+frm+""
+      util.which("git"), "log", "--pretty=format:"+frm+""
     ];
     result = subprocess.Popen(cmd, 
                                   stdout=subprocess.PIPE,
@@ -95,9 +96,9 @@ def get_log(rep):
 
 def do(args):
   if len(args.repository) == 0:
-    args.repository = [lmhutil.tryRepo(".", lmhutil.lmh_root()+"/MathHub/*/*")]
+    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
   if args.all:
-    args.repository = [lmhutil.tryRepo(lmhutil.lmh_root()+"/MathHub", lmhutil.lmh_root()+"/MathHub")]
+    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]
 
   entries = []
   for repo in args.repository:

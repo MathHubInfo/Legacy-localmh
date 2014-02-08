@@ -4,9 +4,9 @@
 Local Math Hub repository installer
 
 .. argparse::
-   :module: lmhinstall
+   :module: install
    :func: create_parser
-   :prog: lmhinstall
+   :prog: install
 
 """
 
@@ -34,21 +34,21 @@ import sys
 import argparse
 from subprocess import call
 
-from . import lmhutil
+from lmh import util
 
-repoRegEx = lmhutil.repoRegEx;
+repoRegEx = util.repoRegEx;
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Install tool.')
   add_parser_args(parser)
   return parser
 
-def add_parser(subparsers):
-  parser_status = subparsers.add_parser('install', help='fetches a MathHub repository and its dependencies')
+def add_parser(subparsers, name="install"):
+  parser_status = subparsers.add_parser(name, help='fetches a MathHub repository and its dependencies')
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', default=["."], type=lmhutil.parseSimpleRepo, nargs='*', help="a list of remote repositories to fetch locally. Should have form mygroup/myproject. No wildcards allowed. ")
+  parser.add_argument('repository', default=["."], type=util.parseSimpleRepo, nargs='*', help="a list of remote repositories to fetch locally. Should have form mygroup/myproject. No wildcards allowed. ")
 
 def do(args):
   for rep in args.repository:
@@ -59,7 +59,7 @@ def getURL(repoName):
 
 def cloneRepository(repoName):
   try:
-    gitpath = lmhutil.which("git")
+    gitpath = util.which("git")
     if os.path.exists(repoName):
       return
     repoURL = getURL(repoName)
@@ -79,7 +79,7 @@ def installNoCycles(repoName, tried):
 
   print "Checking dependencies for project "+repoName
 
-  deps = lmhutil.get_dependencies(repoName);
+  deps = util.get_dependencies(repoName);
   if deps == None:
     print("Error: META-INF/MANIFEST.MF file missing or invalid.\n You should consider running lmh init.")
     return
@@ -89,7 +89,7 @@ def installNoCycles(repoName, tried):
 
 
 def installrepo(repoName):
-  root = lmhutil.lmh_root()+"/MathHub"
+  root = util.lmh_root()+"/MathHub"
   os.chdir(root)
   installNoCycles(repoName, {})
 

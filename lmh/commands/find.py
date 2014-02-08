@@ -4,9 +4,9 @@
 This is the entry point for the Local Math Hub utility. 
 
 .. argparse::
-   :module: lmhfind
+   :module: find
    :func: create_parser
-   :prog: lmhfind
+   :prog: find
 
 """
 
@@ -34,22 +34,22 @@ import argparse
 import glob
 from string import Template
 
-from . import lmhutil
+from lmh import util
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Find tool.')
   add_parser_args(parser)
   return parser
 
-def add_parser(subparsers):
-  parser_status = subparsers.add_parser('find', formatter_class=argparse.RawTextHelpFormatter, help='find tool')
+def add_parser(subparsers, name="find"):
+  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='find tool')
   add_parser_args(parser_status)
 
 
 def add_parser_args(parser):
   parser.add_argument('matcher', metavar='matcher', help="RegEx matcher on the path of the module")
   parser.add_argument('--replace', nargs=1, help="Replace string")
-  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = util.autocomplete_mathhub_repository
 
   parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Option specifying that files should be changed")
   
@@ -102,7 +102,7 @@ def replacePath(dir, matcher, replaceFnc, apply=False):
 
 def do_find(rep, args):
   replacer = None  
-  repname = lmhutil.lmh_repos(rep);
+  repname = util.lmh_repos(rep);
 
   matcher = Template(args.matcher).substitute(repo=repname)
 
@@ -117,7 +117,7 @@ def do_find(rep, args):
 
 def do(args):
   if len(args.repository) == 0:
-    args.repository = [lmhutil.tryRepo(".", lmhutil.lmh_root()+"/MathHub/*/*")]
+    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
   for repo in args.repository:
     for rep in glob.glob(repo):
       do_find(rep, args);

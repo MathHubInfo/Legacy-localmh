@@ -4,9 +4,9 @@
 This is the entry point for the Local Math Hub utility. 
 
 .. argparse::
-   :module: lmhdepcrawl
+   :module: depcrawl
    :func: create_parser
-   :prog: lmhdepcrawl
+   :prog: depcrawl
 
 """
 
@@ -31,15 +31,15 @@ import os
 import re
 import argparse
 
-from . import lmhutil
+from lmh import util
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Path Management tool.')
   add_parser_args(parser)
   return parser
 
-def add_parser(subparsers):
-  parser_status = subparsers.add_parser('depcrawl', formatter_class=argparse.RawTextHelpFormatter, help='crawls current repository for dependencies')
+def add_parser(subparsers, name="depcrawl"):
+  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='crawls current repository for dependencies')
   add_parser_args(parser_status)
 
 
@@ -48,7 +48,7 @@ def add_parser_args(parser):
 
 def calcDeps(dir="."):
   currentdeps = {};
-  for dep in lmhutil.get_dependencies(dir):
+  for dep in util.get_dependencies(dir):
     currentdeps["/".join(dep)] = True
 
   paths = {};

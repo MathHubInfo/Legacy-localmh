@@ -20,13 +20,13 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import ConfigParser
 import os
 
-from . import lmhutil
+from . import util
 
 def config_load_content(root, config):
   for fl in ["pre", "post"]:
     if config.has_option("gen", fl):
       file_path = os.path.realpath(os.path.join(root, config.get("gen", fl)))
-      config.set("gen", "%s_content"%fl, lmhutil.get_file(file_path));
+      config.set("gen", "%s_content"%fl, util.get_file(file_path));
 
 def traverse(root, config):
   files = os.listdir(root)

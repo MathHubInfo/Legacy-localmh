@@ -4,9 +4,9 @@
 This is the entry point for the Local Math Hub utility. 
 
 .. argparse::
-   :module: lmhstatus
+   :module: status
    :func: create_parser
-   :prog: lmhstatus
+   :prog: status
 
 """
 
@@ -33,22 +33,20 @@ import glob
 import subprocess
 import argparse
 
-from . import lmhutil
+from lmh import util
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Status tool.')
   add_parser_args(parser)
   return parser
 
-def add_parser(subparsers):
-  parser_status = subparsers.add_parser('status', formatter_class=argparse.RawTextHelpFormatter, help='shows the working tree status of repositories')
-  add_parser_args(parser_status)
-  parser_status = subparsers.add_parser('st', formatter_class=argparse.RawTextHelpFormatter, help='short form for status')
+def add_parser(subparsers, name="status"):
+  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='shows the working tree status of repositories')
   add_parser_args(parser_status)
 
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = util.autocomplete_mathhub_repository
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs status on all repositories currently in lmh")
 
   parser.epilog = """
@@ -60,7 +58,7 @@ Repository names allow using the wildcard '*' to match any repository. It allows
 """;
 
 def do_status(rep):
-  cmd = [lmhutil.which("git"), "status", "-u", "-s"];
+  cmd = [util.which("git"), "status", "-u", "-s"];
   result = subprocess.Popen(cmd, 
                                 stdout=subprocess.PIPE,
                                 cwd=rep
@@ -73,9 +71,9 @@ def do_status(rep):
 
 def do(args):
   if len(args.repository) == 0:
-    args.repository = [lmhutil.tryRepo(".", lmhutil.lmh_root()+"/MathHub/*/*")]
+    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
   if args.all:
-    args.repository = [lmhutil.tryRepo(lmhutil.lmh_root()+"/MathHub", lmhutil.lmh_root()+"/MathHub")]
+    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]
   for repo in args.repository:
     for rep in glob.glob(repo):
       do_status(rep);

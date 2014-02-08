@@ -4,9 +4,9 @@
 This is the entry point for the Local Math Hub utility. 
 
 .. argparse::
-   :module: lmhcheckpaths
+   :module: checkpaths
    :func: create_parser
-   :prog: lmhcheckpaths
+   :prog: checkpaths
 
 """
 
@@ -34,11 +34,11 @@ import fileinput
 import argparse
 import functools
 
-from . import lmhutil
-from . import lmhfind
+from lmh import util
+from lmh.commands import find
 
 
-mathroot = lmhutil.lmh_root()+"/MathHub";
+mathroot = util.lmh_root()+"/MathHub";
 fileIndex = {};
 remChoices = {};
 
@@ -47,13 +47,13 @@ def create_parser():
   add_parser_args(parser)
   return parser
 
-def add_parser(subparsers):
-  parser_status = subparsers.add_parser('checkpaths', formatter_class=argparse.RawTextHelpFormatter, help='check paths for validity')
+def add_parser(subparsers, name="checkpaths"):
+  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='check paths for validity')
   add_parser_args(parser_status)
 
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=lmhutil.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = lmhutil.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = util.autocomplete_mathhub_repository
   parser.add_argument('--interactive', metavar='interactive', const=True, default=False, action="store_const", help="Should check paths be interactive")
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
@@ -139,11 +139,11 @@ def createIndex():
       fileIndex[file].append(root[len(mathroot)+1:]+"/"+file);
 
 def checkpaths(dir, args):
-  lmhfind.replacePath(dir, r"\\MathHub{([^}]*)", functools.partial(replaceFnc, args), True);
+  find.replacePath(dir, r"\\MathHub{([^}]*)", functools.partial(replaceFnc, args), True);
 
 def do(args):
   if len(args.repository) == 0:
-    args.repository = [lmhutil.tryRepo(".", lmhutil.lmh_root()+"/MathHub/*/*")]
+    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
 
   createIndex()
   for repo in args.repository:

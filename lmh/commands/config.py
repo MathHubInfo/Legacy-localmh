@@ -4,9 +4,9 @@
 This is the entry point for the Local Math Hub utility. 
 
 .. argparse::
-   :module: lmhconfig
+   :module: config
    :func: create_parser
-   :prog: lmhconfig
+   :prog: config
 
 """
 
@@ -29,15 +29,15 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
-from . import lmhutil
+from lmh import util
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Configuration Tool. ')
   add_parser_args(parser)
   return parser
 
-def add_parser(subparsers):
-  about_parser = subparsers.add_parser('config', formatter_class=argparse.RawTextHelpFormatter, help='configures this lmh installation. ')
+def add_parser(subparsers, name="config"):
+  about_parser = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='configures this lmh installation. ')
   add_parser_args(about_parser)
 
 def add_parser_args(parser):
@@ -53,6 +53,6 @@ def do(args):
     if args.setting == None:
       print "Nothing to do ..."
     else:
-      print lmhutil.get_setting(args.setting)
+      print util.get_setting(args.setting)
   else:
     print ""
