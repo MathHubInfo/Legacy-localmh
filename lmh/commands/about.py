@@ -46,27 +46,20 @@ def add_parser(subparsers, name="about"):
   add_parser_args(about_parser)
 
 def add_parser_args(parser):
-  parser.add_argument('--version', "-v", default=False, const=True, action="store_const", help="show version and exit")
-  parser.add_argument('--license', "-l", default=False, const=True, action="store_const", help="show license and exit")
+  pass
 
 def do(args):
-  if args.license:
-    print """
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+  print """
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    """
-  else:
-    try:
-      print pkg_resources.require("lmh")[0].version, " (via pip)"
-    except pkg_resources.DistributionNotFound:
-      print "local (unversioned)"
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  """

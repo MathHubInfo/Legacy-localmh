@@ -60,9 +60,9 @@ def add_parser_args(parser):
   parser.add_argument('--add-private-token', nargs=1, help="add private token to use advanced MathHub functionality")
    
   source = parser.add_argument_group('Dependency versions')
-  source.add_argument('--latexml-source', default="", metavar="source@refspec", help='Get LaTeXML from the given source. ')
-  source.add_argument('--stex-source', default="", metavar="source@refspec", help='Get sTex from the given source. ')
-  source.add_argument('--mmt-source', default="", metavar="source@refspec", help='Get MMT from the given source. ')
+  source.add_argument('--latexml-source', default="", metavar="source@branch", help='Get LaTeXML from the given source. ')
+  source.add_argument('--stex-source', default="", metavar="source@branch", help='Get sTex from the given source. ')
+  source.add_argument('--mmt-source', default="", metavar="source@branch", help='Get MMT from the given source. ')
 
   latexml = parser.add_argument_group('LaTeXML').add_mutually_exclusive_group()
   latexml.add_argument('--install-latexml', action="store_const", dest="latexml_action", const="in", default="", help='Install LaTexML. ')
@@ -157,7 +157,7 @@ def latexml_install(root, source, branch):
     if branch == "":
       util.git_clone(root, source, "LaTeXML")
     else:
-      util.git_clone(root, source, "-t", branch, "LaTeXML")
+      util.git_clone(root, source, "-b", branch, "LaTeXML")
   except:
     print "Failed to install LaTeXML (is the source available? )"
 def latexml_update(root, source, branch):
@@ -176,7 +176,7 @@ def stex_install(root, source, branch):
     if branch == "":
       util.git_clone(root, source, "sTeX")
     else:
-      util.git_clone(root, source, "-t", branch, "sTeX")
+      util.git_clone(root, source, "-b", branch, "sTeX")
   except:
     print "Failed to install sTex (is the source available? )"
  
