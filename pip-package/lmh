@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import lmh
+import lmh_setup as lmh
 
 if __name__ == "__main__":
 	lmh.main()

@@ -2,11 +2,11 @@
 
 from setuptools import setup
 
-setup(name='Local MathHub Utility',
+setup(name='lmh',
       version='0.1',
-      description='Local MathHub Utility (dummy package)',
+      description='Local MathHub Utility (setup package)',
       author='The KWARC Group',
       scripts=['lmh'], 
       license='GPL', 
-      packages=['lmh'],
+      packages=['lmh_setup'],
 )
