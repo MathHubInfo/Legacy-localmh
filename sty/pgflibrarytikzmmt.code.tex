@@ -1,23 +1,74 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% A TIKZ library for MMT Theory Graphs
+% copyright 2014 Michael Kohlhase; Released under the LPPL
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% this library provides some standardized node and arrow styles for formatting MMT graph
+% diagrams in tikz. The advantage is that we can classify the arrows and nodes
+% symbolically and with the styles in this library achieve a uniform look that helps
+% readability. 
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% 1. Arrows 
+% 1.1. Arrowtips (only internal)
 \usetikzlibrary{arrows}
-\newcommand{\mmtarrowtip}{angle 45}
-\newcommand{\mmtreversearrowtip}{angle 45 reversed}
-\newcommand{\mmtarrowtipepi}{triangle 45}
-\newcommand{\mmtarrowtipmonoright}{right hook}
-\newcommand{\mmtarrowtipmonoleft}{left hook}
-\newcommand{\mmtarrowtippartial}{right to}
+\newcommand{\@mmtarrowtip}{angle 45}
+\newcommand{\@mmtreversearrowtip}{angle 45 reversed}
+\newcommand{\@mmtarrowtipepi}{triangle 45}
+\newcommand{\@mmtarrowtipmonoright}{right hook}
+\newcommand{\@mmtarrowtipmonoleft}{left hook}
+\newcommand{\@mmtarrowtippartial}{right to}
+\newcommand{\@mmtarrowtippartialleft}{left to}
+\newcommand{\@mmtreversearrowtippartial}{right to reversed}
+\newcommand{\@mmtreversearrowtippartialleft}{left to reversed}
+
+% 1.2 the arrow sstyles in graphs
+%
+% a generic theory
+\tikzstyle{thy}=[draw,outer sep=.6mm,rounded corners]
+% a flat theory
+\tikzstyle{flatthy}=[thy,double]
+% a theory graph 
+\tikzstyle{thygraph}=[draw,outer sep=1mm,rounded corners,dashed]
+
+% any morphism 
+\tikzstyle{morph}=[-\@mmtarrowtip] 
+\tikzstyle{mapsto}=[|-\@mmtarrowtip] %| any morphism 
+% structures
+\tikzstyle{struct}=[-\@mmtarrowtip,thick]
+% inclusions: regular, partial, and left variants
+\tikzstyle{include}=[\@mmtarrowtipmonoright-\@mmtarrowtip,thick]
+\tikzstyle{pinclude}=[\@mmtarrowtipmonoright-\@mmtarrowtippartial,thick]
+\tikzstyle{includeleft}=[\@mmtarrowtipmonoleft-\@mmtarrowtip,thick]
+\tikzstyle{pincludeleft}=[\@mmtarrowtipmonoleft-\@mmtarrowtippartialleft,thick]
+% views: regular, mono, partial, and left variants
+\tikzstyle{view}=[dashed,thick,-\@mmtarrowtip]
+\tikzstyle{mview}=[dashed,thick,\@mmtarrowtipmonoright-\@mmtarrowtip]
+\tikzstyle{pview}=[dashed,thick,-\@mmtarrowtippartial]
+\tikzstyle{pmview}=[dashed,thick,\@mmtarrowtipmonoright-\@mmtarrowtippartial]
+\tikzstyle{viewleft}=[dashed,thick,-\@mmtarrowtip]
+\tikzstyle{mviewleft}=[dashed,thick,\@mmtarrowtipmonoleft-\@mmtarrowtipleft]
+\tikzstyle{pviewleft}=[dashed,thick,-\@mmtarrowtippartialleft]
+\tikzstyle{pmviewleft}=[dashed,thick,\@mmtarrowtipmonoleft-\@mmtarrowtippartialleft]
+% biviews: regular, partial, and left variants
+\tikzstyle{biview}=[dashed,thick,\@mmtreversearrowtip-\@mmtarrowtip]
+\tikzstyle{pbiview}=[dashed,thick,\@mmtreversearrowtippartial-\@mmtarrowtippartial]
+\tikzstyle{pbiviewleft}=[dashed,thick,\@mmtreversearrowtippartialleft-\@mmtarrowtippartialleft]
+% defining views (experimental)
+\tikzstyle{defview}=[dashed,thick,double,-\@mmtarrowtip]
+% meta-theory inclusion
+\tikzstyle{meta}=[dotted,-\@mmtarrowtip,thick]
+% conservative extensions (abbreviation)
+\tikzstyle{conservative}=[hooks-\@mmtarrowtip,double] 
+
+% 2. convenience macros
+% 2.1 the \mmtthy macro takes three arguments, name, decl, axioms and makes a 
+% table-like structure
 \newcommand\mmtthy[3]{\def\@test{#3}%
 \begin{array}{l}\textsf{#1}\\\hline #2\ifx\@test\@empty\else\\\hline #3\fi\end{array}}
-\tikzstyle{thy}=[draw,outer sep=.6mm,rounded corners]
-\tikzstyle{thygraph}=[draw,outer sep=1mm,rounded corners,dashed]
-\tikzstyle{include}=[\mmtarrowtipmonoright-\mmtarrowtip,thick]
-\tikzstyle{pinclude}=[\mmtarrowtipmonoright-\mmtarrowtippartial,thick]
-\tikzstyle{includeleft}=[\mmtarrowtipmonoleft-\mmtarrowtip,thick]
-\tikzstyle{pincludeleft}=[\mmtarrowtipmonoleft-\mmtarrowtippartial,thick]
-\tikzstyle{view}=[dashed,-\mmtarrowtip,thick]
-\tikzstyle{defview}=[dashed,double,-\mmtarrowtip]
-\tikzstyle{biview}=[dashed,\mmtarrowtip-\mmtarrowtip,thick]
-\tikzstyle{struct}=[-\mmtarrowtip,thick]
-\tikzstyle{meta}=[dotted,-\mmtarrowtip,thick]
-\tikzstyle{morph}=[-\mmtarrowtip] % any morphism
-\tikzstyle{mapsto}=[|-\mmtarrowtip] %| any morphism
-\tikzstyle{conservative}=[hooks-\mmtarrowtip,double] % a conservative morphism pair
+% 2.2 the \mmtar takes two arguments, some tikz options, and an arrow style. \nmmtar
+% is a variant that also has a name on top.
+\newcommand\mmtar[2][]{\raisebox{.5ex}{\tikz[#1]{\draw[#2] (0,0) -- (.6,0);}}}
+\newcommand\nmmtar[3][]{\raisebox{.4ex}{\tikz[#1]{\draw[#2] (0,0) --
+      node[above]{\ensuremath{\scriptstyle #3}} (.8,0);}}}
