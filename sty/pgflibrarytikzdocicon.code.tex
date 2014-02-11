@@ -1,4 +1,13 @@
-% copied from http://tex.stackexchange.com/questions/103688/folded-paper-shape-tikz (thanks)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% A TIKZ module for document icons code copied (thanks) from 
+% http://tex.stackexchange.com/questions/103688/folded-paper-shape-tikz
+% use e.g. as 
+% \tikzstyle{doc}=[draw,thick,align=center,color=black,
+%                  shape=document,minimum width=10mm,minimum height=15mm]
+% \node[doc] (d0) at (-1,0) {};
+% \node[doc] at (0,0) {Annotation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \pgfdeclareshape{document}{
 \inheritsavedanchors[from=rectangle] % this is nearly a rectangle
 \inheritanchorborder[from=rectangle]
