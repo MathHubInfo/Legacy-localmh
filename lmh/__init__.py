@@ -35,6 +35,7 @@ import traceback
 
 from lmh import util
 from lmh.commands import create_parser
+from lmh.commands import gen
 
 submods = {};
 
@@ -67,29 +68,37 @@ def main(argv = sys.argv[1:]):
     return
 
   if args.action == "root":
-    print util.lmh_root();
+    print util.lmh_root()
     return
 
+  # gen aliases
   if args.action == "sms":
-    import lmhgen
-    cmd = ["gen"]; cmd.extend(args.repository);
-    lmhgen.do(parser.parse_args(cmd));
+    cmd = ["gen"]
+    if args.force:
+      cmd.extend(["--force"])
+    cmd.extend(args.repository)
+    print cmd
+    gen.do(parser.parse_args(cmd))
     return    
 
   if args.action == "omdoc":
-    import lmhgen
-    cmd = ["gen", "--verbose", "--omdoc"]; cmd.extend(args.repository);
-    lmhgen.do(parser.parse_args(cmd));
+    cmd = ["gen", "--verbose", "--omdoc"]
+    if args.force:
+      cmd.extend(["--force"])
+    cmd.extend(args.repository)
+    gen.do(parser.parse_args(cmd))
     return    
 
   if args.action == "pdf":
-    import lmhgen
-    cmd = ["gen", "--verbose", "--pdf"]; cmd.extend(args.repository);
-    lmhgen.do(parser.parse_args(cmd));
+    cmd = ["gen", "--verbose", "--pdf"]
+    if args.force:
+      cmd.extend(["--force"])
+    cmd.extend(args.repository)
+    gen.do(parser.parse_args(cmd))
     return    
 
   if args.action == "repos":
-    rep = util.lmh_repos();
+    rep = util.lmh_repos()
     if rep:
       print rep
     else:

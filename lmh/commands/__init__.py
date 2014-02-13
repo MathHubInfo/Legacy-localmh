@@ -61,13 +61,16 @@ def create_parser(submods = {}):
 	subparsers.add_parser('root', help='prints the root directory of the Local Math Hub repository')
 
 	reps.append(subparsers.add_parser('sms', help='generates sms files'))
-	reps.append(subparsers.add_parser('mods', help='generates omdoc module files'))
 	reps.append(subparsers.add_parser('omdoc', help='generates omdoc for targets'))
 	reps.append(subparsers.add_parser('pdf', help='generates pdf for targets, short form for lmh gen --pdf'))
+	reps.append(subparsers.add_parser('mods', help='generates omdoc module files'))
 	reps.append(subparsers.add_parser('modspdf', help='generates omdoc module files, short form for lmh gen --omdoc'))
+
 
 	for rep in reps:
 		rep.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories. ").completer = util.autocomplete_mathhub_repository
+		rep.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories. ").completer = util.autocomplete_mathhub_repository
+		rep.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
 
 
 	if util.module_exists("argcomplete"):

@@ -27,8 +27,6 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-
-
 import os
 import re
 import glob
@@ -57,14 +55,23 @@ def add_parser(subparsers, name="gen"):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = util.autocomplete_mathhub_repository
-  parser.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
-  parser.add_argument('-v', '--verbose', const=True, default=False, action="store_const", help="verbose mode")
-  parser.add_argument('-w', '--workers',  metavar='number', default=8, type=int,
+
+  flags = parser.add_argument_group("Generation options")
+
+  flags.add_argument('-s', '--simulate', const=True, default=False, action="store_const", help="Simulate only. Prints all commands to be executed. UNIMPLEMENTED. ")
+  flags.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
+  flags.add_argument('-v', '--verbose', const=True, default=False, action="store_const", help="verbose mode")
+  flags.add_argument('-w', '--workers',  metavar='number', default=8, type=int,
                    help='number of worker processes to use')
-  parser.add_argument('--omdoc', nargs="*", help="generate omdoc files")
-  parser.add_argument('--pdf', nargs="*", help="generate pdf files")
-  parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs status on all repositories currently in lmh")
+
+  whattogen = parser.add_argument_group("What to generate")
+
+  whattogen.add_argument('--sms', nargs="*", help="generate sms files")
+  whattogen.add_argument('--omdoc', nargs="*", help="generate omdoc files")
+  whattogen.add_argument('--pdf', nargs="*", help="generate pdf files")
+
+  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to show the generate files. ").completer = util.autocomplete_mathhub_repository
+  parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="generates files for all repositories")
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
   Example:  
@@ -250,17 +257,25 @@ def do_gen(rep, args):
   print "generating in repository %r"%rep
   rep_root = util.git_root_dir(rep);
   repo_name = util.lmh_repos(rep)
-  omdocToDo = [];
-  pdfToDo = [];
+  omdocToDo = []
+  pdfToDo = []
 
   def traverse(root, config):
-    files = os.listdir(root)
+    # This **might** fix issue 79
+    files = [os.path.join(dp, f) for dp, dn, fn in os.walk(root) for f in fn]
+    files = [os.path.relpath(f, root) for f in files]
+
     if any(".lmh" in s for s in files):
       newCfg = ConfigParser.ConfigParser()
-      newCfg.read(root+"/.lmh")
-      config = newCfg
-      print "loading config at %s"%root
-      config_load_content(root, config)
+      try:
+        newCfg.read(root+"/.lmh")
+        config = newCfg
+        print "loading config at %s"%root
+        config_load_content(root, config)
+      except:
+        print "failed to load config at %s"%root
+        print "Skipping config file ..."
+
 
     mods = get_modules(root, files)
     if len(mods) > 0:
@@ -318,5 +333,5 @@ def do(args):
 
   for repo in args.repository:
     for rep in glob.glob(repo):
-      do_gen(rep, args);
+      do_gen(rep, args)
   agg.print_summary()
