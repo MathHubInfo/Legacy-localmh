@@ -62,13 +62,13 @@ def update_lmh(install, setupuri = "http://gl.mathhub.info/MathHub/localmh.git",
           print "    http://msysgit.github.io/"
         return False
     if branch == "":
-        subprocess.Popen([git, "remote", "add", "updater", setupuri], pwd=install, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr).wait()
-        subprocess.Popen([git, "pull", "updater", "master"], pwd=install, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr).wait()
-        subprocess.Popen([git, "remote", "rm", "updater"], pwd=install, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr).wait()
+        subprocess.Popen([git, "remote", "add", "updater", setupuri], cwd=install, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr).wait()
+        subprocess.Popen([git, "pull", "updater", "master"], cwd=install, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr).wait()
+        subprocess.Popen([git, "remote", "rm", "updater"], cwd=install, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr).wait()
     else:
-        subprocess.Popen([git, "remote", "add", "updater", setupuri], pwd=install, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr).wait()
-        subprocess.Popen([git, "pull", "updater", branch], pwd=install, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr).wait()
-        subprocess.Popen([git, "remote", "rm", "updater"], pwd=install, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr).wait()
+        subprocess.Popen([git, "remote", "add", "updater", setupuri], cwd=install, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr).wait()
+        subprocess.Popen([git, "pull", "updater", branch], cwd=install, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr).wait()
+        subprocess.Popen([git, "remote", "rm", "updater"], cwd=install, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr).wait()
     return True
 def run_lmh(install):
     # run lmh
@@ -149,11 +149,11 @@ def run_core(args, install):
             print "Unable to migrate installation, please attempt reinstalling. "
             return
         try:
-            text_file = open(os.path.expanduser("~/.localmh"), "w")
+            text_file = open(os.path.expanduser("~/.lmhpath"), "w")
             text_file.write(to)
             text_file.close()
         except:
-            print "Warning: Unable to store new location in ~/.localmh. Please fix this manually. "
+            print "Warning: Unable to store new location in ~/.lmhpath. Please fix this manually. "
 
         install = to        
         print "Done. "
@@ -164,13 +164,14 @@ def run_core(args, install):
         to = os.path.expanduser(args.use)
 
         try:
-            text_file = open(os.path.expanduser("~/.localmh"), "w")
+            text_file = open(os.path.expanduser("~/.lmhpath"), "w")
             text_file.write(to)
             text_file.close()
         except:
-            print "Warning: Unable to store new location in ~/.localmh. Please fix this manually. "
+            print "Warning: Unable to store new location in ~/.lmhpath. Please fix this manually. "
 
         install = to
+        new = "skip"
 
     action = ""
 
@@ -219,7 +220,7 @@ def run_core(args, install):
 def get_lmh_path():
     content = ""
     try:
-        f = open(os.path.expanduser("~/.localmh"), 'r')
+        f = open(os.path.expanduser("~/.lmhpath"), 'r')
         content = f.readlines()[0]
     except:
         pass
