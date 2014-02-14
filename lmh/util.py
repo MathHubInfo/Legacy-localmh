@@ -19,6 +19,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import subprocess
 import os
+import sys
 import re
 import argparse
 import ConfigParser
@@ -174,7 +175,7 @@ def get_template(name):
 def git_clone(dest, *arg):
   args = [gitexec, "clone"];
   args.extend(arg);
-  err = subprocess.Popen(args, stderr=subprocess.PIPE, cwd=dest).communicate()[1]
+  err = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=sys.stdout, cwd=dest).communicate()[1]
 
   if err.find("already exists") != -1:
     return

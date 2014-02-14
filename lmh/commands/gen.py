@@ -58,7 +58,7 @@ def add_parser_args(parser):
 
   flags = parser.add_argument_group("Generation options")
 
-  flags.add_argument('-s', '--simulate', const=True, default=False, action="store_const", help="Simulate only. Prints all commands to be executed. UNIMPLEMENTED. ")
+  #flags.add_argument('-s', '--simulate', const=True, default=False, action="store_const", help="Simulate only. Prints all commands to be executed. UNIMPLEMENTED. ")
   flags.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
   flags.add_argument('-v', '--verbose', const=True, default=False, action="store_const", help="verbose mode")
   flags.add_argument('-w', '--workers',  metavar='number', default=8, type=int,
