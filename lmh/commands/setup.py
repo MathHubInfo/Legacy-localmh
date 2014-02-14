@@ -150,6 +150,16 @@ def check_deps():
       print "    https://www.tug.org/texlive/windows.html"
     return False
 
+  try:
+    import psutil
+  except:
+    print "Unable to locate python module 'psutil'. "
+    print "Please make sure it is installed. "
+    print "You may be able to install it with: "
+    print "    pip install psutil"
+    return False
+
+
   return True
 
 def latexml_install(root, source, branch):

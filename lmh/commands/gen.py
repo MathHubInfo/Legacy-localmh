@@ -58,12 +58,12 @@ def add_parser_args(parser):
 
   flags = parser.add_argument_group("Generation options")
 
-  flags.add_argument('-s', '--simulate', const=True, default=False, action="store_const", help="Simulate only. Prints all commands to be executed. UNIMPLEMENTED. ")
+  flags.add_argument('-s', '--simulate', const=True, default=False, action="store_const", help="Simulate only. Implies --debug. ")
   flags.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
-  flags.add_argument('-v', '--verbose', const=True, default=False, action="store_const", help="verbose mode")
+  flags.add_argument('-d', '--debug', const=True, default=False, action="store_const", help="verbose mode")
   flags.add_argument('-w', '--workers',  metavar='number', default=8, type=int,
                    help='number of worker processes to use')
-  flags.add_argument('-l', '--low', const=True, default=False, dest="low", action="store_const", help="Use low priority for woker processes. ")
+  flags.add_argument('-H', '--high', const=False, default=True, dest="low", action="store_const", help="Use low priority for woker processes. ")
 
   whattogen = parser.add_argument_group("What to generate")
 
@@ -79,86 +79,59 @@ Repository names allow using the wildcard '*' to match any repository. It allows
     */*       - would match all repositories from all groups. 
     mygroup/* - would match all repositories from group mygroup
     .         - would be equivalent to "git status ."
-""";
+"""
 
+# the root of lmh
+lmh_root = util.lmh_root()
 
+# The special files
+special_files = {"all.tex":True, "localpaths.tex": True}
+
+# for gen_sms
 ignore = re.compile(r'\\verb')
-
 regStrings = [r'\\(guse|gadopt|symdef|abbrdef|symvariant|keydef|listkeydef|importmodule|gimport|adoptmodule|importmhmodule|adoptmhmodule)', r'\\begin{(module|importmodulevia)}', r'\\end{(module|importmodulevia)}']
 regs = map(re.compile, regStrings)
 
-all_textpl = Template(util.get_template("alltex_struct.tpl"))
-all_modtpl = Template(util.get_template("alltex_mod.tpl"))
+# templates
 all_pathstpl = Template(util.get_template("localpaths.tpl"))
-lmh_root = util.lmh_root()
-special_files = {"all.tex":True, "localpaths.tex": True};
 
-latexmlc = util.which("latexmlc")
-pdflatex = util.which("pdflatex")
 
-stexstydir = lmh_root+"/ext/sTeX/sty";
-latexmlstydir = lmh_root+"/ext/sTeX/LaTeXML/lib/LaTeXML/texmf";
-stydir = lmh_root+"/sty";
+def config_load_content(root, config, msg):
+  # Load config content
+  msg("CONFIG_LOAD_CONTENT: "+root)
+  for fl in ["pre", "post"]:
+    if config.has_option("gen", fl):
+      file_path = os.path.realpath(os.path.join(root, config.get("gen", fl)))
+      config.set("gen", "%s_content"%fl, util.get_file(file_path))
 
-def genTEXInputs():
-  res = ".:"+stydir+":";
-  for (root, files, dirs) in os.walk(stexstydir):
-    res += root+":"
-  for (root, files, dirs) in os.walk(latexmlstydir):
-    res += root+":"
-  return res
+def get_modules(root, files, msg):
+  # finds all the modules in root
+  mods = []
+  msg("GET_MODULES: "+root)
+  for file in files:
+    fullFile = root+"/"+file
+    if not file.endswith(".tex") or file in special_files:
+      # skip it if it is in special_files
+      continue
+    msg("FIND_MODULE: Found "+fullFile)
+    mods.append({ "modName" : file[:-4], "file": fullFile, "date": os.path.getmtime(fullFile)})
+  return mods
 
-TEXINPUTS = genTEXInputs()
+def gen_sms_all(root, mods, args, msg):
+  # Generate all SMS files
+  msg("SMS_GEN_ALL: " + root)
+  for mod in mods:
+    smsfileName = root+"/"+mod["modName"]+".sms";
 
-# ---------------- OMDOC generation -----------------------------
-errorMsg = re.compile("Error:(.*)")
-fatalMsg = re.compile("Fatal:(.*)")
+    if args.force or not os.path.exists(smsfileName) or mod["date"] > os.path.getmtime(smsfileName):
+      gen_sms(args, mod["file"], smsfileName, msg)
 
-def parseLateXMLOutput(file):
-  mod = file[:-4];
-  logfile = mod+".ltxlog";
 
-  for idx, line in enumerate(open(logfile)):
-    m = errorMsg.match(line)
-    if m:
-      agg.log_error(["compile", "omdoc", "error"], file, m.group(1))
-    m = fatalMsg.match(line)
-    if m:
-      agg.log_error(["compile", "omdoc", "error"], file, m.group(1))
-
-def needsPreamble(file):
-  return re.search(r"\\begin(\w)*{document}", util.get_file(file)) == None 
-
-def genOMDoc(root, mod, pre_path, post_path, args=None, port=3354):
-  print "generating %r"%(mod+".omdoc")
-  args = [latexmlc,"--expire=120", "--port="+str(port), "--profile", "stex-module", "--path="+stydir, mod+".tex", "--destination="+mod+".omdoc", "--log="+mod+".ltxlog"];
-
-  if needsPreamble(root+"/"+mod+".tex"):
-    args.append("--preload="+pre_path)
-
-  _env = os.environ;
-  _env["STEXSTYDIR"]=stexstydir;
-  call(args, cwd=root, env=_env, stderr=PIPE)
-  parseLateXMLOutput(root+"/"+mod+".tex")
-
-def genPDF(root, mod, pre_path, post_path, args=None, port=None):
-  print "generating %r"%(mod+".pdf")
-  modPath = os.path.join(root, mod);
-  if needsPreamble(root+"/"+mod+".tex"):
-    p0 = Popen(["echo", "\\begin{document}\n"], stdout=PIPE);
-    c1 = ["cat", pre_path, "-", modPath+".tex", post_path];
-    p1 = Popen(c1, cwd=root, stdin=p0.stdout, stdout=PIPE);
-    p2 = Popen([pdflatex, "-jobname", mod], cwd=root, stdin=p1.stdout, stdout=PIPE, env = {"TEXINPUTS" : TEXINPUTS})
-  else:
-    p2 = Popen([pdflatex, mod+".tex"], cwd=root, stdout=PIPE, env = {"TEXINPUTS" : TEXINPUTS})
-
-  output = p2.communicate()[0]
-  if args and args.verbose:
-    print output
-  util.set_file(modPath+".clog", output)
-
-def genSMS(input, output):
-  print "generating %r"%output
+def gen_sms(args, input, output, msg):
+  # generates a single sms file
+  msg("SMS_GEN: " + output)
+  if args.simulate:
+    return
   output = open(output, "w")
   for line in open(input):
     idx = line.find("%")
@@ -174,10 +147,24 @@ def genSMS(input, output):
         break
   output.close()
 
-def genAllTex(dest, mods, config):
+def gen_localpaths(dest, repo, repo_name, args, msg):
+  # generates localpaths.tex
+  msg("GEN_LOCALPATHS: "+dest)
+  if args.simulate:
+    return
+  output = open(dest, "w")
+  output.write(all_pathstpl.substitute(mathhub=lmh_root, repo=repo, repo_name=repo_name))
+  output.close()
+
+def gen_alltex(dest, mods, config, args, msg):
+  # generates all.tex
   if not config.has_option("gen", "pre_content") or not config.has_option("gen", "post_content"):
     return
-  print "generating %r"%dest
+
+  msg("GEN_ALLTEX: "+dest)
+
+  if args.simulate:
+    return
 
   preFileContent = config.get("gen", "pre_content")
   postFileContent = config.get("gen", "post_content")
@@ -189,147 +176,144 @@ def genAllTex(dest, mods, config):
   output.write(all_textpl.substitute(pre_tex=preFileContent, post_tex=postFileContent, mods="\n".join(content)))
   output.close()
 
-def genLocalPaths(dest, repo, repo_name):
-  print "generating %r"%dest
-  output = open(dest, "w")
-  output.write(all_pathstpl.substitute(mathhub=lmh_root, repo=repo, repo_name=repo_name))
-  output.close()
-
-def get_modules(root, files):
-  mods = [];
-  for file in files:
-    fullFile = root+"/"+file
-    if not file.endswith(".tex") or file in special_files:
-      continue
-    if not os.access(fullFile, os.R_OK): # ignoring files I cannot read
-      continue
-
-    mods.append({ "modName" : file[:-4], "file": fullFile, "date": os.path.getmtime(fullFile)})
-  return mods
-
-def do_compute(fnc, args, omdoc):
-    current = multiprocessing.current_process()
-    wid = current._identity[0]
-    try:
-      if args.low:
-        util.lowpriority()
-    except:
-      print "Failed to set low priority!"
-
-    print str(datetime.datetime.now().time())+" worker "+str(wid)+": "+omdoc["modName"]+" "
-    fnc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], port=3353+wid, args=args)
-
-
-def do_bulk_generation(docs, fnc, args, ty):
-  if args.simulate:
-    for doc in docs:
-      print ty+": '"+ doc["root"] + doc["modName"]+ "'"
-    return
-
-  pool = multiprocessing.Pool(processes=args.workers)
-  result = pool.map_async(functools.partial(do_compute, fnc, args), docs)
-
-def gen_sms(root, mods, args):
-  # Generate all SMS files
-  for mod in mods:
-    smsfileName = root+"/"+mod["modName"]+".sms";
-
-    if args.force or not os.path.exists(smsfileName) or mod["date"] > os.path.getmtime(smsfileName):
-      genSMS(mod["file"], smsfileName)
-
-def config_load_content(root, config):
-  for fl in ["pre", "post"]:
-    if config.has_option("gen", fl):
-      file_path = os.path.realpath(os.path.join(root, config.get("gen", fl)))
-      config.set("gen", "%s_content"%fl, util.get_file(file_path));
-
-def gen_ext(extension, root, mods, config, args, todo, force):
+def gen_ext(extension, root, mods, config, args, todo, force, msg):
+  # find and add files to todo
   if len(args) == 0:
+    msg("GEN_EXT_MODS_"+extension.upper()+": "+root)
     for mod in mods:
       modName = mod["modName"]
       modFile = root+"/"+modName+"."+extension
 
-
       if force or not os.path.exists(modFile) or os.path.getmtime(mod["file"]) > os.path.getmtime(modFile):
+        msg("GEN_EXT_TODO_"+extension.upper()+": "+modFile)
         todo.append({"root": root, "modName": mod["modName"], "pre" : config.get("gen", "pre"), "post" : config.get("gen", "post")})
   else:
+    msg("GEN_EXT_ARGS_"+extension.upper()+": "+root)
     for omdoc in args:
       if omdoc.endswith("."+extension):
         omdoc = omdoc[:-len(extension)-1];
       if omdoc.endswith(".tex"):
         omdoc = omdoc[:-4];
       omdoc = os.path.basename(omdoc)
+      msg("GEN_EXT_TODO_"+extension.upper()+": "+omdoc)
       todo.append({"root": root, "modName": omdoc, "pre" : config.get("gen", "pre"), "post" : config.get("gen", "post") })
 
+def do_bulk_generation(docs, fnc, args, ty, msg):
+  if args.simulate:
+    for doc in docs:
+      print ty+": '"+ doc["root"] + doc["modName"]+ "'"
+    return
+
+  #pool = multiprocessing.Pool(processes=args.workers)
+  #result = pool.map_async(functools.partial(do_compute, fnc, args), docs)
+
+
 def do_gen(rep, args):
-  print "generating in repository %r"%rep
-  rep_root = util.git_root_dir(rep);
+  #main generation function
+
+  def msg(m):
+    if args.debug:
+      print m
+
+  # intialise this repository
+  rep_root = util.git_root_dir(rep)
   repo_name = util.lmh_repos(rep)
+
+  # have todo lists
   omdocToDo = []
   pdfToDo = []
 
   def traverse(root, config):
+    # traversing a directory
     files = os.listdir(root)
 
+    # go into subdirectories
+    for d in filter((lambda x: os.path.isdir(root+"/"+x)), files):
+      traverse(root+"/"+d, config)
+
+    msg("TRAVERSE: "+root)
+
+    # load the config files if possible
     if any(".lmh" in s for s in files):
       newCfg = ConfigParser.ConfigParser()
       try:
         newCfg.read(root+"/.lmh")
         config = newCfg
-        print "loading config at %s"%root
         config_load_content(root, config)
       except:
-        print "failed to load config at %s"%root
-        print "Skipping config file ..."
+        print "WARNING: Failed to load config at %s"%root
 
-
-    mods = get_modules(root, files)
+    # LOAD the modules
+    mods = get_modules(root, files, msg)
+    
     if len(mods) > 0:
+      # find the youngest mod
       youngest = max(map(lambda x : x["date"], mods))
-      gen_sms(root, mods, args)
 
-      allTex = root+"/all.tex";
+      # generate sms
+      gen_sms_all(root, mods, args, msg)
+
+      # find the localpaths and all .tex files
+      allTex = root+"/all.tex"
       localPathTex = root+"/localpaths.tex"
-       
+         
       if args.force or not os.path.exists(localPathTex) or youngest > os.path.getmtime(localPathTex):
-        genLocalPaths(localPathTex, rep_root, repo_name);
+        gen_localpaths(localPathTex, rep_root, repo_name, args, msg)
 
-      if args.force or not os.path.exists(allTex) or youngest > os.path.getmtime(allTex):
-        genAllTex(allTex, mods, config);
+        if args.force or not os.path.exists(allTex) or youngest > os.path.getmtime(allTex):
+          gen_alltex(allTex, mods, config, args, msg)
 
-      if args.omdoc != None:
-        if config.has_option("gen", "pre_content"):
-          gen_ext("omdoc", root, mods, config, args.omdoc, omdocToDo, args.force);
-        else:
-          print "WARNING: OMDoc generation desired but could not find preamble and/or postamble - skipping generation"
 
-      if args.pdf != None:
-        if config.has_option("gen", "pre_content"):
-          gen_ext("pdf", root, mods, config, args.pdf, pdfToDo, args.force);
-        else:
-          print "WARNING: PDF generation desired but could not find preamble and/or postamble - skipping generation"
+        if args.omdoc != None:          
+          if config.has_option("gen", "pre_content"):
+            gen_ext("omdoc", root, mods, config, args.omdoc, omdocToDo, args.force, msg)
+          else:
+            print "WARNING: GEN_EXT_OMDOC: OMDoc generation desired but could not find preamble and/or postamble - skipping generation"
+      
+        if args.pdf != None:
+          if config.has_option("gen", "pre_content"):
+            gen_ext("pdf", root, mods, config, args.pdf, pdfToDo, args.force, msg);
+          else:
+            print "WARNING: GEN_EXT_PDF: PDF generation desired but could not find preamble and/or postamble - skipping generation"
 
-    for d in filter((lambda x: os.path.isdir(root+"/"+x)), files):
-      traverse(root+"/"+d, config)
-
+  # go into the source directory
   if rep == rep_root:
-    rep = rep + "/source";
+    rep = rep + "/source"
 
   if not os.path.exists(rep):
+    msg("WARNING: Directory does not exist: %r"%rep)
     return
 
-  initConfig = ConfigParser.ConfigParser();
-  initConfig.add_section("gen");
+
+  # create the configuration files
+  initConfig = ConfigParser.ConfigParser()
+  initConfig.add_section("gen")
 
   for fl in ["pre", "post"]:
-    if os.path.exists(rep_root+"/lib/%s.tex"%fl):
-      initConfig.set("gen", fl, rep_root+"/lib/%s.tex"%fl);
-  config_load_content(rep, initConfig);
+    fn = rep_root+"/lib/%s.tex"%fl
+    if os.path.exists(fn):
+      msg("ADD_CONFIG: Found '"+fl+"': "+fn)
+      initConfig.set("gen", fl, fn)
 
+  # load the configuration
+  config_load_content(rep, initConfig, msg)
+
+  # traverse this directory
   traverse(rep, initConfig)
 
-  do_bulk_generation(omdocToDo, genOMDoc, args, "omdoc")
-  do_bulk_generation(pdfToDo, genPDF, args, "pdf")
+  try:
+    if args.low:
+      msg("NOTICE: Using low priority")
+      util.lowpriority()
+  except Exception as e:
+    print e
+    print "WARNING: Failed to set low priority!"
+
+  # generate omdocs and pdfs
+  #do_bulk_generation(omdocToDo, genOMDoc, args, "omdoc", msg)
+  #do_bulk_generation(pdfToDo, genPDF, args, "pdf", msg)
+  do_bulk_generation(omdocToDo, lambda x:x, args, "omdoc", msg)
+  do_bulk_generation(pdfToDo, lambda x:x, args, "pdf", msg)
 
 def do(args):
   if len(args.repository) == 0:
