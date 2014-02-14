@@ -58,11 +58,12 @@ def add_parser_args(parser):
 
   flags = parser.add_argument_group("Generation options")
 
-  #flags.add_argument('-s', '--simulate', const=True, default=False, action="store_const", help="Simulate only. Prints all commands to be executed. UNIMPLEMENTED. ")
+  flags.add_argument('-s', '--simulate', const=True, default=False, action="store_const", help="Simulate only. Prints all commands to be executed. UNIMPLEMENTED. ")
   flags.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
   flags.add_argument('-v', '--verbose', const=True, default=False, action="store_const", help="verbose mode")
   flags.add_argument('-w', '--workers',  metavar='number', default=8, type=int,
                    help='number of worker processes to use')
+  flags.add_argument('-l', '--low', const=True, default=False, dest="low", action="store_const", help="Use low priority for woker processes. ")
 
   whattogen = parser.add_argument_group("What to generate")
 
@@ -209,14 +210,20 @@ def get_modules(root, files):
 def do_compute(fnc, args, omdoc):
     current = multiprocessing.current_process()
     wid = current._identity[0]
+    try:
+      if args.low:
+        util.lowpriority()
+    except:
+      print "Failed to set low priority!"
+
     print str(datetime.datetime.now().time())+" worker "+str(wid)+": "+omdoc["modName"]+" "
     fnc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], port=3353+wid, args=args)
 
 
-def do_bulk_generation(docs, fnc, args):
-  if len(docs) < 10:
+def do_bulk_generation(docs, fnc, args, ty):
+  if args.simulate:
     for doc in docs:
-      fnc(doc["root"], doc["modName"], doc["pre"], doc["post"], args=args)
+      print ty+": '"+ doc["root"] + doc["modName"]+ "'"
     return
 
   pool = multiprocessing.Pool(processes=args.workers)
@@ -240,7 +247,8 @@ def gen_ext(extension, root, mods, config, args, todo, force):
   if len(args) == 0:
     for mod in mods:
       modName = mod["modName"]
-      modFile = root+"/"+modName+"."+extension;
+      modFile = root+"/"+modName+"."+extension
+
 
       if force or not os.path.exists(modFile) or os.path.getmtime(mod["file"]) > os.path.getmtime(modFile):
         todo.append({"root": root, "modName": mod["modName"], "pre" : config.get("gen", "pre"), "post" : config.get("gen", "post")})
@@ -261,9 +269,7 @@ def do_gen(rep, args):
   pdfToDo = []
 
   def traverse(root, config):
-    # This **might** fix issue 79
-    files = [os.path.join(dp, f) for dp, dn, fn in os.walk(root) for f in fn]
-    files = [os.path.relpath(f, root) for f in files]
+    files = os.listdir(root)
 
     if any(".lmh" in s for s in files):
       newCfg = ConfigParser.ConfigParser()
@@ -303,8 +309,8 @@ def do_gen(rep, args):
         else:
           print "WARNING: PDF generation desired but could not find preamble and/or postamble - skipping generation"
 
-    for dir in filter((lambda x: os.path.isdir(root+"/"+x)), files):
-      traverse(root+"/"+dir, config)
+    for d in filter((lambda x: os.path.isdir(root+"/"+x)), files):
+      traverse(root+"/"+d, config)
 
   if rep == rep_root:
     rep = rep + "/source";
@@ -322,8 +328,8 @@ def do_gen(rep, args):
 
   traverse(rep, initConfig)
 
-  do_bulk_generation(omdocToDo, genOMDoc, args)
-  do_bulk_generation(pdfToDo, genPDF, args)
+  do_bulk_generation(omdocToDo, genOMDoc, args, "omdoc")
+  do_bulk_generation(pdfToDo, genPDF, args, "pdf")
 
 def do(args):
   if len(args.repository) == 0:
