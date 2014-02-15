@@ -27,6 +27,10 @@ import urllib2
 import json
 import glob
 
+
+def shellquote(s):
+    return "'" + s.replace("'", "'\\''") + "'"
+    
 def lmh_root():
     mypath = os.path.dirname(os.path.realpath(__file__))+"/.."
     return os.path.realpath(mypath)

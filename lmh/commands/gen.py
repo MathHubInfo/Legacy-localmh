@@ -28,6 +28,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
+import sys
 import re
 import glob
 import time
@@ -58,12 +59,12 @@ def add_parser_args(parser):
 
   flags = parser.add_argument_group("Generation options")
 
-  flags.add_argument('-s', '--simulate', const=True, default=False, action="store_const", help="Simulate only. Implies --debug. ")
+  flags.add_argument('-s', '--simulate', const=True, default=False, action="store_const", help="Instead of running generate commands, output bash-style commands to STDOUT. ")
   flags.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
   flags.add_argument('-d', '--debug', const=True, default=False, action="store_const", help="verbose mode")
   flags.add_argument('-w', '--workers',  metavar='number', default=8, type=int,
                    help='number of worker processes to use')
-  flags.add_argument('-H', '--high', const=False, default=True, dest="low", action="store_const", help="Use low priority for woker processes. ")
+  flags.add_argument('-H', '--high', const=False, default=True, dest="low", action="store_const", help="Do not use low priority. ")
 
   whattogen = parser.add_argument_group("What to generate")
 
@@ -94,6 +95,40 @@ regs = map(re.compile, regStrings)
 
 # templates
 all_pathstpl = Template(util.get_template("localpaths.tpl"))
+all_modtpl = Template(util.get_template("alltex_mod.tpl"))
+all_textpl = Template(util.get_template("alltex_struct.tpl"))
+
+# PATHS
+latexmlc = util.which("latexmlc") or lmh_root+"/ext/LaTeXML/bin/latexmlc"
+pdflatex = util.which("pdflatex")
+
+stexstydir = lmh_root+"/ext/sTeX/sty"
+latexmlstydir = lmh_root+"/ext/sTeX/LaTeXML/lib/LaTeXML/texmf"
+stydir = lmh_root+"/sty"
+
+def needsPreamble(file):
+  # echsk if we need to add the premable
+  return re.search(r"\\begin(\w)*{document}", util.get_file(file)) == None 
+
+# For Error parsing
+errorMsg = re.compile("Error:(.*)")
+fatalMsg = re.compile("Fatal:(.*)")
+
+def parseLateXMLOutput(file):
+  mod = file[:-4];
+  logfile = mod+".ltxlog";
+  try:
+
+    for idx, line in enumerate(open(logfile)):
+      m = errorMsg.match(line)
+      if m:
+        agg.log_error(["compile", "omdoc", "error"], file, m.group(1))
+      m = fatalMsg.match(line)
+      if m:
+        agg.log_error(["compile", "omdoc", "error"], file, m.group(1))
+  except:
+    print "ERROR: Failed to open logfile '"+logfile+"'. "
+    print "Make sure latexmlc is working properly. "
 
 
 def config_load_content(root, config, msg):
@@ -130,9 +165,12 @@ def gen_sms_all(root, mods, args, msg):
 def gen_sms(args, input, output, msg):
   # generates a single sms file
   msg("SMS_GEN: " + output)
-  if args.simulate:
-    return
-  output = open(output, "w")
+  if not args.simulate:
+    output = open(output, "w")
+  else:
+    print "# generate "+output
+    print "echo -n '' > "+util.shellquote(output)
+  
   for line in open(input):
     idx = line.find("%")
     if idx == -1:
@@ -143,17 +181,25 @@ def gen_sms(args, input, output, msg):
 
     for reg in regs:
       if reg.search(line):
-        output.write(line.strip()+"%\n")
+        text = line.strip()+"%\n"
+        if args.simulate:
+          print "echo -n "+util.shellquote(text)+" >> "+util.shellquote(output)
+        else:
+          output.write(text)
         break
-  output.close()
+  if not args.simulate:
+    output.close()
 
 def gen_localpaths(dest, repo, repo_name, args, msg):
   # generates localpaths.tex
   msg("GEN_LOCALPATHS: "+dest)
+  text = all_pathstpl.substitute(mathhub=lmh_root, repo=repo, repo_name=repo_name)
   if args.simulate:
+    print "# generate "+dest
+    print "echo -n " + util.shellquote(text)+ " > "+util.shellquote(dest)
     return
   output = open(dest, "w")
-  output.write(all_pathstpl.substitute(mathhub=lmh_root, repo=repo, repo_name=repo_name))
+  output.write(text)
   output.close()
 
 def gen_alltex(dest, mods, config, args, msg):
@@ -163,17 +209,20 @@ def gen_alltex(dest, mods, config, args, msg):
 
   msg("GEN_ALLTEX: "+dest)
 
-  if args.simulate:
-    return
-
   preFileContent = config.get("gen", "pre_content")
   postFileContent = config.get("gen", "post_content")
   content = [];
   for mod in mods:
     content.append(all_modtpl.substitute(file=mod["modName"]));
 
+  text = all_textpl.substitute(pre_tex=preFileContent, post_tex=postFileContent, mods="\n".join(content))
+
+  if args.simulate:
+    print "echo -n "+util.shellquote(text) + " > "+util.shellquote(dest)
+    return
+
   output = open(dest, "w")
-  output.write(all_textpl.substitute(pre_tex=preFileContent, post_tex=postFileContent, mods="\n".join(content)))
+  output.write(text)
   output.close()
 
 def gen_ext(extension, root, mods, config, args, todo, force, msg):
@@ -198,14 +247,49 @@ def gen_ext(extension, root, mods, config, args, todo, force, msg):
       msg("GEN_EXT_TODO_"+extension.upper()+": "+omdoc)
       todo.append({"root": root, "modName": omdoc, "pre" : config.get("gen", "pre"), "post" : config.get("gen", "post") })
 
-def do_bulk_generation(docs, fnc, args, ty, msg):
-  if args.simulate:
-    for doc in docs:
-      print ty+": '"+ doc["root"] + doc["modName"]+ "'"
-    return
+def gen_omdoc_runner(args, omdoc):
+  try:
+    current = multiprocessing.current_process()
+    wid = current._identity[0]
+    def msg(m):
+      if args.debug:
+        print "#"+ m 
+    run_gen_omdoc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], msg, port=3353+wid, args=args)
+  except Exception as e:
+    print "WARNING: Generating OMDoc failed. (Make sure latexml is running)"
 
-  #pool = multiprocessing.Pool(processes=args.workers)
-  #result = pool.map_async(functools.partial(do_compute, fnc, args), docs)
+
+def gen_omdoc(docs, args, msg):
+
+  if args.simulate:
+    print "#---------------"
+    print "# generate omdoc"
+    print "#---------------"
+    print "export STEXSTYDIR="+util.shellquote(stexstydir)
+    for omdoc in docs:
+      run_gen_omdoc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], msg, port=3353, args=args)
+  else:
+    pool = multiprocessing.Pool(processes=args.workers)
+    result = pool.map_async(functools.partial(gen_omdoc_runner, args), docs)
+
+def run_gen_omdoc(root, mod, pre_path, post_path, msg, args=None, port=3354):
+  msg("GEN_OMDOC: "+ mod + ".omdoc")
+  oargs = args
+  args = [latexmlc,"--expire=120", "--port="+str(port), "--profile", "stex-module", "--path="+stydir, mod+".tex", "--destination="+mod+".omdoc", "--log="+mod+".ltxlog"];
+
+  if needsPreamble(root+"/"+mod+".tex"):
+    args.append("--preload="+pre_path)
+
+  if oargs.simulate:
+    print "cd "+util.shellquote(root)
+    print " ".join(args)
+    return 
+
+  _env = os.environ;
+  _env["STEXSTYDIR"]=stexstydir
+
+  call(args, cwd=root, env=_env, stderr=PIPE)
+  parseLateXMLOutput(root+"/"+mod+".tex")
 
 
 def do_gen(rep, args):
@@ -213,7 +297,7 @@ def do_gen(rep, args):
 
   def msg(m):
     if args.debug:
-      print m
+      print "#"+ m
 
   # intialise this repository
   rep_root = util.git_root_dir(rep)
@@ -309,11 +393,11 @@ def do_gen(rep, args):
     print e
     print "WARNING: Failed to set low priority!"
 
-  # generate omdocs and pdfs
-  #do_bulk_generation(omdocToDo, genOMDoc, args, "omdoc", msg)
-  #do_bulk_generation(pdfToDo, genPDF, args, "pdf", msg)
-  do_bulk_generation(omdocToDo, lambda x:x, args, "omdoc", msg)
-  do_bulk_generation(pdfToDo, lambda x:x, args, "pdf", msg)
+  # generate all omdoc
+  gen_omdoc(omdocToDo, args, msg)
+
+  # generate all pdf
+  # do_bulk_generation(pdfToDo, lambda x:x, args, "pdf", msg)
 
 def do(args):
   if len(args.repository) == 0:
