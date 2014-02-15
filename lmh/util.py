@@ -270,4 +270,4 @@ def lowpriority(pid = None):
           pid = os.getpid()
 
         p = psutil.Process(pid)
-        p.nice = 19
+        p.nice = 1

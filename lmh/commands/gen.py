@@ -269,8 +269,15 @@ def gen_omdoc(docs, args, msg):
     for omdoc in docs:
       run_gen_omdoc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], msg, port=3353, args=args)
   else:
+    print "Generating OmDoc for", len(docs), "files. " 
+    done = False
+
     pool = multiprocessing.Pool(processes=args.workers)
-    result = pool.map_async(functools.partial(gen_omdoc_runner, args), docs)
+    result = pool.map(functools.partial(gen_omdoc_runner, args), docs)
+    pool.close()
+    pool.join()
+    print result
+    
 
 def run_gen_omdoc(root, mod, pre_path, post_path, msg, args=None, port=3354):
   msg("GEN_OMDOC: "+ mod + ".omdoc")
@@ -285,19 +292,16 @@ def run_gen_omdoc(root, mod, pre_path, post_path, msg, args=None, port=3354):
     print " ".join(args)
     return 
 
-  _env = os.environ;
+  _env = os.environ
   _env["STEXSTYDIR"]=stexstydir
-
-  call(args, cwd=root, env=_env, stderr=PIPE)
+  print "# "
+  p = Popen(args, cwd=root, env=_env, stdout=sys.stdout, stderr=sys.stderr)
+  p.wait()
   parseLateXMLOutput(root+"/"+mod+".tex")
 
 
-def do_gen(rep, args):
-  #main generation function
-
-  def msg(m):
-    if args.debug:
-      print "#"+ m
+def prep_gen(rep, args, msg):
+  # prepare generation
 
   # intialise this repository
   rep_root = util.git_root_dir(rep)
@@ -393,19 +397,31 @@ def do_gen(rep, args):
     print e
     print "WARNING: Failed to set low priority!"
 
+  return (omdocToDo, pdfToDo)
+
+def run_gen(omdocToDo, pdfToDo, args, msg):
   # generate all omdoc
   gen_omdoc(omdocToDo, args, msg)
 
-  # generate all pdf
-  # do_bulk_generation(pdfToDo, lambda x:x, args, "pdf", msg)
-
 def do(args):
+
+  def msg(m):
+    if args.debug:
+      print "#"+ m
+
   if len(args.repository) == 0:
     args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
   if args.all:
     args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]  
 
+  omdocToDo = []
+  pdfToDo = []
+
   for repo in args.repository:
     for rep in glob.glob(repo):
-      do_gen(rep, args)
+      (omdoc, pdf) = prep_gen(rep, args, msg)
+      omdocToDo.extend(omdoc)
+      pdfToDo.extend(pdf)
+
+  run_gen(omdocToDo, pdfToDo, args, msg)
   agg.print_summary()

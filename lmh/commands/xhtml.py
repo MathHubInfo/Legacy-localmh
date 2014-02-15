@@ -34,7 +34,7 @@ from subprocess import call
 import ConfigParser
 import glob
 
-from lmh.commands.gen import do_gen
+from lmh.commands.gen import prep_gen
 from lmh.commands.gen import create_parser as gen_parser
 from lmh.mmt import compile
 from lmh import util
@@ -57,8 +57,10 @@ def add_parser_args(parser):
   pass
 
 def do_xhtml(rep):
-  rep_root = util.git_root_dir(rep);
-  do_gen(rep, attr)
+  rep_root = util.git_root_dir(rep)
+  def msg(m):
+    pass
+  prep_gen(rep, attr, msg)
   compile(rep_root)
   pass
 
