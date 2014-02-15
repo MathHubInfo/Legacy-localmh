@@ -115,7 +115,7 @@ def genPDF(root, mod, pre_path, post_path, args=None, port=None):
   print "generating %r"%(mod+".pdf")
   modPath = os.path.join(root, mod);
   if needsPreamble(root+"/"+mod+".tex"):
-    p0 = Popen(["echo", "\\begin{document}\n"], stdout=PIPE);
+    p0 = Popen(["echo", "\n"], stdout=PIPE);
     c1 = ["cat", pre_path, "-", modPath+".tex", post_path];
     p1 = Popen(c1, cwd=root, stdin=p0.stdout, stdout=PIPE);
     p2 = Popen([pdflatex, "-jobname", mod], cwd=root, stdin=p1.stdout, stdout=PIPE, env = {"TEXINPUTS" : TEXINPUTS})
