@@ -29,10 +29,10 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import sys
-import signal
 import re
 import glob
 import time
+import signal
 import argparse
 import datetime
 import functools
@@ -270,6 +270,9 @@ def gen_omdoc(docs, args, msg):
     print "export PATH=\"$PATH:"+latexmlbindir+"\""
     for omdoc in docs:
       run_gen_omdoc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], msg, port=3353, args=args)
+  elif len(docs) == 0:
+    print "no omdoc to generate, skipping omdoc generation ..." 
+    return True
   else:
     print "Generating OmDoc for", len(docs), "files. " 
     done = False
@@ -280,42 +283,50 @@ def gen_omdoc(docs, args, msg):
       res = result.get(9999999)
       res = True
     except KeyboardInterrupt:
-      print "<<KeyboardInterrupt>>"
-      print "Aborting ..."
-      print pool.terminate()
+      print "received <<KeyboardInterrupt>>"
+      print "killing worker processes ..."
+      pool.terminate()
       res = False
     pool.close()
     pool.join()
-    return res
+    print "All worker processes have finished. "
     
 
 def run_gen_omdoc(root, mod, pre_path, post_path, msg, args=None, port=3354):
+  msg("GEN_OMDOC: "+ mod + ".omdoc")
+  oargs = args
+  args = [latexmlc,"--expire=120", "--port="+str(port), "--profile", "stex-module", "--path="+stydir, mod+".tex", "--destination="+mod+".omdoc", "--log="+mod+".ltxlog"];
+
+  if needsPreamble(root+"/"+mod+".tex"):
+    args.append("--preload="+pre_path)
+
+  if oargs.simulate:
+    print "cd "+util.shellquote(root)
+    print " ".join(args)
+    return 
+
+  wid = port - 3353
+
+  _env = os.environ
+  _env["STEXSTYDIR"]=stexstydir
+  _env["PATH"]=_env["PATH"]+":"+latexmlbindir
   try:
-
-    msg("GEN_OMDOC: "+ mod + ".omdoc")
-    oargs = args
-    args = [latexmlc,"--expire=120", "--port="+str(port), "--profile", "stex-module", "--path="+stydir, mod+".tex", "--destination="+mod+".omdoc", "--log="+mod+".ltxlog"];
-
-    if needsPreamble(root+"/"+mod+".tex"):
-      args.append("--preload="+pre_path)
-
-    if oargs.simulate:
-      print "cd "+util.shellquote(root)
-      print " ".join(args)
-      return 
-
-    wid = port - 3353
-
-    _env = os.environ
-    _env["STEXSTYDIR"]=stexstydir
-    _env["PATH"]=_env["PATH"]+":"+latexmlbindir
-
     print "Worker #"+str(wid)+": Generating "+os.path.relpath(root)+"/"+mod+".tex"
-    p = Popen(args, cwd=root, env=_env, stdin=None, stdout=sys.stdout, stderr=sys.stderr, preexec_fn=os.setsid)
+    p = Popen(args, cwd=root, env=_env, stdin=None, stdout=PIPE, stderr=sys.stderr, preexec_fn=os.setsid)
     p.wait()
+    print "Worker #"+str(wid)+": Generated "+os.path.relpath(root)+"/"+mod+".tex"
     parseLateXMLOutput(root+"/"+mod+".tex")
   except KeyboardInterrupt:
-    p.send_signal(signal.SIGINT)
+    print "Worker #"+str(wid)+": Sending SIGINT to latexml..."
+    try:
+      util.kill_child_processes(p.pid,sig=signal.SIGINT)
+      p.kill()
+    except Exception as e:
+      print e
+    print "Worker #"+str(wid)+": terminated latexml. "
+    sys.exit()
+    
+    
 
 
 
@@ -420,7 +431,9 @@ def prep_gen(rep, args, msg):
 
 def run_gen(omdocToDo, pdfToDo, args, msg):
   # generate all omdoc
-  gen_omdoc(omdocToDo, args, msg)
+  omdoc = gen_omdoc(omdocToDo, args, msg)
+  if not omdoc:
+    print "OmDoc generation aborted prematurely, skipping pdf generation. "
 
 def do(args):
 

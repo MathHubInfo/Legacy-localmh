@@ -26,6 +26,8 @@ import ConfigParser
 import urllib2
 import json
 import glob
+import psutil
+import signal
 
 
 def shellquote(s):
@@ -246,7 +248,6 @@ def get_dependencies(dir):
 
 def lowpriority(pid = None):
     """ Set the priority of the process to below-normal."""
-
     import sys
     try:
         sys.getwindowsversion()
@@ -271,3 +272,15 @@ def lowpriority(pid = None):
 
         p = psutil.Process(pid)
         p.nice = 1
+
+def kill_child_processes(parent_pid, sig=signal.SIGTERM, recursive=True,self=True):
+    try:
+      p = psutil.Process(parent_pid)
+    except psutil.error.NoSuchProcess:
+      return
+    child_pid = p.get_children(recursive=recursive)
+    for pid in child_pid:
+      os.kill(pid.pid, sig) 
+
+    if self:
+      os.kill(parent_pid, sig) 
