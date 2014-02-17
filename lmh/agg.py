@@ -53,12 +53,9 @@ def print_summary():
 
 def log_error(tags, file, msg):
   events.append({"type": "error", "tags": tags, "file" : file, "msg": msg})
-  pass
 
 def warn_count(tags, file, count):
   events.append({"type": "#warn", "tags": tags, "file" : file, "cnt": count})  
-  pass
 
 def error_count(tags, file, count):
   events.append({"type": "#error", "tags": tags, "file" : file, "cnt": count})
-  pass
