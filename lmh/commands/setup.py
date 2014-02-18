@@ -61,6 +61,7 @@ def add_parser_args(parser):
    
   source = parser.add_argument_group('Dependency versions')
   source.add_argument('--latexml-source', default="", metavar="source@branch", help='Get LaTeXML from the given source. ')
+  source.add_argument('--latexmls-source', default="", metavar="source@branch", help='Get LaTeXMLs from the given source. ')
   source.add_argument('--stex-source', default="", metavar="source@branch", help='Get sTex from the given source. ')
   source.add_argument('--mmt-source', default="", metavar="source@branch", help='Get MMT from the given source. ')
 
@@ -69,6 +70,13 @@ def add_parser_args(parser):
   latexml.add_argument('--update-latexml', action="store_const", dest="latexml_action", const="up", help='Update LaTeXML. ')
   latexml.add_argument('--reinstall-latexml', action="store_const", dest="latexml_action", const="re", help='Reinstall LaTeXML. ')
   latexml.add_argument('--skip-latexml', action="store_const", dest="latexml_action", const="sk", help='Leave LaTeXML untouched. ')
+
+  latexmls = parser.add_argument_group('LaTeXML::Plugin::latexmls').add_mutually_exclusive_group()
+  latexmls.add_argument('--install-latexmls', action="store_const", dest="latexmls_action", const="in", default="", help='Install LaTexMLs. ')
+  latexmls.add_argument('--update-latexmls', action="store_const", dest="latexmls_action", const="up", help='Update LaTeXMLs. ')
+  latexmls.add_argument('--reinstall-latexmls', action="store_const", dest="latexmls_action", const="re", help='Reinstall LaTeXMLs. ')
+  latexmls.add_argument('--skip-latexmls', action="store_const", dest="latexmls_action", const="sk", help='Leave LaTeXMLs untouched. ')
+
 
   stex = parser.add_argument_group('sTeX').add_mutually_exclusive_group()
   stex.add_argument('--install-stex', action="store_const", dest="stex_action", const="in", default="", help='Install sTeX. ')
@@ -181,6 +189,25 @@ def latexml_remove(root, source, branch):
   except:
     print "Failed to remove LaTeXML (is it present? )"
 
+def latexmls_install(root, source, branch):
+  try:
+    if branch == "":
+      util.git_clone(root, source, "LaTeXMLs")
+    else:
+      util.git_clone(root, source, "-b", branch, "LaTeXMLs")
+  except:
+    print "Failed to install LaTeXMLs (is the source available? )"
+def latexmls_update(root, source, branch):
+  try:
+    util.git_pull(root + "/LaTeXMLs")
+  except:
+    print "Failed to update LaTeXMLs (is it present? )"
+def latexmls_remove(root, source, branch):
+  try:
+     shutil.rmtree(root + "/LaTeXMLs")
+  except:
+    print "Failed to remove LaTeXMLs (is it present? )"
+
 def stex_install(root, source, branch):
   try:
     if branch == "":
@@ -265,6 +292,38 @@ def do(args):
   if latexml_action == "up":
     print "Updating LaTexML ..."
     latexml_update(root, latexml_source, latexml_branch)
+
+  # LaTeXMLs
+  latexmls_action = args.latexml_action or action
+  latexmls_source = "https://github.com/dginev/LaTeXML-Plugin-latexmls"
+  latexmls_branch = ""
+
+  if not args.latexmls_source == "":
+    index = args.latexmls_source.find("@")
+    if index == 0:
+      latexmls_branch = args.latexmls_source[1:]
+    elif index > 0:
+      latexmls_source = args.latexmls_source[:index]
+      latexmls_branch = args.latexmls_source[index+1:]
+    else:
+      latexmls_source = args.latexmls_source
+
+    print "Using LaTexML Version: "+latexmls_source+"@"+latexmls_branch
+
+  # run perl Makefile.pl
+  # run make
+
+
+  if latexmls_action == "re":
+    print "Reinstalling LaTexMLs ..."
+    latexmls_remove(root, latexmls_source, latexmls_branch)
+    latexmls_install(root, latexmls_source, latexmls_branch)
+  if latexmls_action == "in":
+    print "Installing LaTeXMLs ..."
+    latexmls_install(root, latexmls_source, latexmls_branch)
+  if latexmls_action == "up":
+    print "Updating LaTexMLs ..."
+    latexmls_update(root, latexmls_source, latexmls_branch)
   
   # sTex
   stex_action = args.stex_action or action

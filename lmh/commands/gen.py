@@ -101,10 +101,19 @@ all_textpl = Template(util.get_template("alltex_struct.tpl"))
 
 # PATHS
 latexmlc = util.which("latexmlc") or lmh_root+"/ext/LaTeXML/bin/latexmlc"
-latexmlbindir = lmh_root+"/ext/LaTeXML/bin/"
+latexmlbindir = lmh_root+"/ext/LaTeXML/bin:"+lmh_root+"/ext/LaTeXMLs/bin"
+latexmllibdir = lmh_root+"/ext/LaTeXML/blib/lib"
 pdflatex = util.which("pdflatex")
 
 stexstydir = lmh_root+"/ext/sTeX/sty"
+try:
+	stexstydir = ":".join([x[0] for x in os.walk(stexstydir)])
+except:
+	pass
+
+#add subdirectories
+
+
 latexmlstydir = lmh_root+"/ext/sTeX/LaTeXML/lib/LaTeXML/texmf"
 stydir = lmh_root+"/sty"
 
@@ -259,15 +268,15 @@ def gen_omdoc_runner(args, omdoc):
     run_gen_omdoc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], msg, port=3353+wid, args=args)
   except Exception as e:
     print "WARNING: Generating OMDoc failed. (Make sure latexml is running)"
-    print e
 
 def gen_omdoc(docs, args, msg):
   if args.simulate:
     print "#---------------"
     print "# generate omdoc"
     print "#---------------"
-    print "export STEXSTYDIR="+util.shellquote(stexstydir)
+    print "export STEXSTYDIR=\""+stexstydir+"\""
     print "export PATH=\"$PATH:"+latexmlbindir+"\""
+    print "export PERL5LIB=\"$PERL5LIB:"+latexmllibdir+"\""
     for omdoc in docs:
       run_gen_omdoc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], msg, port=3353, args=args)
   elif len(docs) == 0:
@@ -309,12 +318,18 @@ def run_gen_omdoc(root, mod, pre_path, post_path, msg, args=None, port=3354):
 
   _env = os.environ
   _env["STEXSTYDIR"]=stexstydir
-  _env["PATH"]=_env["PATH"]+":"+latexmlbindir
+  _env["PATH"]=latexmlbindir+":"+_env["PATH"]
   try:
-    print "Worker #"+str(wid)+": Generating "+os.path.relpath(root)+"/"+mod+".tex"
+     _env["PERL5LIB"] = latexmllibdir+":"+ _env["PERL5LIB"]
+  except:
+    _env["PERL5LIB"] = latexmllibdir
+
+  
+  try:
+    print "Worker #"+str(wid)+": Generating OMDoc for "+os.path.relpath(root)+"/"+mod+".tex"
     p = Popen(args, cwd=root, env=_env, stdin=None, stdout=PIPE, stderr=sys.stderr, preexec_fn=os.setsid)
     p.wait()
-    print "Worker #"+str(wid)+": Generated "+os.path.relpath(root)+"/"+mod+".tex"
+    print "Worker #"+str(wid)+": Generated OMDoc for "+os.path.relpath(root)+"/"+mod+".tex"
     parseLateXMLOutput(root+"/"+mod+".tex")
   except KeyboardInterrupt:
     print "Worker #"+str(wid)+": Sending SIGINT to latexml..."

@@ -179,21 +179,16 @@ def get_template(name):
     return get_file(_lmh_root + "/bin/templates/" + name);
 
 def git_clone(dest, *arg):
-  args = [gitexec, "clone"];
-  args.extend(arg);
-  err = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=sys.stdout, cwd=dest).communicate()[1]
-
-  if err.find("already exists") != -1:
-    return
-
-  print err
+  args = [gitexec, "clone"]
+  args.extend(arg)
+  proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
+  proc.wait()
 
 def git_pull(dest, *arg):
   args = [gitexec, "pull"];
   args.extend(arg);
-  err = subprocess.Popen(args, stderr=subprocess.PIPE, cwd=dest).communicate()[1]
-
-  print err
+  proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest).communicate()[1]
+  proc.wait()
 
 def svn_clone(dest, *arg):
   args = [svnexec, "co"];
