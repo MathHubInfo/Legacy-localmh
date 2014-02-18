@@ -28,6 +28,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
+import sys
 import argparse
 import ConfigParser
 import shutil
@@ -158,6 +159,19 @@ def check_deps():
       print "    https://www.tug.org/texlive/windows.html"
     return False
 
+  if util.which("perl") == None:
+    print "Unable to locate perl executable. "
+    print "Please make sure it is in the $PATH environment variable. "
+    if islinux: 
+      print "On Ubtuntu 13.10 or later you can install this with: "
+      print "    sudo apt-get install perl"
+    return False
+
+  if util.which("make") == None:
+    print "Unable to locate make. "
+    print "Please make sure it is in the $PATH environment variable. "
+    return False
+
   try:
     import psutil
   except:
@@ -183,6 +197,15 @@ def latexml_update(root, source, branch):
     util.git_pull(root + "/LaTeXML")
   except:
     print "Failed to update LaTeXML (is it present? )"
+def latexml_make(root):
+  perl = util.which("perl")
+  make = util.which("make")
+  try:
+    call([perl, "Makefile.PL"], cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+    call([make], cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+  except Exception as e:
+    print "Unable to run make commands for latexml. "
+    print e
 def latexml_remove(root, source, branch):
   try:
      shutil.rmtree(root + "/LaTeXML")
@@ -286,12 +309,15 @@ def do(args):
     print "Reinstalling LaTexML ..."
     latexml_remove(root, latexml_source, latexml_branch)
     latexml_install(root, latexml_source, latexml_branch)
+    latexml_make(root)
   if latexml_action == "in":
     print "Installing LaTeXML ..."
     latexml_install(root, latexml_source, latexml_branch)
+    latexml_make(root)
   if latexml_action == "up":
     print "Updating LaTexML ..."
     latexml_update(root, latexml_source, latexml_branch)
+    latexml_make(root)
 
   # LaTeXMLs
   latexmls_action = args.latexml_action or action
@@ -310,9 +336,6 @@ def do(args):
 
     print "Using LaTexML Version: "+latexmls_source+"@"+latexmls_branch
 
-  # run perl Makefile.pl
-  # run make
-
 
   if latexmls_action == "re":
     print "Reinstalling LaTexMLs ..."
@@ -324,7 +347,7 @@ def do(args):
   if latexmls_action == "up":
     print "Updating LaTexMLs ..."
     latexmls_update(root, latexmls_source, latexmls_branch)
-  
+
   # sTex
   stex_action = args.stex_action or action
   stex_source = "https://github.com/KWARC/sTeX.git"

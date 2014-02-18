@@ -76,10 +76,19 @@ def run_lmh(install):
     try:
         args = [sys.executable, install + "/bin/lmh"] + sys.argv[1:]
         runner = subprocess.Popen(args, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-        runner.wait()
-    except KeyboardInterrupt:
-        runner.send_signal(signal.SIGINT)
+    except:
+        print "lmh core: Unable to run lmh. Please try to update. "
+        sys.exit(1)
 
+    def do_the_run():
+        try:
+            runner.wait()
+        except KeyboardInterrupt:
+            runner.send_signal(signal.SIGINT)
+            do_the_run()
+
+    do_the_run()
+    
     sys.exit(runner.returncode)
 
 def has_lmh(install):

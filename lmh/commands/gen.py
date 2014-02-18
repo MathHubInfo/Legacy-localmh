@@ -280,10 +280,10 @@ def gen_omdoc(docs, args, msg):
     for omdoc in docs:
       run_gen_omdoc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], msg, port=3353, args=args)
   elif len(docs) == 0:
-    print "no omdoc to generate, skipping omdoc generation ..." 
+    print "Master: no omdoc to generate, skipping omdoc generation ..." 
     return True
   else:
-    print "Generating OmDoc for", len(docs), "files. " 
+    print "Master: Generating OmDoc for", len(docs), "files. " 
     done = False
 
     pool = multiprocessing.Pool(processes=args.workers)
@@ -292,13 +292,27 @@ def gen_omdoc(docs, args, msg):
       res = result.get(9999999)
       res = True
     except KeyboardInterrupt:
-      print "received <<KeyboardInterrupt>>"
-      print "killing worker processes ..."
+      print "Master: received <<KeyboardInterrupt>>"
+      print "Master: killing worker processes ..."
       pool.terminate()
+      print "Master: Cleaning up latexmls processes ..."
+      try:
+        p = Popen(['ps', '-A'], stdout=PIPE)
+        out, err = p.communicate()
+        for line in out.splitlines():
+          if 'latexmls' in line:
+           pid = int(line.split(None, 1)[0])
+           os.kill(pid, signal.SIGKILL)
+      except Exception as e:
+        print e
+        print "Master: Unable to kill some latexmls processes. "
+      print "Master: Waiting for all processes to finish ..."
+      time.sleep(5)
+      print "Master: Done. "
       res = False
     pool.close()
     pool.join()
-    print "All worker processes have finished. "
+    print "Master: All worker processes have finished. "
     
 
 def run_gen_omdoc(root, mod, pre_path, post_path, msg, args=None, port=3354):
@@ -334,7 +348,7 @@ def run_gen_omdoc(root, mod, pre_path, post_path, msg, args=None, port=3354):
   except KeyboardInterrupt:
     print "Worker #"+str(wid)+": Sending SIGINT to latexml..."
     try:
-      util.kill_child_processes(p.pid,sig=signal.SIGINT)
+      util.kill_child_processes(p.pid,sig=signal.SIGINT, self=True)
       p.kill()
     except Exception as e:
       print e
@@ -472,3 +486,4 @@ def do(args):
 
   run_gen(omdocToDo, pdfToDo, args, msg)
   agg.print_summary()
+  print ""
