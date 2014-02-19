@@ -61,7 +61,11 @@ def add_parser_args(parser):
   flags = parser.add_argument_group("Generation options")
 
   flags.add_argument('-s', '--simulate', const=True, default=False, action="store_const", help="Instead of running generate commands, output bash-style commands to STDOUT. ")
-  flags.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
+  g1 = parser.add_mutually_exclusive_group()
+
+  g1.add_argument('-u', '--update', const=True, default=False, action="store_const", help="Only generate files which have been changed. Experimental. ")
+  g1.add_argument('-f', '--force', const=False, dest="Update", action="store_const", help="Force to regenerate all files. DEFAULT. ")
+
   flags.add_argument('-d', '--debug', const=True, default=False, action="store_const", help="verbose mode")
   flags.add_argument('-w', '--workers',  metavar='number', default=8, type=int,
                    help='number of worker processes to use')
@@ -154,9 +158,9 @@ def get_modules(root, files, msg):
   # finds all the modules in root
   mods = []
   msg("GET_MODULES: "+root)
-  for file in files:
+  for file in filter(lambda x: os.path.isfile(root+"/"+x), files):
     fullFile = root+"/"+file
-    if not file.endswith(".tex") or file in special_files:
+    if not file.endswith(".tex") or file in special_files or not util.effectively_readable(fullFile):
       # skip it if it is in special_files
       continue
     msg("FIND_MODULE: Found "+fullFile)
@@ -169,7 +173,7 @@ def gen_sms_all(root, mods, args, msg):
   for mod in mods:
     smsfileName = root+"/"+mod["modName"]+".sms";
 
-    if args.force or not os.path.exists(smsfileName) or mod["date"] > os.path.getmtime(smsfileName):
+    if not args.update or not os.path.exists(smsfileName) or mod["date"] > os.path.getmtime(smsfileName):
       gen_sms(args, mod["file"], smsfileName, msg)
 
 
@@ -264,9 +268,10 @@ def gen_omdoc_runner(args, omdoc):
     wid = current._identity[0]
     def msg(m):
       if args.debug:
-        print "#"+ m 
+        print "# "+ m 
     run_gen_omdoc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], msg, port=3353+wid, args=args)
   except Exception as e:
+    print e
     print "WARNING: Generating OMDoc failed. (Make sure latexml is running)"
 
 def gen_omdoc(docs, args, msg):
@@ -289,7 +294,10 @@ def gen_omdoc(docs, args, msg):
     pool = multiprocessing.Pool(processes=args.workers)
     try:
       result = pool.map_async(functools.partial(gen_omdoc_runner, args), docs).get(9999999)
-      res = result.get(9999999)
+      try:
+        res = result.get(9999999)
+      except:
+        pass
       res = True
     except KeyboardInterrupt:
       print "Master: received <<KeyboardInterrupt>>"
@@ -403,23 +411,23 @@ def prep_gen(rep, args, msg):
       # find the localpaths and all .tex files
       allTex = root+"/all.tex"
       localPathTex = root+"/localpaths.tex"
-         
-      if args.force or not os.path.exists(localPathTex) or youngest > os.path.getmtime(localPathTex):
+
+      if not args.update or not os.path.exists(localPathTex) or youngest > os.path.getmtime(localPathTex):
         gen_localpaths(localPathTex, rep_root, repo_name, args, msg)
 
-        if args.force or not os.path.exists(allTex) or youngest > os.path.getmtime(allTex):
+        if not args.update or not os.path.exists(allTex) or youngest > os.path.getmtime(allTex):
           gen_alltex(allTex, mods, config, args, msg)
 
 
         if args.omdoc != None:          
           if config.has_option("gen", "pre_content"):
-            gen_ext("omdoc", root, mods, config, args.omdoc, omdocToDo, args.force, msg)
+            gen_ext("omdoc", root, mods, config, args.omdoc, omdocToDo, not args.update, msg)
           else:
             print "WARNING: GEN_EXT_OMDOC: OMDoc generation desired but could not find preamble and/or postamble - skipping generation"
       
         if args.pdf != None:
           if config.has_option("gen", "pre_content"):
-            gen_ext("pdf", root, mods, config, args.pdf, pdfToDo, args.force, msg);
+            gen_ext("pdf", root, mods, config, args.pdf, pdfToDo, not args.update, msg);
           else:
             print "WARNING: GEN_EXT_PDF: PDF generation desired but could not find preamble and/or postamble - skipping generation"
 
@@ -429,7 +437,7 @@ def prep_gen(rep, args, msg):
 
   if not os.path.exists(rep):
     msg("WARNING: Directory does not exist: %r"%rep)
-    return
+    return ([], [])
 
 
   # create the configuration files
@@ -468,7 +476,7 @@ def do(args):
 
   def msg(m):
     if args.debug:
-      print "#"+ m
+      print "# "+ m
 
   if len(args.repository) == 0:
     args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
