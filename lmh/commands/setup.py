@@ -66,6 +66,7 @@ def add_parser_args(parser):
   source.add_argument('--stex-source', default="", metavar="source@branch", help='Get sTex from the given source. ')
   source.add_argument('--mmt-source', default="", metavar="source@branch", help='Get MMT from the given source. ')
 
+  # TODO: Pull this via cpanm
   latexml = parser.add_argument_group('LaTeXML').add_mutually_exclusive_group()
   latexml.add_argument('--install-latexml', action="store_const", dest="latexml_action", const="in", default="", help='Install LaTexML. ')
   latexml.add_argument('--update-latexml', action="store_const", dest="latexml_action", const="up", help='Update LaTeXML. ')

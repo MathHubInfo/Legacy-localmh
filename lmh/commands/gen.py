@@ -110,6 +110,7 @@ latexmllibdir = lmh_root+"/ext/LaTeXML/blib/lib"
 pdflatex = util.which("pdflatex")
 
 stexstydir = lmh_root+"/ext/sTeX/sty"
+
 # try:
 # 	stexstydir = ":".join([x[0] for x in os.walk(stexstydir)])
 # except:
@@ -353,8 +354,14 @@ def run_gen_omdoc(root, mod, pre_path, post_path, msg, args=None, port=3354):
   
   try:
     print "Worker #"+str(wid)+": Generating OMDoc for "+os.path.relpath(root)+"/"+mod+".tex"
-    p = Popen(args, cwd=root, env=_env, stdin=None, stdout=PIPE, stderr=sys.stderr, preexec_fn=os.setsid)
-    p.wait()
+    p = Popen(args, cwd=root, env=_env, stdin=None, stdout=PIPE, stderr=PIPE, preexec_fn=os.setsid)
+    out, err = p.communicate()
+    for line in out.split("\n"):
+      if line != "":
+        print "Worker #"+str(wid)+": "+line
+    for line in err.split("\n"):
+      if line != "":
+        print "Worker #"+str(wid)+": "+line
     print "Worker #"+str(wid)+": Generated OMDoc for "+os.path.relpath(root)+"/"+mod+".tex"
     parseLateXMLOutput(root+"/"+mod+".tex")
   except KeyboardInterrupt:

@@ -61,10 +61,10 @@ def do_pull(rep):
 
 def do(args):
   if len(args.repository) == 0:
-    if os.getcwd() == util.lmh_root()+"/ext":
-      return setup_update();
-    if os.getcwd() == util.lmh_root():
-      setup_update();
+    # if os.getcwd() == util.lmh_root()+"/ext":
+    #   return setup_update();
+    # if os.getcwd() == util.lmh_root():
+    #   setup_update();
     args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
 
   if args.all:
