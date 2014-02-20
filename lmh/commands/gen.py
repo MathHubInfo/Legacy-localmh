@@ -115,6 +115,9 @@ try:
 except:
 	pass
 
+stexstydir = stexstydir+":"+lmh_root+"/ext/sTeX/schema/rng"
+stexstydir = stexstydir+":"+lmh_root+"/ext/sTeX/xsl"
+
 #add subdirectories
 
 
