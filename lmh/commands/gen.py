@@ -332,7 +332,8 @@ def run_gen_omdoc(root, mod, pre_path, post_path, msg, args=None, port=3354):
   args = [latexmlc,"--expire=120", "--port="+str(port), "--profile", "stex-module", "--path="+stydir, mod+".tex", "--destination="+mod+".omdoc", "--log="+mod+".ltxlog"];
 
   if needsPreamble(root+"/"+mod+".tex"):
-    args.append("--preload="+pre_path)
+    args.append("--preamble="+pre_path)
+    args.append("--postamble="+post_path)
 
   if oargs.simulate:
     print "cd "+util.shellquote(root)
