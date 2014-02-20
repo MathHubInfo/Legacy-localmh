@@ -104,7 +104,7 @@ all_modtpl = Template(util.get_template("alltex_mod.tpl"))
 all_textpl = Template(util.get_template("alltex_struct.tpl"))
 
 # PATHS
-latexmlc = util.which("latexmlc") or lmh_root+"/ext/LaTeXML/bin/latexmlc"
+latexmlc = lmh_root+"/ext/LaTeXML/bin/latexmlc"
 latexmlbindir = lmh_root+"/ext/LaTeXML/bin:"+lmh_root+"/ext/LaTeXMLs/bin"
 latexmllibdir = lmh_root+"/ext/LaTeXML/blib/lib"
 pdflatex = util.which("pdflatex")
