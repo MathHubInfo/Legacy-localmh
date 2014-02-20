@@ -149,6 +149,12 @@ def run_core(args, install):
     # Figure out what to use
     if args.install_to != "":
         install = os.path.expanduser(args.install_to)
+        try:
+            text_file = open(os.path.expanduser("~/.lmhpath"), "w")
+            text_file.write(install)
+            text_file.close()
+        except:
+            print "Warning: Unable to store new location in ~/.lmhpath. Please fix this manually. "
     if args.migrate_to != "":
         to = os.path.expanduser(args.install_to)
         if not has_lmh(install):
