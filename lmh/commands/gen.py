@@ -110,13 +110,13 @@ latexmllibdir = lmh_root+"/ext/LaTeXML/blib/lib"
 pdflatex = util.which("pdflatex")
 
 stexstydir = lmh_root+"/ext/sTeX/sty"
-try:
-	stexstydir = ":".join([x[0] for x in os.walk(stexstydir)])
-except:
-	pass
+# try:
+# 	stexstydir = ":".join([x[0] for x in os.walk(stexstydir)])
+# except:
+# 	pass
 
-stexstydir = stexstydir+":"+lmh_root+"/ext/sTeX/schema/rng"
-stexstydir = stexstydir+":"+lmh_root+"/ext/sTeX/xsl"
+# stexstydir = stexstydir+":"+lmh_root+"/ext/sTeX/schema/rng"
+# stexstydir = stexstydir+":"+lmh_root+"/ext/sTeX/xsl"
 
 #add subdirectories
 
