@@ -77,8 +77,12 @@ def add_parser_args(parser):
   whattogen.add_argument('--omdoc', nargs="*", help="generate omdoc files")
   whattogen.add_argument('--pdf', nargs="*", help="generate pdf files")
 
-  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to show the generate files. ").completer = util.autocomplete_mathhub_repository
-  parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="generates files for all repositories")
+  parser.add_argument('file', nargs='*', default=[], help="List of files to generate. ")
+
+  repos = parser.add_argument_group("Repositories to generate in").add_mutually_exclusive_group()
+  repos.add_argument('--repository', dest="repository", type=util.parseRepo, nargs='*', default=[], help="a list of repositories for which to show the generate files. ")
+  repos.add_argument('--all', "-a", default=False, const=True, action="store_const", help="generates files for all repositories")
+  
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
   Example:  

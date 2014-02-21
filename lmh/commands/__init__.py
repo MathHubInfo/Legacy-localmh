@@ -77,3 +77,8 @@ def create_parser(submods = {}):
 		__import__("argcomplete").autocomplete(parser)
 
 	return parser
+
+def preparse_args(args):
+	#if args[0] == "git":
+	#   args = ["git"] + map(lambda a: "\""+"\"", args[1:])
+	return args

@@ -36,6 +36,7 @@ import traceback
 from lmh import util
 from lmh.commands import create_parser
 from lmh.commands import gen
+from lmh.commands import preparse_args
 
 submods = {};
 
@@ -109,4 +110,4 @@ def main(argv = sys.argv[1:]):
 
 def run(argv = sys.argv[1:]):
   install_excepthook()
-  main(argv)
+  main(preparse_args(argv))
