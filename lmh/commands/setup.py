@@ -93,6 +93,8 @@ def add_parser_args(parser):
 
   parser.epilog = """
     lmh setup --- sets up additional software it requires to run correctly  
+
+    To install and compile latexml you may need additional packages. On Ubuntu the package libgdbm-dev should be enough. 
   """;
   pass
 

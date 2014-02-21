@@ -64,7 +64,8 @@ def cloneRepository(repoName):
     if os.path.exists(repoName):
       return
     repoURL = getURL(repoName)
-    print "cloning " + repoURL    call([gitpath, "clone", repoURL, repoName])
+    print "cloning " + repoURL    
+    call([gitpath, "clone", repoURL, repoName])
   except Exception, e:
     print e
     pass

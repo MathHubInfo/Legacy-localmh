@@ -112,15 +112,13 @@ latexmlc = lmh_root+"/ext/LaTeXML/bin/latexmlc"
 
 pdflatex = util.which("pdflatex")
 
-stexstydir = lmh_root+"/ext/sTeX/sty"
-
 # try:
-# 	stexstydir = ":".join([x[0] for x in os.walk(stexstydir)])
+# 	util.stexstydir = ":".join([x[0] for x in os.walk(util.stexstydir)])
 # except:
 # 	pass
 
-# stexstydir = stexstydir+":"+lmh_root+"/ext/sTeX/schema/rng"
-# stexstydir = stexstydir+":"+lmh_root+"/ext/sTeX/xsl"
+# util.stexstydir = util.stexstydir+":"+lmh_root+"/ext/sTeX/schema/rng"
+# util.stexstydir = util.stexstydir+":"+lmh_root+"/ext/sTeX/xsl"
 
 #add subdirectories
 
@@ -286,7 +284,7 @@ def gen_omdoc(docs, args, msg):
     print "#---------------"
     print "# generate omdoc"
     print "#---------------"
-    print "export STEXSTYDIR=\""+stexstydir+"\""
+    print "export STEXSTYDIR=\""+util.stexstydir+"\""
     print "export PATH=\""+util.perl5bindir+"\":$PATH"
     print "export PERL5LIB=\""+util.perl5libdir+"\":$PERL5LIB"
     for omdoc in docs:
@@ -347,7 +345,6 @@ def run_gen_omdoc(root, mod, pre_path, post_path, msg, args=None, port=3354):
   wid = port - 3353
 
   _env = os.environ
-  _env["STEXSTYDIR"]=stexstydir
   _env = util.perl5env(_env)
 
   

@@ -36,7 +36,7 @@ def create_parser(submods = {}):
 
 	subparsers = parser.add_subparsers(help='valid actions are:', dest="action", metavar='action')
 
-	submodules = ["about", "find", "status", "log", "install", "setup", "xhtml", "init", "commit", "push", "update", "gen", "clean", "git", "depcrawl", "checkpaths"];
+	submodules = ["shell", "about", "find", "status", "log", "install", "setup", "xhtml", "init", "commit", "push", "update", "gen", "clean", "git", "depcrawl", "checkpaths"];
 	for mod in submodules:
 		_mod = getattr(getattr(__import__("lmh.commands."+mod), "commands"), mod)
 		submods[mod] = _mod

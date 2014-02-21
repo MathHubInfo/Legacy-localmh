@@ -85,6 +85,7 @@ perl5root = _lmh_root+"/ext/perl5lib/"
 
 perl5bindir = perl5root+"bin"+":"+_lmh_root+"/ext/LaTeXMLs/bin"+":"+_lmh_root+"/ext/LaTeXML/bin"
 perl5libdir = perl5root+"lib/perl5"
+stexstydir = _lmh_root+"/ext/sTeX/sty"
 
 def perl5env(_env = {}):
   _env["PATH"]=perl5bindir+":"+_env["PATH"]
@@ -92,6 +93,7 @@ def perl5env(_env = {}):
      _env["PERL5LIB"] = perl5libdir+":"+ _env["PERL5LIB"]
   except:
     _env["PERL5LIB"] = perl5libdir
+  _env["STEXSTYDIR"]=stexstydir
   return _env
 
 def set_setting(key,  value):
