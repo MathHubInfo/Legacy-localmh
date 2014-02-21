@@ -49,7 +49,6 @@ def add_parser(subparsers, name="setup"):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-
   action = parser.add_argument_group('Setup actions').add_mutually_exclusive_group()
   action.add_argument('--install', action="store_const", dest="m_action", const="in", default="", help='Perform initial setup of dependencies. Default if no other arguments are given. ')
   action.add_argument('--update', action="store_const", dest="m_action", const="up", help='Update existing versions of dependencies. Implies --update-* arguments. ')
@@ -66,7 +65,6 @@ def add_parser_args(parser):
   source.add_argument('--stex-source', default="", metavar="source@branch", help='Get sTex from the given source. ')
   source.add_argument('--mmt-source', default="", metavar="source@branch", help='Get MMT from the given source. ')
 
-  # TODO: Pull this via cpanm
   latexml = parser.add_argument_group('LaTeXML').add_mutually_exclusive_group()
   latexml.add_argument('--install-latexml', action="store_const", dest="latexml_action", const="in", default="", help='Install LaTexML. ')
   latexml.add_argument('--update-latexml', action="store_const", dest="latexml_action", const="up", help='Update LaTeXML. ')
@@ -168,6 +166,14 @@ def check_deps():
       print "    sudo apt-get install perl"
     return False
 
+  if util.which("cpanm") == None:
+    print "Unable to locate cpanm executable. "
+    print "Please make sure it is in the $PATH environment variable. "
+    if islinux: 
+      print "On Ubtuntu 13.10 or later you can install this with: "
+      print "    sudo apt-get install cpanminus"
+    return False
+
   if util.which("make") == None:
     print "Unable to locate make. "
     print "Please make sure it is in the $PATH environment variable. "
@@ -199,13 +205,22 @@ def latexml_update(root, source, branch):
   except:
     print "Failed to update LaTeXML (is it present? )"
 def latexml_make(root):
-  perl = util.which("perl")
-  make = util.which("make")
+  cpanm = util.which("cpanm")
+  _env = util.perl5env(os.environ)
+  # this may need libgdbm-dev on ubtuntu
+  # TODO: find a way to display a message here
   try:
-    call([perl, "Makefile.PL"], cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-    call([make], cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+    call([cpanm, "-l", util.perl5root, "-L", util.perl5root, "--reinstall", "--notest", "--prompt", "."], env=_env, cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
   except Exception as e:
     print "Unable to run make commands for latexml. "
+    print e
+def latexmls_make(root):
+  cpanm = util.which("cpanm")
+  _env = util.perl5env(os.environ)
+  try:
+    call([cpanm, "-l", util.perl5root, "-L", util.perl5root, "--reinstall", "--notest", "--prompt", "."], env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+  except Exception as e:
+    print "Unable to run make commands for latexmls. "
     print e
 def latexml_remove(root, source, branch):
   try:
@@ -251,7 +266,6 @@ def stex_remove(root, source, branch):
     shutil.rmtree(root + "/sTeX")
   except: 
     print "Failed to remove sTex (is it present? )"
-  
 
 def mmt_install(root, source, branch):
   try:
@@ -342,12 +356,15 @@ def do(args):
     print "Reinstalling LaTexMLs ..."
     latexmls_remove(root, latexmls_source, latexmls_branch)
     latexmls_install(root, latexmls_source, latexmls_branch)
+    latexmls_make(root)
   if latexmls_action == "in":
     print "Installing LaTeXMLs ..."
     latexmls_install(root, latexmls_source, latexmls_branch)
+    latexmls_make(root)
   if latexmls_action == "up":
     print "Updating LaTexMLs ..."
     latexmls_update(root, latexmls_source, latexmls_branch)
+    latexmls_make(root)
 
   # sTex
   stex_action = args.stex_action or action

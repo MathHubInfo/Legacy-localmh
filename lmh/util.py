@@ -53,8 +53,6 @@ def effectively_readable(path):
     if st.st_gid == egid or st.st_gid in groups:
         return st.st_mode & stat.S_IRGRP != 0
 
-
-
 def shellquote(s):
     return "'" + s.replace("'", "'\\''") + "'"
     
@@ -83,6 +81,18 @@ repoRegEx = '[\w-]+/[\w-]+';
 _lmh_root = lmh_root();
 gitexec = which("git")
 svnexec = which("svn")
+perl5root = _lmh_root+"/ext/perl5lib/"
+
+perl5bindir = perl5root+"bin"
+perl5libdir = perl5root+"lib/perl5"
+
+def perl5env(_env = {}):
+  _env["PATH"]=perl5bindir+":"+_env["PATH"]
+  try:
+     _env["PERL5LIB"] = perl5libdir+":"+ _env["PERL5LIB"]
+  except:
+    _env["PERL5LIB"] = perl5libdir
+  return _env
 
 def set_setting(key,  value):
   root = _lmh_root

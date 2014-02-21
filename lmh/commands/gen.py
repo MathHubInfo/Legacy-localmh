@@ -103,10 +103,9 @@ all_pathstpl = Template(util.get_template("localpaths.tpl"))
 all_modtpl = Template(util.get_template("alltex_mod.tpl"))
 all_textpl = Template(util.get_template("alltex_struct.tpl"))
 
-# PATHS
+# Paths for latexml
 latexmlc = lmh_root+"/ext/LaTeXML/bin/latexmlc"
-latexmlbindir = lmh_root+"/ext/LaTeXML/bin:"+lmh_root+"/ext/LaTeXMLs/bin"
-latexmllibdir = lmh_root+"/ext/LaTeXML/blib/lib"
+
 pdflatex = util.which("pdflatex")
 
 stexstydir = lmh_root+"/ext/sTeX/sty"
@@ -284,8 +283,8 @@ def gen_omdoc(docs, args, msg):
     print "# generate omdoc"
     print "#---------------"
     print "export STEXSTYDIR=\""+stexstydir+"\""
-    print "export PATH=\"$PATH:"+latexmlbindir+"\""
-    print "export PERL5LIB=\"$PERL5LIB:"+latexmllibdir+"\""
+    print "export PATH=\""+util.perl5bindir+"\":$PATH"
+    print "export PERL5LIB=\""+util.perl5libdir+"\":$PERL5LIB"
     for omdoc in docs:
       run_gen_omdoc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], msg, port=3353, args=args)
   elif len(docs) == 0:
@@ -345,11 +344,7 @@ def run_gen_omdoc(root, mod, pre_path, post_path, msg, args=None, port=3354):
 
   _env = os.environ
   _env["STEXSTYDIR"]=stexstydir
-  _env["PATH"]=latexmlbindir+":"+_env["PATH"]
-  try:
-     _env["PERL5LIB"] = latexmllibdir+":"+ _env["PERL5LIB"]
-  except:
-    _env["PERL5LIB"] = latexmllibdir
+  _env = util.perl5env(_env)
 
   
   try:
