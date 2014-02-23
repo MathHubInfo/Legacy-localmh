@@ -83,8 +83,8 @@ gitexec = which("git")
 svnexec = which("svn")
 perl5root = [_lmh_root+"/ext/perl5lib/", os.path.expanduser("~/")]
 
-perl5bindir = ":".join([p5r+"bin" for p5r in perl5root])+":"+_lmh_root+"/ext/LaTeXMLs/bin"+":"+_lmh_root+"/ext/LaTeXML/bin"
-perl5libdir = ":".join([p5r+"lib/perl5" for p5r in perl5root])
+perl5bindir = ":".join([p5r+"bin" for p5r in perl5root])+":"+_lmh_root+"/ext/LaTeXML/bin"+":"+_lmh_root+"/ext/LaTeXMLs/bin"
+perl5libdir = ":".join([p5r+"lib/perl5" for p5r in perl5root])+":"+_lmh_root+"/ext/LaTeXML/blib/lib"+":"+_lmh_root+"/ext/LaTeXMLs/blib/lib"
 stexstydir = _lmh_root+"/ext/sTeX/sty"
 
 def perl5env(_env = {}):

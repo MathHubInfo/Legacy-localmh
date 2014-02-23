@@ -48,6 +48,10 @@ def add_parser(subparsers, name="install"):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
+  # TODO: Implement this
+  #parser.add_argument("--simulate", "-s", help="Simulate checkout and only print repositories and dependencies to fetch. ")
+  #parser.add_argument("--update", "-u", help="Update repositories if they already exist locally. ")
+  #parser.add_argument("--depth", "-d", help="Limit depth to resolve dependencies. ")
   parser.add_argument('repository', default=["."], type=util.parseSimpleRepo, nargs='*', help="a list of remote repositories to fetch locally. Should have form mygroup/myproject. No wildcards allowed. ")
 
 def do(args):
@@ -79,7 +83,7 @@ def installNoCycles(repoName, tried):
 
   print "Checking dependencies for project "+repoName
 
-  deps = util.get_dependencies(repoName);
+  deps = util.get_dependencies(repoName)
   if deps == None:
     print("Error: META-INF/MANIFEST.MF file missing or invalid.\n You should consider running lmh init.")
     return

@@ -101,7 +101,6 @@ special_files = {"all.tex":True, "localpaths.tex": True}
 ignore = re.compile(r'\\verb')
 regStrings = [r'\\(guse|gadopt|symdef|abbrdef|symvariant|keydef|listkeydef|importmodule|gimport|adoptmodule|importmhmodule|adoptmhmodule)', r'\\begin{(module|importmodulevia)}', r'\\end{(module|importmodulevia)}']
 regs = map(re.compile, regStrings)
-
 # templates
 all_pathstpl = Template(util.get_template("localpaths.tpl"))
 all_modtpl = Template(util.get_template("alltex_mod.tpl"))
@@ -109,20 +108,7 @@ all_textpl = Template(util.get_template("alltex_struct.tpl"))
 
 # Paths for latexml
 latexmlc = lmh_root+"/ext/LaTeXML/bin/latexmlc"
-
 pdflatex = util.which("pdflatex")
-
-# try:
-# 	util.stexstydir = ":".join([x[0] for x in os.walk(util.stexstydir)])
-# except:
-# 	pass
-
-# util.stexstydir = util.stexstydir+":"+lmh_root+"/ext/sTeX/schema/rng"
-# util.stexstydir = util.stexstydir+":"+lmh_root+"/ext/sTeX/xsl"
-
-#add subdirectories
-
-
 latexmlstydir = lmh_root+"/ext/sTeX/LaTeXML/lib/LaTeXML/texmf"
 stydir = lmh_root+"/sty"
 
