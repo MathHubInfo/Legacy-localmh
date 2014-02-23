@@ -209,18 +209,20 @@ def latexml_update(root, source, branch):
 def latexml_make(root):
   cpanm = util.which("cpanm")
   _env = util.perl5env(os.environ)
-  # this may need libgdbm-dev on ubtuntu
-  # TODO: find a way to display a message here
+  _env.pop("STEXSTYDIR", None)
   try:
-    call([cpanm, "-l", util.perl5root, "-L", util.perl5root, "--reinstall", "--notest", "--prompt", "."], env=_env, cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+    call([cpanm, "-L", util.perl5root[1], "--installdeps", "--prompt", "."], env=_env, cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+    call([cpanm, "-l", util.perl5root[0], "--prompt", "."], env=_env, cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
   except Exception as e:
     print "Unable to run make commands for latexml. "
     print e
 def latexmls_make(root):
   cpanm = util.which("cpanm")
   _env = util.perl5env(os.environ)
+  _env.pop("STEXSTYDIR", None)
   try:
-    call([cpanm, "-l", util.perl5root, "-L", util.perl5root, "--reinstall", "--notest", "--prompt", "."], env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+    call([cpanm, "-L", util.perl5root[1], "--installdeps", "--prompt", "."], env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+    call([cpanm, "-l", util.perl5root[0], "--prompt", "."], env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
   except Exception as e:
     print "Unable to run make commands for latexmls. "
     print e

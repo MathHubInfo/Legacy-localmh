@@ -77,14 +77,14 @@ def which(program):
 
     return None
 
-repoRegEx = '[\w-]+/[\w-]+';
-_lmh_root = lmh_root();
+repoRegEx = '[\w-]+/[\w-]+'
+_lmh_root = lmh_root()
 gitexec = which("git")
 svnexec = which("svn")
-perl5root = _lmh_root+"/ext/perl5lib/"
+perl5root = [_lmh_root+"/ext/perl5lib/", os.path.expanduser("~/")]
 
-perl5bindir = perl5root+"bin"+":"+_lmh_root+"/ext/LaTeXMLs/bin"+":"+_lmh_root+"/ext/LaTeXML/bin"
-perl5libdir = perl5root+"lib/perl5"
+perl5bindir = ":".join([p5r+"bin" for p5r in perl5root])+":"+_lmh_root+"/ext/LaTeXMLs/bin"+":"+_lmh_root+"/ext/LaTeXML/bin"
+perl5libdir = ":".join([p5r+"lib/perl5" for p5r in perl5root])
 stexstydir = _lmh_root+"/ext/sTeX/sty"
 
 def perl5env(_env = {}):
