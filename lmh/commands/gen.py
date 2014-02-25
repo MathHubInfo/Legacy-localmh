@@ -77,7 +77,8 @@ def add_parser_args(parser):
   whattogen.add_argument('--omdoc', nargs="*", help="generate omdoc files")
   whattogen.add_argument('--pdf', nargs="*", help="generate pdf files")
 
-  parser.add_argument('file', nargs='*', default=[], help="List of files to generate. ")
+  # TODO: Implement this. 
+  # parser.add_argument('file', nargs='*', default=[], help="List of files to generate. ")
 
   repos = parser.add_argument_group("Repositories to generate in").add_mutually_exclusive_group()
   repos.add_argument('--repository', dest="repository", type=util.parseRepo, nargs='*', default=[], help="a list of repositories for which to show the generate files. ")
@@ -112,6 +113,17 @@ pdflatex = util.which("pdflatex")
 latexmlstydir = lmh_root+"/ext/sTeX/LaTeXML/lib/LaTeXML/texmf"
 stydir = lmh_root+"/sty"
 
+# pdf inputs
+def genTEXInputs():
+  res = ".:"+stydir+":";
+  for (root, files, dirs) in os.walk(util.stexstydir):
+    res += root+":"
+  for (root, files, dirs) in os.walk(util.latexmlstydir):
+    res += root+":"
+  return res
+
+TEXINPUTS = genTEXInputs()
+
 def needsPreamble(file):
   # echsk if we need to add the premable
   return re.search(r"\\begin(\w)*{document}", util.get_file(file)) == None 
@@ -121,8 +133,8 @@ errorMsg = re.compile("Error:(.*)")
 fatalMsg = re.compile("Fatal:(.*)")
 
 def parseLateXMLOutput(file):
-  mod = file[:-4];
-  logfile = mod+".ltxlog";
+  mod = file[:-4]
+  logfile = mod+".ltxlog"
   try:
 
     for idx, line in enumerate(open(logfile)):
@@ -158,6 +170,10 @@ def get_modules(root, files, msg):
     mods.append({ "modName" : file[:-4], "file": fullFile, "date": os.path.getmtime(fullFile)})
   return mods
 
+# ===
+# SMS
+# ===
+
 def gen_sms_all(root, mods, args, msg):
   # Generate all SMS files
   msg("SMS_GEN_ALL: " + root)
@@ -166,7 +182,6 @@ def gen_sms_all(root, mods, args, msg):
 
     if not args.update or not os.path.exists(smsfileName) or mod["date"] > os.path.getmtime(smsfileName):
       gen_sms(args, mod["file"], smsfileName, msg)
-
 
 def gen_sms(args, input, output, msg):
   # generates a single sms file
@@ -207,6 +222,10 @@ def gen_localpaths(dest, repo, repo_name, args, msg):
   output = open(dest, "w")
   output.write(text)
   output.close()
+
+# ===
+# ALLTEX
+# ===
 
 def gen_alltex(dest, mods, config, args, msg):
   # generates all.tex
@@ -253,6 +272,10 @@ def gen_ext(extension, root, mods, config, args, todo, force, msg):
       msg("GEN_EXT_TODO_"+extension.upper()+": "+omdoc)
       todo.append({"root": root, "modName": omdoc, "pre" : config.get("gen", "pre"), "post" : config.get("gen", "post") })
 
+# ===
+# OMDOC
+# ===
+
 def gen_omdoc_runner(args, omdoc):
   try:
     current = multiprocessing.current_process()
@@ -275,6 +298,7 @@ def gen_omdoc(docs, args, msg):
     print "export PERL5LIB=\""+util.perl5libdir+"\":$PERL5LIB"
     for omdoc in docs:
       run_gen_omdoc(omdoc["root"], omdoc["modName"], omdoc["pre"], omdoc["post"], msg, port=3353, args=args)
+    return True
   elif len(docs) == 0:
     print "Master: no omdoc to generate, skipping omdoc generation ..." 
     return True
@@ -312,6 +336,7 @@ def gen_omdoc(docs, args, msg):
     pool.close()
     pool.join()
     print "Master: All worker processes have finished. "
+    return res
     
 
 def run_gen_omdoc(root, mod, pre_path, post_path, msg, args=None, port=3354):
@@ -355,10 +380,98 @@ def run_gen_omdoc(root, mod, pre_path, post_path, msg, args=None, port=3354):
       print e
     print "Worker #"+str(wid)+": terminated latexml. "
     sys.exit()
-    
+
+# ===
+# PDF
+# ===
+
+def gen_pdf_runner(args, pdf):
+  try:
+    current = multiprocessing.current_process()
+    wid = current._identity[0]
+    def msg(m):
+      if args.debug:
+        print "# "+ m 
+    run_gen_pdf(pdf["root"], pdf["modName"], pdf["pre"], pdf["post"], msg, port=3353+wid, args=args)
+  except Exception as e:
+    print e
+    print "WARNING: Generating PDF failed. (Make sure pdflatex is running)"
+
+def gen_pdf(docs, args, msg):
+  if args.simulate:
+    print "#---------------"
+    print "# generate pdf"
+    print "#---------------"
+    print "export TEXINPUTS="+TEXINPUTS
+    for pdf in docs:
+      run_gen_pdf(pdf["root"], pdf["modName"], pdf["pre"], pdf["post"], msg, port=3353, args=args)
+    return True
+  elif len(docs) == 0:
+    print "Master: no pdf to generate, skipping pdf generation ..." 
+    return True
+  else:
+    print "Master: Generating pdf for", len(docs), "files. " 
+    done = False
+
+    pool = multiprocessing.Pool(processes=args.workers)
+    try:
+      result = pool.map_async(functools.partial(gen_pdf_runner, args), docs).get(9999999)
+      try:
+        res = result.get(9999999)
+      except:
+        pass
+      res = True
+    except KeyboardInterrupt:
+      print "Master: received <<KeyboardInterrupt>>"
+      pool.terminate()
+      print "Master: Waiting for all processes to finish ..."
+      print "Master: Done. "
+      res = False
+    pool.close()
+    pool.join()
+    print "Master: All worker processes have finished. "
+    return res
     
 
+def run_gen_pdf(root, mod, pre_path, post_path, msg, args=None, port=3354):
+  msg("GEN_PDF: "+ mod + ".pdf")
+  modPath = os.path.join(root, mod)
+  if args.simulate:
+    print "cd "+util.shellquote(root)
+    if needsPreamble(root+"/"+mod+".tex"):
+      print "echo \"\\begin{document}\\n\" | cat "+util.shellquote(pre_path)+" - "+util.shellquote(modPath+".tex")+" "+util.shellquote(post_path)+" | "+pdflatex+" -jobname " + mod 
+    else:
+      print pdflatex+" "+util.shellquote(mod+".tex")
+    return 
 
+  wid = port - 3354
+
+  print "Worker #"+str(wid)+": generating "+mod+".pdf"
+  try:
+    if needsPreamble(root+"/"+mod+".tex"):
+      p0 = Popen(["echo", "\\begin{document}\n"], stdout=PIPE)
+      c1 = ["cat", pre_path, "-", modPath+".tex", post_path]
+      p1 = Popen(c1, cwd=root, stdin=p0.stdout, stdout=PIPE)
+      p2 = Popen([pdflatex, "-jobname", mod], cwd=root, stdin=p1.stdout, stdout=PIPE, env = {"TEXINPUTS" : TEXINPUTS})
+    else:
+      p2 = Popen([pdflatex, mod+".tex"], cwd=root, stdout=PIPE, env = {"TEXINPUTS" : TEXINPUTS})
+
+    output = p2.communicate()[0]
+    if args.debug:
+      print "Worker #"+str(wid)+": "+output
+    if not p2.returncode == 0:
+      print "Worker #"+str(wid)+": failed to generate "+mod+".pdf"
+      print output
+    else:
+      print "Worker #"+str(wid)+": generated "+mod+".pdf"
+    util.set_file(modPath+".clog", output)
+  except KeyboardInterrupt:
+    sys.exit()
+    
+
+# ===
+# General generation stuffs
+# ===
 
 def prep_gen(rep, args, msg):
   # prepare generation
@@ -464,12 +577,20 @@ def run_gen(omdocToDo, pdfToDo, args, msg):
   omdoc = gen_omdoc(omdocToDo, args, msg)
   if not omdoc:
     print "OmDoc generation aborted prematurely, skipping pdf generation. "
+    return
+
+  pdf = gen_pdf(pdfToDo, args, msg)
+  if not pdf:
+    print "PDF generation aborted prematurely. "
+    return
 
 def do(args):
 
   def msg(m):
     if args.debug:
       print "# "+ m
+
+  # TODO: Add s ingle file generation here
 
   if len(args.repository) == 0:
     args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
