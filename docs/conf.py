@@ -19,7 +19,7 @@ import os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-sys.path.insert(0, os.path.abspath('../bin'))
+sys.path.insert(0, str(os.path.abspath('..')))
 
 # -- General configuration ------------------------------------------------
 
@@ -49,7 +49,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Local MathHub'
-copyright = u'2013, Constantin Jucovschi'
+copyright = u'2013-14, The KWARC Group <kwarc.info>'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -72,7 +72,7 @@ release = ''
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['.']
+exclude_patterns = []
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -132,7 +132,7 @@ html_theme = 'default'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+#html_static_path = ['_static']
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
@@ -202,7 +202,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'LocalMathHub.tex', u'Local MathHub Documentation',
-   u'Constantin Jucovschi', 'manual'),
+   u'The KWARC group', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -232,7 +232,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'localmathhub', u'Local MathHub Documentation',
-     [u'Constantin Jucovschi'], 1)
+     [u'The KWARC group'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -246,7 +246,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'LocalMathHub', u'Local MathHub Documentation',
-   u'Constantin Jucovschi', 'LocalMathHub', 'One line description of project.',
+   u'The KWARC group', 'LocalMathHub', 'Local MathHub Tool',
    'Miscellaneous'),
 ]
 
@@ -267,9 +267,9 @@ texinfo_documents = [
 
 # Bibliographic Dublin Core info.
 epub_title = u'Local MathHub'
-epub_author = u'Constantin Jucovschi'
-epub_publisher = u'Constantin Jucovschi'
-epub_copyright = u'2013, Constantin Jucovschi'
+epub_author = u'The KWARC group'
+epub_publisher = u'The KWARC group'
+epub_copyright = u'2013-14, The KWARC group'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = u'Local MathHub'
