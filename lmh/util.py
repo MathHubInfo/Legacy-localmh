@@ -178,7 +178,7 @@ def parseSimpleRepo(repoName):
 def tryRepo(repoName, default):
   try:
     return parseRepo(repoName)
-  except Exception, e:
+  except Exception as e:
     return default
 
 def parseRepo(repoName):
@@ -255,6 +255,8 @@ def git_origin(rootdir="."):
 
 
 def git_root_dir(dir = "."):
+    if os.path.isfile(dir):
+      dir = os.path.dirname(dir)
     rootdir = subprocess.Popen([which("git"), "rev-parse", "--show-toplevel"], 
                                 stdout=subprocess.PIPE,
                                 cwd=dir,
@@ -263,7 +265,7 @@ def git_root_dir(dir = "."):
     return rootdir
 
 def get_dependencies(dir):
-    res = [];
+    res = []
     try:
         dir = git_root_dir(dir);
         with open (dir+"/META-INF/MANIFEST.MF", "r") as metafile:

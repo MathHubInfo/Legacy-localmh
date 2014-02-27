@@ -219,11 +219,13 @@ def latexml_make(root):
   _env = util.perl5env(os.environ)
   _env.pop("STEXSTYDIR", None)
   try:
-    call([cpanm, "-L", util.perl5root[1], "--installdeps", "--prompt", "."], env=_env, cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-    call([perl, "Makefile.PL"], env=_env, cwd=root+"/LaTeXML")
-    call([make], env=_env, cwd=root+"/LaTeXML")
+    call([cpanm, "-L", util.perl5root[0], "--installdeps", "--prompt", "."], env=_env, cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+    call([cpanm, "-L", util.perl5root[0], "--notest", "--prompt", "."], env=_env, cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+  
+    # MANUAL INSTALLATION
+    #call([perl, "Makefile.PL"], env=_env, cwd=root+"/LaTeXML")
+    #call([make], env=_env, cwd=root+"/LaTeXML")
     #call([make, "test"], env=_env, cwd=root+"/LaTeXML")
-    #call([cpanm, "-l", util.perl5root[0], "--prompt", "."], env=_env, cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
   except Exception as e:
     print "Unable to run make commands for latexml. "
     print e
@@ -234,11 +236,13 @@ def latexmls_make(root):
   _env = util.perl5env(os.environ)
   _env.pop("STEXSTYDIR", None)
   try:
-    call([cpanm, "-L", util.perl5root[1], "--installdeps", "--prompt", "."], env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-    call([perl, "Makefile.PL"], env=_env, cwd=root+"/LaTeXMLs")
-    call([make], env=_env, cwd=root+"/LaTeXMLs")
+    call([cpanm, "-L", util.perl5root[0], "--installdeps", "--prompt", "."], env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+    call([cpanm, "-L", util.perl5root[0], "--notest", "--prompt", "."], env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+    
+    # MANUAL INSTALLATION
+    #call([perl, "Makefile.PL"], env=_env, cwd=root+"/LaTeXMLs")
+    #call([make], env=_env, cwd=root+"/LaTeXMLs")
     #call([make, "test"], env=_env, cwd=root+"/LaTeXMLs")
-    #call([cpanm, "-l", util.perl5root[0], "--prompt", "."], env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
   except Exception as e:
     print "Unable to run make commands for latexmls. "
     print e
