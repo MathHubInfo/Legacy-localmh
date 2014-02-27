@@ -26,6 +26,7 @@ import glob
 import psutil
 import signal
 import urllib2
+import itertools
 import argparse
 import subprocess
 import ConfigParser
@@ -319,3 +320,7 @@ def kill_child_processes(parent_pid, sig=signal.SIGTERM, recursive=True,self=Tru
 
     if self:
       os.kill(parent_pid, sig) 
+def reduce(a):
+  b = []
+  [b.extend(c) for c in a]
+  return b
