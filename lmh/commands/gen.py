@@ -73,16 +73,15 @@ def add_parser_args(parser):
 
   whattogen = parser.add_argument_group("What to generate")
 
-  whattogen.add_argument('--sms', nargs="*", help="generate sms files")
-  whattogen.add_argument('--omdoc', nargs="*", help="generate omdoc files")
+  whattogen.add_argument('--sms', action="store_const", const=[], default=None, help="generate sms files")
+  whattogen.add_argument('--omdoc', action="store_const", const=[], default=None, help="generate omdoc files")
   whattogen.add_argument('--pdf', nargs="*", help="generate pdf files")
 
-  # TODO: Implement this. 
-  # parser.add_argument('file', nargs='*', default=[], help="List of files to generate. ")
+  wheretogen = parser.add_argument_group("Where to generate").add_mutually_exclusive_group()
 
-  repos = parser.add_argument_group("Repositories to generate in").add_mutually_exclusive_group()
-  repos.add_argument('--repository', dest="repository", type=util.parseRepo, nargs='*', default=[], help="a list of repositories for which to show the generate files. ")
-  repos.add_argument('--all', "-a", default=False, const=True, action="store_const", help="generates files for all repositories")
+
+  wheretogen.add_argument('pathspec', metavar="PATH_OR_REPOSITORY", nargs='*', default=[], help="A list of paths or repositories to generate things in. ")
+  wheretogen.add_argument('--all', "-a", default=False, const=True, action="store_const", help="generates files for all repositories")
   
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
@@ -303,7 +302,7 @@ def gen_omdoc(docs, args, msg):
     print "Master: no omdoc to generate, skipping omdoc generation ..." 
     return True
   else:
-    print "Master: Generating OmDoc for", len(docs), "files. " 
+    print "Master: Generating OmDoc for", len(docs), "file(s). " 
     done = False
 
     pool = multiprocessing.Pool(processes=args.workers)
@@ -410,7 +409,7 @@ def gen_pdf(docs, args, msg):
     print "Master: no pdf to generate, skipping pdf generation ..." 
     return True
   else:
-    print "Master: Generating pdf for", len(docs), "files. " 
+    print "Master: Generating pdf for", len(docs), "file(s). " 
     done = False
 
     pool = multiprocessing.Pool(processes=args.workers)
@@ -473,8 +472,9 @@ def run_gen_pdf(root, mod, pre_path, post_path, msg, args=None, port=3354):
 # General generation stuffs
 # ===
 
-def prep_gen(rep, args, msg):
+def prep_gen(dir_or_path, args, msg):
   # prepare generation
+  rep = dir_or_path # use the repository in the dir or path
 
   # intialise this repository
   rep_root = util.git_root_dir(rep)
@@ -485,6 +485,7 @@ def prep_gen(rep, args, msg):
   pdfToDo = []
 
   def traverse(root, config):
+
     # traversing a directory
     files = os.listdir(root)
 
@@ -506,7 +507,7 @@ def prep_gen(rep, args, msg):
 
     # LOAD the modules
     mods = get_modules(root, files, msg)
-    
+
     if len(mods) > 0:
       # find the youngest mod
       youngest = max(map(lambda x : x["date"], mods))
@@ -584,27 +585,80 @@ def run_gen(omdocToDo, pdfToDo, args, msg):
     print "PDF generation aborted prematurely. "
     return
 
+def prep_gen_file(args, fname, pdf, omdoc, msg):
+  pdf_t = []
+  omdoc_t = []
+  for file in glob.glob(fname):
+    file = os.path.abspath(file)
+    args.repository = [util.tryRepo(os.path.dirname(file), util.lmh_root()+"/MathHub/*/*")]
+    if pdf:
+      args.pdf = [os.path.basename(file)]
+    if omdoc:
+      args.omdoc = [os.path.basename(file)]
+    (omdoct, pdft) = prep_gen(args.repository[0], args, msg)
+    pdf_t.extend(pdft)
+    omdoc_t.extend(omdoct)
+  return (omdoc_t, pdf_t) 
+def prep_gen_folder(args, fname, pdf, omdoc, msg):
+  pdf_t = []
+  omdoc_t = []
+  for fname in glob.glob(fname):
+    args.repository = [util.tryRepo(folder, util.lmh_root()+"/MathHub/*/*")]
+    if pdf:
+      args.pdf = []
+    if omdoc:
+      args.omdoc = []
+    (omdoct, pdft) = prep_gen(args.repository[0], args, msg)
+    pdf_t.extend(pdft)
+    omdoc_t.extend(omdoct)
+  return (omdoc_t, pdf_t)
+
+
 def do(args):
 
   def msg(m):
     if args.debug:
       print "# "+ m
 
-  # TODO: Add s ingle file generation here
-
-  if len(args.repository) == 0:
-    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
-  if args.all:
-    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]  
+ 
 
   omdocToDo = []
   pdfToDo = []
 
-  for repo in args.repository:
-    for rep in glob.glob(repo):
-      (omdoc, pdf) = prep_gen(rep, args, msg)
-      omdocToDo.extend(omdoc)
-      pdfToDo.extend(pdf)
+  args.repository = []
+
+  #TODO: Put paths in repository with /*; put files into omdoc and pdf if exist
+  has_omdoc = (args.omdoc != None)
+  has_pdf = (args.pdf != None)
+
+
+  if(len(args.pathspec) == 0):
+    # Nothing to do, generate in the current directory
+    if args.all:
+      # generate everywhere
+      args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]
+    else:
+      # generate in the current directory only
+      args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
+    for repo in args.repository:
+      for rep in glob.glob(repo):
+        (omdoc, pdf) = prep_gen(rep, args, msg)
+        omdocToDo.extend(omdoc)
+        pdfToDo.extend(pdf)
+  else:
+    # we have some repositories
+    for pathspec in args.pathspec:
+      try:
+        if os.path.isfile(pathspec):
+          (omdoc, pdf) = prep_gen_file(args, pathspec, has_pdf, has_omdoc, msg)
+        else:
+          (omdoc, pdf) = prep_gen_folder(args, pathspec, has_pdf, has_omdoc, msg)
+        omdocToDo.extend(omdoc)
+        pdfToDo.extend(pdf)
+      except Exception as e:
+        print e
+        print "# Nothing to do for: "+pathspec 
+
 
   run_gen(omdocToDo, pdfToDo, args, msg)
   agg.print_summary()
