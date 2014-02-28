@@ -33,9 +33,11 @@ import re
 import glob
 import time
 import signal
+import shutil
 import argparse
 import datetime
 import functools
+import traceback
 import ConfigParser
 import multiprocessing
 
@@ -46,6 +48,7 @@ from subprocess import PIPE
 
 from lmh import agg
 from lmh import util
+
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Generation tool.')
@@ -166,11 +169,13 @@ def gen_sms(modules, update, verbose, quiet, workers, nice):
       for job in jobs:
         sms_gen_dump(job)
     else:
+      if not quiet:
+        print "SMS: Generating", len(jobs), "files"
       for job in jobs:
         sms_gen_do(job, quiet)
   except Exception as e:
     print "SMS generation failed. "
-    print e
+    print traceback.format_exc()
     return False
 
   return True
@@ -245,18 +250,20 @@ def gen_localpaths(modules, update, verbose, quiet, workers, nice):
       for job in jobs:
         localpaths_gen_dump(job)
     else:
+      if not quiet:
+        print "LOCALPATHS: Generating", len(jobs), "files. "
       for job in jobs:
         localpaths_gen_do(job, quiet)
   except Exception as e:
     print "LOCALPATHS generation failed. "
-    print e
+    print traceback.format_exc()
     return False
 
   return True
 
 def localpaths_gen_job(module):
-  # store parameters for locapath.tex job generation
-  return (module["localpaths"], module["repo"], module["repo_name"])
+  # store parameters for localpaths.tex job generation
+  return (module["localpaths_path"], module["repo"], module["repo_name"])
   
 
 def localpaths_gen_do(job, quiet, worker=None, cwd="."):
@@ -303,18 +310,20 @@ def gen_alltex(modules, update, verbose, quiet, workers, nice):
       for job in jobs:
         alltex_gen_dump(job)
     else:
+      if not quiet:
+        print "ALLTEX: Generating", len(jobs), "files. "
       for job in jobs:
         alltex_gen_do(job, quiet)
   except Exception as e:
     print "ALLTEX generation failed. "
-    print e
+    print traceback.format_exc()
     return False
 
   return True
 
 def alltex_gen_job(module):
   # store parameters for all.tex job generation
-  return (module["alltex"], module["file_pre"], module["file_post"], module["modules"])
+  return (module["alltex_path"], module["file_pre"], module["file_post"], module["modules"])
   
 
 def alltex_gen_do(job, quiet, worker=None, cwd="."):
@@ -371,14 +380,47 @@ def gen_omdoc(modules, update, verbose, quiet, workers, nice):
       for job in jobs:
         omdoc_gen_dump(job)
     elif workers == 1:
+      if not quiet:
+        print "OMDOC: Generating", len(jobs), "files"
       for job in jobs:
-        omdoc_gen_do(job, quiet)
+        omdoc_gen_do_master(job, quiet)
     else:
-      print "OMDOC: Multi threading disabled. "
-      return False
+      print "OMDOC: Generating", len(jobs), "files with", workers, "workers."
+      pool = multiprocessing.Pool(processes=workers)
+      try:
+        result = pool.map_async(functools.partial(omdoc_gen_do_worker, quiet), jobs).get(9999999)
+        try:
+          res = result.get(9999999)
+        except:
+          pass
+        res = True
+      except KeyboardInterrupt:
+        print "OMDOC: received <<KeyboardInterrupt>>"
+        print "OMDOC: killing worker processes ..."
+        pool.terminate()
+        print "OMDOC: Cleaning up latexmls processes ..."
+        try:
+          p = Popen(['ps', '-A'], stdout=PIPE)
+          out, err = p.communicate()
+          for line in out.splitlines():
+            if 'latexmls' in line:
+             pid = int(line.split(None, 1)[0])
+             os.kill(pid, signal.SIGKILL)
+        except Exception as e:
+          print e
+          print "OMDOC: Unable to kill some latexmls processes. "
+        print "OMDOC: Waiting for all processes to finish ..."
+        time.sleep(5)
+        print "OMDOC: Done. "
+        res = False
+      pool.close()
+      pool.join()
+      if not quiet:
+        print "OMDOC: All workers have finished "
+      return res
   except Exception as e:
     print "OMDOC generation failed. "
-    print e
+    print traceback.format_exc()
     return False
 
   return True
@@ -395,51 +437,170 @@ def omdoc_gen_job(module):
 
   return (args, module["omdoc_path"], module["path"], _env)
 
-def omdoc_gen_do(job, quiet, worker=None, cwd="."):
-  # run a omdoc job 
-  if worker == None:
-    # we are in master
-    omdoc_gen_do_master(job, quiet, cwd)
-  else:
-    # we are not in the master, we need to determine worker id
-    omdoc_gen_do_worker(job, worker, quiet)
-
-def omdoc_gen_do_master(job, quiet, cwd="."):
+def omdoc_gen_do_master(job, quiet, port=None, wid=""):
   (args, mod, path, _env) = job
+
+  if port == None:
+    port = "3353"
+
   if not quiet:
-    print "OMDOC: Generating", mod
+    print "OMDOC"+wid+": Generating", mod
 
-  args[1:1] = ["--expire=120", "--port=3353"]
+  args.extend(["--expire=10", "--port="+str(port)])
 
-  p = Popen(args, cwd=path, env=_env, stdin=None, stdout=PIPE, stderr=PIPE, bufsize=1)
-  p.wait()
+  try:
+    if quiet:
+      p = Popen(args, cwd=path, env=_env, stdin=None, stdout=PIPE, stderr=PIPE, bufsize=1)
+    else:
+      p = Popen(args, cwd=path, env=_env, stdin=None, stdout=sys.stdout, stderr=sys.stderr, bufsize=1)
+    p.wait()
+  except KeyboardInterrupt as k:
+    print "OMDOC"+wid+": KeyboardInterrupt, stopping generation"
+    p.terminate()
+    p.wait()
+    raise k
+
   parseLateXMLOutput(mod[:-6]+".tex")
 
-  # out, err = p.communicate()
-  # if not quiet:
-  #   for line in out.split("\n"):
-  #     if line != "":
-  #       print "OMDOC: "+line
-  #   for line in err.split("\n"):
-  #     if line != "":
-  #       print "OMDOC: "+line
-  
-
   if not quiet:
-    print "OMDOC: Generated", mod
+    if p.returncode == 0:
+      print "OMDOC"+wid+": Generated", mod
+    else:
+      print "OMDOC"+wid+": Did not generate", mod
 
-def omdoc_gen_do_worker(job, worker, quiet, cwd="."):
-  pass
+def omdoc_gen_do_worker(quiet, job):
+  wid = multiprocessing.current_process()._identity[0]
+  omdoc_gen_do_master(job, quiet, port=wid+3353, wid="["+str(wid)+"]")
 
 
 def omdoc_gen_dump(job):
   # dump an omdoc job to stdout
   (args, omdoc, path, env) = job
 
-  print "# generate", omdoc   
+  print "# generate", omdoc  
+
+  args.extend(["--expire=10", "--port=3353"])
 
   print "cd "+path
   print " ".join(args)
+
+# ==============
+# pdf
+# ==============
+
+def gen_pdf(modules, update, verbose, quiet, workers, nice):
+  # general pdf generation
+  jobs = []
+  for mod in modules:
+    if mod["type"] == "file":
+      if mod["file_pre"] != None and (not update or mod["file_time"] > mod["pdf_fime"]):
+        jobs.append(pdf_gen_job(mod))
+  try:
+    # check we have pdflatex
+    if not os.path.isfile(pdflatex):
+      raise Exception("pdflatex is missing, make sure you ran lmh setup. ")
+
+    if verbose:
+      print "# PDFLATEX Generation"
+
+      print "export TEXINPUTS="+TEXINPUTS
+
+      for job in jobs:
+        pdf_gen_dump(job)
+    elif workers == 1:
+      if not quiet:
+        print "PDF: Generating", len(jobs), "files"
+      for job in jobs:
+        pdf_gen_do_master(job, quiet)
+    else:
+      print "PDF: Generating", len(jobs), "files with", workers, "workers."
+      pool = multiprocessing.Pool(processes=workers)
+      try:
+        result = pool.map_async(functools.partial(pdf_gen_do_worker, quiet), jobs).get(9999999)
+        try:
+          res = result.get(9999999)
+        except:
+          pass
+        res = True
+      except KeyboardInterrupt:
+        print "PDF: received <<KeyboardInterrupt>>"
+        print "PDF: killing worker processes ..."
+        pool.terminate()
+        print "PDF: Waiting for all processes to finish ..."
+        time.sleep(5)
+        print "PDF: Done. "
+        res = False
+      pool.close()
+      pool.join()
+      if not quiet:
+        print "PDF: All workers have finished "
+      return res
+  except Exception as e:
+    print "PDF generation failed. "
+    print traceback.format_exc()
+    return False
+
+  return True
+
+def pdf_gen_job(module):
+  # store parameters for pdf job generation
+  _env = os.environ.copy()
+  _env["TEXINPUTS"] = TEXINPUTS
+  return (module["file_pre"], module["file_post"], module["mod"], _env, module["file"], module["path"], module["pdf_path"], module["pdf_log"])
+
+
+def pdf_gen_do_master(job, quiet, wid=""):
+  # pdf generation in master process
+  (pre, post, mod, _env, file, cwd, pdf_path, pdflog) = job
+
+  if not quiet:
+    print "PDF"+wid+": Generating", pdf_path
+
+  args = [pdflatex, "-jobname", mod]
+
+  try:
+    if pre != None:
+      p0 = Popen(["echo", "\\begin{document}\n"], stdout=PIPE)
+      c1 = ["cat", pre, "-", mod+".tex", post]
+      p1 = Popen(c1, cwd=cwd, stdin=p0.stdout, stdout=PIPE)
+      p = Popen([pdflatex, "-jobname", mod], cwd=cwd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env = _env)
+    else:
+      p = Popen([pdflatex, file], cwd=cwd, stdout=PIPE, env=_env)
+    p.wait()
+  except KeyboardInterrupt as k:
+    print "PDF"+wid+": KeyboardInterrupt, stopping generation"
+    p.terminate()
+    p.wait()
+    raise k
+
+  # move the log file
+  shutil.move(file[:-4]+".log", pdflog)
+  
+  if not quiet:
+    if p.returncode == 0:
+      print "PDF"+wid+": Generated", pdf_path
+    else:
+      print "PDF"+wid+": Did not generate", pdf_path
+  
+
+def pdf_gen_do_worker(quiet, job):
+  wid = multiprocessing.current_process()._identity[0]
+  pdf_gen_do_master(job, quiet, wid="["+str(wid)+"]")
+
+
+def pdf_gen_dump(job):
+  # dump an pdf job to stdout
+  (pre, post, mod, _env, file, cwd, pdf_path, pdflog) = job
+
+  print "# generate", pdf_path  
+  print "cd "+cwd
+
+  if pre != None:
+    print "echo \"\\begin{document}\\n\" | cat "+util.shellquote(pre)+" - "+util.shellquote(file)+" "+util.shellquote(post)+" | "+pdflatex+" -jobname " + mod
+  else:
+      print pdflatex+" "+file
+  print "mv "+job+".log "+pdflog
+
 
 
 def locate_module(path, git_root):
@@ -565,9 +726,11 @@ def locate_modules(path, depth=-1):
       "youngest": youngest, 
 
       "alltex": alltexpath if os.path.isfile(alltexpath) else None, 
+      "alltex_path": alltexpath, 
       "alltex_time": os.path.getmtime(alltexpath) if os.path.isfile(alltexpath) else 0,
 
       "localpaths": localpathstex if os.path.isfile(localpathstex) else None, 
+      "localpaths_path": localpathstex, 
       "localpaths_time": os.path.getmtime(localpathstex) if os.path.isfile(localpathstex) else 0,
 
       "file_pre": pre, 
@@ -665,9 +828,6 @@ def do(args):
     if not gen_omdoc(modules, args.update, args.verbose, args.quiet, args.workers, args.nice):
       print "OMDOC: Generation aborted prematurely, skipping further generation. "
       sys.exit(1)
-
-  print "PDF: Generation unimplemented. Ignoring all --pdf commands. "
-  sys.exit(1)
 
   if args.pdf:
     if not gen_pdf(modules, args.update, args.verbose, args.quiet, args.workers, args.nice):

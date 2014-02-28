@@ -304,7 +304,6 @@ def kill_child_processes(parent_pid, sig=signal.SIGTERM, recursive=True,self=Tru
 
     if self:
       os.kill(parent_pid, sig) 
-def reduce(a):
-  b = []
-  [b.extend(c) for c in a]
-  return b
+def reduce(lst):
+  return sum( ([x] if not isinstance(x, list) else reduce(x)
+         for x in lst), [] )
