@@ -87,6 +87,9 @@ def add_parser_args(parser, add_types=True):
     whattogen.add_argument('--pdf', action="store_const", const=True, default=False, help="generate pdf files, implies --sms. ")
     whattogen.add_argument('--list', action="store_const", const=True, default=False, help="dump all found modules to stdout. If enabled, --sms --omdoc and --pdf are ignored. ")
 
+    parser.add_argument('--pdf-add-begin-document', action="store_const", const=True, default=False, help="add \\begin{document} to LaTeX sources when generating pdfs. Backward compatibility for issue #82")
+
+
   wheretogen = parser.add_argument_group("Where to generate")
   wheretogen.add_argument('-d', '--recursion-depth', type=int, default=-1, help="Recursion depth for paths and repositories. ")
   
@@ -488,13 +491,13 @@ def omdoc_gen_dump(job):
 # pdf
 # ==============
 
-def gen_pdf(modules, update, verbose, quiet, workers, nice):
+def gen_pdf(modules, update, verbose, quiet, workers, nice, add_bd):
   # general pdf generation
   jobs = []
   for mod in modules:
     if mod["type"] == "file":
       if mod["file_pre"] != None and (not update or mod["file_time"] > mod["pdf_fime"]):
-        jobs.append(pdf_gen_job(mod))
+        jobs.append(pdf_gen_job(mod, add_bd))
   try:
     # check we have pdflatex
     if not os.path.isfile(pdflatex):
@@ -542,16 +545,16 @@ def gen_pdf(modules, update, verbose, quiet, workers, nice):
 
   return True
 
-def pdf_gen_job(module):
+def pdf_gen_job(module, add_bd):
   # store parameters for pdf job generation
   _env = os.environ.copy()
   _env["TEXINPUTS"] = TEXINPUTS
-  return (module["file_pre"], module["file_post"], module["mod"], _env, module["file"], module["path"], module["pdf_path"], module["pdf_log"])
+  return (module["file_pre"], module["file_post"], module["mod"], _env, module["file"], module["path"], module["pdf_path"], module["pdf_log"], add_bd)
 
 
 def pdf_gen_do_master(job, quiet, wid=""):
   # pdf generation in master process
-  (pre, post, mod, _env, file, cwd, pdf_path, pdflog) = job
+  (pre, post, mod, _env, file, cwd, pdf_path, pdflog, add_bd) = job
 
   if not quiet:
     print "PDF"+wid+": Generating", pdf_path
@@ -560,9 +563,14 @@ def pdf_gen_do_master(job, quiet, wid=""):
 
   try:
     if pre != None:
-      p0 = Popen(["echo", "\\begin{document}\n"], stdout=PIPE)
-      c1 = ["cat", pre, "-", mod+".tex", post]
-      p1 = Popen(c1, cwd=cwd, stdin=p0.stdout, stdout=PIPE)
+      if add_bd:
+        p0 = Popen(["echo", "\\begin{document}\n"], stdout=PIPE)
+        c1 = ["cat", pre, "-", mod+".tex", post]
+        p1 = Popen(c1, cwd=cwd, stdin=p0.stdout, stdout=PIPE)
+      else:
+        c1 = ["cat", pre, mod+".tex", post]
+        p1 = Popen(c1, cwd=cwd, stdin=None, stdout=PIPE)
+      
       p = Popen([pdflatex, "-jobname", mod], cwd=cwd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env = _env)
     else:
       p = Popen([pdflatex, file], cwd=cwd, stdout=PIPE, env=_env)
@@ -590,13 +598,17 @@ def pdf_gen_do_worker(quiet, job):
 
 def pdf_gen_dump(job):
   # dump an pdf job to stdout
-  (pre, post, mod, _env, file, cwd, pdf_path, pdflog) = job
+  (pre, post, mod, _env, file, cwd, pdf_path, pdflog, add_bd) = job
 
   print "# generate", pdf_path  
   print "cd "+cwd
 
   if pre != None:
-    print "echo \"\\begin{document}\\n\" | cat "+util.shellquote(pre)+" - "+util.shellquote(file)+" "+util.shellquote(post)+" | "+pdflatex+" -jobname " + mod
+    if add_bd:
+      print "echo \"\\begin{document}\\n\" | cat "+util.shellquote(pre)+" - "+util.shellquote(file)+" "+util.shellquote(post)+" | "+pdflatex+" -jobname " + mod
+    else:
+      print "cat "+util.shellquote(pre)+" "+util.shellquote(file)+" "+util.shellquote(post)+" | "+pdflatex+" -jobname " + mod
+
   else:
       print pdflatex+" "+file
   print "mv "+job+".log "+pdflog
@@ -830,6 +842,6 @@ def do(args):
       sys.exit(1)
 
   if args.pdf:
-    if not gen_pdf(modules, args.update, args.verbose, args.quiet, args.workers, args.nice):
+    if not gen_pdf(modules, args.update, args.verbose, args.quiet, args.workers, args.nice, args.pdf_add_begin_document):
       print "PDF: Generation aborted prematurely, skipping further generation. "
       sys.exit(1)

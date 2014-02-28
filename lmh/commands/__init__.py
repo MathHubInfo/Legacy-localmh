@@ -63,7 +63,10 @@ def create_parser(submods = {}):
 
 	add_parser_args(subparsers.add_parser('sms', help='generates sms files, alias for lmh gen --sms'), add_types=False).epilog = "Generate sms files. "
 	add_parser_args(subparsers.add_parser('omdoc', help='generates omdoc files, alias for lmh gen --omdoc'), add_types=False).epilog = "Generate omdoc files. "
-	add_parser_args(subparsers.add_parser('pdf', help='generates pdf files, alias for lmh gen --pdf'), add_types=False).epilog = "Generate pdf files. "
+	
+	p = add_parser_args(subparsers.add_parser('pdf', help='generates pdf files, alias for lmh gen --pdf'), add_types=False)
+	p.add_argument('--pdf-add-begin-document', action="store_const", const=True, default=False, help="add \\begin{document} to LaTeX sources when generating pdfs. Backward compatibility for issue #82")
+	p.epilog = "Generate pdf files. "
 
 	if util.module_exists("argcomplete"):
 		__import__("argcomplete").autocomplete(parser)
