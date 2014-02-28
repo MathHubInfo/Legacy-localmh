@@ -74,29 +74,20 @@ def main(argv = sys.argv[1:]):
 
   # gen aliases
   if args.action == "sms":
-    cmd = ["gen"]
-    if args.force:
-      cmd.extend(["--force"])
-    cmd.extend(args.repository)
-    print cmd
-    gen.do(parser.parse_args(cmd))
-    return    
+    argv[0] = "gen"
+    argv.append("--sms")
+    return submods["gen"].do(parser.parse_args(argv))
 
   if args.action == "omdoc":
-    cmd = ["gen", "--verbose", "--omdoc"]
-    if args.force:
-      cmd.extend(["--force"])
-    cmd.extend(args.repository)
-    gen.do(parser.parse_args(cmd))
+    argv[0] = "gen"
+    argv.append("--omdoc")
+    return submods["gen"].do(parser.parse_args(argv))
     return    
 
   if args.action == "pdf":
-    cmd = ["gen", "--verbose", "--pdf"]
-    if args.force:
-      cmd.extend(["--force"])
-    cmd.extend(args.repository)
-    gen.do(parser.parse_args(cmd))
-    return    
+    argv[0] = "gen"
+    argv.append("--pdf")
+    return submods["gen"].do(parser.parse_args(argv)) 
 
   if args.action == "repos":
     rep = util.lmh_repos()

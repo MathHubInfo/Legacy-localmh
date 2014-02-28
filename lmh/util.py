@@ -26,6 +26,7 @@ import glob
 import psutil
 import signal
 import urllib2
+import itertools
 import argparse
 import subprocess
 import ConfigParser
@@ -281,32 +282,16 @@ def get_dependencies(dir):
 
     return res
 
-def lowpriority(pid = None):
+def setnice(nice, pid = None):
     """ Set the priority of the process to below-normal."""
-    import sys
-    try:
-        sys.getwindowsversion()
-    except:
-        isWindows = False
-    else:
-        isWindows = True
 
-    if isWindows:
-        # Based on:
-        #   "Recipe 496767: Set Process Priority In Windows" on ActiveState
-        #   http://code.activestate.com/recipes/496767/
-        import win32api,win32process,win32con
-        if pid == None:
-          pid = win32api.GetCurrentProcessId()
-        handle = win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS, True, pid)
-        win32process.SetPriorityClass(handle, win32process.BELOW_NORMAL_PRIORITY_CLASS)
-    else:
-        import psutil, os
-        if pid == None:
-          pid = os.getpid()
 
-        p = psutil.Process(pid)
-        p.nice = 1
+    import psutil, os
+    if pid == None:
+      pid = os.getpid()
+
+    p = psutil.Process(pid)
+    p.nice = nice
 
 def kill_child_processes(parent_pid, sig=signal.SIGTERM, recursive=True,self=True):
     try:
@@ -319,3 +304,6 @@ def kill_child_processes(parent_pid, sig=signal.SIGTERM, recursive=True,self=Tru
 
     if self:
       os.kill(parent_pid, sig) 
+def reduce(lst):
+  return sum( ([x] if not isinstance(x, list) else reduce(x)
+         for x in lst), [] )

@@ -34,6 +34,7 @@ import argparse
 import subprocess
 
 from lmh import util
+from lmh.commands.gen import resolve_pathspec
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Clean tool.')
@@ -45,39 +46,60 @@ def add_parser(subparsers, name="clean"):
   add_parser_args(parser_clean)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to show the clean. ").completer = util.autocomplete_mathhub_repository
-  parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs status on all repositories currently in lmh")
+  ps = parser.add_mutually_exclusive_group()
+  ps.add_argument('pathspec', metavar="PATH_OR_REPOSITORY", nargs='*', default=[], help="A list of paths or repositories to generate things in. ")
+  ps.add_argument('--all', "-a", default=False, const=True, action="store_const", help="generates files for all repositories")  
 
-  parser.epilog = """
-Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
-  Example:  
-    */*       - would match all repositories from all groups. 
-    mygroup/* - would match all repositories from group mygroup
-    .         - would be equivalent to "git clean ."
-""";
+  parser.add_argument('-d', '--recursion-depth', type=int, default=-1, help="Recursion depth for paths and repositories. ")
 
-def do_clean(rep):
-  remove = [];
-  rep_root = util.git_root_dir(rep);
-  ignoreFile = rep_root+"/.gitignore";
-  if not os.path.exists(ignoreFile):
-    print "No .gitignore file found in %s"%rep_root
-    return
-  for line in open(ignoreFile):
-    pattern = line.strip()
-    if len(pattern) > 0:
-      remove.append(pattern);
 
-  for root, dirs, files in os.walk(rep):
-    for rem in remove:
-      for file in glob.glob(root+"/"+rem):
-        os.remove(file)
+  parser.add_argument('--verbose', "-v", default=False, const=True, action="store_const", help="prints lots of debug output to the console ")  
+
+  types = parser.add_argument_group()
+  types.add_argument('--keep-omdoc', default=False, const=True, action="store_const", help="keep omdoc files")  
+  types.add_argument('--keep-omdoc-log', default=False, const=True, action="store_const", help="keep omdoc log files")  
+  types.add_argument('--keep-pdf', default=False, const=True, action="store_const", help="keep pdf files")  
+  types.add_argument('--keep-pdf-log', default=False, const=True, action="store_const", help="keep pdf log files")  
+  types.add_argument('--keep-sms', default=False, const=True, action="store_const", help="keep sms files") 
+  types.add_argument('--keep-alltex', default=False, const=True, action="store_const", help="keep all.tex files") 
+  types.add_argument('--keep-localpaths', default=False, const=True, action="store_const", help="keep localpaths.tex files") 
 
 def do(args):
-  if len(args.repository) == 0:
-    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
-  if args.all:
-    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]  
-  for repo in args.repository:
-    for rep in glob.glob(repo):
-      do_clean(rep);
+  try:
+    if args.verbose:
+      print "Looking for modules ..."
+    modules = resolve_pathspec(args)
+    if args.verbose:
+      print "Found", len(modules), "paths to work on. "
+  except KeyboardInterrupt:
+    print "<<KeyboardInterrupt>>"
+    sys.exit(1) 
+
+  if args.verbose:
+    def rm(file):
+      print "Removing", file
+      os.remove(file)
+  else:
+    def rm(file):
+      os.remove(file)
+
+  # remove all the modules
+  for mod in modules:
+    if mod["type"] == "file":
+      if os.path.isfile(mod["omdoc_path"]) and not args.keep_omdoc:
+        rm(mod["omdoc_path"])
+      if os.path.isfile(mod["omdoc_log"]) and not args.keep_omdoc_log:
+        rm(mod["omdoc_log"])
+      if os.path.isfile(mod["pdf_path"]) and not args.keep_pdf:
+        rm(mod["pdf_path"])
+      if os.path.isfile(mod["pdf_log"]) and not args.keep_pdf_log:
+        rm(mod["pdf_log"])
+      if os.path.isfile(mod["sms"]) and not args.keep_sms:
+        rm(mod["sms"])
+    else:
+      if os.path.isfile(mod["alltex_path"]) and not args.keep_alltex:
+        rm(mod["alltex_path"])
+      if os.path.isfile(mod["localpaths_path"]) and not args.keep_localpaths:
+        rm(mod["localpaths_path"])
+
+
