@@ -360,15 +360,16 @@ def run_gen_omdoc(root, mod, pre_path, post_path, msg, args=None, port=3354):
   
   try:
     print "Worker #"+str(wid)+": Generating OMDoc for "+os.path.relpath(root)+"/"+mod+".tex"
-    p = Popen(args, cwd=root, env=_env, stdin=None, stdout=PIPE, stderr=PIPE, preexec_fn=os.setsid)
-    out, err = p.communicate()
-    for line in out.split("\n"):
-      if line != "":
-        print "Worker #"+str(wid)+": "+line
-    for line in err.split("\n"):
-      if line != "":
-        print "Worker #"+str(wid)+": "+line
-    print "Worker #"+str(wid)+": Generated OMDoc for "+os.path.relpath(root)+"/"+mod+".tex"
+    p = Popen(args, cwd=root)#, env=_env, stdin=None, stdout=sys.stdout, stderr=sys.stderr, bufsize=1)
+    p.wait()
+    #out, err = p.communicate()
+    #for line in out.split("\n"):
+    #  if line != "":
+    #    print "Worker #"+str(wid)+": "+line
+    #for line in err.split("\n"):
+    #  if line != "":
+    #    print "Worker #"+str(wid)+": "+line
+    #print "Worker #"+str(wid)+": Generated OMDoc for "+os.path.relpath(root)+"/"+mod+".tex"
     parseLateXMLOutput(root+"/"+mod+".tex")
   except KeyboardInterrupt:
     print "Worker #"+str(wid)+": Sending SIGINT to latexml..."
