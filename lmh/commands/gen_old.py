@@ -1,58 +1,5 @@
 
 # ===
-# SMS
-# ===
-
-def gen_sms_all(root, mods, args, msg):
-  # Generate all SMS files
-  msg("SMS_GEN_ALL: " + root)
-  for mod in mods:
-    smsfileName = root+"/"+mod["modName"]+".sms";
-
-    if not args.update or not os.path.exists(smsfileName) or mod["date"] > os.path.getmtime(smsfileName):
-      gen_sms(args, mod["file"], smsfileName, msg)
-
-def gen_sms(args, input, output, msg):
-  # generates a single sms file
-  msg("SMS_GEN: " + output)
-  if not args.simulate:
-    output = open(output, "w")
-  else:
-    print "# generate "+output
-    print "echo -n '' > "+util.shellquote(output)
-  
-  for line in open(input):
-    idx = line.find("%")
-    if idx == -1:
-      line = line[0:idx];
-
-    if ignore.search(line):
-      continue
-
-    for reg in regs:
-      if reg.search(line):
-        text = line.strip()+"%\n"
-        if args.simulate:
-          print "echo -n "+util.shellquote(text)+" >> "+util.shellquote(output)
-        else:
-          output.write(text)
-        break
-  if not args.simulate:
-    output.close()
-
-def gen_localpaths(dest, repo, repo_name, args, msg):
-  # generates localpaths.tex
-  msg("GEN_LOCALPATHS: "+dest)
-  text = all_pathstpl.substitute(mathhub=lmh_root, repo=repo, repo_name=repo_name)
-  if args.simulate:
-    print "# generate "+dest
-    print "echo -n " + util.shellquote(text)+ " > "+util.shellquote(dest)
-    return
-  output = open(dest, "w")
-  output.write(text)
-  output.close()
-
-# ===
 # ALLTEX
 # ===
 

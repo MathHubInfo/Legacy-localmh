@@ -29,6 +29,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 from lmh import util
+from lmh.commands.gen import add_parser_args
 
 def create_parser(submods = {}):
 	parser = argparse.ArgumentParser(description='Local MathHub XHTML conversion tool.')
@@ -60,18 +61,9 @@ def create_parser(submods = {}):
 	subparsers.add_parser('repos', help='prints the group/repository of the current  Math Hub repository')
 	subparsers.add_parser('root', help='prints the root directory of the Local Math Hub repository')
 
-	reps.append(subparsers.add_parser('sms', help='generates sms files'))
-	reps.append(subparsers.add_parser('omdoc', help='generates omdoc for targets'))
-	reps.append(subparsers.add_parser('pdf', help='generates pdf for targets, short form for lmh gen --pdf'))
-	reps.append(subparsers.add_parser('mods', help='generates omdoc module files'))
-	reps.append(subparsers.add_parser('modspdf', help='generates omdoc module files, short form for lmh gen --omdoc'))
-
-
-	for rep in reps:
-		rep.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories. ").completer = util.autocomplete_mathhub_repository
-		rep.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories. ").completer = util.autocomplete_mathhub_repository
-		rep.add_argument('-f', '--force', const=True, default=False, action="store_const", help="force all regeneration")
-
+	add_parser_args(subparsers.add_parser('sms', help='generates sms files, alias for lmh gen --sms'), add_types=False).epilog = "Generate sms files. "
+	add_parser_args(subparsers.add_parser('omdoc', help='generates omdoc files, alias for lmh gen --omdoc'), add_types=False).epilog = "Generate omdoc files. "
+	add_parser_args(subparsers.add_parser('pdf', help='generates pdf files, alias for lmh gen --pdf'), add_types=False).epilog = "Generate pdf files. "
 
 	if util.module_exists("argcomplete"):
 		__import__("argcomplete").autocomplete(parser)
