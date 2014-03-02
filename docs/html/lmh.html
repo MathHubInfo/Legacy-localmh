@@ -59,10 +59,10 @@ usage: lmh [-h] action ...
 <dl class="docutils">
 <dt>Sub-commands:</dt>
 <dd><dl class="first last docutils">
-<dt><strong>config</strong></dt>
-<dd><p class="first">configures this lmh installation. </p>
+<dt><strong>shell</strong></dt>
+<dd><p class="first">launch a shell with everything set to run build commands. </p>
 <pre class="literal-block">
-usage: lmh config [-h] [-a] [--reset] [setting] [value]
+usage: lmh shell [-h] [shell]
 
 </pre>
 <dl class="last docutils">
@@ -72,26 +72,8 @@ usage: lmh config [-h] [-a] [--reset] [setting] [value]
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd>setting</kbd></td>
-<td>Setting to show or edit. </td></tr>
-<tr><td class="option-group">
-<kbd>value</kbd></td>
-<td>New value for setting. </td></tr>
-</tbody>
-</table>
-</dd>
-<dt>Options:</dt>
-<dd><table class="first last docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-a=False</span>, <span class="option">--all=False</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>Shows all available settings. </td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--reset=False</span></kbd></td>
-<td>Resets the given setting or all settings. </td></tr>
+<kbd>shell</kbd></td>
+<td>shell to use</td></tr>
 </tbody>
 </table>
 </dd>
@@ -237,9 +219,11 @@ usage: lmh install [-h] [repository [repository ...]]
 <pre class="literal-block">
 usage: lmh setup [-h] [--install | --update | --reinstall | --skip] [-f]
                  [--autocomplete] [--add-private-token ADD_PRIVATE_TOKEN]
-                 [--latexml-source source&#64;refspec]
-                 [--stex-source source&#64;refspec] [--mmt-source source&#64;refspec]
+                 [--latexml-source source&#64;branch]
+                 [--latexmls-source source&#64;branch]
+                 [--stex-source source&#64;branch] [--mmt-source source&#64;branch]
                  [--install-latexml | --update-latexml | --reinstall-latexml | --skip-latexml]
+                 [--install-latexmls | --update-latexmls | --reinstall-latexmls | --skip-latexmls]
                  [--install-stex | --update-stex | --reinstall-stex | --skip-stex]
                  [--install-mmt | --update-mmt | --reinstall-mmt | --skip-mmt]
 
@@ -278,6 +262,10 @@ usage: lmh setup [-h] [--install | --update | --reinstall | --skip] [-f]
 <kbd><span class="option">--latexml-source=</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td>Get LaTeXML from the given source. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--latexmls-source=</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Get LaTeXMLs from the given source. </td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--stex-source=</span></kbd></td>
 <td>Get sTex from the given source. </td></tr>
@@ -299,6 +287,22 @@ usage: lmh setup [-h] [--install | --update | --reinstall | --skip] [-f]
 <tr><td class="option-group">
 <kbd><span class="option">--skip-latexml</span></kbd></td>
 <td>Leave LaTeXML untouched. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--install-latexmls=</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Install LaTexMLs. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--update-latexmls</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Update LaTeXMLs. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--reinstall-latexmls</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Reinstall LaTeXMLs. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--skip-latexmls</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Leave LaTeXMLs untouched. </td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--install-stex=</span></kbd></td>
 </tr>
@@ -476,9 +480,11 @@ usage: lmh update [-h] [--all] [repository [repository ...]]
 <dt><strong>gen</strong></dt>
 <dd><p class="first">updates generated content</p>
 <pre class="literal-block">
-usage: lmh gen [-h] [-f] [-v] [-w number] [--omdoc [OMDOC [OMDOC ...]]]
-               [--pdf [PDF [PDF ...]]] [--all]
-               [repository [repository ...]]
+usage: lmh gen [-h] [-w number | -s] [-u | -f] [-n NICE | -H] [-v | -q]
+               [--sms] [--omdoc] [--pdf] [--alltex] [--localpaths] [--list]
+               [--pdf-add-begin-document] [--skip-implies]
+               [-d RECURSION_DEPTH] [--all]
+               [PATH_OR_REPOSITORY [PATH_OR_REPOSITORY ...]]
 
 </pre>
 <dl class="last docutils">
@@ -488,8 +494,8 @@ usage: lmh gen [-h] [-f] [-v] [-w number] [--omdoc [OMDOC [OMDOC ...]]]
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd>repository</kbd></td>
-<td>a list of repositories for which to show the status. </td></tr>
+<kbd>pathspec</kbd></td>
+<td>A list of paths or repositories to generate things in. </td></tr>
 </tbody>
 </table>
 </dd>
@@ -499,27 +505,68 @@ usage: lmh gen [-h] [-f] [-v] [-w number] [--omdoc [OMDOC [OMDOC ...]]]
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">-f=False</span>, <span class="option">--force=False</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>force all regeneration</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-v=False</span>, <span class="option">--verbose=False</span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>verbose mode</td></tr>
-<tr><td class="option-group" colspan="2">
 <kbd><span class="option">-w=8</span>, <span class="option">--workers=8</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td>number of worker processes to use</td></tr>
 <tr><td class="option-group">
-<kbd><span class="option">--omdoc</span></kbd></td>
-<td>generate omdoc files</td></tr>
+<kbd><span class="option">-s</span>, <span class="option">--single</span></kbd></td>
+<td>Use only a single process. Shortcut for -w 1</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-u=False</span>, <span class="option">--update=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Only generate files which have been changed. Experimental. </td></tr>
 <tr><td class="option-group">
-<kbd><span class="option">--pdf</span></kbd></td>
-<td>generate pdf files</td></tr>
+<kbd><span class="option">-f</span>, <span class="option">--force</span></kbd></td>
+<td>Force to regenerate all files. DEFAULT. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-n=1</span>, <span class="option">--nice=1</span></kbd></td>
+<td>Assign the worker processes the given niceness. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-H</span>, <span class="option">--high</span></kbd></td>
+<td>Generate files using the same priority as the main process. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-v=False</span>, <span class="option">--verbose=False</span>, <span class="option">--simulate=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Dump commands for generation to STDOUT instead of running them. Implies &#8211;quiet. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-q=False</span>, <span class="option">--quiet=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Do not write log messages to STDOUT while generating files. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--sms=False</span></kbd></td>
+<td>generate sms files</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--omdoc=False</span></kbd></td>
+<td>generate omdoc files, implies &#8211;sms, &#8211;alltex, &#8211;localpaths</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--pdf=False</span></kbd></td>
+<td>generate pdf files, implies &#8211;sms, &#8211;alltex, &#8211;localpaths</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--alltex=False</span></kbd></td>
+<td>Generate all.tex files</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--localpaths=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Generate localpaths.tex files</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--list=False</span></kbd></td>
+<td>dump all found modules to stdout. If enabled, &#8211;sms &#8211;omdoc and &#8211;pdf are ignored. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--pdf-add-begin-document=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>add \begin{document} to LaTeX sources when generating pdfs. Backward compatibility for issue #82</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--skip-implies=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Generate only what is requested explicitly. Might fail if some files are missing. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-d=-1</span>, <span class="option">--recursion-depth=-1</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Recursion depth for paths and repositories. </td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>runs status on all repositories currently in lmh</td></tr>
+<tr><td>&nbsp;</td><td>generates files for all repositories</td></tr>
 </tbody>
 </table>
 </dd>
@@ -528,7 +575,10 @@ usage: lmh gen [-h] [-f] [-v] [-w number] [--omdoc [OMDOC [OMDOC ...]]]
 <dt><strong>clean</strong></dt>
 <dd><p class="first">clean repositories of generated files</p>
 <pre class="literal-block">
-usage: lmh clean [-h] [--all] [repository [repository ...]]
+usage: lmh clean [-h] [--all] [-d RECURSION_DEPTH] [--verbose] [--keep-omdoc]
+                 [--keep-omdoc-log] [--keep-pdf] [--keep-pdf-log] [--keep-sms]
+                 [--keep-alltex] [--keep-localpaths]
+                 [PATH_OR_REPOSITORY [PATH_OR_REPOSITORY ...]]
 
 </pre>
 <dl class="last docutils">
@@ -538,8 +588,8 @@ usage: lmh clean [-h] [--all] [repository [repository ...]]
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd>repository</kbd></td>
-<td>a list of repositories for which to show the clean. </td></tr>
+<kbd>pathspec</kbd></td>
+<td>A list of paths or repositories to generate things in. </td></tr>
 </tbody>
 </table>
 </dd>
@@ -551,7 +601,43 @@ usage: lmh clean [-h] [--all] [repository [repository ...]]
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>runs status on all repositories currently in lmh</td></tr>
+<tr><td>&nbsp;</td><td>generates files for all repositories</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-d=-1</span>, <span class="option">--recursion-depth=-1</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Recursion depth for paths and repositories. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--verbose=False</span>, <span class="option">-v=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>prints lots of debug output to the console </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--keep-omdoc=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>keep omdoc files</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--keep-omdoc-log=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>keep omdoc log files</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--keep-pdf=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>keep pdf files</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--keep-pdf-log=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>keep pdf log files</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--keep-sms=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>keep sms files</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--keep-alltex=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>keep all.tex files</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--keep-localpaths=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>keep localpaths.tex files</td></tr>
 </tbody>
 </table>
 </dd>
@@ -763,9 +849,11 @@ usage: lmh root [-h]
 </dl>
 </dd>
 <dt><strong>sms</strong></dt>
-<dd><p class="first">generates sms files</p>
+<dd><p class="first">generates sms files, alias for lmh gen &#8211;sms</p>
 <pre class="literal-block">
-usage: lmh sms [-h] [repository [repository ...]]
+usage: lmh sms [-h] [-w number | -s] [-u | -f] [-n NICE | -H] [-v | -q]
+               [--skip-implies] [-d RECURSION_DEPTH] [--all]
+               [PATH_OR_REPOSITORY [PATH_OR_REPOSITORY ...]]
 
 </pre>
 <dl class="last docutils">
@@ -775,37 +863,67 @@ usage: lmh sms [-h] [repository [repository ...]]
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd>repository</kbd></td>
-<td>a list of repositories. </td></tr>
+<kbd>pathspec</kbd></td>
+<td>A list of paths or repositories to generate things in. </td></tr>
 </tbody>
 </table>
 </dd>
-</dl>
-</dd>
-<dt><strong>mods</strong></dt>
-<dd><p class="first">generates omdoc module files</p>
-<pre class="literal-block">
-usage: lmh mods [-h] [repository [repository ...]]
-
-</pre>
-<dl class="last docutils">
-<dt>Positional arguments:</dt>
+<dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
 <tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-w=8</span>, <span class="option">--workers=8</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>number of worker processes to use</td></tr>
 <tr><td class="option-group">
-<kbd>repository</kbd></td>
-<td>a list of repositories. </td></tr>
+<kbd><span class="option">-s</span>, <span class="option">--single</span></kbd></td>
+<td>Use only a single process. Shortcut for -w 1</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-u=False</span>, <span class="option">--update=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Only generate files which have been changed. Experimental. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-f</span>, <span class="option">--force</span></kbd></td>
+<td>Force to regenerate all files. DEFAULT. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-n=1</span>, <span class="option">--nice=1</span></kbd></td>
+<td>Assign the worker processes the given niceness. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-H</span>, <span class="option">--high</span></kbd></td>
+<td>Generate files using the same priority as the main process. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-v=False</span>, <span class="option">--verbose=False</span>, <span class="option">--simulate=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Dump commands for generation to STDOUT instead of running them. Implies &#8211;quiet. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-q=False</span>, <span class="option">--quiet=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Do not write log messages to STDOUT while generating files. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--skip-implies=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Generate only what is requested explicitly. Might fail if some files are missing. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-d=-1</span>, <span class="option">--recursion-depth=-1</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Recursion depth for paths and repositories. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>generates files for all repositories</td></tr>
 </tbody>
 </table>
 </dd>
 </dl>
 </dd>
 <dt><strong>omdoc</strong></dt>
-<dd><p class="first">generates omdoc for targets</p>
+<dd><p class="first">generates omdoc files, alias for lmh gen &#8211;omdoc</p>
 <pre class="literal-block">
-usage: lmh omdoc [-h] [repository [repository ...]]
+usage: lmh omdoc [-h] [-w number | -s] [-u | -f] [-n NICE | -H] [-v | -q]
+                 [--skip-implies] [-d RECURSION_DEPTH] [--all]
+                 [PATH_OR_REPOSITORY [PATH_OR_REPOSITORY ...]]
 
 </pre>
 <dl class="last docutils">
@@ -815,17 +933,68 @@ usage: lmh omdoc [-h] [repository [repository ...]]
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd>repository</kbd></td>
-<td>a list of repositories. </td></tr>
+<kbd>pathspec</kbd></td>
+<td>A list of paths or repositories to generate things in. </td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-w=8</span>, <span class="option">--workers=8</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>number of worker processes to use</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-s</span>, <span class="option">--single</span></kbd></td>
+<td>Use only a single process. Shortcut for -w 1</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-u=False</span>, <span class="option">--update=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Only generate files which have been changed. Experimental. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-f</span>, <span class="option">--force</span></kbd></td>
+<td>Force to regenerate all files. DEFAULT. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-n=1</span>, <span class="option">--nice=1</span></kbd></td>
+<td>Assign the worker processes the given niceness. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-H</span>, <span class="option">--high</span></kbd></td>
+<td>Generate files using the same priority as the main process. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-v=False</span>, <span class="option">--verbose=False</span>, <span class="option">--simulate=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Dump commands for generation to STDOUT instead of running them. Implies &#8211;quiet. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-q=False</span>, <span class="option">--quiet=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Do not write log messages to STDOUT while generating files. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--skip-implies=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Generate only what is requested explicitly. Might fail if some files are missing. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-d=-1</span>, <span class="option">--recursion-depth=-1</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Recursion depth for paths and repositories. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>generates files for all repositories</td></tr>
 </tbody>
 </table>
 </dd>
 </dl>
 </dd>
 <dt><strong>pdf</strong></dt>
-<dd><p class="first">generates pdf for targets, short form for lmh gen &#8211;pdf</p>
+<dd><p class="first">generates pdf files, alias for lmh gen &#8211;pdf</p>
 <pre class="literal-block">
-usage: lmh pdf [-h] [repository [repository ...]]
+usage: lmh pdf [-h] [-w number | -s] [-u | -f] [-n NICE | -H] [-v | -q]
+               [--skip-implies] [-d RECURSION_DEPTH] [--all]
+               [--pdf-add-begin-document]
+               [PATH_OR_REPOSITORY [PATH_OR_REPOSITORY ...]]
 
 </pre>
 <dl class="last docutils">
@@ -835,28 +1004,60 @@ usage: lmh pdf [-h] [repository [repository ...]]
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group">
-<kbd>repository</kbd></td>
-<td>a list of repositories. </td></tr>
+<kbd>pathspec</kbd></td>
+<td>A list of paths or repositories to generate things in. </td></tr>
 </tbody>
 </table>
 </dd>
-</dl>
-</dd>
-<dt><strong>modspdf</strong></dt>
-<dd><p class="first">generates omdoc module files, short form for lmh gen &#8211;omdoc</p>
-<pre class="literal-block">
-usage: lmh modspdf [-h] [repository [repository ...]]
-
-</pre>
-<dl class="last docutils">
-<dt>Positional arguments:</dt>
+<dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
 <tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-w=8</span>, <span class="option">--workers=8</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>number of worker processes to use</td></tr>
 <tr><td class="option-group">
-<kbd>repository</kbd></td>
-<td>a list of repositories. </td></tr>
+<kbd><span class="option">-s</span>, <span class="option">--single</span></kbd></td>
+<td>Use only a single process. Shortcut for -w 1</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-u=False</span>, <span class="option">--update=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Only generate files which have been changed. Experimental. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-f</span>, <span class="option">--force</span></kbd></td>
+<td>Force to regenerate all files. DEFAULT. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-n=1</span>, <span class="option">--nice=1</span></kbd></td>
+<td>Assign the worker processes the given niceness. </td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-H</span>, <span class="option">--high</span></kbd></td>
+<td>Generate files using the same priority as the main process. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-v=False</span>, <span class="option">--verbose=False</span>, <span class="option">--simulate=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Dump commands for generation to STDOUT instead of running them. Implies &#8211;quiet. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-q=False</span>, <span class="option">--quiet=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Do not write log messages to STDOUT while generating files. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--skip-implies=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Generate only what is requested explicitly. Might fail if some files are missing. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-d=-1</span>, <span class="option">--recursion-depth=-1</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Recursion depth for paths and repositories. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--all=False</span>, <span class="option">-a=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>generates files for all repositories</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--pdf-add-begin-document=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>add \begin{document} to LaTeX sources when generating pdfs. Backward compatibility for issue #82</td></tr>
 </tbody>
 </table>
 </dd>

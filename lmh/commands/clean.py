@@ -52,9 +52,9 @@ def add_parser_args(parser):
 
   parser.add_argument('-d', '--recursion-depth', type=int, default=-1, help="Recursion depth for paths and repositories. ")
 
-
-  parser.add_argument('--verbose', "-v", default=False, const=True, action="store_const", help="prints lots of debug output to the console ")  
-
+  opts = parser.add_mutually_exclusive_group()
+  opts.add_argument('--verbose', "-v", default=False, const=True, action="store_const", help="prints lots of debug output to the console ")  
+    
   types = parser.add_argument_group()
   types.add_argument('--keep-omdoc', default=False, const=True, action="store_const", help="keep omdoc files")  
   types.add_argument('--keep-omdoc-log', default=False, const=True, action="store_const", help="keep omdoc log files")  
