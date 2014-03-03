@@ -283,8 +283,8 @@ def resolve_pathspec(args):
 
 def do(args):
 
-  if args.workers == 1 and args.nice != 0:
-    # set niceness if we have exactly one worker
+  if args.nice != 0:
+    # set niceness
     util.setnice(args.nice)
 
   if args.verbose:
