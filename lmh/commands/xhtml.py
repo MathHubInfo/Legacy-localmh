@@ -34,7 +34,6 @@ from subprocess import call
 import ConfigParser
 import glob
 
-#from lmh.commands.gen import prep_gen
 from lmh.commands.gen import create_parser as gen_parser
 from lmh.mmt import compile
 from lmh import util

@@ -223,6 +223,12 @@ def git_clone(dest, *arg):
   proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
   proc.wait()
 
+def git_exists(dest):
+  args = [gitexec, "ls-remote", dest]
+  proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+  proc.wait()
+  return (proc.returncode == 0)
+
 def git_pull(dest, *arg):
   args = [gitexec, "pull"];
   args.extend(arg);

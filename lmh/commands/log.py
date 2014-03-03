@@ -4,9 +4,9 @@
 This is the entry point for the Local Math Hub utility. 
 
 .. argparse::
-   :module: status
+   :module: log
    :func: create_parser
-   :prog: status
+   :prog: log
 
 """
 

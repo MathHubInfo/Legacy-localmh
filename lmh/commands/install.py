@@ -48,10 +48,6 @@ def add_parser(subparsers, name="install"):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  # TODO: Implement this
-  #parser.add_argument("--simulate", "-s", help="Simulate checkout and only print repositories and dependencies to fetch. ")
-  #parser.add_argument("--update", "-u", help="Update repositories if they already exist locally. ")
-  #parser.add_argument("--depth", "-d", help="Limit depth to resolve dependencies. ")
   parser.add_argument('repository', default=["."], type=util.parseSimpleRepo, nargs='*', help="a list of remote repositories to fetch locally. Should have form mygroup/myproject. No wildcards allowed. ")
 
 def do(args):
@@ -60,7 +56,14 @@ def do(args):
 
 def getURL(repoName):
   # TODO: Add different urls here
-  return "git@gl.mathhub.info:"+repoName
+  root_urls = ["git@gl.mathhub.info:"]
+
+  for url in root_urls:
+    if util.git_exists(url+repoName):
+      return url+repoName
+
+  raise Exception("Can not find repository "+repoName)
+
 
 def cloneRepository(repoName):
   try:
@@ -76,24 +79,33 @@ def cloneRepository(repoName):
 
 def installNoCycles(repoName, tried):
   if (repoName) in tried:
-    return
+    return True
 
   tried[repoName] = True
   cloneRepository(repoName)
 
   print "Checking dependencies for project "+repoName
-
-  deps = util.get_dependencies(repoName)
+  try:
+    deps = util.get_dependencies(repoName)
+  except:
+    print "Failed to install "+repoName+", please check if it exists. "
+    return False
   if deps == None:
     print("Error: META-INF/MANIFEST.MF file missing or invalid.\n You should consider running lmh init.")
-    return
+    return False
 
   for dep in deps:
-    installNoCycles(dep, tried)
+    if not installNoCycles(dep, tried):
+      return False
+
+  return True
 
 
 def installrepo(repoName):
   root = util.lmh_root()+"/MathHub"
   os.chdir(root)
-  installNoCycles(repoName, {})
+  if not installNoCycles(repoName, {}):
+    sys.exit(1)
+  else:
+    sys.exit(0)
 
