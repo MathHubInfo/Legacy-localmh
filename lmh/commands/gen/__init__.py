@@ -66,8 +66,8 @@ def add_parser_args(parser, add_types=True):
   f1.add_argument('-s', '--single',  action="store_const", dest="workers", const=1, help='Use only a single process. Shortcut for -w 1')
 
   f2 = flags.add_mutually_exclusive_group()
-  f2.add_argument('-u', '--update', const=True, default=False, action="store_const", help="Only generate files which have been changed. Experimental. ")
-  f2.add_argument('-f', '--force', const=False, dest="update", action="store_const", help="Force to regenerate all files. DEFAULT. ")
+  f2.add_argument('-u', '--update', const=True, default=True, action="store_const", help="Only generate files which have been changed. DEFAULT. ")
+  f2.add_argument('-f', '--force', const=False, dest="update", action="store_const", help="Force to regenerate all files. ")
 
   f3 = flags.add_mutually_exclusive_group()
   f3.add_argument('-n', '--nice', type=int, default=1, help="Assign the worker processes the given niceness. ")

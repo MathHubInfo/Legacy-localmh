@@ -53,7 +53,7 @@ def gen_pdf(modules, update, verbose, quiet, workers, nice, add_bd):
   jobs = []
   for mod in modules:
     if mod["type"] == "file":
-      if mod["file_pre"] != None and (not update or mod["file_time"] > mod["pdf_fime"]):
+      if mod["file_pre"] != None and (not update or mod["file_time"] > mod["pdf_time"]):
         jobs.append(pdf_gen_job(mod, add_bd))
   try:
     # check we have pdflatex
