@@ -28,7 +28,7 @@ lmh_root = util.lmh_root()
 
 all_pathstpl = Template(util.get_template("localpaths.tpl"))
 
-def gen_localpaths(modules, update, verbose, quiet, workers, nice):
+def gen_localpaths(modules, update, verbose, quiet, workers, nice, nothing):
   # general all.tex localpaths.tex generation
   jobs = []
   for mod in modules:

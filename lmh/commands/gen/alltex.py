@@ -26,7 +26,7 @@ from lmh import util
 all_modtpl = Template(util.get_template("alltex_mod.tpl"))
 all_textpl = Template(util.get_template("alltex_struct.tpl"))
 
-def gen_alltex(modules, update, verbose, quiet, workers, nice):
+def gen_alltex(modules, update, verbose, quiet, workers, nice, nothing):
   # general all.tex localpaths.tex generation
   jobs = []
   for mod in modules:

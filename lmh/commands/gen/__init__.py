@@ -76,6 +76,7 @@ def add_parser_args(parser, add_types=True):
   f4 = flags.add_mutually_exclusive_group()
   f4.add_argument('-v', '--verbose', '--simulate', const=True, default=False, action="store_const", help="Dump commands for generation to STDOUT instead of running them. Implies --quiet. ")
   f4.add_argument('-q', '--quiet', const=True, default=False, action="store_const", help="Do not write log messages to STDOUT while generating files. ")
+  f4.add_argument('-m', '--find-modules', const=True, default=False, action="store_const", help="Find modules to generate and dump them to STDOUT. Implies --skip-implies, --quiet. Incompatible with --localpaths and --alltex. ")
 
   whattogen = parser.add_argument_group("What to generate")
 
@@ -88,7 +89,7 @@ def add_parser_args(parser, add_types=True):
     whattogen.add_argument('--alltex', action="store_const", const=True, default=False, help="Generate all.tex files")
     whattogen.add_argument('--localpaths', action="store_const", const=True, default=False, help="Generate localpaths.tex files")
 
-    whattogen.add_argument('--list', action="store_const", const=True, default=False, help="dump all found modules to stdout. If enabled, --sms --omdoc and --pdf are ignored. ")
+    whattogen.add_argument('--list', action="store_const", const=True, default=False, help="Lists all modules which exist in the given paths. If enabled, --sms --omdoc and --pdf are ignored. ")
 
     parser.add_argument('--pdf-add-begin-document', action="store_const", const=True, default=False, help="add \\begin{document} to LaTeX sources when generating pdfs. Backward compatibility for issue #82")
 
@@ -282,12 +283,15 @@ def resolve_pathspec(args):
   return modules
 
 def do(args):
-
   if args.nice != 0:
     # set niceness
     util.setnice(args.nice)
 
   if args.verbose:
+    args.quiet = True
+
+  if args.find_modules:
+    args.skip_implies = True
     args.quiet = True
 
   if not args.pdf and not args.omdoc and not args.sms and not args.list and not args.localpaths and not args.alltex:
@@ -313,7 +317,6 @@ def do(args):
         print "./"+os.path.relpath(m["file"], "./")
     return
 
-  print args.skip_implies
   # Check what we need to do
   if (args.pdf or args.omdoc) and not args.skip_implies:
     args.sms = True
@@ -321,26 +324,26 @@ def do(args):
     args.alltex = True
 
   if args.sms:
-    if not gen_sms(modules, args.update, args.verbose, args.quiet, args.workers, args.nice):
+    if not gen_sms(modules, args.update, args.verbose, args.quiet, args.workers, args.nice, args.find_modules):
       print "SMS: Generation aborted prematurely, skipping further generation. "
       sys.exit(1)
 
-  if args.localpaths:
+  if args.localpaths and not args.find_modules:
     if not gen_localpaths(modules, args.update, args.verbose, args.quiet, args.workers, args.nice):
       print "LOCALPATHS: Generation aborted prematurely, skipping further generation. "
       sys.exit(1)
 
-  if args.alltex:
+  if args.alltex and not args.find_modules:
     if not gen_alltex(modules, args.update, args.verbose, args.quiet, args.workers, args.nice):
       print "ALLTEX: Generation aborted prematurely, skipping further generation. "
       sys.exit(1)
 
   if args.omdoc:
-    if not gen_omdoc(modules, args.update, args.verbose, args.quiet, args.workers, args.nice):
+    if not gen_omdoc(modules, args.update, args.verbose, args.quiet, args.workers, args.nice, args.find_modules):
       print "OMDOC: Generation aborted prematurely, skipping further generation. "
       sys.exit(1)
 
   if args.pdf:
-    if not gen_pdf(modules, args.update, args.verbose, args.quiet, args.workers, args.nice, args.pdf_add_begin_document):
+    if not gen_pdf(modules, args.update, args.verbose, args.quiet, args.workers, args.nice, args.pdf_add_begin_document, args.find_modules):
       print "PDF: Generation aborted prematurely, skipping further generation. "
       sys.exit(1)

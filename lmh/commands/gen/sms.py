@@ -27,13 +27,18 @@ ignore = re.compile(r'\\verb')
 regStrings = [r'\\(guse|gadopt|symdef|abbrdef|symvariant|keydef|listkeydef|importmodule|gimport|adoptmodule|importmhmodule|adoptmhmodule)', r'\\begin{(module|importmodulevia)}', r'\\end{(module|importmodulevia)}']
 regs = map(re.compile, regStrings)
 
-def gen_sms(modules, update, verbose, quiet, workers, nice):
+def gen_sms(modules, update, verbose, quiet, workers, nice, find_modules):
   # general sms generation
   jobs = []
   for mod in modules:
     if mod["type"] == "file":
       if not update or mod["file_time"] > mod["sms_time"]:
-        jobs.append(sms_gen_job(mod))
+        if find_modules:
+          print module["file"]
+        else:
+          jobs.append(sms_gen_job(mod))
+  if find_modules:
+    return True
   try:
     if verbose:
       print "# SMS Generation"

@@ -53,13 +53,18 @@ def parseLateXMLOutput(file):
       agg.log_error(["compile", "omdoc", "error"], file, m.group(1))
 
 
-def gen_omdoc(modules, update, verbose, quiet, workers, nice):
+def gen_omdoc(modules, update, verbose, quiet, workers, nice, find_modules):
   # general omdoc generation
   jobs = []
   for mod in modules:
     if mod["type"] == "file":
       if mod["file_pre"] != None and (not update or mod["file_time"] > mod["omdoc_time"]):
-        jobs.append(omdoc_gen_job(mod))
+        if find_modules:
+          print mod["file"]
+        else:
+          jobs.append(omdoc_gen_job(mod))
+  if find_modules:
+    return True
   try:
     # check we have latexmlc
     if not os.path.isfile(latexmlc):

@@ -48,13 +48,18 @@ def genTEXInputs():
 
 TEXINPUTS = genTEXInputs()
 
-def gen_pdf(modules, update, verbose, quiet, workers, nice, add_bd):
+def gen_pdf(modules, update, verbose, quiet, workers, nice, add_bd, find_modules):
   # general pdf generation
   jobs = []
   for mod in modules:
     if mod["type"] == "file":
       if mod["file_pre"] != None and (not update or mod["file_time"] > mod["pdf_time"]):
-        jobs.append(pdf_gen_job(mod, add_bd))
+        if find_modules:
+          print mod["file"]
+        else:
+          jobs.append(pdf_gen_job(mod, add_bd))
+  if find_modules:
+    return True
   try:
     # check we have pdflatex
     if not os.path.isfile(pdflatex):
