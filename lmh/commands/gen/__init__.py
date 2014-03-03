@@ -313,10 +313,11 @@ def do(args):
         print "./"+os.path.relpath(m["file"], "./")
     return
 
+  print args.skip_implies
   # Check what we need to do
   if (args.pdf or args.omdoc) and not args.skip_implies:
     args.sms = True
-    args.locapaths = True
+    args.localpaths = True
     args.alltex = True
 
   if args.sms:
