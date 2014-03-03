@@ -93,7 +93,6 @@ def gen_omdoc(modules, update, verbose, quiet, workers, nice, find_modules):
           res = result.get(9999999)
         except:
           pass
-        print res
         res = True
       except KeyboardInterrupt:
         print "OMDOC: received <<KeyboardInterrupt>>"
