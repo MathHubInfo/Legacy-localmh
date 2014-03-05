@@ -66,6 +66,8 @@ def create_parser(submods = {}):
 	
 	p = add_parser_args(subparsers.add_parser('pdf', help='generates pdf files, alias for lmh gen --pdf'), add_types=False)
 	p.add_argument('--pdf-add-begin-document', action="store_const", const=True, default=False, help="add \\begin{document} to LaTeX sources when generating pdfs. Backward compatibility for issue #82")
+	p.add_argument('--pdf-pipe-log', action="store_const", const=True, default=False, help="Displays only the pdf log as output. Implies --quiet. ")
+
 	p.epilog = "Generate pdf files. "
 
 	if util.module_exists("argcomplete"):

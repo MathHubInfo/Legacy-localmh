@@ -48,7 +48,7 @@ def genTEXInputs():
 
 TEXINPUTS = genTEXInputs()
 
-def gen_pdf(modules, update, verbose, quiet, workers, nice, add_bd, find_modules):
+def gen_pdf(modules, update, verbose, quiet, workers, nice, add_bd, pdf_pipe_log, find_modules):
   # general pdf generation
   jobs = []
   for mod in modules:
@@ -57,7 +57,7 @@ def gen_pdf(modules, update, verbose, quiet, workers, nice, add_bd, find_modules
         if find_modules:
           print mod["file"]
         else:
-          jobs.append(pdf_gen_job(mod, add_bd))
+          jobs.append(pdf_gen_job(mod, add_bd, pdf_pipe_log))
   if find_modules:
     return True
   try:
@@ -107,35 +107,42 @@ def gen_pdf(modules, update, verbose, quiet, workers, nice, add_bd, find_modules
 
   return True
 
-def pdf_gen_job(module, add_bd):
+def pdf_gen_job(module, add_bd, pdf_pipe_log):
   # store parameters for pdf job generation
   _env = os.environ.copy()
   _env["TEXINPUTS"] = TEXINPUTS
-  return (module["file_pre"], module["file_post"], module["mod"], _env, module["file"], module["path"], module["pdf_path"], module["pdf_log"], add_bd)
+  return (module["file_pre"], module["file_post"], module["mod"], _env, module["file"], module["path"], module["pdf_path"], module["pdf_log"], add_bd, pdf_pipe_log)
 
 
 def pdf_gen_do_master(job, quiet, wid=""):
   # pdf generation in master process
-  (pre, post, mod, _env, file, cwd, pdf_path, pdflog, add_bd) = job
+  (pre, post, mod, _env, file, cwd, pdf_path, pdflog, add_bd, pdf_pipe_log) = job
 
   if not quiet:
     print "PDF"+wid+": Generating", pdf_path
 
   args = [pdflatex, "-jobname", mod]
 
+
   try:
     if pre != None:
       if add_bd:
-        p0 = Popen(["echo", "\\begin{document}\n"], stdout=PIPE)
+        p0 = Popen(["echo", "\\begin{document}\n"], stdout=PIPE, env = _env)
         c1 = ["cat", pre, "-", mod+".tex", post]
-        p1 = Popen(c1, cwd=cwd, stdin=p0.stdout, stdout=PIPE)
+        p1 = Popen(c1, cwd=cwd, stdin=p0.stdout, stdout=PIPE, env = _env)
       else:
         c1 = ["cat", pre, mod+".tex", post]
-        p1 = Popen(c1, cwd=cwd, stdin=None, stdout=PIPE)
+        p1 = Popen(c1, cwd=cwd, stdin=None, stdout=PIPE, env = _env)
       
-      p = Popen([pdflatex, "-jobname", mod], cwd=cwd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env = _env)
+      if pdf_pipe_log:
+        p = Popen([pdflatex, "-jobname", mod], cwd=cwd, stdin=p1.stdout, stdout=sys.stdout, stderr=sys.stderr, env = _env)
+      else:
+        p = Popen([pdflatex, "-jobname", mod], cwd=cwd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env = _env)
     else:
-      p = Popen([pdflatex, file], cwd=cwd, stdout=PIPE, env=_env)
+      if pdf_pipe_log:
+        p = Popen([pdflatex, file], cwd=cwd, stdout=sys.stdout, env=_env)
+      else:
+        p = Popen([pdflatex, file], cwd=cwd, stdout=PIPE, env=_env)
     p.wait()
   except KeyboardInterrupt as k:
     print "PDF"+wid+": KeyboardInterrupt, stopping generation"
@@ -160,7 +167,7 @@ def pdf_gen_do_worker(quiet, job):
 
 def pdf_gen_dump(job):
   # dump an pdf job to stdout
-  (pre, post, mod, _env, file, cwd, pdf_path, pdflog, add_bd) = job
+  (pre, post, mod, _env, file, cwd, pdf_path, pdflog, add_bd, pdf_pipe_log) = job
 
   print "# generate", pdf_path  
   print "cd "+cwd
