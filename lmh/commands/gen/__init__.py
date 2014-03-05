@@ -91,7 +91,10 @@ def add_parser_args(parser, add_types=True):
 
     whattogen.add_argument('--list', action="store_const", const=True, default=False, help="Lists all modules which exist in the given paths. If enabled, --sms --omdoc and --pdf are ignored. ")
 
+
     parser.add_argument('--pdf-add-begin-document', action="store_const", const=True, default=False, help="add \\begin{document} to LaTeX sources when generating pdfs. Backward compatibility for issue #82")
+    parser.add_argument('--pdf-pipe-log', action="store_const", const=True, default=False, help="Displays only the pdf log as output. Implies --quiet, --single")
+
 
   whattogen.add_argument('--skip-implies', action="store_const", const=True, default=False, help="Generate only what is requested explicitly. Might fail if some files are missing. ")
 
@@ -290,6 +293,13 @@ def do(args):
   if args.verbose:
     args.quiet = True
 
+  try:
+    if args.pdf_pipe_log:
+      args.quiet = True
+      args.workers = 1
+  except:
+    pass
+
   if args.find_modules:
     args.skip_implies = True
     args.quiet = True
@@ -321,29 +331,34 @@ def do(args):
   if (args.pdf or args.omdoc) and not args.skip_implies:
     args.sms = True
     args.localpaths = True
-    args.alltex = True
+    args.alltex = True  
 
   if args.sms:
     if not gen_sms(modules, args.update, args.verbose, args.quiet, args.workers, args.nice, args.find_modules):
-      print "SMS: Generation aborted prematurely, skipping further generation. "
+      if not quiet:
+        print "SMS: Generation aborted prematurely, skipping further generation. "
       sys.exit(1)
 
   if args.localpaths and not args.find_modules:
     if not gen_localpaths(modules, args.update, args.verbose, args.quiet, args.workers, args.nice):
-      print "LOCALPATHS: Generation aborted prematurely, skipping further generation. "
+      if not quiet:
+        print "LOCALPATHS: Generation aborted prematurely, skipping further generation. "
       sys.exit(1)
 
   if args.alltex and not args.find_modules:
     if not gen_alltex(modules, args.update, args.verbose, args.quiet, args.workers, args.nice):
-      print "ALLTEX: Generation aborted prematurely, skipping further generation. "
+      if not quiet:
+        print "ALLTEX: Generation aborted prematurely, skipping further generation. "
       sys.exit(1)
 
   if args.omdoc:
     if not gen_omdoc(modules, args.update, args.verbose, args.quiet, args.workers, args.nice, args.find_modules):
-      print "OMDOC: Generation aborted prematurely, skipping further generation. "
+      if not quiet:
+        print "OMDOC: Generation aborted prematurely, skipping further generation. "
       sys.exit(1)
 
   if args.pdf:
-    if not gen_pdf(modules, args.update, args.verbose, args.quiet, args.workers, args.nice, args.pdf_add_begin_document, args.find_modules):
-      print "PDF: Generation aborted prematurely, skipping further generation. "
+    if not gen_pdf(modules, args.update, args.verbose, args.quiet, args.workers, args.nice, args.pdf_add_begin_document, args.pdf_pipe_log, args.find_modules):
+      if not quiet:
+        print "PDF: Generation aborted prematurely, skipping further generation. "
       sys.exit(1)
