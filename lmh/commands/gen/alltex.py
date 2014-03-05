@@ -52,7 +52,9 @@ def gen_alltex(modules, update, verbose, quiet, workers, nice):
 
 def alltex_gen_job(module):
   # store parameters for all.tex job generation
-  return (module["alltex_path"], module["file_pre"], module["file_post"], module["modules"])
+  pre = util.get_file(module["file_pre"])
+  post = util.get_file(module["file_post"])
+  return (module["alltex_path"], pre, post, module["modules"])
   
 
 def alltex_gen_do(job, quiet, worker=None, cwd="."):

@@ -219,7 +219,7 @@ def locate_modules(path, depth=-1):
     # so we can generate it before we
     # generate all the other files
 
-    pre = None, 
+    pre = None
     post = None
 
     for m in modules:
