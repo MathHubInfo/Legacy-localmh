@@ -44,7 +44,7 @@ def genTEXInputs():
     res += root+":"
   for (root, files, dirs) in os.walk(util.latexmlstydir):
     res += root+":"
-  return res
+  return res+":"+util.latexmlstydir+":"+util.stexstydir
 
 TEXINPUTS = genTEXInputs()
 
