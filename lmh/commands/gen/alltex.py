@@ -68,7 +68,7 @@ def alltex_gen_do(job, quiet, worker=None, cwd="."):
   text = all_textpl.substitute(pre_tex=pre, post_tex=post, mods="\n".join(content))
 
   output = open(dest, "w")
-  output.write(text)
+  output.write(text+"\n")
   output.close()
 
   if not quiet:
@@ -84,3 +84,4 @@ def alltex_gen_dump(job):
   text = all_textpl.substitute(pre_tex=pre, post_tex=post, mods="\n".join(content))
 
   print "echo -n " + util.shellquote(text)+ " > "+util.shellquote(dest)
+  print "echo > "+util.shellquote(dest)
