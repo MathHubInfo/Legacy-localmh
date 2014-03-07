@@ -56,11 +56,13 @@ def do(args):
 
 def getURL(repoName):
   # TODO: Add different urls here
-  root_urls = ["git@gl.mathhub.info:"]
-
-  for url in root_urls:
-    if util.git_exists(url+repoName):
-      return url+repoName
+  root_urls = ["git@gl.mathhub.info:", "http://gl.mathhub.info/"]
+  root_suffix = ["", ".git"]
+  for i in range(len(root_urls)):
+    url = root_urls[i]
+    url_suf = root_suffix[i]
+    if util.git_exists(url+repoName+url_suf):
+      return url+repoName+url_suf
 
   raise Exception("Can not find repository "+repoName)
 
