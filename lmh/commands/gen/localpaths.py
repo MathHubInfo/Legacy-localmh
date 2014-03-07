@@ -67,7 +67,7 @@ def localpaths_gen_do(job, quiet, worker=None, cwd="."):
   text = all_pathstpl.substitute(mathhub=lmh_root, repo=repo, repo_name=repo_name)
 
   output = open(dest, "w")
-  output.write(text)
+  output.write(text+"\n")
   output.close()
 
   if not quiet:
@@ -82,3 +82,4 @@ def localpaths_gen_dump(job):
   text = all_pathstpl.substitute(mathhub=lmh_root, repo=repo, repo_name=repo_name)
   
   print "echo -n " + util.shellquote(text)+ " > "+util.shellquote(dest)
+  print "echo > "+util.shellquote(dest)
