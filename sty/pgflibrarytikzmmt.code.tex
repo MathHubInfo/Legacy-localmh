@@ -10,8 +10,16 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% 1. Arrows 
-% 1.1. Arrowtips (only internal)
+%%% 1. Theories
+% a generic theory
+\tikzstyle{thy}=[draw,outer sep=.6mm,rounded corners]
+% a primitive theory
+\tikzstyle{primthy}=[thy,double]
+% a theory graph 
+\tikzstyle{thygraph}=[draw,outer sep=1mm,rounded corners,dashed]
+
+%%% 2. Arrows 
+%%% 2.1. Arrowtips (only internal)
 \usetikzlibrary{arrows}
 \newcommand{\@mmtarrowtip}{angle 45}
 \newcommand{\@mmtreversearrowtip}{angle 45 reversed}
@@ -23,15 +31,7 @@
 \newcommand{\@mmtreversearrowtippartial}{right to reversed}
 \newcommand{\@mmtreversearrowtippartialleft}{left to reversed}
 
-% 1.2 the arrow sstyles in graphs
-%
-% a generic theory
-\tikzstyle{thy}=[draw,outer sep=.6mm,rounded corners]
-% a flat theory
-\tikzstyle{flatthy}=[thy,double]
-% a theory graph 
-\tikzstyle{thygraph}=[draw,outer sep=1mm,rounded corners,dashed]
-
+%%% 1.2 the arrow sstyles in graphs
 % any morphism 
 \tikzstyle{morph}=[-\@mmtarrowtip] 
 \tikzstyle{mapsto}=[|-\@mmtarrowtip] %| any morphism 
@@ -62,12 +62,12 @@
 % conservative extensions (abbreviation)
 \tikzstyle{conservative}=[hooks-\@mmtarrowtip,double] 
 
-% 2. convenience macros
-% 2.1 the \mmtthy macro takes three arguments, name, decl, axioms and makes a 
+%%% 3. convenience macros
+%%% 3.1 the \mmtthy macro takes three arguments, name, decl, axioms and makes a 
 % table-like structure
 \newcommand\mmtthy[3]{\def\@test{#3}%
 \begin{array}{l}\textsf{#1}\\\hline #2\ifx\@test\@empty\else\\\hline #3\fi\end{array}}
-% 2.2 the \mmtar takes two arguments, some tikz options, and an arrow style. \nmmtar
+%%% 3.2 the \mmtar takes two arguments, some tikz options, and an arrow style. \nmmtar
 % is a variant that also has a name on top.
 \newcommand\mmtar[2][]{\raisebox{.5ex}{\tikz[#1]{\draw[#2] (0,0) -- (.6,0);}}}
 \newcommand\nmmtar[3][]{\raisebox{.4ex}{\tikz[#1]{\draw[#2] (0,0) --
