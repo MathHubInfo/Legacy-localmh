@@ -24,7 +24,7 @@ import traceback
 from lmh import util
 
 ignore = re.compile(r'\\verb')
-regStrings = [r'\\(guse|gadopt|symdef|abbrdef|symvariant|keydef|listkeydef|importmodule|gimport|adoptmodule|importmhmodule|adoptmhmodule)', r'\\begin{(module|importmodulevia)}', r'\\end{(module|importmodulevia)}']
+regStrings = [r'\\(guse|gadopt|symdef|abbrdef|symvariant|keydef|listkeydef|importmodule|gimport|adoptmodule|importmhmodule|adoptmhmodule)', r'\\begin{(module|importmodulevia|importmhmodulevia)}', r'\\end{(module|importmodulevia|importmhmodulevia)}']
 regs = map(re.compile, regStrings)
 
 def gen_sms(modules, update, verbose, quiet, workers, nice, find_modules):
