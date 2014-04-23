@@ -32,6 +32,7 @@
 \newcommand{\@mmtreversearrowtippartialleft}{left to reversed}
 
 %%% 1.2 the arrow sstyles in graphs
+\usetikzlibrary{decorations,decorations.pathmorphing}
 % any morphism 
 \tikzstyle{morph}=[-\@mmtarrowtip] 
 \tikzstyle{mapsto}=[|-\@mmtarrowtip] %| any morphism 
@@ -43,24 +44,33 @@
 \tikzstyle{includeleft}=[\@mmtarrowtipmonoleft-\@mmtarrowtip,thick]
 \tikzstyle{pincludeleft}=[\@mmtarrowtipmonoleft-\@mmtarrowtippartialleft,thick]
 % views: regular, mono, partial, and left variants
-\tikzstyle{view}=[dashed,thick,-\@mmtarrowtip]
-\tikzstyle{mview}=[dashed,thick,\@mmtarrowtipmonoright-\@mmtarrowtip]
-\tikzstyle{pview}=[dashed,thick,-\@mmtarrowtippartial]
-\tikzstyle{pmview}=[dashed,thick,\@mmtarrowtipmonoright-\@mmtarrowtippartial]
-\tikzstyle{viewleft}=[dashed,thick,-\@mmtarrowtip]
-\tikzstyle{mviewleft}=[dashed,thick,\@mmtarrowtipmonoleft-\@mmtarrowtipleft]
-\tikzstyle{pviewleft}=[dashed,thick,-\@mmtarrowtippartialleft]
-\tikzstyle{pmviewleft}=[dashed,thick,\@mmtarrowtipmonoleft-\@mmtarrowtippartialleft]
+\tikzstyle{preview}=[decorate,
+                                decoration={coil,aspect=0,amplitude=1pt,
+                                                    segment length=6pt,
+                                                    pre=lineto,pre length=5pt,
+                                                    post=lineto,post length=7pt},
+                                thick]
+\tikzstyle{view}=[preview,-\@mmtarrowtip]
+\tikzstyle{mview}=[preview,\@mmtarrowtipmonoright-\@mmtarrowtip]
+\tikzstyle{pview}=[preview,-\@mmtarrowtippartial]
+\tikzstyle{pmview}=[preview,\@mmtarrowtipmonoright-\@mmtarrowtippartial]
+\tikzstyle{viewleft}=[preview,-\@mmtarrowtip]
+\tikzstyle{mviewleft}=[preview,\@mmtarrowtipmonoleft-\@mmtarrowtip]
+\tikzstyle{pviewleft}=[preview,-\@mmtarrowtippartialleft]
+\tikzstyle{pmviewleft}=[preview,\@mmtarrowtipmonoleft-\@mmtarrowtippartialleft]
+\tikzstyle{adoption}=[preview,thin,double,-\@mmtarrowtip]
 % biviews: regular, partial, and left variants
-\tikzstyle{biview}=[dashed,thick,\@mmtreversearrowtip-\@mmtarrowtip]
-\tikzstyle{pbiview}=[dashed,thick,\@mmtreversearrowtippartial-\@mmtarrowtippartial]
-\tikzstyle{pbiviewleft}=[dashed,thick,\@mmtreversearrowtippartialleft-\@mmtarrowtippartialleft]
+\tikzstyle{biview}=[preview,\@mmtreversearrowtip-\@mmtarrowtip]
+\tikzstyle{pbiview}=[preview,\@mmtreversearrowtippartial-\@mmtarrowtippartial]
+\tikzstyle{pbiviewleft}=[preview,\@mmtreversearrowtippartialleft-\@mmtarrowtippartialleft]
 % defining views (experimental)
-\tikzstyle{defview}=[dashed,thick,double,-\@mmtarrowtip]
+\tikzstyle{defview}=[preview,double,-\@mmtarrowtip]
 % meta-theory inclusion
 \tikzstyle{meta}=[dotted,-\@mmtarrowtip,thick]
 % conservative extensions (abbreviation)
 \tikzstyle{conservative}=[hooks-\@mmtarrowtip,double] 
+% conservative development
+\tikzstyle{conservdev}=[hooks-\@mmtarrowtip,dashed,double] 
 
 %%% 3. convenience macros
 %%% 3.1 the \mmtthy macro takes three arguments, name, decl, axioms and makes a 
