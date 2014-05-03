@@ -121,7 +121,7 @@ def autocomplete_mathhub_repository(prefix, parsed_args, **kwargs):
 
 def lmh_repos(dir=os.getcwd()):
   t = os.path.realpath(dir);
-  root = _lmh_root+"/MathHub";
+  root = _lmh_root+"/MathHub"
   if not t.startswith(root):
     return None
   comp = t[len(root)+1:].split("/")
@@ -252,11 +252,11 @@ def get_dependencies(dir):
 
     except IOError, e:
         #print e
-        pass
+        return None
     
     except OSError, e:
         #print e
-        pass
+        return None
 
     return res
 

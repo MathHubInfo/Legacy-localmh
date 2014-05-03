@@ -62,11 +62,11 @@ config_meta = {
 	}, 
 
 	# Untested
-	"untested::enable": {
-		"type": "bool", 
-		"help": "Enable untested features. ", 
-		"default": False
-	},
+	#"untested::enable": {
+	#	"type": "bool", 
+	#	"help": "Enable untested features. ", 
+	#	"default": False
+	#},
 }
 
 config_file = os.path.dirname(os.path.realpath(__file__)) + "/../bin/lmh.cfg"

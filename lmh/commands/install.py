@@ -97,11 +97,9 @@ def installNoCycles(repoName, tried):
   except:
     print "Failed to install "+repoName+", please check if it exists. "
     return False
-  
-  print "post"
-
-  if config.get_config("install::nomanifest") == False and deps == None or len(deps) == 0:
-    print("Error: META-INF/MANIFEST.MF file missing or invalid.\n You should consider running lmh init. ")
+  if config.get_config("install::nomanifest") == False and deps == None:
+    print("Error: META-INF/MANIFEST.MF file missing or invalid. ")
+    print("       You should consider running lmh init. ")
     print("       Set install::nomanifest to true to ignore this error. ")
     return False
 
