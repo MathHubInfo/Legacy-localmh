@@ -22,26 +22,51 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 # Config for the config
 config_meta = {
+
+	# Install Config
+	"install::sources": {
+		"type": "string", 
+		"help": "Url prefixes to clone git repositories from. Seperated by ;s. ", 
+		"default": "git@gl.mathhub.info:;http://gl.mathhub.info/", 
+	}, 
+	"install::nomanifest": {
+		"type": "bool", 
+		"help": "Allow repositories to install without manifests. ", 
+		"default": False
+	}, 
+
+	# Gitlab settings
 	"gl::private_token": {
 		"type": "string", 
 		"help": "Gitlab Private token for gitlab interaction. Unused. ", 
-		"default": ""
+		"default": "", 
 	},
 	"gl::host": {
 		"type": "string", 
 		"help": "Host for gitlab interaction. Unused. ", 
 		"default": "http://gl.mathub.info"
 	},
+
+	# Generation options
 	"gen::default_workers": {
 		"type": "int+", 
 		"help": "Default number of workers to use for generating pdf and omdoc. ", 
 		"default": 8
 	}, 
+
+	# Updating options
 	"update::selfupdate": {
 		"type": "bool", 
 		"help": "When lmh update is called without arguments, also perform a selfupdate. ", 
 		"default": True
-	}
+	}, 
+
+	# Untested
+	"untested::enable": {
+		"type": "bool", 
+		"help": "Enable untested features. ", 
+		"default": False
+	},
 }
 
 config_file = os.path.dirname(os.path.realpath(__file__)) + "/../bin/lmh.cfg"
@@ -144,5 +169,5 @@ def get_config_help(key):
 	print "Default Value: " + json.dumps(meta["default"])
 
 def list_config():
-	for key in config_meta.keys():
+	for key in sorted(config_meta.keys()):
 		print key +" = <" + config_meta[key]["type"] + "> " + json.dumps(get_config(key)) + ""

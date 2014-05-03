@@ -32,6 +32,7 @@ import glob
 from subprocess import call
 
 from lmh.commands.setup import update as setup_update
+from lmh.commands import selfupdate
 from lmh import util
 from lmh import config
 
@@ -48,6 +49,8 @@ def add_parser_args(parser):
   parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories which should be updated. ").completer = util.autocomplete_mathhub_repository
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="updates all repositories currently in lmh")
   parser.epilog = """
+If update::selfupdate is set to True, calling lomh update without any arguments will also call lmh selfupdate. 
+
 Note: LMH will check for tool updates only if run at the root of the LMH folder 
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
   Example:  
@@ -67,6 +70,11 @@ def do(args):
     # if os.getcwd() == util.lmh_root():
     #   setup_update();
     args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
+
+    if config.get_config("update::selfupdate"):
+      print "Selfupdate: "
+      selfupdate.do(None)
+
 
   if args.all:
     args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]

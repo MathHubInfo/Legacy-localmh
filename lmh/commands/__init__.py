@@ -28,7 +28,9 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import argparse
+
 from lmh import util
+from lmh import config
 from lmh.commands.gen import add_parser_args
 
 def create_parser(submods = {}):
@@ -38,6 +40,8 @@ def create_parser(submods = {}):
 	subparsers = parser.add_subparsers(help='valid actions are:', dest="action", metavar='action')
 
 	submodules = ["config", "about", "find", "status", "log", "install", "setup", "shell", "xhtml", "init", "commit", "push", "update", "selfupdate", "gen", "clean", "git", "depcrawl", "checkpaths"];
+
+
 	for mod in submodules:
 		_mod = getattr(getattr(__import__("lmh.commands."+mod), "commands"), mod)
 		submods[mod] = _mod

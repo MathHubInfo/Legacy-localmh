@@ -48,9 +48,14 @@ def add_parser_args(parser):
   parser.add_argument('value', nargs='?', help="New value for setting. If omitted, show some information about the given setting. ", default=None)
   parser.add_argument('--reset', help="Resets a setting. Ignores value. ", default=False, action="store_const", const=True)
   parser.add_argument('--reset-all', help="Resets all settings. ", default=False, action="store_const", const=True)
-
-
 def do(args):
+  if args.reset_all:
+    try:
+      os.remove(config.config_file)
+    except:
+      pass
+    return
+
   if args.reset:
     if args.key == None:
       print "Missing key. "
@@ -61,16 +66,12 @@ def do(args):
       pass
     return
 
-  if args.reset_all:
-    try:
-      os.remove(config.config_file)
-    except:
-      pass
-    return
-
 
   if args.key == None:
     config.list_config()
+    print ""
+    print "Type 'lmh config KEY' to get more information on KEY. "
+    print "Type 'lmh config KEY VALUE' to change KEY to VALUE. "
   elif args.value == None:
     config.get_config_help(args.key)
   else:

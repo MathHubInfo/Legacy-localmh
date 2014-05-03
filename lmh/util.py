@@ -251,9 +251,12 @@ def get_dependencies(dir):
                 res.append(dep)
 
     except IOError, e:
-        print e
+        #print e
+        pass
+    
     except OSError, e:
-        print e
+        #print e
+        pass
 
     return res
 

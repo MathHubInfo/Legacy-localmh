@@ -35,6 +35,7 @@ import argparse
 from subprocess import call
 
 from lmh import util
+from lmh import config
 
 repoRegEx = util.repoRegEx;
 
@@ -49,14 +50,18 @@ def add_parser(subparsers, name="install"):
 
 def add_parser_args(parser):
   parser.add_argument('repository', default=["."], type=util.parseSimpleRepo, nargs='*', help="a list of remote repositories to fetch locally. Should have form mygroup/myproject. No wildcards allowed. ")
+  parser.epilogue = """
+  Use install::sources to configure the sources of repositories. 
+  Use install::nomanifest to configure what happens to repositories without a manifest
+
+  """
 
 def do(args):
   for rep in args.repository:
     installrepo(rep)
 
 def getURL(repoName):
-  # TODO: Add different urls here
-  root_urls = ["git@gl.mathhub.info:", "http://gl.mathhub.info/"]
+  root_urls = config.get_config("install::sources").rsplit(";")
   root_suffix = ["", ".git"]
   for i in range(len(root_urls)):
     url = root_urls[i]
@@ -92,9 +97,18 @@ def installNoCycles(repoName, tried):
   except:
     print "Failed to install "+repoName+", please check if it exists. "
     return False
-  if deps == None:
-    print("Error: META-INF/MANIFEST.MF file missing or invalid.\n You should consider running lmh init.")
+  
+  print "post"
+
+  if config.get_config("install::nomanifest") == False and deps == None or len(deps) == 0:
+    print("Error: META-INF/MANIFEST.MF file missing or invalid.\n You should consider running lmh init. ")
+    print("       Set install::nomanifest to true to ignore this error. ")
     return False
+
+
+
+  if deps == None:
+    deps = []
 
   for dep in deps:
     if not installNoCycles(dep, tried):

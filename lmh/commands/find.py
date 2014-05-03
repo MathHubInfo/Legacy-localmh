@@ -76,10 +76,11 @@ def replacePath(dir, matcher, replaceFnc, apply=False):
   for root, dirs, files in os.walk(dir):
     path = root.split('/')
     for file in files:
+      print file
       fileName, fileExtension = os.path.splitext(file)
       if fileExtension != ".tex":
         continue
-      fullpath = root+"/"+file;
+      fullpath = root+"/"+file
       if not os.access(fullpath, os.R_OK): # ignoring files I cannot read
         continue
       changes = False
