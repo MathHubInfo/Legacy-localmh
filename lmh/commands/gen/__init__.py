@@ -46,6 +46,7 @@ from lmh.commands.gen.omdoc import gen_omdoc
 from lmh.commands.gen.pdf import gen_pdf
 
 from lmh import util
+from lmh import config
 
 
 def create_parser():
@@ -62,7 +63,7 @@ def add_parser_args(parser, add_types=True):
   flags = parser.add_argument_group("Generation options")
 
   f1 = flags.add_mutually_exclusive_group()
-  f1.add_argument('-w', '--workers',  metavar='number', default=8, type=int, help='number of worker processes to use')
+  f1.add_argument('-w', '--workers',  metavar='number', default=config.get_config("gen::default_workers"), type=int, help='Number of worker processes to use. Default determined by gen::default_workers. ')
   f1.add_argument('-s', '--single',  action="store_const", dest="workers", const=1, help='Use only a single process. Shortcut for -w 1')
 
   f2 = flags.add_mutually_exclusive_group()

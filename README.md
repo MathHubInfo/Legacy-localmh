@@ -49,7 +49,7 @@ In addition to the installer dependencies the following are required for lmh to 
 On newer Ubuntu / Debian systems, all required packages may be installed with the following command: 
 
 ```bash
-sudo apt-get install python python-pip python-psutil subversion texlive cpanminus libxml2-dev libxslt-dev
+sudo apt-get install python python-pip python-psutil subversion git texlive cpanminus libxml2-dev libxslt-dev libgdbm-dev 
 ```
 
 ## Directory Structure

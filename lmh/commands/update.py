@@ -33,6 +33,7 @@ from subprocess import call
 
 from lmh.commands.setup import update as setup_update
 from lmh import util
+from lmh import config
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Update tool.')

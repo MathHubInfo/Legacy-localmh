@@ -35,6 +35,7 @@ import shutil
 from subprocess import call
 
 from lmh import util
+from lmh import config
 
 gitpath = util.which("git")
 python = util.which("python")
@@ -453,4 +454,4 @@ def do(args):
 
   if args.add_private_token and len(args.add_private_token) == 1:
     print "Adding private token ..."
-    util.set_setting("private_token", args.add_private_token[0])
+    config.set_config("gl::private_token", args.add_private_token[0])
