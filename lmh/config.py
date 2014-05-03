@@ -1,7 +1,5 @@
 import ConfigParser
 
-from lmh import util
-
 import os.path
 import json
 
@@ -46,7 +44,7 @@ config_meta = {
 	}
 }
 
-config_file = os.path.expanduser("~/.lmhconfig")
+config_file = os.path.dirname(os.path.realpath(__file__)) + "/../bin/lmh.cfg"
 
 def get_config(key):
 

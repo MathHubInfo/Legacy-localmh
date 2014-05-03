@@ -34,6 +34,8 @@ import subprocess
 import traceback
 
 from lmh import util
+from lmh import config
+
 from lmh.commands import create_parser
 from lmh.commands import gen
 from lmh.commands import preparse_args

@@ -109,19 +109,6 @@ def module_exists(module_name):
     else:
         return True
 
-def autocomplete_remote_mathhub_repository(prefix, parsed_args, **kwargs):
-  key = config.get_config("gl::private_token")
-  results = []
-
-  if key:
-    resource = config.get_config("gl::host")+"/api/v3/groups?private_token={token}".format(token=key)
-    json_data = json.loads(urllib2.urlopen(resource).read())
-    for rec in json_data:
-      if rec["name"].startswith(prefix):
-        results.append(rec["name"])
-
-  return results
-
 def autocomplete_mathhub_repository(prefix, parsed_args, **kwargs):
   results = [];
   root = _lmh_root+"/MathHub"
