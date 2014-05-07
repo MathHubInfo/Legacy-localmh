@@ -76,7 +76,7 @@ def do(args):
       os.makedirs("%s%s"%(rootdir,relpath))
 
     for file in files:
-      content = util.get_file("%s/%s"%(root,file))
+      content = util.get_file("%s/1%s"%(root,file))
       util.set_file("%s%s/%s"%(rootdir,relpath,file), content)
 
 

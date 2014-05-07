@@ -35,7 +35,7 @@ config_meta = {
 		"default": False
 	}, 
 
-	# Setup configSetup sources config
+	# Sources configuration
 
 	#Latexml
 	"setup::latexml::source": {
@@ -116,14 +116,15 @@ config_meta = {
 		"type": "bool", 
 		"help": "When lmh update is called without arguments, also perform a selfupdate. ", 
 		"default": True
-	}, 
+	},
 
-	# Untested
-	#"untested::enable": {
-	#	"type": "bool", 
-	#	"help": "Enable untested features. ", 
-	#	"default": False
-	#},
+	# Enable some eastereggs
+	"::eastereggs": {
+		"type": "bool", 
+		"help": "Enable some eastereggs. ", 
+		"default": False, 
+		"hidden": True
+	}
 }
 
 config_file = os.path.dirname(os.path.realpath(__file__)) + "/../bin/lmh.cfg"
@@ -227,4 +228,10 @@ def get_config_help(key):
 
 def list_config():
 	for key in sorted(config_meta.keys()):
+		try:
+			if config_meta[key]["hidden"]:
+				continue
+		except:
+			pass
+			
 		print key +" = <" + config_meta[key]["type"] + "> " + json.dumps(get_config(key)) + ""

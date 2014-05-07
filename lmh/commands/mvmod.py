@@ -73,7 +73,7 @@ def do(args):
   srcpath = args.sourcerepo + "/source/" +  args.module
 
   # Assemble source paths further
-  srcargs = (args.sourcerepo + args.module).split("/")
+  srcargs = (args.sourcerepo + "/" + args.module).split("/")
   srcapath = "/".join(srcargs[:-1])
   srcbpath = srcargs[-1]
   
@@ -84,11 +84,15 @@ def do(args):
   newcall = "\\[" + args.dest + "\\]{"+srcbpath+"}"
   newcall_long = "\\[$g0" + args.dest + "$g1\\]{"+srcbpath+"}"
 
+  args.dest += "/source/"
+
   # Move the files
-  if args.simulate: 
+  if args.simulate:
+    print "mv "+srcpath +".tex"+ " "+ args.dest 
     print "mv "+srcpath +".de.tex"+ " "+ args.dest
     print "mv "+srcpath +".en.tex"+ " "+ args.dest
   else:
+    shutil.move(srcpath +".tex", args.dest)
     shutil.move(srcpath +".de.tex", args.dest)
     shutil.move(srcpath +".en.tex", args.dest)
 

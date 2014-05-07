@@ -103,4 +103,6 @@ def main(argv = sys.argv[1:]):
 
 def run(argv = sys.argv[1:]):
   install_excepthook()
+  if(config.get_config("::eastereggs") == True and argv == ["what", "is", "the", "answer", "to", "life", "the", "universe", "and", "everything?"]):
+    sys.exit(42)
   main(preparse_args(argv))
