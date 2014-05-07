@@ -58,8 +58,10 @@ def add_parser_args(parser):
 
   parser.add_argument('-f', '--force', action="store_const", dest="force", const=True, default=False, help='Skip checking for lmh core requirements. ')
   parser.add_argument('--autocomplete', default=False, const=True, action="store_const", help="should install autocomplete for bash", metavar="")
+  parser.add_argument('--store-source-selections', default=False, const=True, action="store_const", help="If set all source and branch selections are stored and used as default in the future. ", metavar="")
   parser.add_argument('--add-private-token', nargs=1, help="add private token to use advanced MathHub functionality")
-   
+  
+
   source = parser.add_argument_group('Dependency versions')
   source.add_argument('--latexml-source', default="", metavar="source@branch", help='Get LaTeXML from the given source. ')
   source.add_argument('--latexmls-source', default="", metavar="source@branch", help='Get LaTeXMLs from the given source. ')
@@ -90,6 +92,7 @@ def add_parser_args(parser):
   mmt.add_argument('--update-mmt', action="store_const", dest="mmt_action", const="up", help='Update MMT. ')
   mmt.add_argument('--reinstall-mmt', action="store_const", dest="mmt_action", const="re", help='Reinstall MMT. ')
   mmt.add_argument('--skip-mmt', action="store_const", dest="mmt_action", const="sk", help='Leave MMT untouched. ')
+
 
 
   parser.epilog = """
@@ -329,8 +332,8 @@ def do(args):
 
   # LaTeXML
   latexml_action = args.latexml_action or action
-  latexml_source = "https://github.com/KWARC/LaTeXML.git"
-  latexml_branch = ""
+  latexml_source = config.get_config("setup::latexml::source")
+  latexml_branch = config.get_config("setup::latexml::branch")
 
   if not args.latexml_source == "":
     index = args.latexml_source.find("@")
@@ -361,8 +364,8 @@ def do(args):
 
   # LaTeXMLs
   latexmls_action = args.latexml_action or action
-  latexmls_source = "https://github.com/dginev/LaTeXML-Plugin-latexmls"
-  latexmls_branch = ""
+  latexmls_source = config.get_config("setup::latexmls::source")
+  latexmls_branch = config.get_config("setup::latexmls::branch")
 
   if not args.latexmls_source == "":
     index = args.latexmls_source.find("@")
@@ -374,7 +377,7 @@ def do(args):
     else:
       latexmls_source = args.latexmls_source
 
-    print "Using LaTexML Version: "+latexmls_source+"@"+latexmls_branch
+    print "Using LaTeXMLs Version: "+latexmls_source+"@"+latexmls_branch
 
 
   if latexmls_action == "re":
@@ -393,8 +396,8 @@ def do(args):
 
   # sTex
   stex_action = args.stex_action or action
-  stex_source = "https://github.com/KWARC/sTeX.git"
-  stex_branch = ""
+  stex_source = config.get_config("setup::stex::source")
+  stex_branch = config.get_config("setup::stex::branch")
 
   if not args.stex_source == "":
     index = args.stex_source.find("@")
@@ -421,8 +424,8 @@ def do(args):
 
   # MMT
   mmt_action = args.mmt_action or action
-  mmt_source = "https://svn.kwarc.info/repos/MMT/deploy/"
-  mmt_branch = ""
+  mmt_source = config.get_config("setup::mmt::source")
+  mmt_branch = config.get_config("setup::mmt::branch")
 
   if not args.mmt_source == "":
     index = args.mmt_source.find("@")
@@ -446,6 +449,22 @@ def do(args):
   if mmt_action == "up":
     print "Updating MMT ..."
     mmt_update(root, mmt_source, mmt_branch)
+
+  if args.store_source_selections:
+    # Store the selections in the config
+    config.set_config("setup::latexml::source", latexml_source)
+    config.set_config("setup::latexml::branch", latexml_branch)
+
+    config.set_config("setup::latexmls::source", latexmls_source)
+    config.set_config("setup::latexmls::branch", latexmls_branch)
+
+    config.set_config("setup::stex::source", stex_source)
+    config.set_config("setup::stex::branch", stex_branch)
+
+    config.set_config("setup::mmt::source", mmt_source)
+    config.set_config("setup::mmt::branch", mmt_branch)
+
+
 
 
   if args.autocomplete:

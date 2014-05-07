@@ -35,6 +35,56 @@ config_meta = {
 		"default": False
 	}, 
 
+	# Setup configSetup sources config
+
+	#Latexml
+	"setup::latexml::source": {
+		"type": "string", 
+		"help": "Default Source for latexml. ", 
+		"default": "https://github.com/KWARC/LaTeXML.git"
+	}, 
+	"setup::latexml::branch": {
+		"type": "string", 
+		"help": "Default branch for latexml. Automatically uses the remote HEAD if undefined. ", 
+		"default": ""
+	}, 
+
+	#Latexmls
+	"setup::latexmls::source": {
+		"type": "string", 
+		"help": "Default Source for latexmls. ", 
+		"default": "https://github.com/dginev/LaTeXML-Plugin-latexmls"
+	}, 
+	"setup::latexmls::branch": {
+		"type": "string", 
+		"help": "Default branch for latexmls. Automatically uses the remote HEAD if undefined. ", 
+		"default": ""
+	}, 
+
+	#STeX
+	"setup::stex::source": {
+		"type": "string", 
+		"help": "Default Source for sTeX. ", 
+		"default": "https://github.com/KWARC/sTeX.git"
+	}, 
+	"setup::stex::branch": {
+		"type": "string", 
+		"help": "Default branch for sTeX. Automatically uses the remote HEAD if undefined. ", 
+		"default": ""
+	}, 
+
+	# MMT
+	"setup::mmt::source": {
+		"type": "string", 
+		"help": "Default Source for MMT. ", 
+		"default": "https://svn.kwarc.info/repos/MMT/deploy/"
+	}, 
+	"setup::mmt::branch": {
+		"type": "string", 
+		"help": "Default branch for MMT. Automatically uses TRUNK if empty. ", 
+		"default": ""
+	}, 
+
 	# Gitlab settings
 	"gl::private_token": {
 		"type": "string", 
