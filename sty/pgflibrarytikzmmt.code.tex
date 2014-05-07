@@ -31,10 +31,10 @@
 \newcommand{\@mmtreversearrowtippartial}{right to reversed}
 \newcommand{\@mmtreversearrowtippartialleft}{left to reversed}
 
-%%% 1.2 the arrow sstyles in graphs
-\usetikzlibrary{decorations,decorations.pathmorphing}
+%%% 2.2 the arrow sstyles in graphs
+\usetikzlibrary{decorations,decorations.pathmorphing,decorations.markings}
 % any morphism 
-\tikzstyle{morph}=[-\@mmtarrowtip] 
+\tikzstyle{morph}=[-\@mmtarrowtip,thick] 
 \tikzstyle{mapsto}=[|-\@mmtarrowtip] %| any morphism 
 % structures
 \tikzstyle{struct}=[-\@mmtarrowtip,thick]
@@ -71,6 +71,12 @@
 \tikzstyle{conservative}=[hooks-\@mmtarrowtip,double] 
 % conservative development
 \tikzstyle{conservdev}=[hooks-\@mmtarrowtip,dashed,double] 
+
+% antimorphisms as striktthroughs
+\tikzset{anti/.style={
+    decoration={markings, mark=between positions 0.2 and 0.8 step 4mm with {
+        \draw [thick,-] ++ (-3pt,-3pt) -- (3pt,3pt);}},
+    postaction={decorate}}}
 
 %%% 3. convenience macros
 %%% 3.1 the \mmtthy macro takes three arguments, name, decl, axioms and makes a 
