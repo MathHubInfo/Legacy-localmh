@@ -97,6 +97,13 @@ config_meta = {
 		"default": "http://gl.mathub.info"
 	},
 
+	# Init
+	"init::allow_nonempty": {
+		"type": "bool", 
+		"help": "Allow to run lmh init in non-empty directories. ", 
+		"default": False
+	}, 
+
 	# Generation options
 	"gen::default_workers": {
 		"type": "int+", 

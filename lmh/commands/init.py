@@ -33,6 +33,7 @@ import re
 import argparse
 
 from lmh import util
+from lmh import config
 
 repoRegEx = '([\w-]+)/([\w-]+)';
 
@@ -46,10 +47,22 @@ def add_parser(subparsers, name="init"):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  pass
+  parser.add_argument('--use-git-root', '-g', action="store_const", default=False, const=True, help="initialise repository in the current git repository root. ")
 
-def do(args):
-  rootdir = util.git_root_dir()
+
+def do(args): 
+  if args.use_git_root:
+    rootdir = util.git_root_dir()
+  else:
+    rootdir = os.getcwd()
+
+    if (not (not os.listdir(rootdir))) and (not config.get_config("init::allow_nonempty")):
+      print "Could not create repository, directory not empty. "
+      print "If you want to enable lmh init on non-empty directories, please run"
+      print "    lmh config init::allow_nonempty true"
+      print "If you want to use the root of the current git repository, please use lmh install -g"
+      return
+
   metadir = rootdir+"/META-INF"
 
   tManifest = util.get_template("manifest.tpl")
@@ -85,7 +98,10 @@ def do(args):
     util.set_file(rootdir+"/serve.msl", tServe.format(group, name, util.lmh_root()))
 
   print """
-If the new repository depends on other MathHub repositories, we can add them in the line starting with "dependencies:" in META-INF/MANIFEST.MF.
-Note that any changes have to be committed and pushed before the repository can be used by others.
+  Created new repository successfully. 
+
+  If the new repository depends on other MathHub repositories, we can add them in the line starting with "dependencies:" in META-INF/MANIFEST.MF.
+
+  Note that any changes have to be committed and pushed before the repository can be used by others.
 """
   
