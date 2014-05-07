@@ -76,7 +76,6 @@ def replacePath(dir, matcher, replaceFnc, apply=False):
   for root, dirs, files in os.walk(dir):
     path = root.split('/')
     for file in files:
-      print file
       fileName, fileExtension = os.path.splitext(file)
       if fileExtension != ".tex":
         continue
