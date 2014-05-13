@@ -4,6 +4,7 @@ import subprocess
 import argparse
 import shutil
 import signal
+import imp
 
 def which(program):
     def is_exe(fpath):
@@ -74,11 +75,12 @@ def update_lmh(install, setupuri = "http://gl.mathhub.info/MathHub/localmh.git",
 def run_lmh(install):
     # run lmh
     try:
-        args = [sys.executable, install + "/bin/lmh"] + sys.argv[1:]
-        runner = subprocess.Popen(args, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-    except:
-        print "lmh core: Unable to run lmh. Please try to update. "
+        s = imp.load_source("main", install + "/bin/lmh")
+        s.main()
+    except Exception as e:
+        print "lmh core: Exception occured while running lmh. "
         sys.exit(1)
+    sys.exit(0)
 
     def do_the_run():
         try:

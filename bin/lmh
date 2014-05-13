@@ -4,8 +4,11 @@
 import sys
 import os
 
-if __name__ == "__main__":
-	pth = os.path.realpath(os.path.dirname(sys.argv[0])+ "/../")
+def main():
+	pth = os.path.realpath(os.path.dirname(__file__)+ "/../")
 	sys.path.append(pth)
 	import lmh
 	lmh.run(sys.argv[1:])
+
+if __name__ == "__main__":
+	main()
