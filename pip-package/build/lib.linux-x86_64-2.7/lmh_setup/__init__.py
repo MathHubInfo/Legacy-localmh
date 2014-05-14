@@ -74,13 +74,24 @@ def update_lmh(install, setupuri = "http://gl.mathhub.info/MathHub/localmh.git",
     return True
 def run_lmh(install):
     # run lmh
-    try:
-        s = imp.load_source("main", install + "/bin/lmh")
+    s = imp.load_source("main", install + "/bin/lmh")
+
+    # check if s has an attribute called main
+    if hasattr(s, "main"):
         s.main()
-    except Exception as e:
-        print "lmh core: Exception occured while running lmh. "
-        sys.exit(1)
+    else:
+        run_lmh_legacy(install)
+
     sys.exit(0)
+
+def run_lmh_legacy(install):
+    # run the legacy version of lmh
+    try:
+        args = [sys.executable, install + "/bin/lmh"] + sys.argv[1:]
+        runner = subprocess.Popen(args, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+    except:
+        print "lmh core: Unable to run lmh. Please use the new version of lmh. "
+        sys.exit(1)
 
     def do_the_run():
         try:
