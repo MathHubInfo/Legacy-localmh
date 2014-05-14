@@ -46,67 +46,78 @@ def add_parser(subparsers, name="mvmod"):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('sourcerepo', nargs=1, help="name of old repository")
-  parser.add_argument('module', nargs=1, help="relative path of source module in old repository")
+  parser.add_argument('source', nargs=1, help="name of old repository. ")
   parser.add_argument('dest', nargs=1, help="Name of new repository. Assumed to be initalised correctly. ", default=None)
+  parser.add_argument('module', nargs="+", help="Relative path(s) of source module(s) in old repository")
   parser.add_argument('--simulate', action="store_const", default=False, const=True, help="Simulate only. ")
 
 
   parser.epilog = """
-    Example: lmh mvmod smglom/smglom set smglom/set
+    Example: lmh mvmod smglom/smglom smglom/set set 
 
-    Which moves the multilingual set module from smglom/smglom into the new repository smglom/set
+    Which moves the multilingual set module from smglom/smglom into the new repository smglom/set. 
+
+    It can be advisable to run an lmh clean before executing this command, as it speeds it up quite a lot. 
   """
 def do(args):
-  # change directory to MathHub root, makes paths easier
-
-  args.sourcerepo = args.sourcerepo[0]
-  args.module = args.module[0]
+  args.source = args.source[0]
   args.dest = args.dest[0]
 
+  # change directory to MathHub root, makes paths easier
   if args.simulate: 
     print "cd "+util._lmh_root + "/MathHub/"
   else:
     os.chdir(util._lmh_root + "/MathHub/")
 
-  # Figure out the full path to the source
-  srcpath = args.sourcerepo + "/source/" +  args.module
+  for module in args.module:
+    # Figure out the full path to the source
+    srcpath = args.source + "/source/" +  module
 
-  # Assemble source paths further
-  srcargs = (args.sourcerepo + "/" + args.module).split("/")
-  srcapath = "/".join(srcargs[:-1])
-  srcbpath = srcargs[-1]
-  
-  # Assemble all the commands
-  oldcall = "\\[" + srcapath + "\\]{"+srcbpath+"}"
-  oldcall_long = "\\[(.*)repos=" + srcapath + "(.*)\\]{"+srcbpath+"}"
-  oldcall_local = "{"+srcbpath+"}"
-  newcall = "\\[" + args.dest + "\\]{"+srcbpath+"}"
-  newcall_long = "\\[$g0" + args.dest + "$g1\\]{"+srcbpath+"}"
+    # Assemble source paths further
+    srcargs = (args.source + "/" + module).split("/")
+    srcapath = "/".join(srcargs[:-1])
+    srcbpath = srcargs[-1]
+    
+    # Assemble all the commands
+    oldcall = "\\[" + srcapath + "\\]{"+srcbpath+"}"
+    oldcall_long = "\\[(.*)repos=" + srcapath + "(.*)\\]{"+srcbpath+"}"
+    oldcall_local = "{"+srcbpath+"}"
+    newcall = "\\[" + args.dest + "\\]{"+srcbpath+"}"
+    newcall_long = "\\[$g0" + args.dest + "$g1\\]{"+srcbpath+"}"
 
-  args.dest += "/source/"
+    args.dest += "/source/"
 
-  # Move the files
-  if args.simulate:
-    print "mv "+srcpath +".tex"+ " "+ args.dest 
-    print "mv "+srcpath +".de.tex"+ " "+ args.dest
-    print "mv "+srcpath +".en.tex"+ " "+ args.dest
-  else:
-    shutil.move(srcpath +".tex", args.dest)
-    shutil.move(srcpath +".de.tex", args.dest)
-    shutil.move(srcpath +".en.tex", args.dest)
+    file_patterns = ["", ".de", ".en"]
 
-  def run_lmh_command(cmd):
+    # Move the files
     if args.simulate:
-      print "lmh '"+ "' '".join(cmd)+"'"
+      for pat in file_patterns:
+        # try to move the file if it exists
+        try:
+          print "mv "+srcpath + pat +".tex"+ " "+ args.dest + " 2>/dev/null || true"
+        except:
+          pass
+      
     else:
-      main(cmd)
+      for pat in file_patterns:
+        # try to move the file if it exists
+        try:
+          shutil.move(srcpath + pat + ".tex", args.dest)
+        except:
+          pass
+      
 
-  # Run all the commands
-  for m in ["gimport", "guse", "gadopt"]:
-    run_lmh_command(['find', '\\\\'+m+oldcall, '--replace', '\\'+m+newcall, '--apply'])
-    run_lmh_command(['find', '\\\\'+m+oldcall_local, '--replace', '\\'+m+newcall, '--apply'])
+    def run_lmh_command(cmd):
+      if args.simulate:
+        print "lmh '"+ "' '".join(cmd)+"'"
+      else:
+        main(cmd)
 
-  for m in ["importmhmodule", "usemhmodule", "adoptmhmodule", "usemhvocab"]:
-    run_lmh_command(['find', '\\'+m+oldcall_long, "--replace", '\\'+m+newcall_long, "--apply"])
-    run_lmh_command(['find', '\\'+m+oldcall_local, '--replace', '\\'+m+newcall_long, '--apply'])
+    # Run all the commands
+    for m in ["gimport", "guse", "gadopt"]:
+      run_lmh_command(['find', '\\\\'+m+oldcall, '--replace', '\\'+m+newcall, '--apply'])
+      run_lmh_command(['find', '\\\\'+m+oldcall_local, '--replace', '\\'+m+newcall, '--apply'])
+
+    for m in ["importmhmodule", "usemhmodule", "adoptmhmodule", "usemhvocab"]:
+      run_lmh_command(['find', '\\'+m+oldcall_long, "--replace", '\\'+m+newcall_long, "--apply"])
+      run_lmh_command(['find', '\\'+m+oldcall_local, '--replace', '\\'+m+newcall_long, '--apply'])
