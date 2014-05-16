@@ -56,14 +56,39 @@ def add_parser_args(parser):
       TBD
   """
 
-def do_file(fname):
-  content = util.get_file(fname)
-  
-  def_pattern = "\\\\def(i{1,3}){(.+)}"
+def pat_to_match(pat):
+  # turn it into a match
+  if pat[1] == "i":
+    return [pat[0], 1, pat[3], [pat[5]]]
+  elif pat[1] == "ii":
+    return [pat[0], 2, pat[3], [pat[5], pat[7]]]
+  elif pat[1] == "iii":
+    return [pat[0], 3, pat[3], [pat[5], pat[7], pat[9]]]
 
-  print fname
-  print re.match(def_pattern, content)
-  
+
+def find_all_defis(text):
+  # find all a?defs and turn them into nice matches
+  pattern = r"\\(def|adef)(i{1,3})(\[(.*?)\])?({([^{}]+)?})({([^{}]+)?})?({([^{}]+)?})?"
+  return [pat_to_match(x) for x in re.findall(pattern, text)]
+
+def find_all_symis(text):
+  # find all the symis
+  pattern = r"\\begin{modsig}((.|\n)*)\\end{modsig}"
+  matches = re.findall(pattern, text)
+  if len(pattern) == 0:
+    return []
+  text = pattern[0]
+
+
+
+
+def do_file(fname, simulate):
+  with open(fname, 'r') as content_file:
+    content = content_file.read()
+
+  defs = find_all_defis(content)
+  syms = find_all_symis(text)
+
 
 def do(args):
   # Find all the modules that we have to worry about

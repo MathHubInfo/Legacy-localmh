@@ -30,7 +30,6 @@ def which(program):
 def install_lmh(install, setupuri = "http://gl.mathhub.info/MathHub/localmh.git", branch=""):
     if not os.path.exists(install):
         os.makedirs(install)
-
     islinux = os.name == "posix"
     iswin = os.name == "nt"
     git = which("git")
@@ -107,7 +106,7 @@ def run_lmh_legacy(install):
     do_the_run()
     
     sys.exit(runner.returncode)
-    
+
 def has_lmh(install):
     return os.path.isfile(install + "/bin/lmh")
 
