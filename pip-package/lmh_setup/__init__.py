@@ -1,5 +1,9 @@
+#!/usr/bin/env python
+# PYTHON_ARGCOMPLETE_OK
+
 import os
 import sys
+import imp
 import subprocess
 import argparse
 import shutil
@@ -10,7 +14,7 @@ def which(program):
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
-    fpath, fname = os.path.split(program)
+    fpath, fname = os.path.lsplit(program)
     if fpath:
         if is_exe(program):
             return program
@@ -103,7 +107,7 @@ def run_lmh_legacy(install):
     do_the_run()
     
     sys.exit(runner.returncode)
-
+    
 def has_lmh(install):
     return os.path.isfile(install + "/bin/lmh")
 

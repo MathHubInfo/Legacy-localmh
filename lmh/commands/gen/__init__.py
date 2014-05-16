@@ -28,6 +28,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
+import os.path
 import sys
 import re
 import glob
@@ -191,6 +192,12 @@ def locate_modules(path, depth=-1):
 
   if os.path.relpath(util.lmh_root() + "/MathHub/", path) == "../..":
     path = path + "/source"
+
+  if not os.path.isdir(path):
+    return []
+
+  if not os.path.isdir(path):
+    return []
 
   path = os.path.abspath(path)
   try:

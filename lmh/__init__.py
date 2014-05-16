@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# PYTHON_ARGCOMPLETE_OK
 
 """
 Local Math Hub utility main parser. 
@@ -33,6 +34,11 @@ import time
 import subprocess
 import traceback
 
+try:
+  import argcomplete
+except ImportError:
+  pass
+
 from lmh import util
 from lmh import config
 
@@ -60,6 +66,10 @@ def install_excepthook():
 def main(argv = sys.argv[1:]):
   """Calls the main program with given arguments. """
   parser = create_parser(submods)
+  try:
+    argcomplete.autocomplete(parser)
+  except:
+    pass
   if len(argv) == 0:
     parser.print_help();
     return
