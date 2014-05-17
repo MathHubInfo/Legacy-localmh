@@ -15,22 +15,5 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import argparse
-import lmh.lib.about
-
-def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub About information. ')
-  add_parser_args(parser)
-  return parser
-
-def add_parser(subparsers, name="about"):
-  about_parser = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='shows version and general information. ')
-  add_parser_args(about_parser)
-
-def add_parser_args(parser):
-  pass
-
-def do(args):
-  print("LMH, Version " + lmh.lib.about.version)
-  print("")
-  print(lmh.lib.about.license)
+# Set the version information
+from lmh.lib.about import version as __version__

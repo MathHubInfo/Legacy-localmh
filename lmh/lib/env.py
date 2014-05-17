@@ -15,22 +15,25 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import argparse
-import lmh.lib.about
+import os.path
 
-def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub About information. ')
-  add_parser_args(parser)
-  return parser
+"""Installation directory of lmh"""
+install_dir = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../")
 
-def add_parser(subparsers, name="about"):
-  about_parser = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='shows version and general information. ')
-  add_parser_args(about_parser)
+def which(program):
+	"""Returns the full path to program similar to the *nix command which"""
+	def is_exe(fpath):
+		return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+	
+	fpath, fname = os.path.split(program)
+	if fpath:
+		if is_exe(program):
+			return program
+	else:
+		for path in os.environ["PATH"].split(os.pathsep):
+			path = path.strip('"')
+			exe_file = os.path.join(path, program)
+			if is_exe(exe_file):
+				return exe_file
 
-def add_parser_args(parser):
-  pass
-
-def do(args):
-  print("LMH, Version " + lmh.lib.about.version)
-  print("")
-  print(lmh.lib.about.license)
+	return None

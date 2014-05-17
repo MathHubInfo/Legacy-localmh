@@ -9,5 +9,5 @@ setup(name='lmh',
       author_email = "postmaster@kwarc.info",
       scripts=['lmh'], 
       license='GPL', 
-      packages=['lmh_setup'],
+      packages=['lmh_core'],
 )

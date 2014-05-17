@@ -79,9 +79,6 @@ def find_all_symis(text):
     return []
   text = pattern[0]
 
-
-
-
 def do_file(fname, simulate):
   with open(fname, 'r') as content_file:
     content = content_file.read()
