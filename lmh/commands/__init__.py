@@ -1,15 +1,4 @@
 #!/usr/bin/env python
-
-"""
-Local Math Hub utility main parser. 
-
-.. argparse::
-   :module: lmh
-   :func: create_parser
-   :prog: lmh
-
-"""
-
 """
 This file is part of LMH.
 
@@ -73,9 +62,6 @@ def create_parser(submods = {}):
 	p.add_argument('--pdf-pipe-log', action="store_const", const=True, default=False, help="Displays only the pdf log as output. Implies --quiet. ")
 
 	p.epilog = "Generate pdf files. "
-
-	if util.module_exists("argcomplete"):
-		__import__("argcomplete").autocomplete(parser)
 
 	return parser
 

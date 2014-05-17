@@ -24,6 +24,22 @@ from lmh.lib.io import std, err, read_file, write_file
 
 """Available configuration values. """
 config_meta = {
+	
+	#
+	# General
+	#
+	"self::enable_colors": {
+		"type": "bool", 
+		"help": "Use colors in the output. ",
+		"default": False 
+	}, 
+
+	"self::git": {
+		"type": "string", 
+		"help": "Path to the Git executable. Auto-detected if empty. ",
+		"default": "" 
+	}, 
+
 	# Install Config
 	"install::sources": {
 		"type": "string", 
@@ -142,7 +158,7 @@ def get_config(key):
 
 	# Try to find the setting in the config file
 	try:
-		data = json.load(read_file(config_file))
+		data = json.loads(read_file(config_file))
 
 		return data[key]
 	except:

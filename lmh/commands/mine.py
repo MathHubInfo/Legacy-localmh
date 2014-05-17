@@ -27,16 +27,14 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-
-import os.path
 import argparse
+import os.path
 
-from lmh import util
-from lmh import config
-
+from lmh.lib import config
 from lmh.commands import install
+from lmh.lib.repos.local import export, restore
 
-repoRegEx = util.repoRegEx
+# import the root
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Manages all locally installed repositories. ')
@@ -59,32 +57,8 @@ def add_parser_args(parser):
 def do(args):
 
   fn = os.path.abspath(args.file)
+
   if args.export:
-
-    subdirs = lambda d,p:[(os.path.join(d, o), o, p+"/"+o) for o in os.listdir(d) if os.path.isdir(os.path.join(d,o))]
-
-    # find all the repositories
-    things = [[r[2] for r in subdirs(q[0], q[1])] for q in subdirs(util._lmh_root+"/MathHub", "")]
-    things = [item for sublist in things for item in sublist]
-
-    try:
-          f = open(fn,'w')
-          f.write(os.linesep.join(things))
-          f.close()
-    except:
-      print "Unable to read "+fn
-      return False
+    return export(fn)
   else:
-    try:
-      f = open(fn)
-      lines = f.readlines()
-      f.close()
-    except:
-      print "Unable to read "+fn
-      return False
-    lines = [line.strip() for line in lines]
-
-    ns = argparse.Namespace()
-    ns.__dict__.update({"repository":lines})
-
-    return install.do(ns)
+    return restore(fn)

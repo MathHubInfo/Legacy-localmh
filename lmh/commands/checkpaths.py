@@ -1,15 +1,4 @@
 #!/usr/bin/env python
-
-"""
-This is the entry point for the Local Math Hub utility. 
-
-.. argparse::
-   :module: checkpaths
-   :func: create_parser
-   :prog: checkpaths
-
-"""
-
 """
 This file is part of LMH.
 
@@ -26,6 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
+
+
 
 import os
 import glob

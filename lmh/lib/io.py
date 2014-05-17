@@ -44,6 +44,8 @@ def std(*args, **kwargs):
 def err(*args, **kwargs):
 	"""Prints some text to stderr"""
 
+	from lmh.lib.config import get_config
+
 	newline = True
 
 	# allow only the newline kwarg
@@ -55,7 +57,14 @@ def err(*args, **kwargs):
 
 	if not __supressErr__:
 		text = " ".join([str(text) for text in args]) + ('\n' if newline else '')
-		sys.stderr.write(text)
+		if get_config("self::enable_colors"):
+			sys.stderr.write("\033[01;31m{0}\033[00m".format(text))
+		else:
+			sys.stderr.write(text)
+
+def read_raw():
+	"""Reads a line of text form stdin. """
+	return sys.stdin.readline()
 
 def block_std():
 	"""Blocks stdout"""
@@ -94,3 +103,13 @@ def read_file(filename):
 	text_file.close()
 
 	return text
+
+def read_file_lines(filename):
+	"""Reads all text lines from a file"""
+
+	# Read lines and then close the file
+	text_file = open(filename, "r")
+	lines = text_file.readlines()
+	text_file.close()
+
+	return lines

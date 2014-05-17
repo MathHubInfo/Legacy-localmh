@@ -34,6 +34,7 @@ import ConfigParser
 from lmh import config
 
 from lmh.lib.env import which
+from lmh.lib.env import install_dir as _lmh_root
 
 def effectively_readable(path):
     uid = os.getuid()
@@ -61,14 +62,11 @@ def effectively_readable(path):
 def shellquote(s):
     return "'" + s.replace("'", "'\\''") + "'"
     
+# Place holder function
 def lmh_root():
-    mypath = os.path.dirname(os.path.realpath(__file__))+"/.."
-    return os.path.realpath(mypath)
-
-
+    return _lmh_root
 
 repoRegEx = '[\w-]+/[\w-]+'
-_lmh_root = lmh_root()
 gitexec = which("git")
 svnexec = which("svn")
 perl5root = [_lmh_root+"/ext/perl5lib/", os.path.expanduser("~/")]
@@ -84,17 +82,8 @@ def perl5env(_env = {}):
      _env["PERL5LIB"] = perl5libdir+":"+ _env["PERL5LIB"]
   except:
     _env["PERL5LIB"] = perl5libdir
-  _env["STEXSTYDIR"]=stexstydir
+  _env["STEXSTYDIR"] = stexstydir
   return _env
-
-
-def module_exists(module_name):
-    try:
-        __import__(module_name)
-    except ImportError:
-        return False
-    else:
-        return True
 
 def autocomplete_mathhub_repository(prefix, parsed_args, **kwargs):
   results = [];
@@ -105,16 +94,7 @@ def autocomplete_mathhub_repository(prefix, parsed_args, **kwargs):
 
   return results
 
-
-def lmh_repos(dir=os.getcwd()):
-  t = os.path.realpath(dir);
-  root = _lmh_root+"/MathHub"
-  if not t.startswith(root):
-    return None
-  comp = t[len(root)+1:].split("/")
-  if len(comp) < 2:
-    return None
-  return "/".join(comp[:2]);
+from lmh.lib.repos.local import match_repository as lmh_repos
 
 def validRepoName(name):
   if name.find("..") != -1:
@@ -125,12 +105,7 @@ def validRepoName(name):
     return False
   return True
 
-def parseSimpleRepo(repoName):
-  m = re.match(repoRegEx, repoName);
-  if m and len(m.group(0)) == len(repoName):
-    return repoName;
-  else:
-    raise argparse.ArgumentTypeError("%r is not a valid repository name"%repoName)
+from lmh.lib.repos import repoType as parseSimpleRepo
 
 def tryRepo(repoName, default):
   try:
@@ -164,32 +139,17 @@ def parseRepo(repoName):
 
   raise argparse.ArgumentTypeError("%r is not a valid repository name"%repoName)
 
-def get_file(filePath):
-    return open(filePath).read()
-
-def set_file(filePath, fileContent):
-    return open(filePath, "w").write(fileContent)
+from lmh.lib.io import read_file as get_file
+from lmh.lib.io import write_file as set_file
     
 def get_template(name):
     return get_file(_lmh_root + "/bin/templates/" + name);
 
-def git_clone(dest, *arg):
-  args = [gitexec, "clone"]
-  args.extend(arg)
-  proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
-  proc.wait()
-
-def git_exists(dest):
-  args = [gitexec, "ls-remote", dest]
-  proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-  proc.wait()
-  return (proc.returncode == 0)
-
-def git_pull(dest, *arg):
-  args = [gitexec, "pull"];
-  args.extend(arg);
-  proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest).communicate()[1]
-  proc.wait()
+from lmh.lib.git import clone as git_clone
+from lmh.lib.git import exists as git_exists
+from lmh.lib.git import pull as git_pull
+from lmh.lib.git import root_dir as git_root_dir
+from lmh.lib.git import origin as git_origin
 
 def svn_clone(dest, *arg):
   args = [svnexec, "co"];
@@ -210,42 +170,7 @@ def svn_pull(dest, *arg):
 
   print err
 
-def git_origin(rootdir="."):
-    return subprocess.Popen([which("git"), "remote", "show", "origin", "-n"], 
-                                stdout=subprocess.PIPE,
-                                cwd=rootdir,
-                               ).communicate()[0]
-
-
-def git_root_dir(dir = "."):
-    if os.path.isfile(dir):
-      dir = os.path.dirname(dir)
-    rootdir = subprocess.Popen([which("git"), "rev-parse", "--show-toplevel"], 
-                                stdout=subprocess.PIPE,
-                                cwd=dir,
-                               ).communicate()[0]
-    rootdir = rootdir.strip()
-    return rootdir
-
-def get_dependencies(dir):
-    res = []
-    try:
-        dir = git_root_dir(dir);
-        with open (dir+"/META-INF/MANIFEST.MF", "r") as metafile:
-          for line in metafile:
-            if line.startswith("dependencies: "):
-              for dep in re.findall(repoRegEx, line):
-                res.append(dep)
-
-    except IOError, e:
-        #print e
-        return None
-    
-    except OSError, e:
-        #print e
-        return None
-
-    return res
+from lmh.lib.repos import find_dependencies as get_dependencies
 
 def setnice(nice, pid = None):
     """ Set the priority of the process to below-normal."""
@@ -268,7 +193,8 @@ def kill_child_processes(parent_pid, sig=signal.SIGTERM, recursive=True,self=Tru
       os.kill(pid.pid, sig) 
 
     if self:
-      os.kill(parent_pid, sig) 
+      os.kill(parent_pid, sig)
+
 def reduce(lst):
   return sum( ([x] if not isinstance(x, list) else reduce(x)
          for x in lst), [] )

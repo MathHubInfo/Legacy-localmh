@@ -20,6 +20,9 @@ import os.path
 """Installation directory of lmh"""
 install_dir = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../")
 
+"""Data directory of lmh"""
+data_dir = os.path.realpath(install_dir + "/MathHub")
+
 def which(program):
 	"""Returns the full path to program similar to the *nix command which"""
 	def is_exe(fpath):
