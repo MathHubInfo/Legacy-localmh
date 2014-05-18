@@ -38,7 +38,7 @@ def add_parser_args(parser):
   parser.epilog = """
 If update::selfupdate is set to True, calling lomh update without any arguments will also call lmh selfupdate. 
 
-Note: LMH will check for tool updates only if run at the root of the LMH folder 
+Note: LMH will check for tool updates only if run at the root of the LMH folder. 
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
   Example:  
     */*       - would match all repositories from all groups. 

@@ -40,11 +40,25 @@ def pull(dest, *arg):
 	proc.wait()
 	return (proc.returncode == 0)
 
+def commit(dest, *arg):
+	args = [git_executable, "commit"]
+	args.extend(arg)
+	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
+	proc.wait()
+	return (proc.returncode == 0)
+
 def push(dest, *arg):
 	"""Pulls a git repository. """
 
 	args = [git_executable, "push"]
 	args.extend(arg);
+	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
+	proc.wait()
+	return (proc.returncode == 0)
+
+def do(dest, cmd, *args):
+	args = [git_executable, cmd]
+	args.extend(arg)
 	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
 	proc.wait()
 	return (proc.returncode == 0)

@@ -27,12 +27,10 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
-import glob
 import argparse
-from subprocess import call
 
-from lmh import util
+from lmh.lib.repos import parseRepo
+from lmh.lib.repos.local import match_repositories, commit
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Commit tool.')
@@ -44,8 +42,8 @@ def add_parser(subparsers, name="commit"):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to show the status. ").completer = util.autocomplete_mathhub_repository
-  parser.add_argument('--message', "-m", default="autocommit", nargs=1, help="message to be used for commits")
+  parser.add_argument('repository', type=parseRepo, nargs='*', help="a list of repositories for which to show the status. ")
+  parser.add_argument('--message', "-m", default=["automatic commit by lmh"], nargs=1, help="message to be used for commits")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs commit on all repositories currently in lmh")
 
   parser.epilog = """
@@ -54,17 +52,12 @@ Repository names allow using the wildcard '*' to match any repository. It allows
     */*       - would match all repositories from all groups. 
     mygroup/* - would match all repositories from group mygroup
     .         - would be equivalent to "git status ."
-""";
+"""
 
 def do_commit(rep, msg):
   print "committing %r"%rep
   call([util.which("git"), "commit", "-a", "-m", msg], cwd=rep);    
 
 def do(args):
-  if len(args.repository) == 0:
-    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
-  if args.all:
-    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]
-  for repo in args.repository:
-    for rep in glob.glob(repo):
-      do_commit(rep, args.message[0]);
+  repos = match_repositories(args)
+  return commit(args.message[0], *repos)

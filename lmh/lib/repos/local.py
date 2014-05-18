@@ -26,6 +26,9 @@ from lmh.lib.repos.remote import install
 from lmh.lib.git import push as git_push
 from lmh.lib.git import pull as git_pull
 from lmh.lib.git import status as git_status
+from lmh.lib.git import commit as git_commit
+from lmh.lib.git import do as git_do
+
 
 #
 # Matching Repository names
@@ -141,5 +144,23 @@ def status(*repos):
 			ret = False
 		else:
 			std(val)
+
+	return ret
+
+def commit(msg, *repos):
+	ret = True
+
+	for rep in repos:
+		std("git commit", rep)
+		ret = git_commit(rep, "-a", "-m", msg) and ret
+
+	return ret
+
+def do(*repos):
+	ret = True
+
+	for rep in repos:
+		std("git commit", rep)
+		ret = git_commit(rep, "-a", "-m", msg) and ret
 
 	return ret

@@ -6,7 +6,7 @@
 * unuse lmh.util
 
 # Still to port the following files:
-
+__init__
 commands.__init__
 commands.checkpaths
 commands.clean
@@ -15,11 +15,9 @@ commands.find
 commands.init
 commands.log
 commands.mvmod
-commands.symbols
-commands.gen.*
-
+commands.symbols <-- Not finished
+commands.gen.* <-- Hardest
 commands.git
-commands.commit
 
 # Ported already
 
@@ -45,5 +43,7 @@ commands.xhtml
 # New Stuff
 
 * lmh symbols
+* in the master, preparse lmh git args
 * autocomplete
 * firstrun code
+* add *s to the repository names

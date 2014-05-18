@@ -27,6 +27,9 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from lmh.lib.io import err
+
+
 import argparse
 
 import os
@@ -66,6 +69,7 @@ def do_xhtml(rep):
   pass
 
 def do(args):
+  err("Warning: lmh xhtml is currently outdated, whatever you are trying to probably wont work. ")
   if len(args.repository) == 0:
     args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
   if args.all:
