@@ -31,7 +31,7 @@ import os
 import glob
 from subprocess import call
 
-from lmh.commands.setup import update as setup_update
+from lmh.lib.self import update as setup_update
 from lmh.commands import selfupdate
 from lmh import util
 from lmh import config

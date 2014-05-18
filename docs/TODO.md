@@ -9,21 +9,20 @@
 commands.__init__
 commands.checkpaths
 commands.clean
-commands.commit
 commands.depcrawl
 commands.find
-commands.git
 commands.init
 commands.log
 commands.mvmod
-commands.push
-commands.selfupdate
-commands.setup
 commands.shell
-commands.status
 commands.symbols
-commands.update
 commands.gen.*
+
+commands.git
+commands.push
+commands.status
+commands.commit
+commands.update
 
 # Ported already
 
@@ -31,6 +30,8 @@ commands.about
 commands.config
 commands.install
 commands.mine
+commands.selfupdate
+commands.setup
 
 # Currently completly unsupported / broken: 
 
@@ -40,16 +41,7 @@ commands.xhtml
 .server
 .util
 
-# Existing "new" structure
-lmh.__init__ => (Empty)
+# New Stuff
 
-lmh.commands.__init__ => General command setup
-lmh.commands.$COMMAND => Code for $COMMAND
-
-lmh.lib.__init__
-lmh.lib.config => Config managing
-lmh.lib.env => Installation environment
-lmh.lib.io => Input / Output management
-lmh.lib.repos.__init__
-lmh.lib.repos.local => Manage lcoally installed repositories
-lmh.lib.repos.remote => Install remote repositories and check if they exist
+* lmh symbols
+* firstrun code

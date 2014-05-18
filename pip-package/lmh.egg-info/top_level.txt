@@ -1,1 +1,1 @@
-lmh_setup
+lmh_core

@@ -79,11 +79,11 @@ def do(args):
     srcbpath = srcargs[-1]
     
     # Assemble all the commands
-    oldcall = "\\[" + srcapath + "\\]{"+srcbpath+"}"
-    oldcall_long = "\\[(.*)repos=" + srcapath + "(.*)\\]{"+srcbpath+"}"
+    oldcall = "[" + srcapath + "]{"+srcbpath+"}"
+    oldcall_long = "[(.*)repos=" + srcapath + "(.*)]{"+srcbpath+"}"
     oldcall_local = "{"+srcbpath+"}"
-    newcall = "\\[" + args.dest + "\\]{"+srcbpath+"}"
-    newcall_long = "\\[$g0" + args.dest + "$g1\\]{"+srcbpath+"}"
+    newcall = "[" + args.dest + "]{"+srcbpath+"}"
+    newcall_long = "[$g0" + args.dest + "$g1]{"+srcbpath+"}"
 
     args.dest += "/source/"
 

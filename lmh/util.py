@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 This file is part of LMH.
 
@@ -16,6 +14,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
+
+# This file is currently under rewriting and split up
+# Will be removed once all code is completely ported
+# This is the dev branch afterall
 
 import re
 import os
@@ -62,28 +64,15 @@ def effectively_readable(path):
 def shellquote(s):
     return "'" + s.replace("'", "'\\''") + "'"
     
-# Place holder function
 def lmh_root():
     return _lmh_root
 
-repoRegEx = '[\w-]+/[\w-]+'
-gitexec = which("git")
-svnexec = which("svn")
-perl5root = [_lmh_root+"/ext/perl5lib/", os.path.expanduser("~/")]
+from lmh.lib.repos import nameExpression as repoRegEx
 
-perl5bindir = ":".join([p5r+"bin" for p5r in perl5root])+":"+_lmh_root+"/ext/LaTeXML/bin"+":"+_lmh_root+"/ext/LaTeXMLs/bin"
-perl5libdir = ":".join([p5r+"lib/perl5" for p5r in perl5root])+":"+_lmh_root+"/ext/LaTeXML/blib/lib"+":"+_lmh_root+"/ext/LaTeXMLs/blib/lib"
-stexstydir = _lmh_root+"/ext/sTeX/sty"
-latexmlstydir = _lmh_root+"/ext/sTeX/LaTeXML/lib/LaTeXML/texmf"
+from lmh.lib.extenv import git_executable as gitexec
+from lmh.lib.extenv import svn_executable as svnexec
 
-def perl5env(_env = {}):
-  _env["PATH"]=perl5bindir+":"+_env["PATH"]
-  try:
-     _env["PERL5LIB"] = perl5libdir+":"+ _env["PERL5LIB"]
-  except:
-    _env["PERL5LIB"] = perl5libdir
-  _env["STEXSTYDIR"] = stexstydir
-  return _env
+from lmh.lib.env import perl5root, perl5bindir, perl5libdir, stexstydir, latexmlstydir, perl5env
 
 def autocomplete_mathhub_repository(prefix, parsed_args, **kwargs):
   results = [];

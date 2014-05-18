@@ -1,15 +1,3 @@
-#!/usr/bin/env python
-
-"""
-This is the entry point for the Local Math Hub utility. 
-
-.. argparse::
-   :module: selfupdate
-   :func: create_parser
-   :prog: selfupdate
-
-"""
-
 """
 This file is part of LMH.
 
@@ -28,14 +16,8 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 
-import os
-import sys
-
-from subprocess import Popen
-
-from lmh import util
-
-
+import argparse
+from lmh.lib.self import update
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Updates lmh itself. ')
@@ -49,6 +31,4 @@ def add_parser_args(parser):
   pass
 
 def do(args):
-  ps = Popen([util.which("git"), "pull"], stdout=sys.stdout, stdin=sys.stdin, stderr=sys.stderr)
-  ps.wait()
-  sys.exit(ps.returncode)
+  return update()

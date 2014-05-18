@@ -34,10 +34,54 @@ config_meta = {
 		"default": False 
 	}, 
 
-	"self::git": {
+	# Environment paths
+	"env::git": {
 		"type": "string", 
 		"help": "Path to the Git executable. Auto-detected if empty. ",
 		"default": "" 
+	}, 
+
+	"env::svn": {
+		"type": "string", 
+		"help": "Path to the svn executable. Auto-detected if empty. ",
+		"default": "" 
+	}, 
+
+	"env::pdflatex": {
+		"type": "string", 
+		"help": "Path to the pdflatex executable. Auto-detected if empty. ",
+		"default": "" 
+	}, 
+
+	"env::perl": {
+		"type": "string", 
+		"help": "Path to the perl executable. Auto-detected if empty. ",
+		"default": "" 
+	}, 
+
+	"env::cpanm": {
+		"type": "string", 
+		"help": "Path to the cpanm executable. Auto-detected if empty. ",
+		"default": "" 
+	}, 
+
+	"env::make": {
+		"type": "string", 
+		"help": "Path to the make executable. Auto-detected if empty. ",
+		"default": "" 
+	}, 
+
+	"env::tar": {
+		"type": "string", 
+		"help": "Path to the make executable. Auto-detected if empty. ",
+		"default": "" 
+	}, 
+
+	"self::firstrun": {
+		"type": "bool", 
+		"help": "Generic flag set to true after the first run of lmh. ", 
+		"default": False, 
+		"hidden": True
 	}, 
 
 	# Install Config
@@ -170,6 +214,8 @@ def get_config(key):
 def set_config(key, value):
 	"""Sets a given configuration setting. """
 
+	value = str(value) # Set it to a string
+
 	# check if the given key exists
 	if not key in config_meta:
 		err("Option", key, "does not exist. ")
@@ -245,6 +291,8 @@ def get_config_help(key):
 	std(meta["help"])
 	std("Current Value: " + json.dumps(get_config(key)))
 	std("Default Value: " + json.dumps(meta["default"]))
+
+	return True
 
 def list_config():
 	"""	Lists available config settings. """

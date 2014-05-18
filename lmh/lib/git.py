@@ -19,15 +19,9 @@ import sys
 import os.path
 import subprocess
 
-from lmh.lib.env import which
-from lmh.lib.config import get_config
+from lmh.lib.io import std, err
+from lmh.lib.extenv import git_executable
 
-"""The path to the git executable """
-git_executable = get_config("self::git")
-
-# Find it yourself if the config is empty
-if git_executable == "":
-	git_executable = which("git")
 
 def clone(dest, *arg):
 	"""Clones a git repository. """
@@ -39,14 +33,16 @@ def clone(dest, *arg):
 
 def pull(dest, *arg):
 	"""Pulls a git repository. """
+
 	args = [git_executable, "pull"];
 	args.extend(arg);
-	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest).communicate()[1]
+	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
 	proc.wait()
 	return (proc.returncode == 0)
 
 def exists(dest):
 	"""Checks if a git repository exists. """
+	
 	args = [git_executable, "ls-remote", dest]
 	proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 	proc.wait()
@@ -67,7 +63,7 @@ def root_dir(dir = "."):
 def origin(dir="."):
 	"""Finds the origin of a given git repository. """
 
-	return subprocess.Popen([which("git"), "remote", "show", "origin", "-n"], 
+	return subprocess.Popen([git_executable, "remote", "show", "origin", "-n"], 
 							stdout=subprocess.PIPE,
 							cwd=rootdir,
 							).communicate()[0]

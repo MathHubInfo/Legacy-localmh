@@ -4,4 +4,4 @@ lmh.egg-info/PKG-INFO
 lmh.egg-info/SOURCES.txt
 lmh.egg-info/dependency_links.txt
 lmh.egg-info/top_level.txt
-lmh_setup/__init__.py
+lmh_core/__init__.py

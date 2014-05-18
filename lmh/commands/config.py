@@ -40,29 +40,32 @@ def do(args):
 	if args.reset_all:
 		try:
 			os.remove(config.config_file)
+			return True
 		except:
 			pass
-		return
+		return False
 
 	if args.reset:
 		if args.key == None:
 			err("Missing key. ")
-			return
+			return False
 		try:
-			config.reset_config(args.key)
+			return config.reset_config(args.key)
 		except:
 			pass
-		return
+		return False
 
 	if args.key == None:
 		config.list_config()
 		std()
 		std("Type 'lmh config KEY' to get more information on KEY. ")
 		std("Type 'lmh config KEY VALUE' to change KEY to VALUE. ")
+		return True
 	elif args.value == None:
-		config.get_config_help(args.key)
+		return config.get_config_help(args.key)
 	else:
 		try:
-			config.set_config(args.key, args.value)
+			return config.set_config(args.key, args.value)
 		except:
 			pass
+		return False
