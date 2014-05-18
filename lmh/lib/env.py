@@ -14,8 +14,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+import os
+import sys
 import os.path
+
+from lmh.lib.io import std
+
+
+from subprocess import Popen
 
 """Installation directory of lmh"""
 install_dir = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../")
@@ -73,3 +79,34 @@ def perl5env(_env = {}):
 		_env["PERL5LIB"] = perl5libdir
 		_env["STEXSTYDIR"] = stexstydir
 	return _env
+
+
+def run_shell(shell = None):
+	"""Runs a shell that is ready for any perl5 things"""
+	if shell == None:
+		shell = os.environ["SHELL"] or which("bash")
+	else:
+		shell = util.which(shell)
+		if shell == None:
+			shell = args.shell
+
+	# Make a perl 5 environment
+	_env = perl5env(os.environ)
+
+	try:
+		runner = Popen([shell], env=_env, cwd=install_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+	except:
+		# we could not find that
+		return 127
+
+	def do_the_run():
+		try:
+			runner.wait()
+		except KeyboardInterrupt:
+			runner.send_signal(signal.SIGINT)
+			do_the_run()
+
+	std("Opening a shell ready to compile for you. ")
+	do_the_run()
+
+	return runner.returncode

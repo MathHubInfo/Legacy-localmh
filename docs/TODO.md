@@ -14,7 +14,6 @@ commands.find
 commands.init
 commands.log
 commands.mvmod
-commands.shell
 commands.symbols
 commands.gen.*
 
@@ -30,6 +29,7 @@ commands.about
 commands.config
 commands.install
 commands.mine
+commands.shell
 commands.selfupdate
 commands.setup
 
