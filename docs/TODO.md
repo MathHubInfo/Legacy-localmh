@@ -17,10 +17,9 @@ commands.log
 commands.mvmod
 commands.symbols <-- Not finished
 commands.gen.* <-- Hardest
-commands.git
+
 
 # Ported already
-
 commands.about
 commands.config
 commands.install
@@ -31,6 +30,7 @@ commands.setup
 commands.push
 commands.status
 commands.update
+commands.git
 
 # Currently completly unsupported / broken: 
 
@@ -47,3 +47,4 @@ commands.xhtml
 * autocomplete
 * firstrun code
 * add *s to the repository names
+* in commands.__init__, regroup commands

@@ -56,7 +56,7 @@ def push(dest, *arg):
 	proc.wait()
 	return (proc.returncode == 0)
 
-def do(dest, cmd, *args):
+def do(dest, cmd, *arg):
 	args = [git_executable, cmd]
 	args.extend(arg)
 	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)

@@ -156,11 +156,11 @@ def commit(msg, *repos):
 
 	return ret
 
-def do(*repos):
+def do(cmd, *repos):
 	ret = True
 
 	for rep in repos:
-		std("git commit", rep)
-		ret = git_commit(rep, "-a", "-m", msg) and ret
+		std("git * ", rep)
+		ret = git_do(rep, cmd) and ret
 
 	return ret

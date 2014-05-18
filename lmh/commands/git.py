@@ -1,15 +1,3 @@
-#!/usr/bin/env python
-
-"""
-This is the entry point for the Local Math Hub utility. 
-
-.. argparse::
-   :module: git
-   :func: create_parser
-   :prog: git
-
-"""
-
 """
 This file is part of LMH.
 
@@ -26,14 +14,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-
-import os
-import glob
 import argparse
-from subprocess import call
 
-from lmh import util
+from lmh.lib.repos import parseRepo
+from lmh.lib.repos.local import match_repositories
+from lmh.lib.repos.local import do as local_do
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Git Wrapper.')
@@ -47,7 +32,7 @@ def add_parser(subparsers, name="git"):
 def add_parser_args(parser):
   parser.add_argument('cmd', nargs=1, help="a git command to be run.")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs a git command on all repositories currently in lmh")
-  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to run the git command.").completer = util.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=parseRepo, nargs='*', help="a list of repositories for which to run the git command.")
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
   Example:  
@@ -56,19 +41,6 @@ Repository names allow using the wildcard '*' to match any repository. It allows
     .         - would be equivalent to "git status ."
 """;
 
-def do_git(rep, cmd):
-  print "doing git {cmd} on {rep}".format(cmd=cmd, rep=rep)
-  cmd_lst = [util.which("git")];
-  cmd_lst.extend(cmd.split(" "))
-  call(cmd_lst, cwd=rep);
-
 def do(args):
-  if len(args.repository) == 0:
-    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
-  if args.all:
-    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]  
-
-  for repo in args.repository:
-    for rep in glob.glob(repo):
-      do_git(rep, args.cmd[0]);
-      
+  repos = match_repositories(args)
+  return local_do(args.cmd[0], *repos)

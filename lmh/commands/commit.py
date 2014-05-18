@@ -1,15 +1,3 @@
-#!/usr/bin/env python
-
-"""
-This is the entry point for the Local Math Hub utility. 
-
-.. argparse::
-   :module: commit
-   :func: create_parser
-   :prog: commit
-
-"""
-
 """
 This file is part of LMH.
 
@@ -53,10 +41,6 @@ Repository names allow using the wildcard '*' to match any repository. It allows
     mygroup/* - would match all repositories from group mygroup
     .         - would be equivalent to "git status ."
 """
-
-def do_commit(rep, msg):
-  print "committing %r"%rep
-  call([util.which("git"), "commit", "-a", "-m", msg], cwd=rep);    
 
 def do(args):
   repos = match_repositories(args)
