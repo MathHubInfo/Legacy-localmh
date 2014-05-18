@@ -89,7 +89,7 @@ def is_valid_repo_name(name):
 		return False
 	return True
 
-def parseRepo(name):
+def parseRepo(repoName):
 	"""Turn name into a full repository name"""
 
 	# TODO: un-hardcode the "MathHub" part somehow

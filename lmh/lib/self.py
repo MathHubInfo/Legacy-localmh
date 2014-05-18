@@ -43,12 +43,14 @@ def update():
 	# set the first run flag to false
 	set_config("self::firstrun", False)
 
+	return True
+
 def update_deps():
 	"""Update lmh and its dependencies"""
 
 	std("Updating LMH dependencies ...")
 
-	run_setup({
+	return run_setup({
 		"m_action": "up", 
 		"force": True, 
 		"autocomplete": False, 

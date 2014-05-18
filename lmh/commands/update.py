@@ -1,14 +1,3 @@
-#!/usr/bin/env python
-
-"""
-
-.. argparse::
-   :module: update
-   :func: create_parser
-   :prog: update
-
-"""
-
 """
 This file is part of LMH.
 
@@ -27,14 +16,12 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import argparse
-import os
-import glob
-from subprocess import call
 
-from lmh.lib.self import update as setup_update
-from lmh.commands import selfupdate
-from lmh import util
-from lmh import config
+from lmh.lib.io import std
+from lmh.lib.self import update
+from lmh.lib.repos import parseRepo
+from lmh.lib.repos.local import match_repositories, pull
+from lmh.lib.config import get_config
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Update tool.')
@@ -46,7 +33,7 @@ def add_parser(subparsers, name="update"):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories which should be updated. ").completer = util.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=parseRepo, nargs='*', help="a list of repositories which should be updated. ")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="updates all repositories currently in lmh")
   parser.epilog = """
 If update::selfupdate is set to True, calling lomh update without any arguments will also call lmh selfupdate. 
@@ -57,24 +44,15 @@ Repository names allow using the wildcard '*' to match any repository. It allows
     */*       - would match all repositories from all groups. 
     mygroup/* - would match all repositories from group mygroup
     .         - would be equivalent to updating current repository
-""";
-
-def do_pull(rep):
-  print "pulling %r"%rep
-  call([util.which("git"), "pull"], cwd=rep);
+"""
 
 def do(args):
+
   if len(args.repository) == 0:
-    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
+    if get_config("update::selfupdate"):
+      std("Selfupdate: ")
+      if not update():
+        return False
 
-    if config.get_config("update::selfupdate"):
-      print "Selfupdate: "
-      selfupdate.do(None)
-
-
-  if args.all:
-    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]
-
-  for repo in args.repository:
-    for rep in glob.glob(repo):
-      do_pull(rep);
+  repos = match_repositories(args)
+  return pull(*repos)

@@ -24,6 +24,8 @@ from lmh.lib.io import std, err, write_file, read_file_lines
 from lmh.lib.repos import is_valid_repo, matchRepo
 from lmh.lib.repos.remote import install
 from lmh.lib.git import push as git_push
+from lmh.lib.git import pull as git_pull
+from lmh.lib.git import status as git_status
 
 #
 # Matching Repository names
@@ -114,7 +116,30 @@ def push(*repos):
 	ret = True
 
 	for rep in repos:
-		std("Pushing", rep)
+		std("git push", rep)
 		ret = git_push(rep) and ret
+
+	return ret
+
+def pull(*repos):
+	ret = True
+
+	for rep in repos:
+		std("git pull", rep)
+		ret = git_pull(rep) and ret
+
+	return ret
+
+def status(*repos):
+	ret = True
+
+	for rep in repos:
+		std("git status", rep)
+		val = git_status(rep)
+		if not val:
+			err("Unable to run git status on", rep)
+			ret = False
+		else:
+			std(val)
 
 	return ret

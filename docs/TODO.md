@@ -3,6 +3,7 @@
 * better doc
 * return True or False
 * use lmh.lib whenever possible to share all code
+* unuse lmh.util
 
 # Still to port the following files:
 
@@ -18,9 +19,7 @@ commands.symbols
 commands.gen.*
 
 commands.git
-commands.status
 commands.commit
-commands.update
 
 # Ported already
 
@@ -32,6 +31,8 @@ commands.shell
 commands.selfupdate
 commands.setup
 commands.push
+commands.status
+commands.update
 
 # Currently completly unsupported / broken: 
 
@@ -39,7 +40,7 @@ commands.xhtml
 .agg
 .mmt
 .server
-.util
+
 
 # New Stuff
 

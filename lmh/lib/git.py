@@ -34,8 +34,8 @@ def clone(dest, *arg):
 def pull(dest, *arg):
 	"""Pulls a git repository. """
 
-	args = [git_executable, "pull"];
-	args.extend(arg);
+	args = [git_executable, "pull"]
+	args.extend(arg)
 	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
 	proc.wait()
 	return (proc.returncode == 0)
@@ -43,11 +43,21 @@ def pull(dest, *arg):
 def push(dest, *arg):
 	"""Pulls a git repository. """
 
-	args = [git_executable, "push"];
+	args = [git_executable, "push"]
 	args.extend(arg);
 	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
 	proc.wait()
 	return (proc.returncode == 0)
+
+def status(dest, *arg):
+	args = [git_executable, "status"];
+	args.extend(arg)
+	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=subprocess.PIPE, cwd=dest)
+	proc.wait()
+	if(proc.returncode == 0):
+		return proc.communicate()[0]
+	else:
+		return False
 
 def exists(dest):
 	"""Checks if a git repository exists. """
