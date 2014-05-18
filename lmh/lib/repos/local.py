@@ -17,11 +17,13 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import os.path
+import glob
 
-from lmh.lib.env import data_dir
-from lmh.lib.io import write_file, read_file_lines
+from lmh.lib.env import install_dir, data_dir
+from lmh.lib.io import std, err, write_file, read_file_lines
+from lmh.lib.repos import is_valid_repo, matchRepo
 from lmh.lib.repos.remote import install
-from lmh.lib.repos import is_valid_repo
+from lmh.lib.git import push as git_push
 
 #
 # Matching Repository names
@@ -41,6 +43,26 @@ def match_repository(dir=os.getcwd()):
 		return None
 
 	return "/".join(comp[:2])
+
+def match_repositories(args):
+	"""Matches a list of repositories to a list of absolute paths"""
+	spec = None
+
+	if len(args.repository) == 0:
+		spec = [matchRepo(".", data_dir+"/*/*")]
+	if args.all:
+		spec = [matchRepo(data_dir, data_dir)]
+	if spec == None:
+		spec = args.repository
+
+	repos = []
+	for repol in spec:
+		for repo in glob.glob(repol):
+			repos.append(repo)
+
+	return repos
+
+
 
 
 #
@@ -87,3 +109,12 @@ def restore(file):
 	ns.__dict__.update({"repository":lines})
 
 	return install.do(ns)
+
+def push(*repos):
+	ret = True
+
+	for rep in repos:
+		std("Pushing", rep)
+		ret = git_push(rep) and ret
+
+	return ret

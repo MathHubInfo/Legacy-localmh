@@ -19,22 +19,11 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 # Will be removed once all code is completely ported
 # This is the dev branch afterall
 
-import re
 import os
-import sys
 import stat
-import json
 import glob
 import psutil
 import signal
-import urllib2
-import itertools
-import argparse
-import subprocess
-import ConfigParser
-
-from lmh import config
-
 from lmh.lib.env import which
 from lmh.lib.env import install_dir as _lmh_root
 
@@ -68,10 +57,8 @@ def lmh_root():
     return _lmh_root
 
 from lmh.lib.repos import nameExpression as repoRegEx
-
 from lmh.lib.extenv import git_executable as gitexec
 from lmh.lib.extenv import svn_executable as svnexec
-
 from lmh.lib.env import perl5root, perl5bindir, perl5libdir, stexstydir, latexmlstydir, perl5env
 
 def autocomplete_mathhub_repository(prefix, parsed_args, **kwargs):
@@ -84,50 +71,10 @@ def autocomplete_mathhub_repository(prefix, parsed_args, **kwargs):
   return results
 
 from lmh.lib.repos.local import match_repository as lmh_repos
-
-def validRepoName(name):
-  if name.find("..") != -1:
-    return False
-  if name == ".":
-    return False
-  if len(name) == 0:
-    return False
-  return True
-
+from lmh.lib.repos import is_valid_repo_name as validRepoName
 from lmh.lib.repos import repoType as parseSimpleRepo
-
-def tryRepo(repoName, default):
-  try:
-    return parseRepo(repoName)
-  except Exception as e:
-    return default
-
-def parseRepo(repoName):
-  # if repoName looks like the user meant to write a whole repository
-  r = repoName.split("/");
-  if len(r) == 2 and validRepoName(r[0]) and validRepoName(r[1]):
-    repoPath = "/".join([_lmh_root+"/MathHub", r[0], r[1]]);
-    if os.path.exists(repoPath):
-      return repoPath
-
-  fullPath = os.path.normpath(os.path.realpath(repoName))
-
-  if not fullPath.startswith(_lmh_root):
-    raise argparse.ArgumentTypeError("%r is not a valid repository"%fullPath)
-
-  relPath = filter(len, fullPath[len(_lmh_root)+1:].split(os.sep))
-
-  if len(relPath) == 0 or (len(relPath)==1 and relPath[0]=="MathHub"):
-    return _lmh_root+"/MathHub/*/*";
-
-  if len(relPath) == 2 and relPath[0]=="MathHub":
-    return _lmh_root+"/MathHub/"+relPath[1]+"/*";
-
-  if len(relPath) > 2:
-    return fullPath
-
-  raise argparse.ArgumentTypeError("%r is not a valid repository name"%repoName)
-
+from lmh.lib.repos import matchRepo as tryRepo
+from lmh.lib.repos import parseRepo
 from lmh.lib.io import read_file as get_file
 from lmh.lib.io import write_file as set_file
     
@@ -139,26 +86,8 @@ from lmh.lib.git import exists as git_exists
 from lmh.lib.git import pull as git_pull
 from lmh.lib.git import root_dir as git_root_dir
 from lmh.lib.git import origin as git_origin
-
-def svn_clone(dest, *arg):
-  args = [svnexec, "co"];
-  args.extend(arg);
-  
-  err = subprocess.Popen(args, stderr=subprocess.PIPE, cwd=dest).communicate()[1]
-
-  if err.find("already exists") != -1:
-    return
-
-  print err
-
-def svn_pull(dest, *arg):
-  args = [svnexec, "up"];
-  args.extend(arg);
-  
-  err = subprocess.Popen(args, stderr=subprocess.PIPE, cwd=dest).communicate()[1]
-
-  print err
-
+from lmh.lib.svn import clone as svn_clone
+from lmh.lib.svn import pull as svn_pull
 from lmh.lib.repos import find_dependencies as get_dependencies
 
 def setnice(nice, pid = None):

@@ -21,17 +21,18 @@ import os.path
 
 from lmh.lib.io import err, read_file_lines
 from lmh.lib.git import root_dir
-from lmh.lib.env import data_dir
+from lmh.lib.env import install_dir, data_dir
 
 """A regular expression for repository names"""
 nameExpression = '[\w-]+/[\w-]+'
 
 def repoType(name):
+	"""Repository type for an argument"""
 	m = re.match(nameExpression, name)
-	if m and len(m.group(0)) == len(repoName):
-		return repoName
+	if m and len(m.group(0)) == len(name):
+		return name
 	else:
-		raise argparse.ArgumentTypeError("%r is not a valid repository name"%repoName)
+		raise argparse.ArgumentTypeError("%r is not a valid repository name"%name)
 
 def is_installed(repo):
 	"""Checks if a repository is is installed"""
@@ -47,11 +48,13 @@ def find_dependencies(repo):
 		err("Repository", repo, "is not installed. Failed to parse dependencies. ")
 		return []
 
+	repo = data_dir +"/" + repo
+
 	res = []
 	try:
 		# Find the root directory
 		dir = root_dir(repo)
-		read_file_lines(dir+"/META-INF/MANIFEST.MF")
+		metafile = read_file_lines(dir+"/META-INF/MANIFEST.MF")
 
 		# Find the right line for dependencies
 		for line in metafile:
@@ -59,7 +62,7 @@ def find_dependencies(repo):
 				# TODO: Maybe find a better alternative for this. 
 				for dep in re.findall(nameExpression, line):
 					res.append(dep)
-	except:
+	except Exception as e:
 		return False
 
 	return res
@@ -75,3 +78,49 @@ def is_valid_repo(dir):
 	except:
 		return False
 	return True
+
+def is_valid_repo_name(name):
+	"""Checks if name is a valid repo name"""
+	if name.find("..") != -1:
+		return False
+	if name == ".":
+		return False
+	if len(name) == 0:
+		return False
+	return True
+
+def parseRepo(name):
+	"""Turn name into a full repository name"""
+
+	# TODO: un-hardcode the "MathHub" part somehow
+
+	r = repoName.split("/")
+	if len(r) == 2 and is_valid_repo_name(r[0]) and is_valid_repo_name(r[1]):
+		repoPath = "/".join([data_dir, r[0], r[1]]);
+		if os.path.exists(repoPath):
+			return repoPath
+
+	fullPath = os.path.normpath(os.path.realpath(repoName))
+
+	if not fullPath.startswith(install_dir):
+		raise argparse.ArgumentTypeError("%r is not a valid repository"%fullPath)
+
+	relPath = filter(len, fullPath[len(install_dir)+1:].split(os.sep))
+
+	if len(relPath) == 0 or (len(relPath)==1 and relPath[0]=="MathHub"):
+		return data_dir+"/*/*";
+
+	if len(relPath) == 2 and relPath[0]=="MathHub":
+		return data_dir+relPath[1]+"/*";
+
+	if len(relPath) > 2:
+		return fullPath
+
+	raise argparse.ArgumentTypeError("%r is not a valid repository name"%repoName)
+
+def matchRepo(name, default):
+	"""Try and match name to a repository name. If it fails, use the default. """
+	try:
+		return parseRepo(name)
+	except:
+		return default

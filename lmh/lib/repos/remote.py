@@ -45,17 +45,19 @@ def force_install(rep):
 	std("Installing", rep)
 
 	# Find the source for the repository
-	source = find_source(rep)
+	repoURL = find_source(rep)
 
-	if source == False:
+	if repoURL == False:
 		return False
 
 	# Clone the repo
-	return clone(data_dir, repoURL, repoName)
+	return clone(data_dir, repoURL, rep)
 
 
 def install(*reps):
 	"""Install a repositories and its dependencies"""
+
+	reps = [r for r in reps]
 
 	for rep in reps:
 		if not is_installed(rep):
@@ -63,13 +65,14 @@ def install(*reps):
 				err("Unable to install", rep)
 				return False
 
-			try:
-				std("Resolving dependencies for", rep)
-				for dep in find_dependencies(rep):
-					if not (dep in reps):
-						reps.append(dep)
-			except:
-				if not get_config("install::nomanifest"):
-					err("Error parsing dependencies for", rep)
-					err("Set install::nomanifest to True to disable this. ")
-					return False
+		try:
+			std("Resolving dependencies for", rep)
+			for dep in find_dependencies(rep):
+				if not (dep in reps) and not is_installed(dep):
+					std("Found unsatisfied dependency:", dep) 
+					reps.append(dep)
+		except:
+			if not get_config("install::nomanifest"):
+				err("Error parsing dependencies for", rep)
+				err("Set install::nomanifest to True to disable this. ")
+				return False

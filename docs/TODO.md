@@ -18,7 +18,6 @@ commands.symbols
 commands.gen.*
 
 commands.git
-commands.push
 commands.status
 commands.commit
 commands.update
@@ -32,6 +31,7 @@ commands.mine
 commands.shell
 commands.selfupdate
 commands.setup
+commands.push
 
 # Currently completly unsupported / broken: 
 
@@ -44,4 +44,5 @@ commands.xhtml
 # New Stuff
 
 * lmh symbols
+* autocomplete
 * firstrun code

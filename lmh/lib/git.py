@@ -40,6 +40,15 @@ def pull(dest, *arg):
 	proc.wait()
 	return (proc.returncode == 0)
 
+def push(dest, *arg):
+	"""Pulls a git repository. """
+
+	args = [git_executable, "push"];
+	args.extend(arg);
+	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
+	proc.wait()
+	return (proc.returncode == 0)
+
 def exists(dest):
 	"""Checks if a git repository exists. """
 	
