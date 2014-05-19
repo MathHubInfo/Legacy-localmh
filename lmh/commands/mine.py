@@ -1,15 +1,3 @@
-#!/usr/bin/env python
-
-"""
-Local Math Hub repository installer export/import
-
-.. argparse::
-   :module: mine
-   :func: create_parser
-   :prog: mine
-
-"""
-
 """
 This file is part of LMH.
 
@@ -27,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import argparse
 import os.path
+import argparse
 
 from lmh.lib import config
 from lmh.lib.io import std, err

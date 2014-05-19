@@ -77,6 +77,12 @@ config_meta = {
 		"default": "" 
 	}, 
 
+	"env::pager": {
+		"type": "string", 
+		"help": "A full path to a pager to use for long outputs. If empty, no pager is used. ",
+		"default": "" 
+	}, 
+
 	"self::firstrun": {
 		"type": "bool", 
 		"help": "Generic flag set to true after the first run of lmh. ", 
@@ -252,7 +258,7 @@ def set_config(key, value):
 	# Load existsing data
 	data = {}	
 	try:   
-		data = json.load(read_file(config_file))
+		data = json.loads(read_file(config_file))
 	except:
 		pass
 

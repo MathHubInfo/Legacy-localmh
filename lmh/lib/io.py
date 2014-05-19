@@ -17,6 +17,8 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
 
+from subprocess import Popen, PIPE, STDOUT
+
 #
 # Error & Normal Output
 #
@@ -61,6 +63,37 @@ def err(*args, **kwargs):
 			sys.stderr.write("\033[01;31m{0}\033[00m".format(text))
 		else:
 			sys.stderr.write(text)
+
+def std_paged(*args, **kwargs):
+	"""Pages output if a pager is available. """
+
+	from lmh.lib.config import get_config
+
+	newline = True
+
+	# allow only the newline kwarg
+	for k in kwargs:
+		if k != "newline":
+			raise TypeError("std() got an unexpected keyword argument '"+k+"'")
+		else:
+			newline = kwargs["newline"]
+
+	if not __supressStd__:
+		pager = get_config("env::pager")
+
+		if pager == "":
+			return std(*args, **kwargs)
+		try:
+			p = Popen(["abc_"+pager], stdout=sys.stdout, stderr=sys.stderr, stdin=PIPE)
+			p.communicate(" ".join([str(text) for text in args]) + ('\n' if newline else ''))
+		except:
+			err("Unable to run configured page. ") 
+			err("Please check your value for env::pager. ")
+			err("Falling back to STDOUT. ")
+			return std(*args, **kwargs)
+
+
+
 
 def read_raw():
 	"""Reads a line of text form stdin. """

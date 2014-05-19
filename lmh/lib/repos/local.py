@@ -20,7 +20,7 @@ import os.path
 import glob
 
 from lmh.lib.env import install_dir, data_dir
-from lmh.lib.io import std, err, write_file, read_file_lines
+from lmh.lib.io import std, std_paged, err, write_file, read_file_lines
 from lmh.lib.repos import is_valid_repo, matchRepo
 from lmh.lib.repos.remote import install
 
@@ -30,6 +30,7 @@ from lmh.lib.git import pull as git_pull
 from lmh.lib.git import status as git_status
 from lmh.lib.git import commit as git_commit
 from lmh.lib.git import do as git_do
+from lmh.lib.git import do_data as git_do_data
 
 
 #
@@ -180,5 +181,58 @@ def do(cmd, *repos):
 	for rep in repos:
 		std("git "+cmd, rep)
 		ret = git_do(rep, cmd) and ret
+
+	return ret
+
+def log(ordered, *repos):
+	"""Prints out log messages on all repositories. """
+	ret = True
+
+	def get_log(repo):
+		get_format = lambda frm:git_do_data(repo, "log", "--pretty=format:"+frm+"")[0].split("\n")
+
+		hash_short = get_format("%h")
+		commit_titles = get_format("%s")
+		dates = get_format("%at")
+		dates_human = get_format("%ad")
+		author_names = get_format("%an")
+		author_mails = get_format("%ae")
+
+		res = [{
+			"hash": hash_short[i], 
+			"subject": commit_titles[i], 
+			"date": int(dates[i]), 
+			"date_human": dates_human[i], 
+			"author": author_names[i], 
+			"author_mail": author_mails[i],
+			"repo": match_repository(repo)
+		} for i in range(len(hash_short))]
+
+		return res
+
+	entries = []
+
+	for rep in repos:
+		try:
+			entries.extend(get_log(rep))
+		except Exception as e:
+			print e
+			ret = False
+
+
+	if ordered:
+		entries.sort(key=lambda e: -e["date"])
+
+	strout = ""
+
+	for entry in entries:
+		strout += "\nRepo:    " + entry["repo"]
+		strout += "\nSubject: " + entry["subject"]
+		strout += "\nHash:    " + entry["hash"]
+		strout += "\nAuthor:  " + entry["author"] + " <" + entry["author_mail"] + ">"
+		strout += "\nDate:    " + entry["date_human"]
+		strout += "\n"
+
+	std_paged(strout, newline=False)
 
 	return ret
