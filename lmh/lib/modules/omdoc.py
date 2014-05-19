@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 This file is part of LMH.
 
@@ -29,12 +27,11 @@ import multiprocessing
 from subprocess import Popen
 from subprocess import PIPE
 
-from lmh import util
+from lmh.lib.io import std, err
+from lmh.lib.env import install_dir, stexstydir, perl5bindir, perl5libdir, perl5env
 
-lmh_root = util.lmh_root()
-
-latexmlc = lmh_root+"/ext/perl5lib/bin/latexmlc"
-stydir = lmh_root+"/sty"
+latexmlc = install_dir+"/ext/perl5lib/bin/latexmlc"
+stydir = install_dir+"/sty"
 
 # For Error parsing
 errorMsg = re.compile("Error:(.*)")
@@ -60,7 +57,7 @@ def gen_omdoc(modules, update, verbose, quiet, workers, nice, find_modules):
     if mod["type"] == "file":
       if mod["file_pre"] != None and (not update or mod["file_time"] > mod["omdoc_time"]):
         if find_modules:
-          print mod["file"]
+          std(mod["file"])
         else:
           jobs.append(omdoc_gen_job(mod))
   if find_modules:
@@ -71,21 +68,20 @@ def gen_omdoc(modules, update, verbose, quiet, workers, nice, find_modules):
       raise Exception("latexmlc is missing, make sure you ran lmh setup. ")
 
     if verbose:
-      print "# OMDOC Generation"
-
-      print "export STEXSTYDIR=\""+util.stexstydir+"\""
-      print "export PATH=\""+util.perl5bindir+"\":$PATH"
-      print "export PERL5LIB=\""+util.perl5libdir+"\":$PERL5LIB"
+      std("# OMDOC Generation")
+      std("export STEXSTYDIR=\""+stexstydir+"\"")
+      std("export PATH=\""+perl5bindir+"\":$PATH")
+      std("export PERL5LIB=\""+perl5libdir+"\":$PERL5LIB")
 
       for job in jobs:
         omdoc_gen_dump(job)
     elif workers == 1:
       if not quiet:
-        print "OMDOC: Generating", len(jobs), "files"
+        std("OMDOC: Generating", len(jobs), "files")
       for job in jobs:
         omdoc_gen_do_master(job, quiet)
     else:
-      print "OMDOC: Generating", len(jobs), "files with", workers, "workers."
+      std("OMDOC: Generating", len(jobs), "files with", workers, "workers.")
       pool = multiprocessing.Pool(processes=workers)
       try:
         result = pool.map_async(functools.partial(omdoc_gen_do_worker, quiet), jobs).get(9999999)
@@ -95,10 +91,10 @@ def gen_omdoc(modules, update, verbose, quiet, workers, nice, find_modules):
           pass
         res = True
       except KeyboardInterrupt:
-        print "OMDOC: received <<KeyboardInterrupt>>"
-        print "OMDOC: killing worker processes ..."
+        err("OMDOC: received <<KeyboardInterrupt>>")
+        err("OMDOC: killing worker processes ...")
         pool.terminate()
-        print "OMDOC: Cleaning up latexmls processes ..."
+        err("OMDOC: Cleaning up latexmls processes ...")
         try:
           p = Popen(['ps', '-A'], stdout=PIPE)
           out, err = p.communicate()
@@ -107,20 +103,20 @@ def gen_omdoc(modules, update, verbose, quiet, workers, nice, find_modules):
              pid = int(line.split(None, 1)[0])
              os.kill(pid, signal.SIGKILL)
         except Exception as e:
-          print e
-          print "OMDOC: Unable to kill some latexmls processes. "
-        print "OMDOC: Waiting for all processes to finish ..."
+          err(e)
+          err("OMDOC: Unable to kill some latexmls processes. ")
+        err("OMDOC: Waiting for all processes to finish ...")
         time.sleep(5)
-        print "OMDOC: Done. "
+        err("OMDOC: Done. ")
         res = False
       pool.close()
       pool.join()
       if not quiet:
-        print "OMDOC: All workers have finished "
+        std("OMDOC: All workers have finished ")
       return res
   except Exception as e:
-    print "OMDOC generation failed. "
-    print traceback.format_exc()
+    err("OMDOC generation failed. ")
+    err(traceback.format_exc())
     return False
 
   return True
@@ -133,7 +129,7 @@ def omdoc_gen_job(module):
   args.append("--postamble="+module["file_post"])
 
   _env = os.environ.copy()
-  _env = util.perl5env(_env)
+  _env = perl5env(_env)
 
   return (args, module["omdoc_path"], module["path"], _env)
 
@@ -144,7 +140,7 @@ def omdoc_gen_do_master(job, quiet, port=None, wid=""):
     port = "3353"
 
   if not quiet:
-    print "OMDOC"+wid+": Generating", mod
+    std("OMDOC"+wid+": Generating", mod)
 
   args.extend(["--expire=10", "--port="+str(port)])
 
@@ -155,7 +151,7 @@ def omdoc_gen_do_master(job, quiet, port=None, wid=""):
       p = Popen(args, cwd=path, env=_env, stdin=None, stdout=sys.stdout, stderr=sys.stderr, bufsize=1)
     p.wait()
   except KeyboardInterrupt as k:
-    print "OMDOC"+wid+": KeyboardInterrupt, stopping generation"
+    err("OMDOC"+wid+": KeyboardInterrupt, stopping generation")
     p.terminate()
     p.wait()
     raise k
@@ -169,9 +165,9 @@ def omdoc_gen_do_master(job, quiet, port=None, wid=""):
 
   if not quiet:
     if p.returncode == 0 and res:
-      print "OMDOC"+wid+": Generated", mod
+      std("OMDOC"+wid+": Generated", mod)
     else:
-      print "OMDOC"+wid+": Did not generate", mod
+      err("OMDOC"+wid+": Did not generate", mod)
 
 def omdoc_gen_do_worker(quiet, job):
   wid = multiprocessing.current_process()._identity[0]
@@ -182,9 +178,9 @@ def omdoc_gen_dump(job):
   # dump an omdoc job to stdout
   (args, omdoc, path, env) = job
 
-  print "# generate", omdoc  
+  std("# generate", omdoc)
 
   args.extend(["--expire=10", "--port=3353"])
 
-  print "cd "+path
-  print " ".join(args)
+  std("cd "+path)
+  std(" ".join(args))

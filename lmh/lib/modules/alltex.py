@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 This file is part of LMH.
 
@@ -18,16 +16,20 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import traceback
-
 from string import Template
 
-from lmh import util
+from lmh.lib.self import get_template
+from lmh.lib.io import std, err, read_file, write_file
 
-all_modtpl = Template(util.get_template("alltex_mod.tpl"))
-all_textpl = Template(util.get_template("alltex_struct.tpl"))
+from lmh.lib import shellquote
+
+
+all_modtpl = Template(get_template("alltex_mod.tpl"))
+all_textpl = Template(get_template("alltex_struct.tpl"))
 
 def gen_alltex(modules, update, verbose, quiet, workers, nice):
-  # general all.tex localpaths.tex generation
+  """Generates all.tex files"""
+
   jobs = []
   for mod in modules:
     if mod["type"] == "folder":
@@ -35,25 +37,25 @@ def gen_alltex(modules, update, verbose, quiet, workers, nice):
         jobs.append(alltex_gen_job(mod))
   try:
     if verbose:
-      print "# all.tex Generation"
+      std("# all.tex Generation")
       for job in jobs:
         alltex_gen_dump(job)
     else:
       if not quiet:
-        print "ALLTEX: Generating", len(jobs), "files. "
+        std("ALLTEX: Generating", len(jobs), "files. ")
       for job in jobs:
         alltex_gen_do(job, quiet)
   except Exception as e:
-    print "ALLTEX generation failed. "
-    print traceback.format_exc()
+    err("ALLTEX generation failed. ")
+    err(traceback.format_exc())
     return False
 
   return True
 
 def alltex_gen_job(module):
   # store parameters for all.tex job generation
-  pre = util.get_file(module["file_pre"])
-  post = util.get_file(module["file_post"])
+  pre = read_file(module["file_pre"])
+  post = read_file(module["file_post"])
   return (module["alltex_path"], pre, post, module["modules"])
   
 
@@ -62,26 +64,24 @@ def alltex_gen_do(job, quiet, worker=None, cwd="."):
   (dest, pre, post, modules) = job
 
   if not quiet:
-    print "ALLTEX: Generating "+dest
+    std("ALLTEX: Generating", dest)
 
   content = [all_modtpl.substitute(file=m) for m in modules]
   text = all_textpl.substitute(pre_tex=pre, post_tex=post, mods="\n".join(content))
 
-  output = open(dest, "w")
-  output.write(text+"\n")
-  output.close()
+  write_file(dest, text+"\n")
 
   if not quiet:
-    print "ALLTEX: Generated "+dest
+    std("ALLTEX: Generated", dest)
 
 def alltex_gen_dump(job):
   # dump an all.tex generation jump to STDOUT
   (dest, pre, post, modules) = job
 
-  print "# generate", dest
+  std("# generate", dest)
   
   content = [all_modtpl.substitute(file=m) for m in modules]
   text = all_textpl.substitute(pre_tex=pre, post_tex=post, mods="\n".join(content))
 
-  print "echo -n " + util.shellquote(text)+ " > "+util.shellquote(dest)
-  print "echo > "+util.shellquote(dest)
+  std("echo -n " + shellquote(text)+ " > "+shellquote(dest))
+  std("echo > "+shellquote(dest))

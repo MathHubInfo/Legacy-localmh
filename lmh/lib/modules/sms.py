@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 This file is part of LMH.
 
@@ -21,7 +19,10 @@ import os
 import re
 import traceback
 
-from lmh import util
+from lmh.lib import shellquote
+from lmh.lib.io import std, err
+
+#TODO: Port open(*, "w") calls to read_file_lines
 
 ignore = re.compile(r'\\verb')
 regStrings = [r'\\(guse|gadopt|symdef|abbrdef|symvariant|keydef|listkeydef|importmodule|gimport|adoptmodule|importmhmodule|adoptmhmodule)', r'\\begin{(module|importmodulevia)}', r'\\end{(module|importmodulevia)}']
@@ -34,24 +35,24 @@ def gen_sms(modules, update, verbose, quiet, workers, nice, find_modules):
     if mod["type"] == "file":
       if not update or mod["file_time"] > mod["sms_time"]:
         if find_modules:
-          print module["file"]
+          std(module["file"])
         else:
           jobs.append(sms_gen_job(mod))
   if find_modules:
     return True
   try:
     if verbose:
-      print "# SMS Generation"
+      std("# SMS Generation")
       for job in jobs:
         sms_gen_dump(job)
     else:
       if not quiet:
-        print "SMS: Generating", len(jobs), "files"
+        std("SMS: Generating", len(jobs), "files")
       for job in jobs:
         sms_gen_do(job, quiet)
   except Exception as e:
-    print "SMS generation failed. "
-    print traceback.format_exc()
+    err("SMS generation failed. ")
+    err(traceback.format_exc())
     return False
 
   return True
@@ -65,7 +66,7 @@ def sms_gen_do(job, quiet, worker=None, cwd="."):
   (input, out) = job
 
   if not quiet:
-    print "SMS: Generating ", os.path.relpath(out, cwd)
+    std("SMS: Generating ", os.path.relpath(out, cwd))
 
   output = open(out, "w")
 
@@ -86,14 +87,14 @@ def sms_gen_do(job, quiet, worker=None, cwd="."):
   output.close()
 
   if not quiet:
-    print "SMS: Generated ", os.path.relpath(out, cwd)
+    std("SMS: Generated ", os.path.relpath(out, cwd))
 
 def sms_gen_dump(job):
   # dump an sms generation jump to STDOUT
   (input, out) = job
 
-  print "# generate ", out
-  print "echo -n '' > "+util.shellquote(out)
+  std("# generate ", out)
+  std("echo -n '' > "+shellquote(out))
 
   for line in open(input):
     idx = line.find("%")
@@ -106,5 +107,5 @@ def sms_gen_dump(job):
     for reg in regs:
       if reg.search(line):
         text = line.strip()+"%\n"
-        print "echo -n "+util.shellquote(text)+" >> "+util.shellquote(out)
+        std("echo -n "+shellquote(text)+" >> "+shellquote(out))
         break

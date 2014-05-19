@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 This file is part of LMH.
 
@@ -21,12 +19,12 @@ import traceback
 
 from string import Template
 
-from lmh import util
+from lmh.lib import shellquote
+from lmh.lib.env import install_dir
+from lmh.lib.io import std, err, write_file
+from lmh.lib.self import get_template
 
-# the root of lmh
-lmh_root = util.lmh_root()
-
-all_pathstpl = Template(util.get_template("localpaths.tpl"))
+all_pathstpl = Template(get_template("localpaths.tpl"))
 
 def gen_localpaths(modules, update, verbose, quiet, workers, nice):
   # general all.tex localpaths.tex generation
@@ -37,17 +35,17 @@ def gen_localpaths(modules, update, verbose, quiet, workers, nice):
         jobs.append(localpaths_gen_job(mod))
   try:
     if verbose:
-      print "# localpaths.tex Generation"
+      std("# localpaths.tex Generation")
       for job in jobs:
         localpaths_gen_dump(job)
     else:
       if not quiet:
-        print "LOCALPATHS: Generating", len(jobs), "files. "
+        std("LOCALPATHS: Generating", len(jobs), "files. ")
       for job in jobs:
         localpaths_gen_do(job, quiet)
   except Exception as e:
-    print "LOCALPATHS generation failed. "
-    print traceback.format_exc()
+    err("LOCALPATHS generation failed. ")
+    err(traceback.format_exc())
     return False
 
   return True
@@ -62,24 +60,22 @@ def localpaths_gen_do(job, quiet, worker=None, cwd="."):
   (dest, repo, repo_name) = job
 
   if not quiet:
-    print "LOCALPATHS: Generating "+dest
+    std("LOCALPATHS: Generating "+dest)
 
-  text = all_pathstpl.substitute(mathhub=lmh_root, repo=repo, repo_name=repo_name)
+  text = all_pathstpl.substitute(mathhub=install_dir, repo=repo, repo_name=repo_name)
 
-  output = open(dest, "w")
-  output.write(text+"\n")
-  output.close()
+  write_file(dest, text+"\n")
 
   if not quiet:
-    print "LOCALPATHS: Generated "+dest
+    std("LOCALPATHS: Generated "+dest)
 
 def localpaths_gen_dump(job):
   # dump an localpaths.tex generation jump to STDOUT
   (dest, repo, repo_name) = job
   
-  print "# generate", dest
+  std("# generate", dest)
 
-  text = all_pathstpl.substitute(mathhub=lmh_root, repo=repo, repo_name=repo_name)
+  text = all_pathstpl.substitute(mathhub=install_dir, repo=repo, repo_name=repo_name)
   
-  print "echo -n " + util.shellquote(text)+ " > "+util.shellquote(dest)
-  print "echo > "+util.shellquote(dest)
+  std("echo -n " + shellquote(text)+ " > "+shellquote(dest))
+  std("echo > "+shellquote(dest))

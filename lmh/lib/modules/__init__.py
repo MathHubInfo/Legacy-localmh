@@ -14,13 +14,3 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-# Set the version information
-from lmh.lib.about import version as __version__
-
-
-# Misc util functions
-
-def shellquote(s):
-	"""shellquotes arguments"""
-	return "'" + s.replace("'", "'\\''") + "'"

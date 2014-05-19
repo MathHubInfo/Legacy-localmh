@@ -50,8 +50,7 @@ def effectively_readable(path):
     if st.st_gid == egid or st.st_gid in groups:
         return st.st_mode & stat.S_IRGRP != 0
 
-def shellquote(s):
-    return "'" + s.replace("'", "'\\''") + "'"
+from lmh.lib import shellquote
     
 def lmh_root():
     return _lmh_root

@@ -40,10 +40,10 @@ import datetime
 import functools
 import traceback
 
-from lmh.commands.gen.sms import gen_sms
-from lmh.commands.gen.localpaths import gen_localpaths
-from lmh.commands.gen.alltex import gen_alltex
-from lmh.commands.gen.omdoc import gen_omdoc
+from lmh.lib.modules.sms import gen_sms
+from lmh.lib.modules.localpaths import gen_localpaths
+from lmh.lib.modules.alltex import gen_alltex
+from lmh.lib.modules.omdoc import gen_omdoc
 from lmh.commands.gen.pdf import gen_pdf
 
 from lmh import util
