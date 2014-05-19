@@ -16,6 +16,8 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import sys
+import os.path
+import shutil
 
 from subprocess import Popen, PIPE, STDOUT
 
@@ -146,3 +148,14 @@ def read_file_lines(filename):
 	text_file.close()
 
 	return lines
+
+def copytree(src, dst, symlinks=False, ignore=None):
+	"""Replacement for shuitil.copytree"""
+	
+	for item in os.listdir(src):
+		s = os.path.join(src, item)
+		d = os.path.join(dst, item)
+		if os.path.isdir(s):
+			shutil.copytree(s, d, symlinks, ignore)
+		else:
+			shutil.copy2(s, d)

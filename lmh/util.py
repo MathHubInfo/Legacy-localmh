@@ -77,10 +77,7 @@ from lmh.lib.repos import matchRepo as tryRepo
 from lmh.lib.repos import parseRepo
 from lmh.lib.io import read_file as get_file
 from lmh.lib.io import write_file as set_file
-    
-def get_template(name):
-    return get_file(_lmh_root + "/bin/templates/" + name);
-
+from lmh.lib.self import get_template
 from lmh.lib.git import clone as git_clone
 from lmh.lib.git import exists as git_exists
 from lmh.lib.git import pull as git_pull

@@ -1,39 +1,31 @@
-# New module ports
+
+# UNDONE
+
+## TOPORT
+
+* commands.gen.* <-- Hardest
+* commands.checkpaths
+* commands.find
+* commands.clean
+* commands.depcrawl
+* commands.mvmod
+* commands.symbols <-- Not finished
+* commands.__init__
+* __init__
+
+## TOFIX
+
+* commands.xhtml
+* agg ?
+* mmt ?
+* server ?
+
+## TODO
 
 * better doc
 * return True or False
 * use lmh.lib whenever possible to share all code
 * unuse lmh.util
-
-# Still to port the following files:
-
-commands.init
-commands.find
-commands.gen.* <-- Hardest
-commands.checkpaths
-commands.clean
-commands.depcrawl
-commands.mvmod
-commands.symbols <-- Not finished
-commands.__init__
-__init__
-
-# Ported already
-commands.about
-commands.config
-commands.install
-commands.mine
-commands.shell
-commands.selfupdate
-commands.setup
-commands.push
-commands.status
-commands.update
-commands.git
-commands.log
-
-# TODO / New Stuff
-
 * unify repotType and parseRepo
 * --version arg to __init__
 * lmh symbols
@@ -43,9 +35,20 @@ commands.log
 * add *s to the repository names
 * in commands.__init__, regroup commands
 
-# Currently completly unsupported / broken: 
+# DONE
 
-commands.xhtml
-.agg
-.mmt
-.server
+## Ported
+
+* commands.about
+* commands.config
+* commands.install
+* commands.init
+* commands.mine
+* commands.shell
+* commands.selfupdate
+* commands.setup
+* commands.push
+* commands.status
+* commands.update
+* commands.git
+* commands.log

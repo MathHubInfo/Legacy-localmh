@@ -20,9 +20,11 @@ import os.path
 import glob
 
 from lmh.lib.env import install_dir, data_dir
-from lmh.lib.io import std, std_paged, err, write_file, read_file_lines
+from lmh.lib.io import std, std_paged, err, copytree, write_file, read_file_lines
 from lmh.lib.repos import is_valid_repo, matchRepo
 from lmh.lib.repos.remote import install
+from lmh.lib.config import get_config
+from lmh.lib.self import get_template
 
 
 from lmh.lib.git import push as git_push
@@ -31,6 +33,7 @@ from lmh.lib.git import status as git_status
 from lmh.lib.git import commit as git_commit
 from lmh.lib.git import do as git_do
 from lmh.lib.git import do_data as git_do_data
+from lmh.lib.git import root_dir as git_root_dir
 
 
 #
@@ -236,3 +239,72 @@ def log(ordered, *repos):
 	std_paged(strout, newline=False)
 
 	return ret
+
+def create(dir = ".", use_git_root = False):
+	"""Creates a new repository in the given directory"""
+
+
+	if use_git_root:
+		rootdir = git_root_dir(dir)
+	else:
+		rootdir = os.path.abspath(dir)
+
+	std("Creating new MathHub repository in", rootdir)
+
+	if (not use_git_root and not (not os.listdir(rootdir))) and (not get_config("init::allow_nonempty")):
+		err("Could not create repository, directory not empty. ")
+		err("If you want to use the root of the current git repository, please use lmh install -g")
+		err("If you want to enable lmh init on non-empty directories, please run")
+		err("    lmh config init::allow_nonempty true")
+		return False
+
+	metadir = rootdir+"/META-INF"
+
+	tManifest = get_template("manifest.tpl")
+	tBuild = get_template("build.tpl")
+	tServe = get_template("serve.tpl")
+
+	emptyrepo = install_dir + "/bin/emptyrepo"
+
+	try:
+		copytree(emptyrepo, rootdir)
+	except Exception as e:
+		err("Error initalising directory. ")
+		err(e)
+		return False
+
+	try:
+		name = match_repository(rootdir).split("/")
+		group = name[0]
+		name = name[1]
+	except: 
+		err("Could not detect repository group & name. ")
+		return False
+
+	if not os.path.exists(metadir+"/MANIFEST.MF"):
+		write_file(metadir+"/MANIFEST.MF", tManifest.format(group, name))
+
+	if not os.path.exists(rootdir+"/build.msl"):
+		write_file(rootdir+"/build.msl", tBuild.format(group, name, install_dir))
+
+	if not os.path.exists(rootdir+"/serve.msl"):
+		write_file(rootdir+"/serve.msl", tServe.format(group, name, install_dir))
+
+	if not use_git_root:
+		if not git_do(rootdir, "init"):
+			err("Error creating git repository. ")
+			err("The directory has been created successfully, however git init failed. ")
+			err("Please run it manually. ")
+			return False
+	
+	if not git_do(rootdir, "add", "-A") and git_commit(rootdir, "-m", "Repository created by lmh"):
+		err("Error creating inital commit. ")
+		err("The directory has been created successfully, however git commit failed. ")
+		err("Please run it manually. ")
+		return False
+
+	std("""Created new repository successfully. 
+If the new repository depends on other MathHub repositories, we can add them in the line starting with 
+"dependencies:" in META-INF/MANIFEST.MF. Note that any changes have to be committed and pushed before 
+the repository can be used by others. """)
+	return True

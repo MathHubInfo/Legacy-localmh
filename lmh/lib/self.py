@@ -20,7 +20,7 @@ import sys
 import shutil
 from subprocess import call
 
-from lmh.lib.io import std, err
+from lmh.lib.io import std, err, read_file
 from lmh.lib.env import install_dir, ext_dir, perl5env, perl5root
 from lmh.lib.extenv import check_deps, cpanm_executable, perl_executable, make_executable
 from lmh.lib.config import get_config, set_config
@@ -427,3 +427,6 @@ def run_setup(args):
 		set_config("gl::private_token", args.add_private_token[0])
 
 	return True
+
+def get_template(name):
+    return read_file(install_dir + "/bin/templates/" + name)
