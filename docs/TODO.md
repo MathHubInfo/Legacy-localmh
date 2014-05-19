@@ -42,6 +42,7 @@ commands.xhtml
 
 # New Stuff
 
+* --version arg to __init__
 * lmh symbols
 * in the master, preparse lmh git args
 * autocomplete

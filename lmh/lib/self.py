@@ -239,6 +239,7 @@ def install_autocomplete():
 	err("Autocomplete auto-installer is currently disabled. ")
 	err("Please install it manually from https://github.com/kislyuk/argcomplete.git")
 	return False
+	# TODO: Fix me
 	#root = util.lmh_root()+"/ext"
 	#util.git_clone(root, "https://github.com/kislyuk/argcomplete.git", "arginstall")
 	#call([python, "setup.py", "install", "--user"], cwd=root+"/arginstall")

@@ -31,8 +31,8 @@ import argparse
 import os.path
 
 from lmh.lib import config
-from lmh.commands import install
-from lmh.lib.repos.local import export, restore
+from lmh.lib.io import std, err
+from lmh.lib.repos.local import find_all_locals, export, restore
 
 # import the root
 
@@ -47,18 +47,24 @@ def add_parser(subparsers, name="mine"):
 
 def add_parser_args(parser):
 
-  group = parser.add_mutually_exclusive_group(required=True)
+  group = parser.add_mutually_exclusive_group()
 
-  group.add_argument("--export", action="store_const", const=True, default=False, help="Dump list of installed repositories in file. ")
-  group.add_argument("--import", dest="export", action="store_const", const=False, help="Install repositories listed in file. ")
+  group.add_argument("--show", dest="dump_action", action="store_const", const=0, default=0, help="Show installed repositories. ")
+  group.add_argument("--export", dest="dump_action", action="store_const", const=1, help="Dump list of installed repositories in file. ")
+  group.add_argument("--import", dest="dump_action", action="store_const", const=2, help="Install repositories listed in file. ")
 
-  parser.add_argument("file", help="File to use. ")
+  parser.add_argument("file", nargs="?")
 
 def do(args):
-
-  fn = os.path.abspath(args.file)
-
-  if args.export:
+  if args.dump_action == 0:
+    for m in find_all_locals():
+      std(m)
+    return True
+  elif not args.file[0]:
+    err("Missing filename! ")
+    return False
+  elif args.dump_action == 1:
+    fn = os.path.abspath(args.file[0])
     return export(fn)
-  else:
+  elif args.dump_action == 2:
     return restore(fn)

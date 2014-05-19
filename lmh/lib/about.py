@@ -18,8 +18,19 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import os.path
 
 
+from lmh.lib.env import install_dir
+from lmh.lib.git import do_data
+
+
 """lmh lib version"""
 version = "0.1"
+
+def git_version():
+  """Checks the current gi version of the core"""
+  try:
+    return do_data(install_dir, "rev-parse", "HEAD")[0].rstrip()
+  except:
+    return "<Not under source control>"
 
 """lmh license text"""
 license = \

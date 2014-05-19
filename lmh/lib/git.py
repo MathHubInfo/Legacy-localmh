@@ -41,6 +41,7 @@ def pull(dest, *arg):
 	return (proc.returncode == 0)
 
 def commit(dest, *arg):
+	"""Commits a git repository. """
 	args = [git_executable, "commit"]
 	args.extend(arg)
 	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
@@ -57,13 +58,29 @@ def push(dest, *arg):
 	return (proc.returncode == 0)
 
 def do(dest, cmd, *arg):
+	"""Does an arbitrary git command and returns if it suceeded. """
+	
 	args = [git_executable, cmd]
 	args.extend(arg)
 	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
 	proc.wait()
 	return (proc.returncode == 0)
 
+def do_data(dest, cmd, *arg):
+	"""Does an arbitrary git command and return stdout and sterr. """
+
+	args = [git_executable, cmd]
+	args.extend(arg)
+	proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
+	proc.wait()
+	if proc.returncode == 0:
+		return proc.communicate()
+	else:
+		return False
+
 def status(dest, *arg):
+	"""Runs git status and returns the status message. """
+
 	args = [git_executable, "status"];
 	args.extend(arg)
 	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=subprocess.PIPE, cwd=dest)
@@ -83,6 +100,7 @@ def exists(dest):
 
 def root_dir(dir = "."):
 	"""Finds the git root dir of the given path. """
+
 	if os.path.isfile(dir):
 		dir = os.path.dirname(dir)
 

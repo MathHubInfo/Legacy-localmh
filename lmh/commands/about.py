@@ -32,7 +32,7 @@ def add_parser_args(parser):
 	pass
 
 def do(args):
-	io.std("LMH, Version " + about.version)
+	io.std("lmh, Version", about.version, "( git", about.git_version(), ")")
 	io.std()
 	io.std(about.license)
 

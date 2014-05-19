@@ -23,6 +23,8 @@ from lmh.lib.env import install_dir, data_dir
 from lmh.lib.io import std, err, write_file, read_file_lines
 from lmh.lib.repos import is_valid_repo, matchRepo
 from lmh.lib.repos.remote import install
+
+
 from lmh.lib.git import push as git_push
 from lmh.lib.git import pull as git_pull
 from lmh.lib.git import status as git_status
@@ -94,6 +96,7 @@ def find_all_locals():
 #
 
 def export(file):
+	"""Exports the list of currently installed repositories. """
 
 	# Get all locally installed directories
 	installed = find_all_locals()
@@ -106,6 +109,7 @@ def export(file):
 		return False
 
 def restore(file):
+	"""Restores a list of currently installed repositories. """
 
 	# read all lines from the file
 	lines = read_file_lines()
@@ -116,6 +120,8 @@ def restore(file):
 	return install.do(ns)
 
 def push(*repos):
+	"""Pushes all currently installed repositories. """
+
 	ret = True
 
 	for rep in repos:
@@ -125,15 +131,23 @@ def push(*repos):
 	return ret
 
 def pull(*repos):
+	"""Pulls all currently installed repositories and updates dependencies"""
+
 	ret = True
 
 	for rep in repos:
 		std("git pull", rep)
+		
 		ret = git_pull(rep) and ret
+
+		rep = match_repository(rep)
+		ret = install(rep) and ret
 
 	return ret
 
 def status(*repos):
+	"""Does git status on all installed repositories """
+
 	ret = True
 
 	for rep in repos:
@@ -148,6 +162,8 @@ def status(*repos):
 	return ret
 
 def commit(msg, *repos):
+	"""Commits all installed repositories """
+
 	ret = True
 
 	for rep in repos:
@@ -157,10 +173,12 @@ def commit(msg, *repos):
 	return ret
 
 def do(cmd, *repos):
+	"""Does an arbitraty git commit on all repositories. """
+
 	ret = True
 
 	for rep in repos:
-		std("git * ", rep)
+		std("git "+cmd, rep)
 		ret = git_do(rep, cmd) and ret
 
 	return ret
