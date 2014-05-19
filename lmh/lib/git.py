@@ -44,7 +44,6 @@ def commit(dest, *arg):
 	"""Commits a git repository. """
 	args = [git_executable, "commit"]
 	args.extend(arg)
-	print args
 	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
 	proc.wait()
 	return (proc.returncode == 0)

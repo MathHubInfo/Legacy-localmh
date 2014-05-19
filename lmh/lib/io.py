@@ -86,7 +86,7 @@ def std_paged(*args, **kwargs):
 		if pager == "":
 			return std(*args, **kwargs)
 		try:
-			p = Popen(["abc_"+pager], stdout=sys.stdout, stderr=sys.stderr, stdin=PIPE)
+			p = Popen([pager], stdout=sys.stdout, stderr=sys.stderr, stdin=PIPE)
 			p.communicate(" ".join([str(text) for text in args]) + ('\n' if newline else ''))
 		except:
 			err("Unable to run configured page. ") 

@@ -297,7 +297,7 @@ def create(dir = ".", use_git_root = False):
 			err("Please run it manually. ")
 			return False
 	
-	if not git_do(rootdir, "add", "-A") and git_commit(rootdir, "-m", "Repository created by lmh"):
+	if not (git_do(rootdir, "add", "-A") and git_commit(rootdir, "-m", "Repository created by lmh")):
 		err("Error creating inital commit. ")
 		err("The directory has been created successfully, however git commit failed. ")
 		err("Please run it manually. ")
