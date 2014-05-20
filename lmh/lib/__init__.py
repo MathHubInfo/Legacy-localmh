@@ -24,3 +24,17 @@ from lmh.lib.about import version as __version__
 def shellquote(s):
 	"""shellquotes arguments"""
 	return "'" + s.replace("'", "'\\''") + "'"
+
+def setnice(nice, pid = None):
+    """ Set the priority of the process to below-normal."""
+
+    import psutil, os
+    if pid == None:
+      pid = os.getpid()
+
+    p = psutil.Process(pid)
+    p.nice = nice
+
+def reduce(lst):
+  return sum( ([x] if not isinstance(x, list) else reduce(x)
+         for x in lst), [] )

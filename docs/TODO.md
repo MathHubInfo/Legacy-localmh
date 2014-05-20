@@ -3,7 +3,6 @@
 
 ## TOPORT
 
-* commands.gen.* <-- Hardest
 * commands.checkpaths
 * commands.find
 * commands.clean

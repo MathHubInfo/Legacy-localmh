@@ -27,28 +27,7 @@ import signal
 from lmh.lib.env import which
 from lmh.lib.env import install_dir as _lmh_root
 
-def effectively_readable(path):
-    uid = os.getuid()
-    euid = os.geteuid()
-    gid = os.getgid()
-    egid = os.getegid()
-
-    # This is probably true most of the time, so just let os.access()
-    # handle it.  Avoids potential bugs in the rest of this function.
-    if uid == euid and gid == egid:
-        return os.access(path, os.R_OK)
-
-    st = os.stat(path)
-
-    # This may be wrong depending on the semantics of your OS.
-    # i.e. if the file is -------r--, does the owner have access or not?
-    if st.st_uid == euid:
-        return st.st_mode & stat.S_IRUSR != 0
-
-    # See comment for UID check above.
-    groups = os.getgroups()
-    if st.st_gid == egid or st.st_gid in groups:
-        return st.st_mode & stat.S_IRGRP != 0
+from lmh.lib.io import effectively_readable
 
 from lmh.lib import shellquote
     
@@ -86,16 +65,7 @@ from lmh.lib.svn import clone as svn_clone
 from lmh.lib.svn import pull as svn_pull
 from lmh.lib.repos import find_dependencies as get_dependencies
 
-def setnice(nice, pid = None):
-    """ Set the priority of the process to below-normal."""
-
-
-    import psutil, os
-    if pid == None:
-      pid = os.getpid()
-
-    p = psutil.Process(pid)
-    p.nice = nice
+from lmh.lib import setnice
 
 def kill_child_processes(parent_pid, sig=signal.SIGTERM, recursive=True,self=True):
     try:
@@ -109,6 +79,4 @@ def kill_child_processes(parent_pid, sig=signal.SIGTERM, recursive=True,self=Tru
     if self:
       os.kill(parent_pid, sig)
 
-def reduce(lst):
-  return sum( ([x] if not isinstance(x, list) else reduce(x)
-         for x in lst), [] )
+from lmh.lib import reduce

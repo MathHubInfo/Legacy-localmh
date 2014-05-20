@@ -37,7 +37,7 @@ from lmh import util
 from lmh import config
 from lmh import main
 
-from lmh.commands.gen import locate_modules, needsPreamble
+from lmh.lib.modules import locate_modules, needsPreamble
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Views or changes lmh configuration. ')
