@@ -44,7 +44,7 @@ from lmh.lib.modules.sms import gen_sms
 from lmh.lib.modules.localpaths import gen_localpaths
 from lmh.lib.modules.alltex import gen_alltex
 from lmh.lib.modules.omdoc import gen_omdoc
-from lmh.commands.gen.pdf import gen_pdf
+from lmh.lib.modules.pdf import gen_pdf
 
 from lmh import util
 from lmh import config

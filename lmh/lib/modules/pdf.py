@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 This file is part of LMH.
 
@@ -29,22 +27,21 @@ import multiprocessing
 from subprocess import Popen
 from subprocess import PIPE
 
-from lmh import util
+from lmh.lib import shellquote
+from lmh.lib.io import std, err
+from lmh.lib.env import install_dir, latexmlstydir, stexstydir
+from lmh.lib.extenv import pdflatex_executable
 
-lmh_root = util.lmh_root()
-
-pdflatex = util.which("pdflatex")
-latexmlstydir = lmh_root+"/ext/sTeX/LaTeXML/lib/LaTeXML/texmf"
-stydir = lmh_root+"/sty"
+stydir = install_dir+"/sty"
 
 # pdf inputs
 def genTEXInputs():
   res = ".:"+stydir+":";
-  for (root, files, dirs) in os.walk(util.stexstydir):
+  for (root, files, dirs) in os.walk(stexstydir):
     res += root+":"
-  for (root, files, dirs) in os.walk(util.latexmlstydir):
+  for (root, files, dirs) in os.walk(latexmlstydir):
     res += root+":"
-  return res+":"+util.latexmlstydir+":"+util.stexstydir
+  return res+":"+latexmlstydir+":"+stexstydir
 
 TEXINPUTS = genTEXInputs()
 
@@ -55,30 +52,30 @@ def gen_pdf(modules, update, verbose, quiet, workers, nice, add_bd, pdf_pipe_log
     if mod["type"] == "file":
       if mod["file_pre"] != None and (not update or mod["file_time"] > mod["pdf_time"]):
         if find_modules:
-          print mod["file"]
+          std(mod["file"])
         else:
           jobs.append(pdf_gen_job(mod, add_bd, pdf_pipe_log))
   if find_modules:
     return True
   try:
-    # check we have pdflatex
-    if not os.path.isfile(pdflatex):
-      raise Exception("pdflatex is missing, make sure you ran lmh setup. ")
+    # check we have pdflatex_executable
+    if not os.path.isfile(pdflatex_executable):
+      raise Exception("pdflatex_executable is missing, make sure you ran lmh setup. ")
 
     if verbose:
-      print "# PDFLATEX Generation"
+      std("# pdflatex Generation")
 
-      print "export TEXINPUTS="+TEXINPUTS
+      std("export TEXINPUTS="+TEXINPUTS)
 
       for job in jobs:
         pdf_gen_dump(job)
     elif workers == 1:
       if not quiet:
-        print "PDF: Generating", len(jobs), "files"
+        std("PDF: Generating", len(jobs), "files")
       for job in jobs:
         pdf_gen_do_master(job, quiet)
     else:
-      print "PDF: Generating", len(jobs), "files with", workers, "workers."
+      std("PDF: Generating", len(jobs), "files with", workers, "workers.")
       pool = multiprocessing.Pool(processes=workers)
       try:
         result = pool.map_async(functools.partial(pdf_gen_do_worker, quiet), jobs).get(9999999)
@@ -88,21 +85,21 @@ def gen_pdf(modules, update, verbose, quiet, workers, nice, add_bd, pdf_pipe_log
           pass
         res = True
       except KeyboardInterrupt:
-        print "PDF: received <<KeyboardInterrupt>>"
-        print "PDF: killing worker processes ..."
+        err("PDF: received <<KeyboardInterrupt>>")
+        err("PDF: killing worker processes ...")
         pool.terminate()
-        print "PDF: Waiting for all processes to finish ..."
+        err("PDF: Waiting for all processes to finish ...")
         time.sleep(5)
-        print "PDF: Done. "
+        err("PDF: Done. ")
         res = False
       pool.close()
       pool.join()
       if not quiet:
-        print "PDF: All workers have finished "
+        std("PDF: All workers have finished ")
       return res
   except Exception as e:
-    print "PDF generation failed. "
-    print traceback.format_exc()
+    err("PDF generation failed. ")
+    err(traceback.format_exc())
     return False
 
   return True
@@ -119,9 +116,9 @@ def pdf_gen_do_master(job, quiet, wid=""):
   (pre, post, mod, _env, file, cwd, pdf_path, pdflog, add_bd, pdf_pipe_log) = job
 
   if not quiet:
-    print "PDF"+wid+": Generating", pdf_path
+    std("PDF"+wid+": Generating", pdf_path)
 
-  args = [pdflatex, "-jobname", mod]
+  args = [pdflatex_executable, "-jobname", mod]
 
 
   try:
@@ -135,17 +132,17 @@ def pdf_gen_do_master(job, quiet, wid=""):
         p1 = Popen(c1, cwd=cwd, stdin=None, stdout=PIPE, env = _env)
       
       if pdf_pipe_log:
-        p = Popen([pdflatex, "-jobname", mod], cwd=cwd, stdin=p1.stdout, stdout=sys.stdout, stderr=sys.stderr, env = _env)
+        p = Popen([pdflatex_executable, "-jobname", mod], cwd=cwd, stdin=p1.stdout, stdout=sys.stdout, stderr=sys.stderr, env = _env)
       else:
-        p = Popen([pdflatex, "-jobname", mod], cwd=cwd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env = _env)
+        p = Popen([pdflatex_executable, "-jobname", mod], cwd=cwd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env = _env)
     else:
       if pdf_pipe_log:
-        p = Popen([pdflatex, file], cwd=cwd, stdout=sys.stdout, env=_env)
+        p = Popen([pdflatex_executable, file], cwd=cwd, stdout=sys.stdout, env=_env)
       else:
-        p = Popen([pdflatex, file], cwd=cwd, stdout=PIPE, env=_env)
+        p = Popen([pdflatex_executable, file], cwd=cwd, stdout=PIPE, env=_env)
     p.wait()
   except KeyboardInterrupt as k:
-    print "PDF"+wid+": KeyboardInterrupt, stopping generation"
+    err("PDF"+wid+": KeyboardInterrupt, stopping generation")
     p.terminate()
     p.wait()
     raise k
@@ -155,9 +152,9 @@ def pdf_gen_do_master(job, quiet, wid=""):
   
   if not quiet:
     if p.returncode == 0:
-      print "PDF"+wid+": Generated", pdf_path
+      std("PDF"+wid+": Generated", pdf_path)
     else:
-      print "PDF"+wid+": Did not generate", pdf_path
+      err("PDF"+wid+": Did not generate", pdf_path)
   
 
 def pdf_gen_do_worker(quiet, job):
@@ -169,15 +166,15 @@ def pdf_gen_dump(job):
   # dump an pdf job to stdout
   (pre, post, mod, _env, file, cwd, pdf_path, pdflog, add_bd, pdf_pipe_log) = job
 
-  print "# generate", pdf_path  
-  print "cd "+cwd
+  std("# generate", pdf_path )
+  std("cd "+cwd)
 
   if pre != None:
     if add_bd:
-      print "echo \"\\begin{document}\\n\" | cat "+util.shellquote(pre)+" - "+util.shellquote(file)+" "+util.shellquote(post)+" | "+pdflatex+" -jobname " + mod
+      std("echo \"\\begin{document}\\n\" | cat "+shellquote(pre)+" - "+shellquote(file)+" "+shellquote(post)+" | "+pdflatex_executable+" -jobname " + mod)
     else:
-      print "cat "+util.shellquote(pre)+" "+util.shellquote(file)+" "+util.shellquote(post)+" | "+pdflatex+" -jobname " + mod
+      std("cat "+shellquote(pre)+" "+shellquote(file)+" "+shellquote(post)+" | "+pdflatex_executable+" -jobname " + mod)
 
   else:
-      print pdflatex+" "+file
-  print "mv "+job+".log "+pdflog
+      std(pdflatex_executable+" "+file)
+  std("mv "+job+".log "+pdflog)
