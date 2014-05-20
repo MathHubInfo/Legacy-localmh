@@ -35,7 +35,6 @@ from lmh.lib.git import do as git_do
 from lmh.lib.git import do_data as git_do_data
 from lmh.lib.git import root_dir as git_root_dir
 
-
 #
 # Matching Repository names
 #
@@ -307,4 +306,34 @@ def create(dir = ".", use_git_root = False):
 If the new repository depends on other MathHub repositories, we can add them in the line starting with 
 "dependencies:" in META-INF/MANIFEST.MF. Note that any changes have to be committed and pushed before 
 the repository can be used by others. """)
+	return True
+
+def clean(args, *modules):
+	"""Cleans up repositories. """
+	if args.verbose:
+		def rm(file):
+			std("Removing", file)
+			os.remove(file)
+	else:
+		def rm(file):
+			os.remove(file)
+
+	# remove all the modules
+	for mod in modules:
+		if mod["type"] == "file":
+			if os.path.isfile(mod["omdoc_path"]) and not args.keep_omdoc:
+				rm(mod["omdoc_path"])
+			if os.path.isfile(mod["omdoc_log"]) and not args.keep_omdoc_log:
+				rm(mod["omdoc_log"])
+			if os.path.isfile(mod["pdf_path"]) and not args.keep_pdf:
+				rm(mod["pdf_path"])
+			if os.path.isfile(mod["pdf_log"]) and not args.keep_pdf_log:
+				rm(mod["pdf_log"])
+			if os.path.isfile(mod["sms"]) and not args.keep_sms:
+				rm(mod["sms"])
+		else:
+			if os.path.isfile(mod["alltex_path"]) and not args.keep_alltex:
+				rm(mod["alltex_path"])
+			if os.path.isfile(mod["localpaths_path"]) and not args.keep_localpaths:
+				rm(mod["localpaths_path"])
 	return True

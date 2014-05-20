@@ -3,12 +3,15 @@
 
 ## TOPORT
 
-* commands.checkpaths
+
+
 * commands.find
-* commands.clean
 * commands.depcrawl
+* commands.checkpaths
+
 * commands.mvmod
 * commands.symbols <-- Not finished
+
 * commands.__init__
 * __init__
 
@@ -38,6 +41,8 @@
 
 ## Ported
 
+* commands.clean
+* commands.gen.*
 * commands.about
 * commands.config
 * commands.install
