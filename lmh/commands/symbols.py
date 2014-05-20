@@ -74,17 +74,36 @@ def find_all_defis(text):
 def find_all_symis(text):
   # find all the symis
   pattern = r"\\begin{modsig}((.|\n)*)\\end{modsig}"
+  pattern2 = r"\\(sym)(i{1,3})(\[(.*?)\])?({([^{}]+)?})({([^{}]+)?})?({([^{}]+)?})?"
   matches = re.findall(pattern, text)
-  if len(pattern) == 0:
+  if len(matches) == 0:
     return []
-  text = pattern[0]
+  text = matches[0][0]
+  return [pat_to_match(x) for x in re.findall(pattern2, text)]
 
-def do_file(fname, simulate):
+
+def do_file(fname):
   with open(fname, 'r') as content_file:
     content = content_file.read()
 
   defs = find_all_defis(content)
-  syms = find_all_symis(text)
+  syms = find_all_symis(content)
+
+  if defs == None:
+    defs = []
+  if syms == None:
+    syms = []
+
+  def has_syms(d):
+    req = ["sym", d[1], d[2], d[3]]
+
+    return not (req in syms)
+
+  required = filter(has_syms, defs)
+  print "We will have to add: "
+  print required
+  print "for", fname
+
 
 
 def do(args):
@@ -93,5 +112,4 @@ def do(args):
   mods = filter(lambda x:needsPreamble(x["file"]), mods)
 
   for mod in mods:
-
     do_file(mod["file"])
