@@ -25,7 +25,7 @@ from lmh.lib.io import std, err
 #TODO: Port open(*, "w") calls to read_file_lines
 
 ignore = re.compile(r'\\verb')
-regStrings = [r'\\(guse|gadopt|symdef|abbrdef|symvariant|keydef|listkeydef|importmodule|gimport|adoptmodule|importmhmodule|adoptmhmodule)', r'\\begin{(module|importmodulevia)}', r'\\end{(module|importmodulevia)}']
+regStrings = [r'\\(guse|gadopt|symdef|abbrdef|symvariant|keydef|listkeydef|importmodule|gimport|adoptmodule|importmhmodule|adoptmhmodule)', r'\\begin{(module|importmodulevia|importmhmodulevia)}', r'\\end{(module|importmodulevia|importmhmodulevia)}']
 regs = map(re.compile, regStrings)
 
 def gen_sms(modules, update, verbose, quiet, workers, nice, find_modules):
@@ -107,5 +107,10 @@ def sms_gen_dump(job):
     for reg in regs:
       if reg.search(line):
         text = line.strip()+"%\n"
+<<<<<<< HEAD:lmh/lib/modules/sms.py
         std("echo -n "+shellquote(text)+" >> "+shellquote(out))
         break
+=======
+        print "echo -n "+util.shellquote(text)+" >> "+util.shellquote(out)
+        break
+>>>>>>> master:lmh/commands/gen/sms.py

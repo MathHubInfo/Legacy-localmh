@@ -10,8 +10,16 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% 1. Arrows 
-% 1.1. Arrowtips (only internal)
+%%% 1. Theories
+% a generic theory
+\tikzstyle{thy}=[draw,outer sep=.6mm,rounded corners]
+% a primitive theory
+\tikzstyle{primthy}=[thy,double]
+% a theory graph 
+\tikzstyle{thygraph}=[draw,outer sep=1mm,rounded corners,dashed]
+
+%%% 2. Arrows 
+%%% 2.1. Arrowtips (only internal)
 \usetikzlibrary{arrows}
 \newcommand{\@mmtarrowtip}{angle 45}
 \newcommand{\@mmtreversearrowtip}{angle 45 reversed}
@@ -23,17 +31,10 @@
 \newcommand{\@mmtreversearrowtippartial}{right to reversed}
 \newcommand{\@mmtreversearrowtippartialleft}{left to reversed}
 
-% 1.2 the arrow sstyles in graphs
-%
-% a generic theory
-\tikzstyle{thy}=[draw,outer sep=.6mm,rounded corners]
-% a flat theory
-\tikzstyle{flatthy}=[thy,double]
-% a theory graph 
-\tikzstyle{thygraph}=[draw,outer sep=1mm,rounded corners,dashed]
-
+%%% 2.2 the arrow sstyles in graphs
+\usetikzlibrary{decorations,decorations.pathmorphing,decorations.markings}
 % any morphism 
-\tikzstyle{morph}=[-\@mmtarrowtip] 
+\tikzstyle{morph}=[-\@mmtarrowtip,thick] 
 \tikzstyle{mapsto}=[|-\@mmtarrowtip] %| any morphism 
 % structures
 \tikzstyle{struct}=[-\@mmtarrowtip,thick]
@@ -43,31 +44,49 @@
 \tikzstyle{includeleft}=[\@mmtarrowtipmonoleft-\@mmtarrowtip,thick]
 \tikzstyle{pincludeleft}=[\@mmtarrowtipmonoleft-\@mmtarrowtippartialleft,thick]
 % views: regular, mono, partial, and left variants
-\tikzstyle{view}=[dashed,thick,-\@mmtarrowtip]
-\tikzstyle{mview}=[dashed,thick,\@mmtarrowtipmonoright-\@mmtarrowtip]
-\tikzstyle{pview}=[dashed,thick,-\@mmtarrowtippartial]
-\tikzstyle{pmview}=[dashed,thick,\@mmtarrowtipmonoright-\@mmtarrowtippartial]
-\tikzstyle{viewleft}=[dashed,thick,-\@mmtarrowtip]
-\tikzstyle{mviewleft}=[dashed,thick,\@mmtarrowtipmonoleft-\@mmtarrowtipleft]
-\tikzstyle{pviewleft}=[dashed,thick,-\@mmtarrowtippartialleft]
-\tikzstyle{pmviewleft}=[dashed,thick,\@mmtarrowtipmonoleft-\@mmtarrowtippartialleft]
+\tikzstyle{preview}=[decorate,
+                                decoration={coil,aspect=0,amplitude=1pt,
+                                                    segment length=6pt,
+                                                    pre=lineto,pre length=5pt,
+                                                    post=lineto,post length=7pt},
+                                thick]
+\tikzstyle{view}=[preview,-\@mmtarrowtip]
+\tikzstyle{mview}=[preview,\@mmtarrowtipmonoright-\@mmtarrowtip]
+\tikzstyle{pview}=[preview,-\@mmtarrowtippartial]
+\tikzstyle{pmview}=[preview,\@mmtarrowtipmonoright-\@mmtarrowtippartial]
+\tikzstyle{viewleft}=[preview,-\@mmtarrowtip]
+\tikzstyle{mviewleft}=[preview,\@mmtarrowtipmonoleft-\@mmtarrowtip]
+\tikzstyle{pviewleft}=[preview,-\@mmtarrowtippartialleft]
+\tikzstyle{pmviewleft}=[preview,\@mmtarrowtipmonoleft-\@mmtarrowtippartialleft]
+\tikzstyle{adoption}=[preview,thin,double,-\@mmtarrowtip]
 % biviews: regular, partial, and left variants
-\tikzstyle{biview}=[dashed,thick,\@mmtreversearrowtip-\@mmtarrowtip]
-\tikzstyle{pbiview}=[dashed,thick,\@mmtreversearrowtippartial-\@mmtarrowtippartial]
-\tikzstyle{pbiviewleft}=[dashed,thick,\@mmtreversearrowtippartialleft-\@mmtarrowtippartialleft]
+\tikzstyle{biview}=[preview,\@mmtreversearrowtip-\@mmtarrowtip]
+\tikzstyle{pbiview}=[preview,\@mmtreversearrowtippartial-\@mmtarrowtippartial]
+\tikzstyle{pbiviewleft}=[preview,\@mmtreversearrowtippartialleft-\@mmtarrowtippartialleft]
 % defining views (experimental)
-\tikzstyle{defview}=[dashed,thick,double,-\@mmtarrowtip]
+\tikzstyle{defview}=[preview,double,-\@mmtarrowtip]
 % meta-theory inclusion
 \tikzstyle{meta}=[dotted,-\@mmtarrowtip,thick]
 % conservative extensions (abbreviation)
 \tikzstyle{conservative}=[hooks-\@mmtarrowtip,double] 
+% conservative development
+\tikzstyle{conservdev}=[hooks-\@mmtarrowtip,dashed,double] 
 
-% 2. convenience macros
-% 2.1 the \mmtthy macro takes three arguments, name, decl, axioms and makes a 
+% antimorphisms as striktthroughs
+\tikzset{anti/.style={
+    decoration={markings, mark=between positions 0.2 and 0.8 step 4mm with {
+        \draw [thick,-] ++ (-3pt,-3pt) -- (3pt,3pt);}},
+    postaction={decorate}}}
+
+% parallel markup
+\tikzstyle{parallel}=[\@mmtarrowtip-\@mmtarrowtip,dashed]
+
+%%% 3. convenience macros
+%%% 3.1 the \mmtthy macro takes three arguments, name, decl, axioms and makes a 
 % table-like structure
 \newcommand\mmtthy[3]{\def\@test{#3}%
 \begin{array}{l}\textsf{#1}\\\hline #2\ifx\@test\@empty\else\\\hline #3\fi\end{array}}
-% 2.2 the \mmtar takes two arguments, some tikz options, and an arrow style. \nmmtar
+%%% 3.2 the \mmtar takes two arguments, some tikz options, and an arrow style. \nmmtar
 % is a variant that also has a name on top.
 \newcommand\mmtar[2][]{\raisebox{.5ex}{\tikz[#1]{\draw[#2] (0,0) -- (.6,0);}}}
 \newcommand\nmmtar[3][]{\raisebox{.4ex}{\tikz[#1]{\draw[#2] (0,0) --
