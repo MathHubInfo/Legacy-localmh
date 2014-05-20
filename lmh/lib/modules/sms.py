@@ -108,4 +108,3 @@ def sms_gen_dump(job):
       if reg.search(line):
         text = line.strip()+"%\n"
         std("echo -n "+shellquote(text)+" >> "+shellquote(out))
-        break
