@@ -50,6 +50,9 @@ def pat_to_match(pat , o = 0):
     split = pat[3+o].split("-")
     return [pat[0], len(split), split]
 
+  if pat[0] == "adef":
+    o += 1
+
   if pat[1] == "i":
     return [pat[0], 1, [pat[5+o]]]
   elif pat[1] == "ii":
@@ -61,7 +64,7 @@ def pat_to_match(pat , o = 0):
 
 def find_all_defis(text):
   # find all a?defs and turn them into nice matches
-  pattern = r"\\(def|adef)(i{1,3})(\[(.*?)\])?({([^{}]+)?})({([^{}]+)?})?({([^{}]+)?})?"
+  pattern = r"\\(def|adef)(i{1,3})(\[(.*?)\])?({([^{}]+)?})({([^{}]+)?})?({([^{}]+)?})?({([^{}]+)?})?"
   vals = [pat_to_match(x) for x in re.findall(pattern, text)]
   return vals
 
