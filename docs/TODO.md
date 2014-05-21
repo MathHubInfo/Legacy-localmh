@@ -3,9 +3,6 @@
 
 ## TOPORT
 
-
-
-* commands.find
 * commands.depcrawl
 * commands.checkpaths
 
@@ -41,6 +38,7 @@
 
 ## Ported
 
+* commands.find
 * commands.clean
 * commands.gen.*
 * commands.about
