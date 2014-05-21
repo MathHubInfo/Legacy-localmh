@@ -16,12 +16,16 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
+import re
 import os.path
 import glob
+import functools
+
+from string import Template
 
 from lmh.lib.env import install_dir, data_dir
 from lmh.lib.io import std, std_paged, err, copytree, write_file, read_file_lines
-from lmh.lib.repos import is_valid_repo, matchRepo
+from lmh.lib.repos import is_valid_repo, matchRepo, find_dependencies
 from lmh.lib.repos.remote import install
 from lmh.lib.config import get_config
 from lmh.lib.self import get_template
@@ -217,7 +221,7 @@ def log(ordered, *repos):
 		try:
 			entries.extend(get_log(rep))
 		except Exception as e:
-			print e
+			err(e)
 			ret = False
 
 
@@ -336,3 +340,108 @@ def clean(args, *modules):
 			if os.path.isfile(mod["localpaths_path"]) and not args.keep_localpaths:
 				rm(mod["localpaths_path"])
 	return True
+
+def replace(replacer, replace_args, fullPath, m):
+	std("replacing at %r"%fullPath)
+	if replacer == None:
+		return m.group(0)
+	for idx, g in enumerate(m.groups()):
+		replace_args["g"+str(idx)] = g
+
+	res = Template(replacer).substitute(replace_args)
+
+	return res
+
+def replacePath(dir, matcher, replaceFnc, apply=False):
+  try:
+    compMatch = re.compile(matcher)
+  except Exception, e:
+    err("failed to compile matcher %r"%matcher)
+    err(e)
+    return False
+
+  for root, dirs, files in os.walk(dir):
+    path = root.split('/')
+    for file in files:
+      fileName, fileExtension = os.path.splitext(file)
+      if fileExtension != ".tex":
+        continue
+      fullpath = root+"/"+file
+      if not os.access(fullpath, os.R_OK): # ignoring files I cannot read
+        continue
+      changes = False
+      replaceContext = functools.partial(replaceFnc, fullpath)
+      for line in open(fullpath, "r"):
+        newLine = compMatch.sub(replaceContext, line)
+        if newLine != line:
+          changes = True          
+          std(fullpath + ": \n " + line + newLine)
+
+        if apply:
+          write_file(fullpath+".tmp", newLine)
+      if apply:
+        if changes:
+          os.rename(fullpath+".tmp", fullpath)
+        else:
+          os.remove(fullpath+".tmp")
+
+def find(rep, args):
+	"""Finds pattern in repositories"""
+
+	replacer = None  
+	repname = match_repository(rep)
+
+	matcher = Template(args.matcher).substitute(repo=repname)
+
+	if args.replace:
+		replacer = args.replace[0]
+
+	replace_args = {"repo" : repname}
+
+	replaceFnc = functools.partial(replace, replacer, replace_args)
+
+	return replacePath(rep, matcher, replaceFnc, args.apply)
+
+def calcDeps(dir="."):
+	"""Crawls for dependencies in a given directory. """
+
+	currentdeps = {}
+	for dep in find_dependencies(match_repository(dir)):
+		currentdeps["/".join(dep)] = True
+
+	print currentdeps
+
+	paths = {}
+	for root, dirs, files in os.walk("."):
+		path = root.split('/')
+		for file in files:
+			fileName, fileExtension = os.path.splitext(file)
+			if fileExtension != ".tex":
+				continue
+			file = open(root+"/"+file, "r")
+			for line in file:
+			 	m = re.search("\\MathHub{([\w/]+)}", line)
+				if m:
+					paths[m.group(1)] = True
+				m = re.search("\\importmhmodule\[([\w/]+)\]", line)
+				if m:
+					paths[m.group(1)] = True
+				m = re.search("\\usemhmodule\[([\w/]+)\]", line)
+				if m:
+					paths[m.group(1)] = True
+				m = re.search("\\adoptmhmodule\[([\w/]+)\]", line)
+				if m:
+				    paths[m.group(1)] = True
+
+	repos = {}
+	for path in paths:
+		comps = path.split("/")
+		if len(comps) < 2:
+			continue
+		repos[comps[0]+"/"+comps[1]] = True
+
+	toAdd = [];
+	for rep in repos:
+		if rep not in currentdeps:
+			toAdd.append(rep)
+	return " ".join(toAdd)

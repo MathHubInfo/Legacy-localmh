@@ -3,12 +3,7 @@
 
 ## TOPORT
 
-
-
-* commands.find
-* commands.depcrawl
 * commands.checkpaths
-
 * commands.mvmod
 * commands.symbols <-- Not finished
 
@@ -17,6 +12,7 @@
 
 ## TOFIX
 
+* commands.depcrawl
 * commands.xhtml
 * agg ?
 * mmt ?
@@ -41,6 +37,8 @@
 
 ## Ported
 
+
+* commands.find
 * commands.clean
 * commands.gen.*
 * commands.about
@@ -56,3 +54,4 @@
 * commands.update
 * commands.git
 * commands.log
+* commands.depcrawl
