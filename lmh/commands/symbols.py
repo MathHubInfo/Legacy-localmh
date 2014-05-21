@@ -37,7 +37,7 @@ from lmh import util
 from lmh import config
 from lmh import main
 
-from lmh.lib.io import write_file
+from lmh.lib.io import write_file, read_file
 from lmh.lib.modules import locate_modules, needsPreamble
 
 def create_parser():
@@ -70,7 +70,8 @@ def pat_to_match(pat):
 def find_all_defis(text):
   # find all a?defs and turn them into nice matches
   pattern = r"\\(def|adef)(i{1,3})(\[(.*?)\])?({([^{}]+)?})({([^{}]+)?})?({([^{}]+)?})?"
-  return [pat_to_match(x) for x in re.findall(pattern, text)]
+  vals = [pat_to_match(x) for x in re.findall(pattern, text)]
+  return vals
 
 def find_all_symis(text):
   # find all the symis
@@ -85,18 +86,26 @@ def find_all_symis(text):
 def add_symis(text, symis):
   addtext = ""
   for sym in symis:
-    addtext += "\\sym"+("i"*sym[1]) +"\{"+"\}\{".join(sym[3])+"\}\n"
+    addtext += "\\sym"+("i"*sym[1]) +"{"+"}{".join(sym[3])+"}\n"
   pattern = r"\\begin{modsig}((.|\n)*)\\end{modsig}"
-  return re.sub(pattern, r"\\begin{modsig}\1"+re.escape(addtext)+"\\end{modsig}", text)
+  return re.sub(pattern, r"\\begin{modsig}\1"+addtext+"\\end{modsig}", text)
 
 
 
 def do_file(fname):
-  with open(fname, 'r') as content_file:
-    content = content_file.read()
+
+  languageFilePattern = r"\.(\w+)\.tex$"
+
+  if len(re.findall(languageFilePattern, fname)) == 0:
+    return
+
+  fmodname = re.sub(languageFilePattern, ".tex", fname)
+
+  content = read_file(fname)
+  modcontent = read_file(fmodname)
 
   defs = find_all_defis(content)
-  syms = find_all_symis(content)
+  syms = find_all_symis(modcontent)
 
   if defs == None:
     defs = []
@@ -104,15 +113,13 @@ def do_file(fname):
     syms = []
 
   def has_syms(d):
-    req = ["sym", d[1], d[2], d[3]]
-
+    req = ["sym", d[1], '', d[3]]
     return not (req in syms)
 
   required = filter(has_syms, defs)
   print fname, ":", len(required)
-  towrite = add_symis(content, required)
-  print towrite == content
-  write_file(fname, towrite)
+  towrite = add_symis(modcontent, required)
+  write_file(fmodname, towrite)
 
 
 
