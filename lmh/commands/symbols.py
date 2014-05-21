@@ -81,6 +81,14 @@ def find_all_symis(text):
   text = matches[0][0]
   return [pat_to_match(x) for x in re.findall(pattern2, text)]
 
+def add_symis(text, symis):
+  addtext = ""
+  for sym in symis:
+    addtext += "\\sym"+("i"*sym[1]) +"\{"+"\}\{".join(sym[3])+"\}\n"
+  pattern = r"\\begin{modsig}((.|\n)*)\\end{modsig}"
+  print re.sub(pattern, r"\\begin{modsig}\1"+addtext+"\\end{modsig}", text)
+
+
 
 def do_file(fname):
   with open(fname, 'r') as content_file:
@@ -101,7 +109,7 @@ def do_file(fname):
 
   required = filter(has_syms, defs)
   print "We will have to add: "
-  print required
+  add_symis(content, required)
   print "for", fname
 
 
