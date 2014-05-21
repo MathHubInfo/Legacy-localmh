@@ -1,15 +1,3 @@
-#!/usr/bin/env python
-
-"""
-This is the entry point for the Local Math Hub utility. 
-
-.. argparse::
-   :module: config
-   :func: create_parser
-   :prog: config
-
-"""
-
 """
 This file is part of LMH.
 
@@ -33,11 +21,7 @@ import re
 import sys
 import shutil
 
-from lmh import util
-from lmh import config
-from lmh import main
-
-from lmh.lib.io import write_file, read_file
+from lmh.lib.io import std, err, write_file, read_file
 from lmh.lib.modules import locate_modules, needsPreamble
 
 def create_parser():
@@ -50,21 +34,24 @@ def add_parser(subparsers, name="symbols"):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('--simulate', action="store_const", default=False, const=True, help="Simulate only. ")
+  #parser.add_argument('--simulate', action="store_const", default=False, const=True, help="Simulate only. ")
+  pass
+  #TODO: Add repository arguments
 
 
   parser.epilog = """
       TBD
   """
 
-def pat_to_match(pat):
+def pat_to_match(pat , o = 0):
   # turn it into a match
   if pat[1] == "i":
-    return [pat[0], 1, pat[3], [pat[5]]]
+    return [pat[0], 1, pat[3+o], [pat[5+o]]]
   elif pat[1] == "ii":
-    return [pat[0], 2, pat[3], [pat[5], pat[7]]]
+    return [pat[0], 2, pat[3+o], [pat[5+o], pat[7+o]]]
   elif pat[1] == "iii":
-    return [pat[0], 3, pat[3], [pat[5], pat[7], pat[9]]]
+    return [pat[0], 3, pat[3+o], [pat[5+o], pat[7+o], pat[9+o]]]
+
 
 
 def find_all_defis(text):
@@ -76,12 +63,12 @@ def find_all_defis(text):
 def find_all_symis(text):
   # find all the symis
   pattern = r"\\begin{modsig}((.|\n)*)\\end{modsig}"
-  pattern2 = r"\\(sym)(i{1,3})(\[(.*?)\])?({([^{}]+)?})({([^{}]+)?})?({([^{}]+)?})?"
+  pattern2 = r"\\(sym)(i{1,3})(\*)?(\[(.*?)\])?({([^{}]+)?})({([^{}]+)?})?({([^{}]+)?})?"
   matches = re.findall(pattern, text)
   if len(matches) == 0:
     return []
   text = matches[0][0]
-  return [pat_to_match(x) for x in re.findall(pattern2, text)]
+  return [pat_to_match(x, o=1) for x in re.findall(pattern2, text)]
 
 def add_symis(text, symis):
   addtext = ""
@@ -102,7 +89,11 @@ def do_file(fname):
   fmodname = re.sub(languageFilePattern, ".tex", fname)
 
   content = read_file(fname)
-  modcontent = read_file(fmodname)
+  try:
+    modcontent = read_file(fmodname)
+  except IOError:
+    err("Missing module:", fmodname)
+    return False
 
   defs = find_all_defis(content)
   syms = find_all_symis(modcontent)
@@ -117,9 +108,12 @@ def do_file(fname):
     return not (req in syms)
 
   required = filter(has_syms, defs)
-  print fname, ":", len(required)
-  towrite = add_symis(modcontent, required)
-  write_file(fmodname, towrite)
+  if len(required) >= 0:
+    std("Adding", len(required), "symbol definition(s) from", fname)
+    towrite = add_symis(modcontent, required)
+    write_file(fmodname, towrite)
+
+  return True
 
 
 
