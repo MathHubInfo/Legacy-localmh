@@ -45,12 +45,17 @@ def add_parser_args(parser):
 
 def pat_to_match(pat , o = 0):
   # turn it into a match
+
+  if pat[3+o] != "":
+    split = pat[3+o].split("-")
+    return [pat[0], len(split), split]
+
   if pat[1] == "i":
-    return [pat[0], 1, pat[3+o], [pat[5+o]]]
+    return [pat[0], 1, [pat[5+o]]]
   elif pat[1] == "ii":
-    return [pat[0], 2, pat[3+o], [pat[5+o], pat[7+o]]]
+    return [pat[0], 2, [pat[5+o], pat[7+o]]]
   elif pat[1] == "iii":
-    return [pat[0], 3, pat[3+o], [pat[5+o], pat[7+o], pat[9+o]]]
+    return [pat[0], 3, [pat[5+o], pat[7+o], pat[9+o]]]
 
 
 
@@ -73,7 +78,7 @@ def find_all_symis(text):
 def add_symis(text, symis):
   addtext = ""
   for sym in symis:
-    addtext += "\\sym"+("i"*sym[1]) +"{"+"}{".join(sym[3])+"}\n"
+    addtext += "\\sym"+("i"*sym[1]) +"{"+"}{".join(sym[2])+"}\n"
   pattern = r"\\begin{modsig}((.|\n)*)\\end{modsig}"
   return re.sub(pattern, r"\\begin{modsig}\1"+addtext+"\\end{modsig}", text)
 
@@ -104,7 +109,7 @@ def do_file(fname):
     syms = []
 
   def has_syms(d):
-    req = ["sym", d[1], '', d[3]]
+    req = ["sym", d[1], d[2]]
     return not (req in syms)
 
   required = filter(has_syms, defs)
