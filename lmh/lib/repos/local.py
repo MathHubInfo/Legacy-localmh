@@ -374,7 +374,7 @@ def replacePath(dir, matcher, replaceFnc, apply=False):
       for line in open(fullpath, "r"):
         newLine = compMatch.sub(replaceContext, line)
         if newLine != line:
-          changes = True          
+          changes = True
           std(fullpath + ": \n " + line + newLine)
 
         if apply:
