@@ -48,10 +48,12 @@ def pat_to_match(pat , o = 0):
 
   if pat[3+o] != "":
     split = pat[3+o].split("-")
+    if pat[0] == "adef":
+      split = split[1:]
     return [pat[0], len(split), split]
 
   if pat[0] == "adef":
-    o += 1
+    o += 2
 
   if pat[1] == "i":
     return [pat[0], 1, [pat[5+o]]]
