@@ -37,6 +37,7 @@ from lmh import util
 from lmh import config
 from lmh import main
 
+from lmh.lib.io import write_file
 from lmh.lib.modules import locate_modules, needsPreamble
 
 def create_parser():
@@ -86,7 +87,7 @@ def add_symis(text, symis):
   for sym in symis:
     addtext += "\\sym"+("i"*sym[1]) +"\{"+"\}\{".join(sym[3])+"\}\n"
   pattern = r"\\begin{modsig}((.|\n)*)\\end{modsig}"
-  print re.sub(pattern, r"\\begin{modsig}\1"+addtext+"\\end{modsig}", text)
+  return re.sub(pattern, r"\\begin{modsig}\1"+re.escape(addtext)+"\\end{modsig}", text)
 
 
 
@@ -108,9 +109,11 @@ def do_file(fname):
     return not (req in syms)
 
   required = filter(has_syms, defs)
-  print "We will have to add: "
-  add_symis(content, required)
-  print "for", fname
+  print fname, ":", len(required)
+  towrite = add_symis(content, required)
+  print towrite == content
+  write_file(fname, towrite)
+
 
 
 
