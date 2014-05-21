@@ -175,14 +175,13 @@ def commit(msg, *repos):
 
 	return ret
 
-def do(cmd, *repos):
+def do(cmd, args, *repos):
 	"""Does an arbitraty git commit on all repositories. """
-
 	ret = True
-
+	args = args[0].split(" ")
 	for rep in repos:
-		std("git "+cmd, rep)
-		ret = git_do(rep, cmd) and ret
+		std("git "+cmd, " ".join(args), rep)
+		ret = git_do(rep, cmd, *args) and ret
 
 	return ret
 

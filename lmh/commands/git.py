@@ -32,6 +32,7 @@ def add_parser(subparsers, name="git"):
 def add_parser_args(parser):
   parser.add_argument('cmd', nargs=1, help="a git command to be run.")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs a git command on all repositories currently in lmh")
+  parser.add_argument('--args', nargs='+', help="Arguments to add to each of the git commands. ")
   parser.add_argument('repository', type=parseRepo, nargs='*', help="a list of repositories for which to run the git command.")
   parser.epilog = """
 Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
@@ -43,4 +44,4 @@ Repository names allow using the wildcard '*' to match any repository. It allows
 
 def do(args):
   repos = match_repositories(args)
-  return local_do(args.cmd[0], *repos)
+  return local_do(args.cmd[0], args.args, *repos)
