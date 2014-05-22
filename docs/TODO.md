@@ -3,15 +3,13 @@
 
 ## TOPORT
 
-* commands.checkpaths
 * commands.mvmod
-* commands.symbols <-- Not finished
+* commands.symbols
 
 * commands.__init__
 * __init__
 
 ## TOFIX
-
 * commands.depcrawl
 * commands.xhtml
 * agg ?
@@ -37,6 +35,7 @@
 
 ## Ported
 
+* commands.checkpaths
 * commands.find
 * commands.clean
 * commands.gen.*

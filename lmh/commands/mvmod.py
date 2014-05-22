@@ -1,15 +1,3 @@
-#!/usr/bin/env python
-
-"""
-This is the entry point for the Local Math Hub utility. 
-
-.. argparse::
-   :module: config
-   :func: create_parser
-   :prog: config
-
-"""
-
 """
 This file is part of LMH.
 

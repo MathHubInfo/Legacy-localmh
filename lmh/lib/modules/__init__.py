@@ -29,7 +29,7 @@ import traceback
 
 from lmh.lib import reduce
 from lmh.lib.io import std, err, read_file, effectively_readable
-from lmh.lib.env import install_dir
+from lmh.lib.env import install_dir, data_dir
 from lmh.lib.git import root_dir
 
 
@@ -53,7 +53,7 @@ def locate_module(path, git_root):
 
   # you can use any directory, but if it is in the localmh directory, 
   # it also has to be within MathHub
-  if path.startswith(os.path.abspath(install_dir)) and not path.startswith(os.path.abspath(install_dir+"/MathHub")):
+  if path.startswith(os.path.abspath(install_dir)) and not path.startswith(os.path.abspath(data_dir)):
     return []
 
   basepth = path[:-4]
@@ -72,7 +72,7 @@ def locate_module(path, git_root):
     "file": path, 
 
     "repo": git_root, 
-    "repo_name": os.path.relpath(git_root, install_dir+"/MathHub"), 
+    "repo_name": os.path.relpath(git_root, data_dir), 
 
     "path": os.path.dirname(path), 
     "file_time": os.path.getmtime(path), 
@@ -105,13 +105,13 @@ def locate_modules(path, depth=-1):
 
   # you can use any directory, but if it is in the localmh directory, 
   # it also has to be within MathHub
-  if path.startswith(os.path.abspath(install_dir)) and not path.startswith(os.path.abspath(install_dir+"/MathHub")):
+  if path.startswith(os.path.abspath(install_dir)) and not path.startswith(os.path.abspath(data_dir)):
     return []
 
   # TODO: Implement per-directory config files
   modules = []
 
-  if os.path.relpath(install_dir + "/MathHub/", path) == "../..":
+  if os.path.relpath(data_dir, path) == "../..":
     path = path + "/source"
 
   if not os.path.isdir(path):
@@ -166,7 +166,7 @@ def locate_modules(path, depth=-1):
       "modules": [m["mod"] for m in modules], 
 
       "repo": git_root, 
-      "repo_name": os.path.relpath(git_root, install_dir+"/MathHub"), 
+      "repo_name": os.path.relpath(git_root, data_dir), 
       "youngest": youngest, 
 
       "alltex": alltexpath if os.path.isfile(alltexpath) else None, 
@@ -187,6 +187,23 @@ def locate_modules(path, depth=-1):
 
   return modules
 
+def locate_modfiles(dir = "."):
+   files = filter(lambda x:x["type"] == "file", locate_modules(dir))
+   return filter(lambda x:needsPreamble(x["file"]), files)
+
+def makeIndex(dir = "."):
+  index = {}
+
+  files = filter(lambda x:x["type"] == "file", locate_modules(dir))
+
+  for file in files:
+    fname = file["mod"]+".tex"
+    if not fname in index.keys():
+      index[fname] = []
+    index[fname].append(file["path"]+"/" + fname)
+
+  return index
+
 def resolve_pathspec(args):
   # Resolves the path specification given by the arguments
 
@@ -199,11 +216,11 @@ def resolve_pathspec(args):
       args.pathspec = ["."]
 
   # is this path a repository
-  is_repo = lambda rep: os.path.relpath(install_dir + "/MathHub/", rep) == "../.."
+  is_repo = lambda rep: os.path.relpath(data_dir, rep) == "../.."
 
   # expand path specification
   def expandpathspec(ps):
-    repomatches = filter(is_repo, glob.glob(install_dir + "/MathHub/" + ps))
+    repomatches = filter(is_repo, glob.glob(data_dir + "/" + ps))
     if len(repomatches) != 0:
       return repomatches
     else:

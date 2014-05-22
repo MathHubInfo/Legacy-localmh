@@ -97,8 +97,11 @@ def std_paged(*args, **kwargs):
 
 
 
-def read_raw():
+def read_raw(query = None):
 	"""Reads a line of text form stdin. """
+
+	if query != None:
+		std(query, newline=False)
 	return sys.stdin.readline()
 
 def block_std():
@@ -139,8 +142,11 @@ def read_file(filename):
 
 	return text
 
-def read_file_lines(filename):
+def read_file_lines(filename = None):
 	"""Reads all text lines from a file"""
+
+	if filename == None:
+		return sys.stdin.readlines()
 
 	# Read lines and then close the file
 	text_file = open(filename, "r")

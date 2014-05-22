@@ -102,29 +102,30 @@ def find_all_locals():
 # Import / Export of all existing repos to a certain file
 #
 
-def export(file):
+def export(file = None):
 	"""Exports the list of currently installed repositories. """
 
 	# Get all locally installed directories
 	installed = find_all_locals()
 
+	if(file == None):
+		for mod in installed:
+			std(mod)
+		return True
 	try:
 		write_file(file, s.linesep.join(things))
 		return True
 	except:
-		err("Unable to read "+fn)
+		err("Unable to write "+fn)
 		return False
 
-def restore(file):
+def restore(file = None):
 	"""Restores a list of currently installed repositories. """
 
 	# read all lines from the file
-	lines = read_file_lines()
-
-	ns = argparse.Namespace()
-	ns.__dict__.update({"repository":lines})
-
-	return install.do(ns)
+	lines = read_file_lines(file)
+	lines = [l.strip() for l in lines]
+	return install(*lines)
 
 def push(*repos):
 	"""Pushes all currently installed repositories. """

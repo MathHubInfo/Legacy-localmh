@@ -25,12 +25,12 @@ from lmh.lib.io import std, err, write_file, read_file
 from lmh.lib.modules import locate_modules, needsPreamble
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Views or changes lmh configuration. ')
+  parser = argparse.ArgumentParser(description='Generates smybols needed by language bindings. ')
   add_parser_args(parser)
   return parser
 
 def add_parser(subparsers, name="symbols"):
-  parser_status = subparsers.add_parser(name, help='Moves a multilingual module to a new repository')
+  parser_status = subparsers.add_parser(name, help='Generates smybols needed by language bindings. ')
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
@@ -89,22 +89,25 @@ def add_symis(text, symis):
 
 
 
-def do_file(fname):
+def add_symbols(fname):
 
+  # skip non-language bindings
   languageFilePattern = r"\.(\w+)\.tex$"
-
   if len(re.findall(languageFilePattern, fname)) == 0:
-    return
+    return True
 
+  # Find the associated module
   fmodname = re.sub(languageFilePattern, ".tex", fname)
-
   content = read_file(fname)
+
+  # Try and read the other file
   try:
     modcontent = read_file(fmodname)
   except IOError:
     err("Missing module:", fmodname)
     return False
 
+  # FInd all the symbolds and definitions
   defs = find_all_defis(content)
   syms = find_all_symis(modcontent)
 
@@ -113,11 +116,15 @@ def do_file(fname):
   if syms == None:
     syms = []
 
+  # check if we still need them
   def has_syms(d):
     req = ["sym", d[1], d[2]]
     return not (req in syms)
 
+  # OK filter them out
   required = filter(has_syms, defs)
+
+  # Add them if we need to
   if len(required) >= 0:
     std("Adding", len(required), "symbol definition(s) from", fname)
     towrite = add_symis(modcontent, required)
@@ -133,5 +140,9 @@ def do(args):
   mods = filter(lambda x:x["type"] == "file", locate_modules(os.getcwd()))
   mods = filter(lambda x:needsPreamble(x["file"]), mods)
 
+  ret = True
+
   for mod in mods:
-    do_file(mod["file"])
+    ret = ret and add_symbols(mod["file"])
+
+  return
