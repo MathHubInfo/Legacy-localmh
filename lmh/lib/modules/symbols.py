@@ -18,7 +18,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import re
 import sys
 import shutil
-
+from lmh.lib import f7
 from lmh.lib.io import std, err, write_file, read_file
 from lmh.lib.modules import locate_modules, needsPreamble
 
@@ -60,11 +60,14 @@ def find_all_symis(text):
   return [pat_to_match(x, o=1) for x in re.findall(pattern2, text)]
 
 def add_symis(text, symis):
-  addtext = ""
+  addtext = []
   for sym in symis:
-    addtext += "\\sym"+("i"*sym[1]) +"{"+"}{".join(sym[2])+"}\n"
+    if sym[1] == 0:
+      continue
+    addtext.append("\\sym"+("i"*sym[1]) +"{"+"}{".join(sym[2])+"}\n")
+  addtext = f7(addtext)
   pattern = r"\\begin{modsig}((.|\n)*)\\end{modsig}"
-  return re.sub(pattern, r"\\begin{modsig}\1"+addtext+"\\end{modsig}", text)
+  return re.sub(pattern, r"\\begin{modsig}\1"+"".join(addtext)+"\\end{modsig}", text)
 
 
 
