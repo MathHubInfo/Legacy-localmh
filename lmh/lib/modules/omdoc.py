@@ -27,11 +27,15 @@ import multiprocessing
 from subprocess import Popen
 from subprocess import PIPE
 
+from lmh.lib.config import get_config
 from lmh.lib.io import std, err
-from lmh.lib.env import install_dir, stexstydir
+from lmh.lib.env import install_dir, stexstydir, which
 from lmh.lib.extenv import perl5bindir, perl5libdir, perl5env
 
-latexmlc = install_dir+"/ext/perl5lib/bin/latexmlc"
+if get_config("lmh config setup::cpanm::selfcontained"):
+  latexmlc = install_dir+"/ext/perl5lib/bin/latexmlc"
+else:
+  latexmlc = which("latexmlc")
 stydir = install_dir+"/sty"
 
 # For Error parsing
