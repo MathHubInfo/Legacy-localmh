@@ -59,6 +59,19 @@ def find_all_symis(text):
   text = matches[0][0]
   return [pat_to_match(x, o=1) for x in re.findall(pattern2, text)]
 
+def find_all_symdefs(text):
+  # FInd all symdefs
+  pattern = r"\\begin{modsig}((.|\n)*)\\end{modsig}"
+  pattern2 = r"\\symdef(\[([^\]]*,(\s)*)?name=([^],]+)?(,[^\]]*)?\])?\{([^{}]+)?\}"
+  matches = re.findall(pattern, text)
+  if len(matches) == 0:
+    return []
+  text = matches[0][0]
+  matches = re.findall(pattern2, text)
+  return [m[3] if m[3] != "" else m[5] for m in matches]
+
+
+
 def add_symis(text, symis):
   addtext = []
   for sym in symis:
@@ -92,7 +105,8 @@ def add_symbols(fname):
   # FInd all the symbolds and definitions
   defs = find_all_defis(content)
   syms = find_all_symis(modcontent)
-
+  symdefs = find_all_symdefs(modcontent)
+  
   if defs == None:
     defs = []
   if syms == None:
@@ -100,8 +114,14 @@ def add_symbols(fname):
 
   # check if we still need them
   def has_syms(d):
+    # negated
     req = ["sym", d[1], d[2]]
-    return not (req in syms)
+    try:
+      name = d[2][0]
+    except:
+      name = ""
+
+    return not (req in syms) and not (name in symdefs)
 
   # OK filter them out
   required = filter(has_syms, defs)
