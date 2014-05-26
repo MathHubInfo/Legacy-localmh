@@ -32,7 +32,7 @@ from lmh.lib.io import std, err
 from lmh.lib.env import install_dir, stexstydir, which
 from lmh.lib.extenv import perl5bindir, perl5libdir, perl5env
 
-if get_config("lmh config setup::cpanm::selfcontained"):
+if get_config("setup::cpanm::selfcontained"):
   latexmlc = install_dir+"/ext/perl5lib/bin/latexmlc"
 else:
   latexmlc = which("latexmlc")
