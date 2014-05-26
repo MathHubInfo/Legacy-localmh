@@ -28,7 +28,8 @@ from subprocess import Popen
 from subprocess import PIPE
 
 from lmh.lib.io import std, err
-from lmh.lib.env import install_dir, stexstydir, perl5bindir, perl5libdir, perl5env
+from lmh.lib.env import install_dir, stexstydir
+from lmh.lib.extenv import perl5bindir, perl5libdir, perl5env
 
 latexmlc = install_dir+"/ext/perl5lib/bin/latexmlc"
 stydir = install_dir+"/sty"
@@ -97,7 +98,7 @@ def gen_omdoc(modules, update, verbose, quiet, workers, nice, find_modules):
         err("OMDOC: Cleaning up latexmls processes ...")
         try:
           p = Popen(['ps', '-A'], stdout=PIPE)
-          out, err = p.communicate()
+          out, unused = p.communicate()
           for line in out.splitlines():
             if 'latexmls' in line:
              pid = int(line.split(None, 1)[0])

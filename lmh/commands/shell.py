@@ -18,7 +18,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import argparse
 
-from lmh.lib.env import run_shell
+from lmh.lib.extenv import run_shell
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Shell wrapper. ')

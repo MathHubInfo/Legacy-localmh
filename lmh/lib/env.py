@@ -20,9 +20,6 @@ import os.path
 
 from lmh.lib.io import std
 
-
-from subprocess import Popen
-
 """Installation directory of lmh"""
 install_dir = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../")
 
@@ -55,58 +52,3 @@ stexstydir = install_dir+"/ext/sTeX/sty"
 
 """LatexML directory"""
 latexmlstydir = install_dir+"/ext/sTeX/LaTeXML/lib/LaTeXML/texmf"
-
-
-#
-# Perl 5 etc
-#
-
-"""The perl5 root directories"""
-perl5root = [install_dir+"/ext/perl5lib/", os.path.expanduser("~/")]
-
-"""Perl5 binary directories"""
-perl5bindir = ":".join([p5r+"bin" for p5r in perl5root])+":"+install_dir+"/ext/LaTeXML/bin"+":"+install_dir+"/ext/LaTeXMLs/bin"
-
-"""Perl5 lib directories"""
-perl5libdir = ":".join([p5r+"lib/perl5" for p5r in perl5root])+":"+install_dir+"/ext/LaTeXML/blib/lib"+":"+install_dir+"/ext/LaTeXMLs/blib/lib"
-
-def perl5env(_env = {}):
-	"""perl 5 environment generator"""
-	_env["PATH"]=perl5bindir+":"+_env["PATH"]
-	try:
-		_env["PERL5LIB"] = perl5libdir+":"+ _env["PERL5LIB"]
-	except:
-		_env["PERL5LIB"] = perl5libdir
-		_env["STEXSTYDIR"] = stexstydir
-	return _env
-
-
-def run_shell(shell = None):
-	"""Runs a shell that is ready for any perl5 things"""
-	if shell == None:
-		shell = os.environ["SHELL"] or which("bash")
-	else:
-		shell = util.which(shell)
-		if shell == None:
-			shell = args.shell
-
-	# Make a perl 5 environment
-	_env = perl5env(os.environ)
-
-	try:
-		runner = Popen([shell], env=_env, cwd=install_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-	except:
-		# we could not find that
-		return 127
-
-	def do_the_run():
-		try:
-			runner.wait()
-		except KeyboardInterrupt:
-			runner.send_signal(signal.SIGINT)
-			do_the_run()
-
-	std("Opening a shell ready to compile for you. ")
-	do_the_run()
-
-	return runner.returncode

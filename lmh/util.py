@@ -37,7 +37,8 @@ def lmh_root():
 from lmh.lib.repos import nameExpression as repoRegEx
 from lmh.lib.extenv import git_executable as gitexec
 from lmh.lib.extenv import svn_executable as svnexec
-from lmh.lib.env import perl5root, perl5bindir, perl5libdir, stexstydir, latexmlstydir, perl5env
+from lmh.lib.env import stexstydir, latexmlstydir
+from lmh.lib.extenv import perl5root, perl5bindir, perl5libdir, perl5env
 
 def autocomplete_mathhub_repository(prefix, parsed_args, **kwargs):
   results = [];

@@ -11,6 +11,11 @@
 		"default": false
 	}, 
 
+	"self::remote_version_url": {
+		"type": "string", 
+		"help": "URL to remote version file. Leave empty to disable version checking. ", 
+		"default": ""
+	}, 
 
 	"env::git": {
 		"type": "string", 
@@ -76,7 +81,7 @@
 		"type": "bool", 
 		"help": "Allow repositories to install without manifests. ", 
 		"default": false
-	}, 
+	},  
 
 	"setup::latexml::source": {
 		"type": "string", 
@@ -124,6 +129,12 @@
 		"help": "Default branch for MMT. Automatically uses TRUNK if empty. ", 
 		"default": ""
 	}, 
+
+	"setup::cpanm::selfcontained": {
+		"type": "bool", 
+		"help": "Use self-contained local CPANM repositories. ", 
+		"default": true
+	},
 
 
 	"gl::private_token": {

@@ -16,10 +16,13 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os.path
+import sys
 
-from lmh.lib.io import err
-from lmh.lib.env import install_dir, which
+from lmh.lib.io import std, err
+from lmh.lib.env import install_dir, which, stexstydir
 from lmh.lib.config import get_config
+
+from subprocess import Popen
 
 # Define all the external tools
 
@@ -129,3 +132,61 @@ def check_deps():
 		return False
 
 	return True
+
+#
+# Perl 5 etc
+#
+
+if get_config("setup::cpanm::selfcontained"):
+	"""The perl5 root directories (if selfcontained)"""
+	perl5root = [install_dir+"/ext/perl5lib/", os.path.expanduser("~/")]
+else:
+	# Perl5 root directory is just global
+	perl5root = []
+
+"""Perl5 binary directories"""
+perl5bindir = ":".join([p5r+"bin" for p5r in perl5root])+":"+install_dir+"/ext/LaTeXML/bin"+":"+install_dir+"/ext/LaTeXMLs/bin"
+
+"""Perl5 lib directories"""
+perl5libdir = ":".join([p5r+"lib/perl5" for p5r in perl5root])+":"+install_dir+"/ext/LaTeXML/blib/lib"+":"+install_dir+"/ext/LaTeXMLs/blib/lib"
+
+def perl5env(_env = {}):
+	"""perl 5 environment generator"""
+	_env["PATH"]=perl5bindir+":"+_env["PATH"]
+	try:
+		_env["PERL5LIB"] = perl5libdir+":"+ _env["PERL5LIB"]
+	except:
+		_env["PERL5LIB"] = perl5libdir
+		_env["STEXSTYDIR"] = stexstydir
+	return _env
+
+
+def run_shell(shell = None):
+	"""Runs a shell that is ready for any perl5 things"""
+	if shell == None:
+		shell = os.environ["SHELL"] or which("bash")
+	else:
+		shell = util.which(shell)
+		if shell == None:
+			shell = args.shell
+
+	# Make a perl 5 environment
+	_env = perl5env(os.environ)
+
+	try:
+		runner = Popen([shell], env=_env, cwd=install_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+	except Exception as e:
+		# we could not find that
+		return 127
+
+	def do_the_run():
+		try:
+			runner.wait()
+		except KeyboardInterrupt:
+			runner.send_signal(signal.SIGINT)
+			do_the_run()
+
+	std("Opening a shell ready to compile for you. ")
+	do_the_run()
+
+	return runner.returncode

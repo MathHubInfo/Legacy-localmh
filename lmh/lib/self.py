@@ -21,14 +21,14 @@ import shutil
 from subprocess import call
 
 from lmh.lib.io import std, err, read_file
-from lmh.lib.env import install_dir, ext_dir, perl5env, perl5root
+from lmh.lib.env import install_dir, ext_dir
+from lmh.lib.extenv import perl5env, perl5root
 from lmh.lib.extenv import check_deps, cpanm_executable, perl_executable, make_executable
 from lmh.lib.config import get_config, set_config
 from lmh.lib.git import pull as git_pull
 from lmh.lib.git import clone as git_clone
 from lmh.lib.svn import pull as svn_pull
 from lmh.lib.svn import clone as svn_clone
-
 
 def update():
 	""" Updates lmh codebase. """
@@ -97,14 +97,23 @@ def latexml_remove(root, source, branch):
 		err("Failed to remove LaTeXML (is it present? )")
 		return False
 
+# Arguments for installing via cpanm
+if get_config("setup::cpanm::selfcontained"):
+	cpanm_installdeps_args = [cpanm_executable, "-L", perl5root[0], "--installdeps", "--prompt", "."]
+	cpanm_installself_args = [cpanm_executable, "-L", perl5root[0], "--notest", "--prompt", "."]
+else:
+	cpanm_installdeps_args = [cpanm_executable, "--installdeps", "--prompt", "."]
+	cpanm_installself_args = [cpanm_executable, "--notest", "--prompt", "."]	
+
+
 def latexml_make(root):
 	"""Builds latexml"""
 
 	_env = perl5env(os.environ)
 	_env.pop("STEXSTYDIR", None)
 	try:
-		call([cpanm_executable, "-L", perl5root[0], "--installdeps", "--prompt", "."], env=_env, cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-		call([cpanm_executable, "-L", perl5root[0], "--notest", "--prompt", "."], env=_env, cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+		call(cpanm_installdeps_args, env=_env, cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+		call(cpanm_installself_args, env=_env, cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
 		return True
 	except Exception as e:
 		err("Unable to run make commands for latexml. ")
@@ -153,8 +162,8 @@ def latexmls_make(root):
 	_env = perl5env(os.environ)
 	_env.pop("STEXSTYDIR", None)
 	try:
-		call([cpanm_executable, "-L", perl5root[0], "--installdeps", "--prompt", "."], env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-		call([cpanm_executable, "-L", perl5root[0], "--notest", "--prompt", "."], env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+		call(cpanm_installdeps_args, env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+		call(cpanm_installself_args, env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
 		return True
 	except Exception as e:
 		err("Unable to run make commands for latexmls. ")
