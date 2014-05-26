@@ -17,12 +17,13 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import os.path
 
+from lmh.lib.io import read_file
 from lmh.lib.env import install_dir
 from lmh.lib.git import do_data
 
 
 """lmh lib version"""
-version = "0.1"
+version = read_file(install_dir + "/" + "/lmh/data/version")
 
 def git_version():
   """Checks the current gi version of the core"""
