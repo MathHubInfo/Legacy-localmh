@@ -158,7 +158,6 @@ def perl5env(_env = {}):
 	except:
 		_env["PERL5LIB"] = perl5libdir
 	_env["STEXSTYDIR"] = stexstydir
-	print stexstydir
 	return _env
 
 
