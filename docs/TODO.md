@@ -4,7 +4,6 @@
 ## TOPORT
 
 * commands.mvmod
-* commands.symbols
 
 * commands.__init__
 * __init__
@@ -35,6 +34,7 @@
 
 ## Ported
 
+* commands.symbols
 * commands.checkpaths
 * commands.find
 * commands.clean

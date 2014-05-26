@@ -17,7 +17,6 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import os.path
 
-
 from lmh.lib.env import install_dir
 from lmh.lib.git import do_data
 

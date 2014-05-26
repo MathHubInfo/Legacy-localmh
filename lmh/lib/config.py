@@ -34,6 +34,12 @@ config_meta = {
 		"default": False 
 	}, 
 
+	"self::showfirstrun": {
+		"type": "bool", 
+		"help": "Show first run dialogs when first running lmh. ", 
+		"default": True
+	}, 
+
 	# Environment paths
 	"env::git": {
 		"type": "string", 
@@ -83,10 +89,14 @@ config_meta = {
 		"default": "" 
 	}, 
 
-	"self::firstrun": {
-		"type": "bool", 
-		"help": "Generic flag set to true after the first run of lmh. ", 
-		"default": False, 
+	#
+	# Automatically set state variables
+	#
+
+	"state::lastversion": {
+		"type": "string", 
+		"help": "Contains the last used version of lmh. ", 
+		"default": "", 
 		"hidden": True
 	}, 
 

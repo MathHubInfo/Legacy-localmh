@@ -102,7 +102,7 @@ def read_raw(query = None):
 
 	if query != None:
 		std(query, newline=False)
-	return sys.stdin.readline()
+	return sys.stdin.readline().strip()
 
 def block_std():
 	"""Blocks stdout"""

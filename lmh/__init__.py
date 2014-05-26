@@ -46,6 +46,8 @@ from lmh.commands import create_parser
 from lmh.commands import gen
 from lmh.commands import preparse_args
 
+from lmh.lib import init
+
 submods = {};
 
 def install_excepthook():
@@ -65,6 +67,7 @@ def install_excepthook():
 
 def main(argv = sys.argv[1:]):
   """Calls the main program with given arguments. """
+  init.init()
   parser = create_parser(submods)
   try:
     argcomplete.autocomplete(parser)
