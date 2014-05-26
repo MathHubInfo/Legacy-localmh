@@ -1,0 +1,167 @@
+{
+	"self::enable_colors": {
+		"type": "bool", 
+		"help": "Use colors in the output. ",
+		"default": false
+	}, 
+
+	"self::showfirstrun": {
+		"type": "bool", 
+		"help": "Show first run dialogs when first running lmh. ", 
+		"default": false
+	}, 
+
+
+	"env::git": {
+		"type": "string", 
+		"help": "Path to the Git executable. Auto-detected if empty. ",
+		"default": "" 
+	}, 
+
+	"env::svn": {
+		"type": "string", 
+		"help": "Path to the svn executable. Auto-detected if empty. ",
+		"default": "" 
+	}, 
+
+	"env::pdflatex": {
+		"type": "string", 
+		"help": "Path to the pdflatex executable. Auto-detected if empty. ",
+		"default": "" 
+	}, 
+
+	"env::perl": {
+		"type": "string", 
+		"help": "Path to the perl executable. Auto-detected if empty. ",
+		"default": "" 
+	}, 
+
+	"env::cpanm": {
+		"type": "string", 
+		"help": "Path to the cpanm executable. Auto-detected if empty. ",
+		"default": "" 
+	}, 
+
+	"env::make": {
+		"type": "string", 
+		"help": "Path to the make executable. Auto-detected if empty. ",
+		"default": "" 
+	}, 
+
+	"env::tar": {
+		"type": "string", 
+		"help": "Path to the make executable. Auto-detected if empty. ",
+		"default": "" 
+	}, 
+
+	"env::pager": {
+		"type": "string", 
+		"help": "A full path to a pager to use for long outputs. If empty, no pager is used. ",
+		"default": "" 
+	}, 
+
+	"state::lastversion": {
+		"type": "string", 
+		"help": "Contains the last used version of lmh. ", 
+		"default": "", 
+		"hidden": true
+	}, 
+
+	"install::sources": {
+		"type": "string", 
+		"help": "Url prefixes to clone git repositories from. Seperated by ;s. ", 
+		"default": "git@gl.mathhub.info:;http://gl.mathhub.info/"
+	}, 
+	"install::nomanifest": {
+		"type": "bool", 
+		"help": "Allow repositories to install without manifests. ", 
+		"default": false
+	}, 
+
+	"setup::latexml::source": {
+		"type": "string", 
+		"help": "Default Source for latexml. ", 
+		"default": "https://github.com/KWARC/LaTeXML.git"
+	}, 
+	"setup::latexml::branch": {
+		"type": "string", 
+		"help": "Default branch for latexml. Automatically uses the remote HEAD if undefined. ", 
+		"default": ""
+	}, 
+
+
+	"setup::latexmls::source": {
+		"type": "string", 
+		"help": "Default Source for latexmls. ", 
+		"default": "https://github.com/dginev/LaTeXML-Plugin-latexmls"
+	}, 
+	"setup::latexmls::branch": {
+		"type": "string", 
+		"help": "Default branch for latexmls. Automatically uses the remote HEAD if undefined. ", 
+		"default": ""
+	}, 
+
+
+	"setup::stex::source": {
+		"type": "string", 
+		"help": "Default Source for sTeX. ", 
+		"default": "https://github.com/KWARC/sTeX.git"
+	}, 
+	"setup::stex::branch": {
+		"type": "string", 
+		"help": "Default branch for sTeX. Automatically uses the remote HEAD if undefined. ", 
+		"default": ""
+	}, 
+
+
+	"setup::mmt::source": {
+		"type": "string", 
+		"help": "Default Source for MMT. ", 
+		"default": "https://svn.kwarc.info/repos/MMT/deploy/"
+	}, 
+	"setup::mmt::branch": {
+		"type": "string", 
+		"help": "Default branch for MMT. Automatically uses TRUNK if empty. ", 
+		"default": ""
+	}, 
+
+
+	"gl::private_token": {
+		"type": "string", 
+		"help": "Gitlab Private token for gitlab interaction. Unused. ", 
+		"default": ""
+	},
+
+	"gl::host": {
+		"type": "string", 
+		"help": "Host for gitlab interaction. Unused. ", 
+		"default": "http://gl.mathub.info"
+	},
+
+
+	"init::allow_nonempty": {
+		"type": "bool", 
+		"help": "Allow to run lmh init in non-empty directories. ", 
+		"default": false
+	}, 
+
+
+	"gen::default_workers": {
+		"type": "int+", 
+		"help": "Default number of workers to use for generating pdf and omdoc. ", 
+		"default": 8
+	}, 
+
+	"update::selfupdate": {
+		"type": "bool", 
+		"help": "When lmh update is called without arguments, also perform a selfupdate. ", 
+		"default": true
+	},
+
+	"::eastereggs": {
+		"type": "bool", 
+		"help": "Enable some eastereggs. ", 
+		"default": false, 
+		"hidden": true
+	}
+}
