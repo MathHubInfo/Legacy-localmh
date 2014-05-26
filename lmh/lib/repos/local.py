@@ -60,6 +60,7 @@ def match_repository(dir=os.getcwd()):
 
 def match_repositories(args):
 	"""Matches a list of repositories to a list of absolute paths"""
+	
 	spec = None
 
 	if len(args.repository) == 0:

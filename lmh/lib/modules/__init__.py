@@ -204,29 +204,117 @@ def makeIndex(dir = "."):
 
   return index
 
-def resolve_pathspec(args):
+def find_repo_subdirs(root, is_repo):
+  """Finds repository subdirectories of a directory. """
+
+  res = []
+
+  #Subdirectories
+  for d in [name for name in os.listdir(root) if os.path.isdir(os.path.join(root, name))]:
+    d = os.path.join(root, d)
+    if is_repo(d):
+      res = res + [d]
+    else:
+      res = res + find_repo_subdirs(d, is_repo)
+
+  return res
+
+def resolve_pathspec(args, allow_files = True, allow_local = True, recursion_depth=None):
   # Resolves the path specification given by the arguments
 
+  """
+    Resolving of paths: 
+
+    1) If --all is given, assume **only** data_dir as argument. 
+    2) If no arguments are given, assume **only** . as argument
+
+    If no arguments are given, assume "." as argument. 
+    
+
+
+    Each argument s is treatde as glob. Then: 
+
+    1) Do a glob.glob($PATHSPEC). Then for each $GLOB:
+      A) Check if a file $GLOB.tex exists => treat as module
+      B) Check if a directory $GLOB exists
+        B.1) Are we inside a repository => treat as a normal repo
+        B.2) are we outside of a repository => search for all repositories contained in it
+    2) If that gives no results, do a glob.glob($PATHSPEC) realtive to data_dir and repeat 1B) 
+  """
+
+  # args.all is given => generate everywhere
+  if args.all:
+    args.pathspec = [data_dir]
+
+  if recursion_depth == None:
+      recursion_depth = args.recursion_depth
+
+  # We do not have any arguments, use nothing at all. 
   if(len(args.pathspec) == 0):
-    if args.all:
-      # generate everywhere
-      args.pathspec = ["*/*"]
-    else:
-      # generate in the current directory only
-      args.pathspec = ["."]
+    args.pathspec = ["."]
 
-  # is this path a repository
-  is_repo = lambda rep: os.path.relpath(data_dir, rep) == "../.."
+  paths = []
+  mods = []
 
-  # expand path specification
-  def expandpathspec(ps):
-    repomatches = filter(is_repo, glob.glob(data_dir + "/" + ps))
-    if len(repomatches) != 0:
-      return repomatches
-    else:
-      return glob.glob(ps)
+  oldpwd = os.getcwd()
 
-  paths = reduce([expandpathspec(ps) for ps in args.pathspec])
-  modules = reduce([locate_modules(path, depth=args.recursion_depth) for path in paths])
+  # Are we a repository
+  is_repo = lambda x:os.path.relpath(data_dir, x) == "../.."
+  is_in_repo = lambda x:os.path.relpath(data_dir, x).startswith("../../")
+  is_in_data = lambda x: not os.path.relpath(x, data_dir).startswith("..")
+
+  for f in args.pathspec:
+    # We did not do anything
+
+    if allow_local:
+      for gl in glob.glob(f):
+        gl_abs = os.path.abspath(gl)
+        # Is it a file => add to modules
+        if allow_files and os.path.isfile(gl_abs):
+          if not is_in_data(gl_abs):
+            err("Warning: Path", gl_abs, "is not within the lmh data directory, ignoring. ")
+            continue
+          if not gl_abs.endswith(".tex"):
+            err("Warning: Path", gl_abs, "is not a tex file, ignoring. ")
+            continue
+          mods.append(gl_abs)
+          continue
+        # Is it a directory => check if we are inside a module
+        elif os.path.isdir(gl_abs):
+          # we are a repository
+          if is_repo(gl_abs) or is_in_repo(gl_abs):
+            paths.append(gl_abs)
+            continue
+          elif is_in_data(gl_abs):
+            didthings = True
+            # Find all the subdirectories which match
+            paths = paths + find_repo_subdirs(gl_abs, is_repo)
+            continue
+          else:
+            err("Warning: Path", gl_abs, "is not within the lmh data directory, ignoring. ")
+            continue
+
+    os.chdir(data_dir)
+
+    for gl in glob.glob(f):
+      gl_abs = os.path.abspath(gl)
+      if os.path.isdir(gl_abs):
+        if is_repo(gl_abs) or is_in_repo(gl_abs):
+          paths.append(gl_abs)
+          didthings = True
+        elif is_in_data(gl_abs):
+          didthings = True
+          # Find all the subdirectories which match
+          paths = paths + find_repo_subdirs(gl_abs, is_repo)
+        else:
+          err("Warning: Path", gl_abs, "is not within the lmh data directory, ignoring. ")
+          continue
+      else:
+        err("Warning: Pathspec", gl, "has no matches, ignoring. ")
+
+    os.chdir(oldpwd)
+
+  modules = reduce([locate_modules(path, depth=recursion_depth) for path in paths])
+  modules = modules + reduce([locate_module(f, root_dir(f)) for f in mods])
 
   return modules
