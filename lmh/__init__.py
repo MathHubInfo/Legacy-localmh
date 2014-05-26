@@ -67,7 +67,7 @@ def install_excepthook():
 
 def main(argv = sys.argv[1:]):
   """Calls the main program with given arguments. """
-  init.init()
+  #init.init()
   parser = create_parser(submods)
   try:
     argcomplete.autocomplete(parser)
