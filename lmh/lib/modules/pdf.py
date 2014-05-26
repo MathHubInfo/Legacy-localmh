@@ -28,7 +28,7 @@ from subprocess import Popen
 from subprocess import PIPE
 
 from lmh.lib import shellquote
-from lmh.lib.io import std, err
+from lmh.lib.io import std, err, read_file
 from lmh.lib.env import install_dir, latexmlstydir, stexstydir
 from lmh.lib.extenv import pdflatex_executable
 
@@ -118,26 +118,29 @@ def pdf_gen_do_master(job, quiet, wid=""):
   if not quiet:
     std("PDF"+wid+": Generating", pdf_path)
 
-  args = [pdflatex_executable, "-jobname", mod]
-
-
+  os.chdir(cwd)
   try:
     if pre != None:
       if add_bd:
-        p0 = Popen(["echo", "\\begin{document}\n"], stdout=PIPE, env = _env)
-        c1 = ["cat", pre, "-", mod+".tex", post]
-        p1 = Popen(c1, cwd=cwd, stdin=p0.stdout, stdout=PIPE, env = _env)
+        text = read_file(pre)
+        text += "\\begin{document}"
+        text += read_file(mod+".tex")
+        text += post
       else:
-        c1 = ["cat", pre, mod+".tex", post]
-        p1 = Popen(c1, cwd=cwd, stdin=None, stdout=PIPE, env = _env)
+        text = read_file(pre)
+        text += read_file(mod+".tex")
+        text += post
       
       if pdf_pipe_log:
-        p = Popen([pdflatex_executable, "-jobname", mod], cwd=cwd, stdin=p1.stdout, stdout=sys.stdout, stderr=sys.stderr, env = _env)
+        p = Popen([pdflatex_executable, "-jobname", mod, "-interaction", "scrollmode"], cwd=cwd, stdin=PIPE, stdout=sys.stdout, stderr=sys.stderr, env = _env)
+        p.stdin.write(text)
+        p.stdin = sys.stdin
       else:
-        p = Popen([pdflatex_executable, "-jobname", mod], cwd=cwd, stdin=p1.stdout, stdout=PIPE, stderr=PIPE, env = _env)
+        p = Popen([pdflatex_executable, "-jobname", mod], cwd=cwd, stdin=PIPE, stdout=PIPE, stderr=PIPE, env = _env)
+        p.stdin.write(text)
     else:
       if pdf_pipe_log:
-        p = Popen([pdflatex_executable, file], cwd=cwd, stdout=sys.stdout, env=_env)
+        p = Popen([pdflatex_executable, file, "-interaction", "scrollmode"], cwd=cwd, stdin=sys.stdin, stdout=sys.stdout, env=_env)
       else:
         p = Popen([pdflatex_executable, file], cwd=cwd, stdout=PIPE, env=_env)
     p.wait()
@@ -173,7 +176,7 @@ def pdf_gen_dump(job):
     if add_bd:
       std("echo \"\\begin{document}\\n\" | cat "+shellquote(pre)+" - "+shellquote(file)+" "+shellquote(post)+" | "+pdflatex_executable+" -jobname " + mod)
     else:
-      std("cat "+shellquote(pre)+" "+shellquote(file)+" "+shellquote(post)+" | "+pdflatex_executable+" -jobname " + mod)
+      std("cat "+shellquote(pre)+" "+shellquote(file)+" "+shellquote(post)+" | "+pdflatex_executable+" -jobname " + mod+ "-interaction scrollmode")
 
   else:
       std(pdflatex_executable+" "+file)

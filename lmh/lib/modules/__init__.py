@@ -266,6 +266,8 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, recursion_dep
   for f in args.pathspec:
     # We did not do anything
 
+    cont = True
+
     if allow_local:
       for gl in glob.glob(f):
         gl_abs = os.path.abspath(gl)
@@ -273,26 +275,28 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, recursion_dep
         if allow_files and os.path.isfile(gl_abs):
           if not is_in_data(gl_abs):
             err("Warning: Path", gl_abs, "is not within the lmh data directory, ignoring. ")
-            continue
+            cont = False
           if not gl_abs.endswith(".tex"):
             err("Warning: Path", gl_abs, "is not a tex file, ignoring. ")
-            continue
+            cont = False
           mods.append(gl_abs)
-          continue
+          cont = False
         # Is it a directory => check if we are inside a module
         elif os.path.isdir(gl_abs):
           # we are a repository
           if is_repo(gl_abs) or is_in_repo(gl_abs):
             paths.append(gl_abs)
-            continue
+            cont = False
           elif is_in_data(gl_abs):
-            didthings = True
             # Find all the subdirectories which match
             paths = paths + find_repo_subdirs(gl_abs, is_repo)
-            continue
+            cont = False
           else:
             err("Warning: Path", gl_abs, "is not within the lmh data directory, ignoring. ")
-            continue
+            cont = False
+
+    if not cont:
+      continue
 
     os.chdir(data_dir)
 

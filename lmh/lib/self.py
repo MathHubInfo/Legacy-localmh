@@ -39,9 +39,6 @@ def update():
 	if not git_pull(install_dir):
 		err("Update has failed, please check your network connection. ")
 		return False
-	
-	# set the first run flag to false
-	set_config("self::firstrun", False)
 
 	return True
 
