@@ -108,17 +108,11 @@ def locate_modules(path, depth=-1):
   if path.startswith(os.path.abspath(install_dir)) and not path.startswith(os.path.abspath(data_dir)):
     return []
 
-  # TODO: Implement per-directory config files
+  # TODO: Implement per-directory config files here
   modules = []
 
   if os.path.relpath(data_dir, path) == "../..":
     path = path + "/source"
-
-  if not os.path.isdir(path):
-    return []
-
-  if not os.path.isdir(path):
-    return []
 
   path = os.path.abspath(path)
   try:
@@ -129,8 +123,8 @@ def locate_modules(path, depth=-1):
   if os.path.isfile(path):
     return locate_module(path, git_root)
 
-  if not os.path.isdir(path):
-    err('Can not find directory: '+path)
+  if not os.path.isdir(path): 
+    # fail silently for non-existing directories
     return []
 
   # find all the files and folders
