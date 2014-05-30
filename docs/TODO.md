@@ -3,14 +3,13 @@
 
 ## TOPORT
 
-* commands.mvmod
-
 * commands.__init__
 * __init__
 
-## TOFIX
-* commands.depcrawl
-* commands.xhtml
+## TOREIMMPLEMENT
+* xhtml
+* depcrawl
+
 * agg ?
 * mmt ?
 * server ?
@@ -18,9 +17,6 @@
 ## TODO
 
 * better doc
-* return True or False
-* use lmh.lib whenever possible to share all code
-* unuse lmh.util
 * unify repotType and parseRepo
 * --version arg to __init__
 * lmh symbols
@@ -34,6 +30,7 @@
 
 ## Ported
 
+* commands.mvmod
 * commands.symbols
 * commands.checkpaths
 * commands.find

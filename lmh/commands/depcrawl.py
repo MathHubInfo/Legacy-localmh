@@ -22,7 +22,6 @@ import argparse
 
 from lmh.lib.io import std, err
 from lmh.lib.repos.local import calcDeps
-from lmh import util
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Path Management tool.')
@@ -38,6 +37,8 @@ def add_parser_args(parser):
   parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Option specifying that files should be changed")
 
 def do(rest):
+  err("Warning: lmh depcrawl is currently out-of-date. ")
+  err("This command may or may not work. ")
   try:
     std(calcDeps())
     return True

@@ -22,8 +22,9 @@ import subprocess
 import glob
 import os
 
-from lmh import util
-
+from lmh.lib.repos.local import match_repository
+from lmh.lib.git import root_dir
+from lmh.lib.env import install_dir
 
 
 initScript = """
@@ -52,8 +53,7 @@ mathpath fs http://cds.omdoc.org/styles {lmhRoot}/styles
 base http://docs.omdoc.org/mmt
 """;
 
-lmh_root = util.lmh_root();
-mmt_root = lmh_root+"/ext/MMT";
+mmt_root = install_dir+"/ext/MMT";
 
 def runMMTScript(src, path):
   cp = "{dir}/lib/*:{dir}/mmt/branches/informal/*:{dir}/lfcatalog/*:{dir}/mmt/*".format(dir=mmt_root)
@@ -68,10 +68,10 @@ def runMMTScript(src, path):
 
 def compile(repository):
   print "Generating XHTML in %s"%repository
-  repoName = util.lmh_repos(repository)
-  repoPath = util.git_root_dir(repository);
+  repoName = match_repository(repository)
+  repoPath = root_dir(repository)
 
   src = repoPath+"/source"
-  script = initScript.format(lmhRoot=lmh_root)+"\n"+buildScript.format(repoName=repoName)
+  script = initScript.format(lmhRoot=install_dir)+"\n"+buildScript.format(repoName=repoName)
   runMMTScript(script, repoPath)
 

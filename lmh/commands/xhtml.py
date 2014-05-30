@@ -32,17 +32,18 @@ from lmh.lib.io import err
 
 import argparse
 
-import os
-from subprocess import call
-import ConfigParser
-import glob
+#import os
+#from subprocess import call
+#import ConfigParser
+#import glob
 
-from lmh.commands.gen import create_parser as gen_parser
-from lmh.mmt import compile
-from lmh import util
+#from lmh.commands.gen import create_parser as gen_parser
+#from lmh.mmt import compile
+#from lmh import util
+from lmh.lib.repos import parseRepo
 
-p = gen_parser()
-attr = p.parse_args(["--omdoc"]);
+#p = gen_parser()
+#attr = p.parse_args(["--omdoc"]);
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub XHTML tool.')
@@ -54,7 +55,7 @@ def add_parser(subparsers, name="xhtml"):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=util.parseRepo, nargs='*', help="a list of repositories for which to generate XHTML").completer = util.autocomplete_mathhub_repository
+  parser.add_argument('repository', type=parseRepo, nargs='*', help="a list of repositories for which to generate XHTML")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs status on all repositories currently in lmh")
   pass
 
@@ -69,7 +70,8 @@ def do_xhtml(rep):
   pass
 
 def do(args):
-  err("Warning: lmh xhtml is currently outdated, whatever you are trying to probably wont work. ")
+  err("Warning: lmh xhtml is currently outdated, whatever you are trying to do wont work. ")
+  return False
   if len(args.repository) == 0:
     args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
   if args.all:
