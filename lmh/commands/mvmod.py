@@ -16,13 +16,9 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 
-import os
-import sys
-import shutil
+import argparse 
 
-from lmh import util
-from lmh import config
-from lmh import main
+from lmh.lib.modules.move import movemod
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Views or changes lmh configuration. ')
@@ -51,61 +47,4 @@ def do(args):
   args.source = args.source[0]
   args.dest = args.dest[0]
 
-  # change directory to MathHub root, makes paths easier
-  if args.simulate: 
-    print "cd "+util._lmh_root + "/MathHub/"
-  else:
-    os.chdir(util._lmh_root + "/MathHub/")
-
-  for module in args.module:
-    # Figure out the full path to the source
-    srcpath = args.source + "/source/" +  module
-
-    # Assemble source paths further
-    srcargs = (args.source + "/" + module).split("/")
-    srcapath = "/".join(srcargs[:-1])
-    srcbpath = srcargs[-1]
-    
-    # Assemble all the commands
-    oldcall = "[" + srcapath + "]{"+srcbpath+"}"
-    oldcall_long = "[(.*)repos=" + srcapath + "(.*)]{"+srcbpath+"}"
-    oldcall_local = "{"+srcbpath+"}"
-    newcall = "[" + args.dest + "]{"+srcbpath+"}"
-    newcall_long = "[$g0" + args.dest + "$g1]{"+srcbpath+"}"
-
-    args.dest += "/source/"
-
-    file_patterns = ["", ".de", ".en"]
-
-    # Move the files
-    if args.simulate:
-      for pat in file_patterns:
-        # try to move the file if it exists
-        try:
-          print "mv "+srcpath + pat +".tex"+ " "+ args.dest + " 2>/dev/null || true"
-        except:
-          pass
-      
-    else:
-      for pat in file_patterns:
-        # try to move the file if it exists
-        try:
-          shutil.move(srcpath + pat + ".tex", args.dest)
-        except:
-          pass
-      
-
-    def run_lmh_command(cmd):
-      if args.simulate:
-        print "lmh '"+ "' '".join(cmd)+"'"
-      else:
-        main(cmd)
-
-    # Run all the commands
-    for m in ["gimport", "guse", "gadopt"]:
-      run_lmh_command(['find', '\\\\'+m+oldcall, '--replace', '\\'+m+newcall, '--apply'])
-      run_lmh_command(['find', '\\\\'+m+oldcall_local, '--replace', '\\'+m+newcall, '--apply'])
-
-    for m in ["importmhmodule", "usemhmodule", "adoptmhmodule", "usemhvocab"]:
-      run_lmh_command(['find', '\\'+m+oldcall_long, "--replace", '\\'+m+newcall_long, "--apply"])
-      run_lmh_command(['find', '\\'+m+oldcall_local, '--replace', '\\'+m+newcall_long, '--apply'])
+  return movemod(args.source[0], args.dest[0], args.module, args.simulate)
