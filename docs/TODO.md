@@ -1,47 +1,23 @@
 
-# UNDONE
+# For 0.1final
 
-## TOREIMMPLEMENT
-* xhtml
-* depcrawl
+* fix depcrawl
+* port all the direct commands to actual commands (which depend on the others)
+* redo documentation on all commands
+* changelog
 
-* agg ?
-* mmt ?
-* server ?
 
-## TODO
-
-* better doc
-* unify repotType and parseRepo
+# For 0.2final
+* lmh translate
 * --version arg to __init__
-* lmh symbols
-* in the master, preparse lmh git args
-* autocomplete
-* firstrun code
-* add *s to the repository names
-* in commands.__init__, regroup commands
+* sort out firstrun code
+* check on xhtml situation
+* version check for init.init()
 
-# DONE
 
-## Ported
-
-* commands.mvmod
-* commands.symbols
-* commands.checkpaths
-* commands.find
-* commands.clean
-* commands.gen.*
-* commands.about
-* commands.config
-* commands.install
-* commands.init
-* commands.mine
-* commands.shell
-* commands.selfupdate
-* commands.setup
-* commands.push
-* commands.status
-* commands.update
-* commands.git
-* commands.log
-* commands.depcrawl
+# Future
+* agg
+* mmt
+* server
+* unify repotType and parseRepo
+* autocompletion
