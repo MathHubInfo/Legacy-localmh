@@ -18,25 +18,45 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
-from lmh import util
-from lmh import config
 from lmh.commands.gen import add_parser_args
 
 def create_parser(submods = {}):
-	parser = argparse.ArgumentParser(description='Local MathHub XHTML conversion tool.')
-	reps = [];
+
+	#
+	# The main parser
+	#
+	parser = argparse.ArgumentParser(description='Local MathHub Tool.')
+
+	#
+	# Subcommands
+	#
 
 	subparsers = parser.add_subparsers(help='valid actions are:', dest="action", metavar='action')
 
-	submodules = ["symbols", "mvmod", "mine", "config", "about", "find", "status", "log", "install", "setup", "shell", "xhtml", "init", "commit", "push", "update", "selfupdate", "gen", "clean", "git", "depcrawl", "checkpaths"];
 
+	#
+	# Group and load submodules
+	#
+
+	submodules = [
+		"init", "status", "install", "commit", "push", "update", "git", "log", "mine",
+
+		"about", "setup", "config", "selfupdate", 
+
+		"gen", "clean", "xhtml", "shell", 
+
+		"find", "depcrawl", "checkpaths", "mvmod", "symbols"
+	]
 
 	for mod in submodules:
 		_mod = getattr(getattr(__import__("lmh.commands."+mod), "commands"), mod)
 		submods[mod] = _mod
 		_mod.add_parser(subparsers)	
 
-	# Define command aliases here. 
+	#
+	# Command aliases
+	#
+
 	aliases = {
 		"commit": "ci", 
 		"update": "up", 
@@ -44,14 +64,16 @@ def create_parser(submods = {}):
 	}
 
 	for cmd in aliases:
-		# Makes an alias
 		mod = aliases[cmd]
 		_mod = getattr(getattr(__import__("lmh.commands."+cmd), "commands"), cmd)
 		submods[mod] = _mod
 		_mod.add_parser(subparsers, mod)
 
-	# Sepcial commands
-	subparsers.add_parser('repos', help='prints the group/repository of the current  Math Hub repository')
+	#
+	# Special commands, directly implemented. 
+	# TODO: Port all of these to seperate files
+	#
+
 	subparsers.add_parser('root', help='prints the root directory of the Local Math Hub repository')
 
 	add_parser_args(subparsers.add_parser('sms', help='generates sms files, alias for lmh gen --sms'), add_types=False).epilog = "Generate sms files. "
@@ -60,12 +82,6 @@ def create_parser(submods = {}):
 	p = add_parser_args(subparsers.add_parser('pdf', help='generates pdf files, alias for lmh gen --pdf'), add_types=False)
 	p.add_argument('--pdf-add-begin-document', action="store_const", const=True, default=False, help="add \\begin{document} to LaTeX sources when generating pdfs. Backward compatibility for issue #82")
 	p.add_argument('--pdf-pipe-log', action="store_const", const=True, default=False, help="Displays only the pdf log as output. Implies --quiet. ")
-
 	p.epilog = "Generate pdf files. "
 
 	return parser
-
-def preparse_args(args):
-	#if args[0] == "git":
-	#   args = ["git"] + map(lambda a: "\""+"\"", args[1:])
-	return args

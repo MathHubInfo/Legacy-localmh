@@ -1,11 +1,6 @@
 
 # UNDONE
 
-## TOPORT
-
-* commands.__init__
-* __init__
-
 ## TOREIMMPLEMENT
 * xhtml
 * depcrawl

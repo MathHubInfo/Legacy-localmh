@@ -2,16 +2,6 @@
 # PYTHON_ARGCOMPLETE_OK
 
 """
-Local Math Hub utility main parser. 
-
-.. argparse::
-   :module: lmh
-   :func: create_parser
-   :prog: lmh
-
-"""
-
-"""
 This file is part of LMH.
 
 LMH is free software: you can redistribute it and/or modify
@@ -34,40 +24,38 @@ import time
 import subprocess
 import traceback
 
-try:
-  import argcomplete
-except ImportError:
-  pass
-
-from lmh import util
-from lmh import config
+from lmh.lib.env import install_dir
+from lmh.lib.io import write_file, std, err
+from lmh.lib.config import get_config
+from lmh.lib.init import init
 
 from lmh.commands import create_parser
 from lmh.commands import gen
-from lmh.commands import preparse_args
 
-from lmh.lib import init
-
-submods = {};
+# Contains all the subcommands
+submods = {}
 
 def install_excepthook():
+  #
+  # Exception handler
+  #
   cwd = os.getcwd()
   def my_excepthook(exctype, value, tb):
     if exctype == KeyboardInterrupt:
       return
     err = ''.join(traceback.format_exception(exctype, value, tb))
-    print err
-    print "lmh seems to have crashed with %s"%exctype
-    print "a report will be generated in "
+    err(err)
+    err("lmh seems to have crashed with %s"%exctype)
+    err("a report will be generated in ")
     s = "cwd = {0}\n args = {1}\n".format(cwd, sys.argv)
     s = s + err 
-    util.set_file(util.lmh_root()+"/logs/"+time.strftime("%Y-%m-%d-%H-%M-%S.log"), s)
+    write_file(install_dir+"/logs/"+time.strftime("%Y-%m-%d-%H-%M-%S.log"), s)
 
   sys.excepthook = my_excepthook
 
 def main(argv = sys.argv[1:]):
   """Calls the main program with given arguments. """
-  #init.init()
+
   parser = create_parser(submods)
   try:
     argcomplete.autocomplete(parser)
@@ -79,15 +67,27 @@ def main(argv = sys.argv[1:]):
 
   args = parser.parse_args(argv)
 
+  #
+  # Default action
+  #
+
   if args.action == None:
+    init()
     parser.print_help()
     return
 
-  if args.action == "root":
-    print util.lmh_root()
-    return
+  #
+  # Quick Aliases
+  # TODO: Port them to actual commands
+  #
 
-  # gen aliases
+  if args.action == "root":
+    std(install_dir)
+    return True
+
+  #
+  # Aliases for lmh gen --$action
+  #
   if args.action == "sms":
     argv[0] = "gen"
     argv.append("--sms")
@@ -97,25 +97,23 @@ def main(argv = sys.argv[1:]):
     argv[0] = "gen"
     argv.append("--omdoc")
     return submods["gen"].do(parser.parse_args(argv))
-    return    
 
   if args.action == "pdf":
     argv[0] = "gen"
     argv.append("--pdf")
     return submods["gen"].do(parser.parse_args(argv)) 
 
-  if args.action == "repos":
-    rep = util.lmh_repos()
-    if rep:
-      print rep
-    else:
-      sys.exit(os.EX_DATAERR)
-    return
+  #
+  # Normal run code
+  #
 
-  submods[args.action].do(args)
+  return submods[args.action].do(args)
 
 def run(argv = sys.argv[1:]):
   install_excepthook()
-  if(config.get_config("::eastereggs") == True and argv == ["what", "is", "the", "answer", "to", "life", "the", "universe", "and", "everything?"]):
+  if(get_config("::eastereggs") == True and argv == ["what", "is", "the", "answer", "to", "life", "the", "universe", "and", "everything?"]):
     sys.exit(42)
-  main(preparse_args(argv))
+  if main(argv):
+    sys.exit(0)
+  else:
+    sys.exit(1)
