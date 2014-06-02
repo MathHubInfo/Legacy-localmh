@@ -406,6 +406,7 @@ def find(rep, args):
 
 def calcDeps(dirname="."):
 	"""Crawls for dependencies in a given directory. """
+
 	repo = match_repository(dirname)
 
 	if not repo:
@@ -430,8 +431,8 @@ def calcDeps(dirname="."):
 			# read the file
 			for f in read_file_lines(root+"/"+file):
 				# First, find all the square-bracket things
-				for find in re.findall(r"\\(use|adopt|import)mhmodule\[([^\]]+)\]", f):
-					real_paths[find[1]] = True
+				for find in re.findall(r"\\(use|adopt|import)mhmodule\[(([^\]]*),)?repos=([^,\]]+)(\s*)(,([^\]])*)?\]", f):
+					real_paths[find[3]] = True
 
 				# Now find all the curly-bracket things
 				for find in re.findall(r"\\(MathHub){([^\}]+)}", f):
@@ -449,6 +450,7 @@ def calcDeps(dirname="."):
 
 	# No need to require itself
 	while repo in real_dependencies: real_dependencies.remove(repo)
+	while repo in given_dependencies: given_dependencies.remove(repo)
 	
 
 	# we are missing the ones that are real but not given

@@ -41,4 +41,5 @@ def do(rest):
   if res:
     return True
   else:
+    err("lmh depcrawl must be run from the root of a repository. ")
     return False
