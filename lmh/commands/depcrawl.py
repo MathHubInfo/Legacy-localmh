@@ -37,11 +37,8 @@ def add_parser_args(parser):
   parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Option specifying that files should be changed")
 
 def do(rest):
-  err("Warning: lmh depcrawl is currently out-of-date. ")
-  err("This command may or may not work. ")
-  try:
-    std(calcDeps())
+  res = calcDeps()
+  if res:
     return True
-  except Exception as e:
-    err(e)
+  else:
     return False

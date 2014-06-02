@@ -1,7 +1,5 @@
 
 # For 0.1final
-
-* fix depcrawl
 * port all the direct commands to actual commands (which depend on the others)
 * redo documentation on all commands
 * changelog

@@ -24,7 +24,7 @@ import functools
 from string import Template
 
 from lmh.lib.env import install_dir, data_dir
-from lmh.lib.io import std, std_paged, err, copytree, write_file, read_file_lines
+from lmh.lib.io import term_colors, std, std_paged, err, copytree, write_file, read_file_lines
 from lmh.lib.repos import is_valid_repo, matchRepo, find_dependencies
 from lmh.lib.repos.remote import install
 from lmh.lib.config import get_config
@@ -43,10 +43,10 @@ from lmh.lib.git import root_dir as git_root_dir
 # Matching Repository names
 #
 
-def match_repository(dir=os.getcwd()):
+def match_repository(dirname=os.getcwd()):
 	"""Matches a folder to the closest repository. """
 
-	t = os.path.realpath(dir)
+	t = os.path.realpath(dirname)
 
 	if not t.startswith(data_dir):
 		return None
@@ -244,14 +244,14 @@ def log(ordered, *repos):
 
 	return ret
 
-def create(dir = ".", use_git_root = False):
+def create(dirname = ".", use_git_root = False):
 	"""Creates a new repository in the given directory"""
 
 
 	if use_git_root:
-		rootdir = git_root_dir(dir)
+		rootdir = git_root_dir(dirname)
 	else:
-		rootdir = os.path.abspath(dir)
+		rootdir = os.path.abspath(dirname)
 
 	std("Creating new MathHub repository in", rootdir)
 
@@ -354,7 +354,7 @@ def replace(replacer, replace_args, fullPath, m):
 
 	return res
 
-def replacePath(dir, matcher, replaceFnc, apply=False):
+def replacePath(dirname, matcher, replaceFnc, apply=False):
   try:
     compMatch = re.compile(matcher)
   except Exception, e:
@@ -362,7 +362,7 @@ def replacePath(dir, matcher, replaceFnc, apply=False):
     err(e)
     return False
 
-  for root, dirs, files in os.walk(dir):
+  for root, dirs, files in os.walk(dirname):
     path = root.split('/')
     for file in files:
       fileName, fileExtension = os.path.splitext(file)
@@ -404,46 +404,78 @@ def find(rep, args):
 
 	return replacePath(rep, matcher, replaceFnc, args.apply)
 
-def calcDeps(dir="."):
+def calcDeps(dirname="."):
 	"""Crawls for dependencies in a given directory. """
+	repo = match_repository(dirname)
 
-	currentdeps = {}
-	for dep in find_dependencies(match_repository(dir)):
-		currentdeps["/".join(dep)] = True
+	if not repo:
+		return False
 
-	print currentdeps
+	std("Checking dependencies for:   ", repo)
 
-	paths = {}
-	for root, dirs, files in os.walk("."):
+	# Getting the real dependencies
+	given_dependencies = find_dependencies(match_repository(dirname))+[repo]
+	given_dependencies = list(set(given_dependencies))
+
+	# All the required paths
+	real_paths = {}
+
+	for root, dirs, files in os.walk(dirname):
 		path = root.split('/')
 		for file in files:
 			fileName, fileExtension = os.path.splitext(file)
 			if fileExtension != ".tex":
 				continue
-			file = open(root+"/"+file, "r")
-			for line in file:
-			 	m = re.search("\\MathHub{([\w/]+)}", line)
-				if m:
-					paths[m.group(1)] = True
-				m = re.search("\\importmhmodule\[([\w/]+)\]", line)
-				if m:
-					paths[m.group(1)] = True
-				m = re.search("\\usemhmodule\[([\w/]+)\]", line)
-				if m:
-					paths[m.group(1)] = True
-				m = re.search("\\adoptmhmodule\[([\w/]+)\]", line)
-				if m:
-				    paths[m.group(1)] = True
 
-	repos = {}
-	for path in paths:
+			# read the file
+			for f in read_file_lines(root+"/"+file):
+				# First, find all the square-bracket things
+				for find in re.findall(r"\\(use|adopt|import)mhmodule\[([^\]]+)\]", f):
+					real_paths[find[1]] = True
+
+				# Now find all the curly-bracket things
+				for find in re.findall(r"\\(MathHub){([^\}]+)}", f):
+					real_paths[find[1]] = True
+
+	# Now only take paths which have exactly two parts
+	real_dependencies = []
+	for path in real_paths:
 		comps = path.split("/")
 		if len(comps) < 2:
 			continue
-		repos[comps[0]+"/"+comps[1]] = True
+		real_dependencies.append(comps[0]+"/"+comps[1])
 
-	toAdd = [];
-	for rep in repos:
-		if rep not in currentdeps:
-			toAdd.append(rep)
-	return " ".join(toAdd)
+	real_dependencies = list(set(real_dependencies))
+
+	# No need to require itself
+	while repo in real_dependencies: real_dependencies.remove(repo)
+	
+
+	# we are missing the ones that are real but not given
+	missing = filter(lambda x:not x in given_dependencies, real_dependencies)
+
+	# we do not need those that are given but not real
+	not_needed = filter(lambda x:not x in real_dependencies, given_dependencies)
+
+	# the others are fine
+	fine  = filter(lambda x:x in real_dependencies, given_dependencies)
+
+	ret = {
+		"fine": fine, 
+		"missing": missing, 
+		"not_needed": not_needed, 
+		"should_be": real_dependencies
+	}
+
+	std("---")
+	if len(ret["fine"]) > 0:
+		std(term_colors("green"),  "Used dependencies:         ", term_colors("normal"), ", ".join(ret["fine"]))
+	if len(ret["not_needed"]) > 0:
+		std(term_colors("yellow"), "Superfluous dependencies:  ", term_colors("normal"), ", ".join(ret["not_needed"]))
+	if len(ret["missing"]) > 0:
+		std(term_colors("red"),    "Missing dependencies:      ", term_colors("normal"), ", ".join(ret["missing"]))
+	std("---")
+	if len(ret["missing"]) > 0 or len(ret["not_needed"]) > 0:
+		std("Dependencies should be: ", ", ".join(ret["should_be"]))
+
+	return ret

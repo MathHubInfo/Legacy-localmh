@@ -21,6 +21,27 @@ import shutil
 
 from subprocess import Popen, PIPE, STDOUT
 
+def term_colors(c):
+	colors = {
+		"grey": "\033[01;30m", 
+		"red": "\033[01;31m", 
+		"green": "\033[01;32m", 
+		"yellow": "\033[01;33m", 
+		"blue": "\033[01;34m", 
+		"magenta": "\033[01;35m", 
+		"cyan": "\033[01;36m", 
+		"white": "\033[01;37m", 
+		"normal": "\033[00m"
+	}
+
+	from lmh.lib.config import get_config
+
+	if get_config("self::enable_colors"):
+		return colors[c]
+	else:
+		return ""
+
+
 #
 # Error & Normal Output
 #
@@ -48,8 +69,6 @@ def std(*args, **kwargs):
 def err(*args, **kwargs):
 	"""Prints some text to stderr"""
 
-	from lmh.lib.config import get_config
-
 	newline = True
 
 	# allow only the newline kwarg
@@ -61,10 +80,7 @@ def err(*args, **kwargs):
 
 	if not __supressErr__:
 		text = " ".join([str(text) for text in args]) + ('\n' if newline else '')
-		if get_config("self::enable_colors"):
-			sys.stderr.write("\033[01;31m{0}\033[00m".format(text))
-		else:
-			sys.stderr.write(text)
+		sys.stderr.write(term_colors("red")+text+term_colors("normal"))
 
 def std_paged(*args, **kwargs):
 	"""Pages output if a pager is available. """
