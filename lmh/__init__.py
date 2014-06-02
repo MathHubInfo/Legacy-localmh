@@ -43,12 +43,12 @@ def install_excepthook():
   def my_excepthook(exctype, value, tb):
     if exctype == KeyboardInterrupt:
       return
-    err = ''.join(traceback.format_exception(exctype, value, tb))
-    err(err)
+    e = ''.join(traceback.format_exception(exctype, value, tb))
+    err(e)
     err("lmh seems to have crashed with %s"%exctype)
     err("a report will be generated in ")
     s = "cwd = {0}\n args = {1}\n".format(cwd, sys.argv)
-    s = s + err 
+    s = s + e 
     write_file(install_dir+"/logs/"+time.strftime("%Y-%m-%d-%H-%M-%S.log"), s)
 
   sys.excepthook = my_excepthook
