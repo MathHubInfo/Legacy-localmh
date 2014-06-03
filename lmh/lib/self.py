@@ -155,15 +155,69 @@ def latexmls_remove(root, source, branch):
 		return False
 
 def latexmls_make(root):
-	"""Builds latexmls"""
+	"""Builds latexmlstomp"""
+
 	_env = perl5env(os.environ)
 	_env.pop("STEXSTYDIR", None)
+
 	try:
 		call(cpanm_installdeps_args, env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
 		call(cpanm_installself_args, env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
 		return True
 	except Exception as e:
-		err("Unable to run make commands for latexmls. ")
+		err("Unable to run make commands for LaTeXMLs. ")
+		err(e)
+		return False
+
+#
+# latexmlstomp
+#
+
+def latexmlstomp_install(root, source, branch):
+	"""Install latexmlstomp"""
+
+	try:
+		if branch == "":
+			return git_clone(root, source, "LaTeXMLStomp")
+		else:
+			return git_clone(root, source, "-b", branch, "LaTeXMLStomp")
+	except:
+		err("Failed to install LaTeXMLStomp (is the source available? )")
+		return False
+
+def latexmlstomp_update(root, source, branch):
+	"""Update latexmlstomp"""
+
+	try:
+		return git_pull(root + "/LaTeXMLStomp")
+	except:
+		err("Failed to update LaTeXMLStomp (is it present? )")
+		return False
+
+
+def latexmlstomp_remove(root, source, branch):
+	"""Remove latexmlstomp"""
+
+	try:
+		shutil.rmtree(root + "/LaTeXMLStomp")
+		return True
+	except:
+		err("Failed to remove LaTeXMLStomp (is it present? )")
+		return False
+
+
+def latexmlstomp_make(root):
+	"""Builds latexmlstomp"""
+
+	_env = perl5env(os.environ)
+	_env.pop("STEXSTYDIR", None)
+
+	try:
+		call(cpanm_installdeps_args, env=_env, cwd=root+"/LaTeXMLStomp", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+		call(cpanm_installself_args, env=_env, cwd=root+"/LaTeXMLStomp", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+		return True
+	except Exception as e:
+		err("Unable to run make commands for LaTeXMLStomp. ")
 		err(e)
 		return False
 
@@ -263,7 +317,7 @@ def run_setup(args):
 
 	action = args.m_action
 	if action == "":
-		if args.latexml_action == "" and args.stex_action == "" and args.mmt_action == "":
+		if args.latexml_action == "" and args.stex_action == "" and args.mmt_action == "" and args.latexmls_action == "" and args.latexmlstomp_action == "":
 			action = "in"
 		else:
 			action = "sk"
@@ -308,7 +362,7 @@ def run_setup(args):
 			return False
 
 	# LaTeXMLs
-	latexmls_action = args.latexml_action or action
+	latexmls_action = args.latexmls_action or action
 	latexmls_source = get_config("setup::latexmls::source")
 	latexmls_branch = get_config("setup::latexmls::branch")
 
@@ -345,6 +399,46 @@ def run_setup(args):
 			return False
 		if not latexmls_make(ext_dir):
 			return False
+
+	# LaTeXMLStomp
+	latexmlstomp_action = args.latexmlstomp_action or action
+	latexmlstomp_source = get_config("setup::latexmlstomp::source")
+	latexmlstomp_branch = get_config("setup::latexmlstomp::branch")
+
+	if not args.latexmlstomp_source == "":
+		index = args.latexmlstomp_source.find("@")
+		if index == 0:
+			latexmlstomp_branch = args.latexmlstomp_source[1:]
+		elif index > 0:
+			latexmlstomp_source = args.latexmlstomp_source[:index]
+			latexmlstomp_branch = args.latexmlstomp_source[index+1:]
+		else:
+			latexmlstomp_source = args.latexmlstomp_source
+
+		std("Using LaTeXMLStomp Version: "+latexmlstomp_source+"@"+latexmlstomp_branch)
+
+
+	if latexmlstomp_action == "re":
+		std("Reinstalling LaTexMLStomp ...")
+		if not latexmlstomp_remove(ext_dir, latexmlstomp_source, latexmlstomp_branch):
+			return False
+		if not latexmlstomp_install(ext_dir, latexmlstomp_source, latexmlstomp_branch):
+			return False
+		if not latexmlstomp_make(ext_dir):
+			return False
+	if latexmlstomp_action == "in":
+		std("Installing LaTeXMLStomp ...")
+		if not latexmlstomp_install(ext_dir, latexmlstomp_source, latexmlstomp_branch):
+			return False
+		if not latexmlstomp_make(ext_dir):
+			return False
+	if latexmlstomp_action == "up":
+		std("Updating LaTexMLStomp ...")
+		if not latexmlstomp_update(ext_dir, latexmlstomp_source, latexmlstomp_branch):
+			return False
+		if not latexmlstomp_make(ext_dir):
+			return False
+
 
 	# sTex
 	stex_action = args.stex_action or action

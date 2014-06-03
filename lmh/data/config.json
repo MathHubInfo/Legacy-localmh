@@ -94,7 +94,6 @@
 		"default": ""
 	}, 
 
-
 	"setup::latexmls::source": {
 		"type": "string", 
 		"help": "Default Source for latexmls. ", 
@@ -103,6 +102,17 @@
 	"setup::latexmls::branch": {
 		"type": "string", 
 		"help": "Default branch for latexmls. Automatically uses the remote HEAD if undefined. ", 
+		"default": ""
+	}, 
+
+	"setup::latexmlstomp::source": {
+		"type": "string", 
+		"help": "Default Source for latexmlstomp. ", 
+		"default": "https://github.com/KWARC/LaTeXML-Plugin-latexmlstomp.git"
+	}, 
+	"setup::latexmlstomp::branch": {
+		"type": "string", 
+		"help": "Default branch for latexmlstomp. Automatically uses the remote HEAD if undefined. ", 
 		"default": ""
 	}, 
 

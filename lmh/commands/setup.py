@@ -44,6 +44,7 @@ def add_parser_args(parser):
   source = parser.add_argument_group('Dependency versions')
   source.add_argument('--latexml-source', default="", metavar="source@branch", help='Get LaTeXML from the given source. ')
   source.add_argument('--latexmls-source', default="", metavar="source@branch", help='Get LaTeXMLs from the given source. ')
+  source.add_argument('--latexmlstomp-source', default="", metavar="source@branch", help='Get LaTeXMLStomp from the given source. ')
   source.add_argument('--stex-source', default="", metavar="source@branch", help='Get sTex from the given source. ')
   source.add_argument('--mmt-source', default="", metavar="source@branch", help='Get MMT from the given source. ')
 
@@ -59,6 +60,11 @@ def add_parser_args(parser):
   latexmls.add_argument('--reinstall-latexmls', action="store_const", dest="latexmls_action", const="re", help='Reinstall LaTeXMLs. ')
   latexmls.add_argument('--skip-latexmls', action="store_const", dest="latexmls_action", const="sk", help='Leave LaTeXMLs untouched. ')
 
+  latexmlstomp = parser.add_argument_group('LaTeXMLStomp').add_mutually_exclusive_group()
+  latexmlstomp.add_argument('--install-latexmlstomp', action="store_const", dest="latexmlstomp_action", const="in", default="", help='Install LaTexMLStomp. ')
+  latexmlstomp.add_argument('--update-latexmlstomp', action="store_const", dest="latexmlstomp_action", const="up", help='Update LaTeXMLStomp. ')
+  latexmlstomp.add_argument('--reinstall-latexmlstomp', action="store_const", dest="latexmlstomp_action", const="re", help='Reinstall LaTeXMLStomp. ')
+  latexmlstomp.add_argument('--skip-latexmlstomp', action="store_const", dest="latexmlstomp_action", const="sk", help='Leave LaTeXMLStomp untouched. ')
 
   stex = parser.add_argument_group('sTeX').add_mutually_exclusive_group()
   stex.add_argument('--install-stex', action="store_const", dest="stex_action", const="in", default="", help='Install sTeX. ')

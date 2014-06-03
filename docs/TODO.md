@@ -1,5 +1,6 @@
 #TODO
 
+* unify latexmlstomp code
 * lmh translate
 * --version arg to __init__
 * sort out firstrun code
