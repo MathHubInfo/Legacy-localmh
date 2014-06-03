@@ -24,6 +24,8 @@ from lmh.lib.config import get_config
 
 from subprocess import Popen
 
+import shlex
+
 # Define all the external tools
 
 """The path to the svn executable """
@@ -161,20 +163,21 @@ def perl5env(_env = {}):
 	return _env
 
 
-def run_shell(shell = None):
+def run_shell(shell = None, args=""):
 	"""Runs a shell that is ready for any perl5 things"""
+
 	if shell == None:
 		shell = os.environ["SHELL"] or which("bash")
 	else:
-		shell = util.which(shell)
+		shell = which(shell)
 		if shell == None:
-			shell = args.shell
+			return 127
 
 	# Make a perl 5 environment
 	_env = perl5env(os.environ)
 
 	try:
-		runner = Popen([shell], env=_env, cwd=install_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+		runner = Popen([shell]+shlex.split(args), env=_env, cwd=install_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
 	except Exception as e:
 		# we could not find that
 		return 127
