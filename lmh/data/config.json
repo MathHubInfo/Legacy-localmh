@@ -11,11 +11,11 @@
 		"default": false
 	}, 
 
-	"self::remote_version_url": {
+	"self::issue_url": {
 		"type": "string", 
-		"help": "URL to remote version file. Leave empty to disable version checking. ", 
-		"default": ""
-	}, 
+		"help": "URL to issues page. ", 
+		"default": "http://gl.mathhub.info/MathHub/localmh/issues/"
+	},
 
 	"env::git": {
 		"type": "string", 
