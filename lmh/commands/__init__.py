@@ -41,7 +41,7 @@ def create_parser(submods = {}):
 	submodules = [
 		"init", "status", "install", "commit", "push", "update", "git", "log", "mine",
 
-		"about", "setup", "config", "selfupdate", 
+		"about", "setup", "config", "selfupdate", "issue", 
 
 		"gen", "clean", "xhtml", "shell", 
 

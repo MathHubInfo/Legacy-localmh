@@ -430,12 +430,17 @@ def calcDeps(dirname="."):
 
 			# read the file
 			for f in read_file_lines(root+"/"+file):
-				# First, find all the square-bracket things
-				for find in re.findall(r"\\(use|adopt|import)mhmodule\[(([^\]]*),)?repos=([^,\]]+)(\s*)(,([^\]])*)?\]", f):
+
+				for find in re.findall(r"\\(usemhvocab|usemhmodule|adoptmhmodule|importmhmodule)\[(([^\]]*),)?repos=([^,\]]+)(\s*)(,([^\]])*)?\]", f):
 					real_paths[find[3]] = True
 
-				# Now find all the curly-bracket things
+				for find in re.findall(r"\\(usemodule|adoptmodule|importmodule|usevocab)\[([^\]]+)\]", f):
+					real_paths[find[1]] = True
+
 				for find in re.findall(r"\\(MathHub){([^\}]+)}", f):
+					real_paths[find[1]] = True
+
+				for find in re.findall(r"\\(gimport|guse|gadpot)\[([^\]]+)\]", f):
 					real_paths[find[1]] = True
 
 	# Now only take paths which have exactly two parts
