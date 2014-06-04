@@ -74,6 +74,8 @@ def match_repositories(args):
 	for repol in spec:
 		for repo in glob.glob(repol):
 			repos.append(repo)
+	# TODO: Check if this is a repository
+	repos = filter(lambda x:os.path.isdir(x), repos)
 
 	return repos
 
