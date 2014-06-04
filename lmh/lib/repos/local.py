@@ -60,7 +60,7 @@ def match_repository(dirname=os.getcwd()):
 
 def match_repositories(args):
 	"""Matches a list of repositories to a list of absolute paths"""
-	
+
 	spec = None
 
 	if len(args.repository) == 0:
@@ -146,7 +146,7 @@ def pull(*repos):
 
 	for rep in repos:
 		std("git pull", rep)
-		
+
 		ret = git_pull(rep) and ret
 
 		rep = match_repository(rep)
@@ -206,11 +206,11 @@ def log(ordered, *repos):
 		author_mails = get_format("%ae")
 
 		res = [{
-			"hash": hash_short[i], 
-			"subject": commit_titles[i], 
-			"date": int(dates[i]), 
-			"date_human": dates_human[i], 
-			"author": author_names[i], 
+			"hash": hash_short[i],
+			"subject": commit_titles[i],
+			"date": int(dates[i]),
+			"date_human": dates_human[i],
+			"author": author_names[i],
 			"author_mail": author_mails[i],
 			"repo": match_repository(repo)
 		} for i in range(len(hash_short))]
@@ -281,7 +281,7 @@ def create(dirname = ".", use_git_root = False):
 		name = match_repository(rootdir).split("/")
 		group = name[0]
 		name = name[1]
-	except: 
+	except:
 		err("Could not detect repository group & name. ")
 		return False
 
@@ -300,16 +300,16 @@ def create(dirname = ".", use_git_root = False):
 			err("The directory has been created successfully, however git init failed. ")
 			err("Please run it manually. ")
 			return False
-	
+
 	if not (git_do(rootdir, "add", "-A") and git_commit(rootdir, "-m", "Repository created by lmh")):
 		err("Error creating inital commit. ")
 		err("The directory has been created successfully, however git commit failed. ")
 		err("Please run it manually. ")
 		return False
 
-	std("""Created new repository successfully. 
-If the new repository depends on other MathHub repositories, we can add them in the line starting with 
-"dependencies:" in META-INF/MANIFEST.MF. Note that any changes have to be committed and pushed before 
+	std("""Created new repository successfully.
+If the new repository depends on other MathHub repositories, we can add them in the line starting with
+"dependencies:" in META-INF/MANIFEST.MF. Note that any changes have to be committed and pushed before
 the repository can be used by others. """)
 	return True
 
@@ -357,7 +357,7 @@ def replace(replacer, replace_args, fullPath, m):
 def replacePath(dirname, matcher, replaceFnc, apply=False):
   try:
     compMatch = re.compile(matcher)
-  except Exception, e:
+  except Exception as e:
     err("failed to compile matcher %r"%matcher)
     err(e)
     return False
@@ -390,7 +390,7 @@ def replacePath(dirname, matcher, replaceFnc, apply=False):
 def find(rep, args):
 	"""Finds pattern in repositories"""
 
-	replacer = None  
+	replacer = None
 	repname = match_repository(rep)
 
 	matcher = Template(args.matcher).substitute(repo=repname)
@@ -451,7 +451,7 @@ def calcDeps(dirname="."):
 	# No need to require itself
 	while repo in real_dependencies: real_dependencies.remove(repo)
 	while repo in given_dependencies: given_dependencies.remove(repo)
-	
+
 
 	# we are missing the ones that are real but not given
 	missing = filter(lambda x:not x in given_dependencies, real_dependencies)
@@ -463,9 +463,9 @@ def calcDeps(dirname="."):
 	fine  = filter(lambda x:x in real_dependencies, given_dependencies)
 
 	ret = {
-		"fine": fine, 
-		"missing": missing, 
-		"not_needed": not_needed, 
+		"fine": fine,
+		"missing": missing,
+		"not_needed": not_needed,
 		"should_be": real_dependencies
 	}
 

@@ -5,8 +5,8 @@ import sys
 import os
 
 def main():
-	pth = os.path.realpath(os.path.dirname(__file__)+ "/../")
-	sys.path.append(pth)
+	pth = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../")
+	sys.path.insert(1, pth)
 	import lmh
 	lmh.run(sys.argv[1:])
 

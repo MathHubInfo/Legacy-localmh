@@ -15,7 +15,6 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import ConfigParser
 import os.path
 import json
 
@@ -86,8 +85,8 @@ def set_config(key, value):
 			return False
 
 	# Load existsing data
-	data = {}	
-	try:   
+	data = {}
+	try:
 		data = json.loads(read_file(config_file))
 	except:
 		pass
