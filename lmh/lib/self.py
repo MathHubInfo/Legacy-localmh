@@ -48,252 +48,187 @@ def update_deps():
 	std("Updating LMH dependencies ...")
 
 	return run_setup({
-		"m_action": "up", 
-		"force": True, 
-		"autocomplete": False, 
-		"latexml_source": "", 
-		"stex_source": "", 
+		"m_action": "up",
+		"force": True,
+		"autocomplete": False,
+		"latexml_source": "",
+		"stex_source": "",
 		"mmt_source": "",
-		"latexml_action": "", 
-		"stex_action": "", 
+		"latexml_action": "",
+		"stex_action": "",
 		"mmt_action": ""
 	})
 
-#
-# latexml
-#
-
-def latexml_install(root, source, branch):
-	"""Install latexml"""
-
-	try:
-		if branch == "":
-			return git_clone(root, source, "LaTeXML")
-		else:
-			return git_clone(root, source, "-b", branch, "LaTeXML")
-	except:
-		err("Failed to install LaTeXML (is the source available? )")
-		return False
-
-def latexml_update(root, source, branch):
-	"""Update latexml"""
-
-	try:
-		return git_pull(root + "/LaTeXML")
-	except:
-		err("Failed to update LaTeXML (is it present? )")
-		return False
-
-
-def latexml_remove(root, source, branch):
-	"""Remove latexml"""
-	try:
-		shutil.rmtree(root + "/LaTeXML")
-		return True
-	except:
-		err("Failed to remove LaTeXML (is it present? )")
-		return False
-
-# Arguments for installing via cpanm
+# Is cpanm selfcontained? Check the config setting
 if get_config("setup::cpanm::selfcontained"):
 	cpanm_installdeps_args = [cpanm_executable, "-L", perl5root[0], "--installdeps", "--prompt", "."]
 	cpanm_installself_args = [cpanm_executable, "-L", perl5root[0], "--notest", "--prompt", "."]
 else:
 	cpanm_installdeps_args = [cpanm_executable, "--installdeps", "--prompt", "."]
-	cpanm_installself_args = [cpanm_executable, "--notest", "--prompt", "."]	
-
-
-def latexml_make(root):
-	"""Builds latexml"""
-
-	_env = perl5env(os.environ)
-	_env.pop("STEXSTYDIR", None)
-	try:
-		call(cpanm_installdeps_args, env=_env, cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-		call(cpanm_installself_args, env=_env, cwd=root+"/LaTeXML", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-		return True
-	except Exception as e:
-		err("Unable to run make commands for latexml. ")
-		err(e)
-		return False
+	cpanm_installself_args = [cpanm_executable, "--notest", "--prompt", "."]
 
 
 #
-# latexmls
+# General Setup Functions
 #
 
-def latexmls_install(root, source, branch):
-	"""Install latexmls"""
+def get_item_source(source_string, def_source, def_branch, name=""):
+	"""Gets the source branch and origin from a string and defaults. """
+	source = def_source
+	branch = def_branch
 
-	try:
-		if branch == "":
-			return git_clone(root, source, "LaTeXMLs")
+	if not source_string == "":
+		index = source_string.find("@")
+		if index == 0:
+			branch = source_string[1:]
+		elif index > 0:
+			source = source_string[:index]
+			branch = source_string[index+1:]
 		else:
-			return git_clone(root, source, "-b", branch, "LaTeXMLs")
-	except:
-		err("Failed to install LaTeXMLs (is the source available? )")
-		return False
+			source = source_string
 
-def latexmls_update(root, source, branch):
-	"""Update latexmls"""
+		std("Using", name, "Version: "+source+"@"+branch)
 
-	try:
-		return git_pull(root + "/latexmls")
-	except:
-		err("Failed to update LaTeXMLs (is it present? )")
-		return False
+	return (source, branch)
 
-
-def latexmls_remove(root, source, branch):
-	"""Remove latexmls"""
-
-	try:
-		shutil.rmtree(root + "/LaTeXMLs")
-		return True
-	except:
-		err("Failed to remove LaTeXMLs (is it present? )")
-		return False
-
-def latexmls_make(root):
-	"""Builds latexmlstomp"""
+def cpanm_make(root, name):
+	"""Run CPANM make commands for a package. """
 
 	_env = perl5env(os.environ)
 	_env.pop("STEXSTYDIR", None)
 
 	try:
-		call(cpanm_installdeps_args, env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-		call(cpanm_installself_args, env=_env, cwd=root+"/LaTeXMLs", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+		call(cpanm_installdeps_args, env=_env, cwd=root+"/"+name, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+		call(cpanm_installself_args, env=_env, cwd=root+"/"+name, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
 		return True
 	except Exception as e:
-		err("Unable to run make commands for LaTeXMLs. ")
+		err("Unable to run make commands for", name, ". ")
 		err(e)
 		return False
 
 #
-# latexmlstomp
+# GIT-controlled setups
 #
 
-def latexmlstomp_install(root, source, branch):
-	"""Install latexmlstomp"""
+def git_install(root, source, branch, name):
+	"""Install a git-controlled software"""
 
 	try:
 		if branch == "":
-			return git_clone(root, source, "LaTeXMLStomp")
+			return git_clone(root, source, name)
 		else:
-			return git_clone(root, source, "-b", branch, "LaTeXMLStomp")
+			return git_clone(root, source, "-b", branch, name)
 	except:
-		err("Failed to install LaTeXMLStomp (is the source available? )")
+		err("Failed to install", name, "(is the source available? )")
 		return False
 
-def latexmlstomp_update(root, source, branch):
-	"""Update latexmlstomp"""
+def git_update(root, source, branch, name):
+	"""Update a git-controlled software"""
 
 	try:
-		return git_pull(root + "/LaTeXMLStomp")
+		return git_pull(root + "/" + name)
 	except:
-		err("Failed to update LaTeXMLStomp (is it present? )")
+		err("Failed to update", name, "(is it present? )")
 		return False
 
 
-def latexmlstomp_remove(root, source, branch):
-	"""Remove latexmlstomp"""
+def git_remove(root, source, branch):
+	"""Update a git-controlled software"""
 
 	try:
-		shutil.rmtree(root + "/LaTeXMLStomp")
+		shutil.rmtree(root + "/" + name)
 		return True
 	except:
-		err("Failed to remove LaTeXMLStomp (is it present? )")
+		err("Failed to remove", name, "(is it present? )")
 		return False
 
+def git_run_setup(name, action, run_cpanm, source_string, ext_dir, def_action, def_source, def_branch):
+	"""Runs the setup of an git-based software."""
 
-def latexmlstomp_make(root):
-	"""Builds latexmlstomp"""
+	action = action or def_action
+	(source, branch) = get_item_source(source_string, def_source, def_branch, name=name)
 
-	_env = perl5env(os.environ)
-	_env.pop("STEXSTYDIR", None)
-
-	try:
-		call(cpanm_installdeps_args, env=_env, cwd=root+"/LaTeXMLStomp", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-		call(cpanm_installself_args, env=_env, cwd=root+"/LaTeXMLStomp", stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-		return True
-	except Exception as e:
-		err("Unable to run make commands for LaTeXMLStomp. ")
-		err(e)
-		return False
+	if action == "re":
+		std("Reinstalling", name, "...")
+		if not git_remove(ext_dir, source, branch, name):
+			return (False, None, None)
+		if not git_install(ext_dir, source, branch, name):
+			return (False, None, None)
+	if action == "in":
+		std("Installing", name, "...")
+		if not git_install(ext_dir, source, branch, name):
+			return (False, None, None)
+	if action == "up":
+		std("Updating", name, "...")
+		if not git_update(ext_dir, source, mmt_branch):
+			return (False, None, None)
+	if action != "sk" and run_cpanm:
+		if not cpanm_make(ext_dir, name):
+			return (False, None, None)
+	return (True, source, branch)
 
 #
-# sTeX
+# SVN-controlled setups
 #
 
-def stex_install(root, source, branch):
-	"""Install sTex"""
+def svn_install(root, source, branch, name):
+	"""Install a svn-controlled software"""
 
 	try:
 		if branch == "":
-			return git_clone(root, source, "sTeX")
+			return svn_clone(root, source, name)
 		else:
-			return git_clone(root, source, "-b", branch, "sTeX")
-	except:
-		err("Failed to install sTex (is the source available? )")
-		return False
-
-def stex_update(root, source, branch):
-	"""Update sTex"""
-
-	try:
-		return git_pull(root + "/sTeX")
-	except:
-		err("Failed to update sTex (is it present? )")
-		return False
-
-
-def stex_remove(root, source, branch):
-	"""Remove sTex"""
-
-	try:
-		shutil.rmtree(root + "/sTeX")
-		return True
-	except:
-		err("Failed to remove sTex (is it present? )")
-		return False
-
-
-#
-# MMT
-#
-
-def mmt_install(root, source, branch):
-	"""Install MMT"""
-
-	try:
-		if branch == "":
-			return svn_clone(root, source, "MMT")
-		else:
-			return svn_clone(root, source + "@" + branch, "MMT")
+			return svn_clone(root, source + "@" + branch, name)
 	except Exception as e:
 		err(e)
-		err("Failed to install MMT (is it present? )")
+		err("Failed to install", name, "(is it present? )")
 		return False
 
 
-def mmt_update(root, source, branch):
-	"""Update MMT"""
+def svn_update(root, source, branch, name):
+	"""Update a SVN-controlled software"""
 
 	try:
-		return svn_pull(root + "/MMT")
+		return svn_pull(root + "/" + name)
 	except:
-		err("Failed to update MMT (is it present? )")
+		err("Failed to update", name, "(is it present? )")
 		return False
 
-def mmt_remove(root, source, branch):
-	"""Remove MMT"""
+def svn_remove(root, source, branch, name):
+	"""Remove a SVN-controlled software"""
 
 	try:
 		shutil.rmtree(root + "/MMT")
 		return True
-	except: 
+	except:
 		err("Failed to remove MMT (is it present? )")
 		return False
+
+def svn_run_setup(name, action, run_cpanm, source_string, ext_dir, def_action, def_source, def_branch):
+	"""Runs the setup of an SVN-based software."""
+
+	action = action or def_action
+	(source, branch) = get_item_source(source_string, def_source, def_branch, name=name)
+
+	if action == "re":
+		std("Reinstalling", name, "...")
+		if not svn_remove(ext_dir, source, branch, name):
+			return (False, None, None)
+		if not svn_install(ext_dir, source, branch, name):
+			return (False, None, None)
+	if action == "in":
+		std("Installing", name, "...")
+		if not svn_install(ext_dir, source, branch, name):
+			return (False, None, None)
+	if action == "up":
+		std("Updating", name, "...")
+		if not svn_update(ext_dir, source, branch):
+			return (False, None, None)
+	if action != "sk" and run_cpanm:
+		if not cpanm_make(ext_dir, name):
+			return (False, None, None)
+	return (True, source, branch)
+
 
 def install_autocomplete():
 	err("Autocomplete auto-installer is currently disabled. ")
@@ -307,210 +242,74 @@ def install_autocomplete():
 	#print "running %r"%(activatecmd)
 	#call([root+"/arginstall/scripts/activate-global-python-argcomplete"])
 
+#
+# Main Setup Routines
+#
+
 def run_setup(args):
 	"""Perform various setup functions"""
 
+	# Check dependencies first
 	if (not args.force) and (not check_deps()):
 		err("Dependency check failed, either install dependencies manually ")
 		err("or use --force to ignore dependency checks. ")
 		return False
 
+
 	action = args.m_action
+
 	if action == "":
+		# If there is nothing special to do, install everything
 		if args.latexml_action == "" and args.stex_action == "" and args.mmt_action == "" and args.latexmls_action == "" and args.latexmlstomp_action == "":
 			action = "in"
 		else:
 			action = "sk"
 
-	# LaTeXML
-	latexml_action = args.latexml_action or action
+	# LaTeXML: git, cpanm
 	latexml_source = get_config("setup::latexml::source")
 	latexml_branch = get_config("setup::latexml::branch")
+	(success, latexml_source, latexml_branch) = git_run_setup("LaTeXML", args.latexml_action, True, args.latexml_source, ext_dir, action, latexml_source, latexml_branch)
+	if not success:
+		return False
 
-	if not args.latexml_source == "":
-		index = args.latexml_source.find("@")
-		if index == 0:
-			latexml_branch = args.latexml_source[1:]
-		elif index > 0:
-			latexml_source = args.latexml_source[:index]
-			latexml_branch = args.latexml_source[index+1:]
-		else:
-			latexml_source = args.latexml_source
-
-		std("Using LaTexML Version: "+latexml_source+"@"+latexml_branch)
-
-
-	if latexml_action == "re":
-		std("Reinstalling LaTexML ...")
-		if not latexml_remove(ext_dir, latexml_source, latexml_branch):
-			return False
-		if not latexml_install(ext_dir, latexml_source, latexml_branch):
-			return False
-		if not latexml_make(ext_dir):
-			return False
-	if latexml_action == "in":
-		std("Installing LaTeXML ...")
-		if not latexml_install(ext_dir, latexml_source, latexml_branch):
-			return False
-		if not latexml_make(ext_dir):
-			return False
-	if latexml_action == "up":
-		std("Updating LaTexML ...")
-		if not latexml_update(ext_dir, latexml_source, latexml_branch):
-			return False
-		if not latexml_make(ext_dir):
-			return False
-
-	# LaTeXMLs
-	latexmls_action = args.latexmls_action or action
+	# LaTeXMLs: git, cpanm
 	latexmls_source = get_config("setup::latexmls::source")
 	latexmls_branch = get_config("setup::latexmls::branch")
+	(success, latexmls_source, latexmls_branch) = git_run_setup("LaTeXMLs", args.latexmls_action, True, args.latexmls_source, ext_dir, action, latexmls_source, latexmls_branch)
+	if not success:
+		return False
 
-	if not args.latexmls_source == "":
-		index = args.latexmls_source.find("@")
-		if index == 0:
-			latexmls_branch = args.latexmls_source[1:]
-		elif index > 0:
-			latexmls_source = args.latexmls_source[:index]
-			latexmls_branch = args.latexmls_source[index+1:]
-		else:
-			latexmls_source = args.latexmls_source
-
-		std("Using LaTeXMLs Version: "+latexmls_source+"@"+latexmls_branch)
-
-
-	if latexmls_action == "re":
-		std("Reinstalling LaTexMLs ...")
-		if not latexmls_remove(ext_dir, latexmls_source, latexmls_branch):
-			return False
-		if not latexmls_install(ext_dir, latexmls_source, latexmls_branch):
-			return False
-		if not latexmls_make(ext_dir):
-			return False
-	if latexmls_action == "in":
-		std("Installing LaTeXMLs ...")
-		if not latexmls_install(ext_dir, latexmls_source, latexmls_branch):
-			return False
-		if not latexmls_make(ext_dir):
-			return False
-	if latexmls_action == "up":
-		std("Updating LaTexMLs ...")
-		if not latexmls_update(ext_dir, latexmls_source, latexmls_branch):
-			return False
-		if not latexmls_make(ext_dir):
-			return False
-
-	# LaTeXMLStomp
-	latexmlstomp_action = args.latexmlstomp_action or action
+	# LaTeXMLStomp: git, cpanm
 	latexmlstomp_source = get_config("setup::latexmlstomp::source")
 	latexmlstomp_branch = get_config("setup::latexmlstomp::branch")
+	(success, latexmlstomp_source, latexmlstomp_branch) = git_run_setup("LaTeXMLStomp", args.latexmlstomp_action, True, args.latexmlstomp_source, ext_dir, action, latexmlstomp_source, latexmlstomp_branch)
+	if not success:
+		return False
 
-	if not args.latexmlstomp_source == "":
-		index = args.latexmlstomp_source.find("@")
-		if index == 0:
-			latexmlstomp_branch = args.latexmlstomp_source[1:]
-		elif index > 0:
-			latexmlstomp_source = args.latexmlstomp_source[:index]
-			latexmlstomp_branch = args.latexmlstomp_source[index+1:]
-		else:
-			latexmlstomp_source = args.latexmlstomp_source
-
-		std("Using LaTeXMLStomp Version: "+latexmlstomp_source+"@"+latexmlstomp_branch)
-
-
-	if latexmlstomp_action == "re":
-		std("Reinstalling LaTexMLStomp ...")
-		if not latexmlstomp_remove(ext_dir, latexmlstomp_source, latexmlstomp_branch):
-			return False
-		if not latexmlstomp_install(ext_dir, latexmlstomp_source, latexmlstomp_branch):
-			return False
-		if not latexmlstomp_make(ext_dir):
-			return False
-	if latexmlstomp_action == "in":
-		std("Installing LaTeXMLStomp ...")
-		if not latexmlstomp_install(ext_dir, latexmlstomp_source, latexmlstomp_branch):
-			return False
-		if not latexmlstomp_make(ext_dir):
-			return False
-	if latexmlstomp_action == "up":
-		std("Updating LaTexMLStomp ...")
-		if not latexmlstomp_update(ext_dir, latexmlstomp_source, latexmlstomp_branch):
-			return False
-		if not latexmlstomp_make(ext_dir):
-			return False
-
-
-	# sTex
-	stex_action = args.stex_action or action
+	# sTeX: git, no cpanm
 	stex_source = get_config("setup::stex::source")
 	stex_branch = get_config("setup::stex::branch")
+	(success, stex_source, stex_branch) = git_run_setup("sTeX", args.stex_action, False, args.stex_source, ext_dir, action, stex_source, stex_branch)
+	if not success:
+		return False
 
-	if not args.stex_source == "":
-		index = args.stex_source.find("@")
-		if index == 0:
-			stex_branch = args.stex_source[1:]
-		elif index > 0:
-			stex_source = args.stex_source[:index]
-			stex_branch = args.stex_source[index+1:]
-		else:
-			stex_source = args.stex_source
-
-		std("Using sTeX Version: "+stex_source+"@"+stex_branch)
-
-	if stex_action == "re":
-		std("Reinstalling sTeX ...")
-		if not stex_remove(ext_dir, stex_source, stex_branch):
-			return False
-		if not stex_install(ext_dir, stex_source, stex_branch):
-			return False
-	if stex_action == "in":
-		std("Installing sTex ...")
-		if not stex_install(ext_dir, stex_source, stex_branch):
-			return False
-	if stex_action == "up":
-		std("Updating sTex ...")
-		if not stex_update(ext_dir, stex_source, stex_branch):
-			return False
-
-	# MMT
-	mmt_action = args.mmt_action or action
+	# MMT: svn, no cpanm
 	mmt_source = get_config("setup::mmt::source")
 	mmt_branch = get_config("setup::mmt::branch")
+	(success, mmt_source, mmt_branch) = svn_run_setup("MMT", args.mmt_action, False, args.mmt_source, ext_dir, action, mmt_source, mmt_branch)
+	if not success:
+		return False
 
-	if not args.mmt_source == "":
-		index = args.mmt_source.find("@")
-		if index == 0:
-			mmt_branch = args.mmt_source[1:]
-		elif index > 0:
-			mmt_source = args.mmt_source[:index]
-			mmt_branch = args.mmt_source[index+1:]
-		else:
-			mmt_source = args.mmt_source
-
-		std("Using MMT Version: "+mmt_source+"@"+mmt_branch)
-
-	if mmt_action == "re":
-		std("Reinstalling MMT ...")
-		if not mmt_remove(ext_dir, mmt_source, mmt_branch):
-			return False
-		if not mmt_install(ext_dir, mmt_source, mmt_branch):
-			return False
-	if mmt_action == "in":
-		std("Installing MMT ...")
-		if not mmt_install(ext_dir, mmt_source, mmt_branch):
-			return False
-	if mmt_action == "up":
-		std("Updating MMT ...")
-		if not mmt_update(ext_dir, mmt_source, mmt_branch):
-			return False
-
+	# Store all the selcted sources back in the config.
 	if args.store_source_selections:
-		# Store the selections in the config
 		set_config("setup::latexml::source", latexml_source)
 		set_config("setup::latexml::branch", latexml_branch)
 
 		set_config("setup::latexmls::source", latexmls_source)
 		set_config("setup::latexmls::branch", latexmls_branch)
+
+		set_config("setup::latexmlstomp::source", latexmls_source)
+		set_config("setup::latexmlstomp::branch", latexmls_branch)
 
 		set_config("setup::stex::source", stex_source)
 		set_config("setup::stex::branch", stex_branch)
