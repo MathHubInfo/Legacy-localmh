@@ -18,7 +18,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import os.path
 import sys
 
-from lmh.lib.io import std, err
+from lmh.lib.io import std, err, read_file
 from lmh.lib.env import install_dir, which, stexstydir
 from lmh.lib.config import get_config
 
@@ -193,3 +193,7 @@ def run_shell(shell = None, args=""):
 	do_the_run()
 
 	return runner.returncode
+
+def get_template(name):
+	"""Gets a template file"""
+	return read_file(install_dir + "/bin/templates/" + name)

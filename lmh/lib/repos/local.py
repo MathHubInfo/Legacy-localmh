@@ -28,7 +28,7 @@ from lmh.lib.io import term_colors, std, std_paged, err, copytree, write_file, r
 from lmh.lib.repos import is_valid_repo, matchRepo, find_dependencies
 from lmh.lib.repos.remote import install
 from lmh.lib.config import get_config
-from lmh.lib.self import get_template
+from lmh.lib.extenv import get_template
 
 
 from lmh.lib.git import push as git_push

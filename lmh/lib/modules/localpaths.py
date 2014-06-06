@@ -22,7 +22,7 @@ from string import Template
 from lmh.lib import shellquote
 from lmh.lib.env import install_dir
 from lmh.lib.io import std, err, write_file
-from lmh.lib.self import get_template
+from lmh.lib.extenv import get_template
 
 all_pathstpl = Template(get_template("localpaths.tpl"))
 
@@ -53,10 +53,10 @@ def gen_localpaths(modules, update, verbose, quiet, workers, nice):
 def localpaths_gen_job(module):
   # store parameters for localpaths.tex job generation
   return (module["localpaths_path"], module["repo"], module["repo_name"])
-  
+
 
 def localpaths_gen_do(job, quiet, worker=None, cwd="."):
-  # run a localpaths.tex job 
+  # run a localpaths.tex job
   (dest, repo, repo_name) = job
 
   if not quiet:
@@ -72,10 +72,10 @@ def localpaths_gen_do(job, quiet, worker=None, cwd="."):
 def localpaths_gen_dump(job):
   # dump an localpaths.tex generation jump to STDOUT
   (dest, repo, repo_name) = job
-  
+
   std("# generate", dest)
 
   text = all_pathstpl.substitute(mathhub=install_dir, repo=repo, repo_name=repo_name)
-  
+
   std("echo -n " + shellquote(text)+ " > "+shellquote(dest))
   std("echo > "+shellquote(dest))

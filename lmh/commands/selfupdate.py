@@ -17,18 +17,22 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import argparse
-from lmh.lib.self import update
+from lmh.lib.io import err
+from lmh.lib.packs import update
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Updates lmh itself. ')
+  parser = argparse.ArgumentParser(description='Updates lmh itself (Deprecated)')
   add_parser_args(parser)
   return parser
 
 def add_parser(subparsers, name="selfupdate"):
-  subparsers.add_parser(name, help='Updates lmh itself. ')
+  subparsers.add_parser(name, help='Updates lmh itself (Deprecated)')
 
 def add_parser_args(parser):
   pass
 
 def do(args):
-  return update()
+    err("lmh selfupdate is deprecated. ")
+    err("Please use 'lmh setup --update self' instead. ")
+    # Update the 'self' package
+    return update("self")

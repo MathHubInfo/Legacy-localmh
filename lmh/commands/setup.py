@@ -16,8 +16,8 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import argparse
-
-from lmh.lib.self import run_setup
+from lmh.lib.io import std
+import lmh.lib.packs
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Setup tool.')
@@ -30,61 +30,70 @@ def add_parser(subparsers, name="setup"):
 
 def add_parser_args(parser):
   action = parser.add_argument_group('Setup actions').add_mutually_exclusive_group()
-  action.add_argument('--install', action="store_const", dest="m_action", const="in", default="", help='Perform initial setup of dependencies. Default if no other arguments are given. ')
-  action.add_argument('--update', action="store_const", dest="m_action", const="up", help='Update existing versions of dependencies. Implies --update-* arguments. ')
-  action.add_argument('--reinstall', action="store_const", dest="m_action", const="re", help='Perform initial setup of dependencies. ')
-  action.add_argument('--skip', action="store_const", dest="m_action", const="sk", help='Skip everything which is not specified explicitly. ')
 
-  parser.add_argument('-f', '--force', action="store_const", dest="force", const=True, default=False, help='Skip checking for lmh core requirements. ')
-  parser.add_argument('--autocomplete', default=False, const=True, action="store_const", help="should install autocomplete for bash", metavar="")
-  parser.add_argument('--store-source-selections', default=False, const=True, action="store_const", help="If set all source and branch selections are stored and used as default in the future. ", metavar="")
-  parser.add_argument('--add-private-token', nargs=1, help="add private token to use advanced MathHub functionality")
-  
+  action.add_argument('--install', action="store_const", dest="saction", const="install", default="", help="Installs a package or group. ")
+  action.add_argument('--update', action="store_const", dest="saction", const="update", help="Updates a package or group. ")
+  action.add_argument('--reset', '--reinstall', action="store_const", dest="saction", const="reset", help="Resets a package or group. ")
+  action.add_argument('--remove', action="store_const", dest="saction", const="remove", help="Removes a package or group. ")
 
-  source = parser.add_argument_group('Dependency versions')
-  source.add_argument('--latexml-source', default="", metavar="source@branch", help='Get LaTeXML from the given source. ')
-  source.add_argument('--latexmls-source', default="", metavar="source@branch", help='Get LaTeXMLs from the given source. ')
-  source.add_argument('--latexmlstomp-source', default="", metavar="source@branch", help='Get LaTeXMLStomp from the given source. ')
-  source.add_argument('--stex-source', default="", metavar="source@branch", help='Get sTex from the given source. ')
-  source.add_argument('--mmt-source', default="", metavar="source@branch", help='Get MMT from the given source. ')
+  parser.add_argument('pack', nargs="*", metavar="PACK:SOURCE")
 
-  latexml = parser.add_argument_group('LaTeXML').add_mutually_exclusive_group()
-  latexml.add_argument('--install-latexml', action="store_const", dest="latexml_action", const="in", default="", help='Install LaTexML. ')
-  latexml.add_argument('--update-latexml', action="store_const", dest="latexml_action", const="up", help='Update LaTeXML. ')
-  latexml.add_argument('--reinstall-latexml', action="store_const", dest="latexml_action", const="re", help='Reinstall LaTeXML. ')
-  latexml.add_argument('--skip-latexml', action="store_const", dest="latexml_action", const="sk", help='Leave LaTeXML untouched. ')
-
-  latexmls = parser.add_argument_group('LaTeXML::Plugin::latexmls').add_mutually_exclusive_group()
-  latexmls.add_argument('--install-latexmls', action="store_const", dest="latexmls_action", const="in", default="", help='Install LaTexMLs. ')
-  latexmls.add_argument('--update-latexmls', action="store_const", dest="latexmls_action", const="up", help='Update LaTeXMLs. ')
-  latexmls.add_argument('--reinstall-latexmls', action="store_const", dest="latexmls_action", const="re", help='Reinstall LaTeXMLs. ')
-  latexmls.add_argument('--skip-latexmls', action="store_const", dest="latexmls_action", const="sk", help='Leave LaTeXMLs untouched. ')
-
-  latexmlstomp = parser.add_argument_group('LaTeXMLStomp').add_mutually_exclusive_group()
-  latexmlstomp.add_argument('--install-latexmlstomp', action="store_const", dest="latexmlstomp_action", const="in", default="", help='Install LaTexMLStomp. ')
-  latexmlstomp.add_argument('--update-latexmlstomp', action="store_const", dest="latexmlstomp_action", const="up", help='Update LaTeXMLStomp. ')
-  latexmlstomp.add_argument('--reinstall-latexmlstomp', action="store_const", dest="latexmlstomp_action", const="re", help='Reinstall LaTeXMLStomp. ')
-  latexmlstomp.add_argument('--skip-latexmlstomp', action="store_const", dest="latexmlstomp_action", const="sk", help='Leave LaTeXMLStomp untouched. ')
-
-  stex = parser.add_argument_group('sTeX').add_mutually_exclusive_group()
-  stex.add_argument('--install-stex', action="store_const", dest="stex_action", const="in", default="", help='Install sTeX. ')
-  stex.add_argument('--update-stex', action="store_const", dest="stex_action", const="up", help='Update sTeX. ')
-  stex.add_argument('--reinstall-stex', action="store_const", dest="stex_action", const="re", help='Reinstall sTeX. ')
-  stex.add_argument('--skip-stex', action="store_const", dest="stex_action", const="sk", help='Leave sTeX untouched. ')
-
-  mmt = parser.add_argument_group('MMT').add_mutually_exclusive_group()
-  mmt.add_argument('--install-mmt', action="store_const", dest="mmt_action", const="in", default="", help='Install MMT. ')
-  mmt.add_argument('--update-mmt', action="store_const", dest="mmt_action", const="up", help='Update MMT. ')
-  mmt.add_argument('--reinstall-mmt', action="store_const", dest="mmt_action", const="re", help='Reinstall MMT. ')
-  mmt.add_argument('--skip-mmt', action="store_const", dest="mmt_action", const="sk", help='Leave MMT untouched. ')
-
-
+  # Extra Things to install: autocomplete
+  #parser.add_argument('--store-source-selections', default=False, const=True, action="store_const", help="If set all source and branch selections are stored and used as default in the future. ", metavar="")
 
   parser.epilog = """
-    lmh setup --- sets up additional software it requires to run correctly  
+lmh setup --- Manages extra software required or useful for work with lmh.
 
-    To install and compile latexml you may need additional packages. On Ubuntu the package libgdbm-dev should be enough. 
+Packages are specefied in the format:
+
+PACKAGE_NAME[:SOURCE]
+
+Packages can be installed, updated, removed and reset (reinstalled) via
+--install, --update and --reset respectively.
+
+Some packages are installed via git or svn. For those the optional argument
+SOURCE specefies which source repository should be used. These can be given in
+the format URL[@BRANCH_OR_REVISION]
+An example for this is:
+
+lmh setup --install LaTeXML:@dev
+
+which will install the dev branch of LaTeXML.
+
+The following packages are available:
+
+"LaTeXML"        LaTeXML
+"LaTeXMLs"       LaTeXML PLugin latexmls
+"LaTeXMLStomp"   LaTeXML Plugin latexmlstomp
+"sTeX"           sTeX
+"MMT"            MMT
+"autocomplete"   Automcplete support for lmh. Currently unsupported.
+"self"           Meta Package which only supports the update option. Can be used
+                 to update lmh.
+
+There are also package groups which simply install several packages at once.
+Furthermore, if no packages are given, the "default" package group is used.
+
+The following package groups are available:
+
+"all"            Contains all packages except for the self package.
+"default"        Contains LaTeXML, LaTeXMLs, sTeX and MMT.
+"LaTeXML-all"    Installs LaTeXML and plugins.
   """
 
 def do(args):
-  return run_setup(args)
+    if len(args.pack) == 0:
+        args.pack = ["default"]
+
+    if args.saction == "install":
+        return lmh.lib.packs.install(*args.pack)
+    elif args.action == "update":
+        return lmh.lib.packs.update(*args.pack)
+    elif args.action == "remove":
+        return lmh.lib.packs.remove(*args.pack)
+    elif args.action == "reset":
+        return lmh.lib.packs.reset(*args.pack)
+    else:
+        std("No setup action specefied, assuming --install. ")
+        std("Please specify some action in the future. ")
+        return lmh.lib.packs.install(*args.pack)

@@ -18,7 +18,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import traceback
 from string import Template
 
-from lmh.lib.self import get_template
+from lmh.lib.extenv import get_template
 from lmh.lib.io import std, err, read_file, write_file
 
 from lmh.lib import shellquote
@@ -57,10 +57,10 @@ def alltex_gen_job(module):
   pre = read_file(module["file_pre"])
   post = read_file(module["file_post"])
   return (module["alltex_path"], pre, post, module["modules"])
-  
+
 
 def alltex_gen_do(job, quiet, worker=None, cwd="."):
-  # run a all.tex job 
+  # run a all.tex job
   (dest, pre, post, modules) = job
 
   if not quiet:
@@ -79,7 +79,7 @@ def alltex_gen_dump(job):
   (dest, pre, post, modules) = job
 
   std("# generate", dest)
-  
+
   content = [all_modtpl.substitute(file=m) for m in modules]
   text = all_textpl.substitute(pre_tex=pre, post_tex=post, mods="\n".join(content))
 
