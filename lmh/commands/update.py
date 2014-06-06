@@ -51,7 +51,7 @@ def do(args):
   if len(args.repository) == 0:
     if get_config("update::selfupdate"):
       std("Selfupdate: ")
-      if not update():
+      if not update("self"):
         return False
 
   repos = match_repositories(args)

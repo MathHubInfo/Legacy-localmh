@@ -17,6 +17,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 from lmh.lib.io import std
+from lmh.lib.config import get_config
 import lmh.lib.packs
 
 def create_parser():
@@ -84,14 +85,17 @@ The following package groups are available:
 def do(args):
     if len(args.pack) == 0:
         args.pack = ["default"]
+        if args.saction == "update" and get_config("update::selfupdate"):
+            # Update self as well when calling lmh setup --update
+            args.pack += ["self"]
 
     if args.saction == "install":
         return lmh.lib.packs.install(*args.pack)
-    elif args.action == "update":
+    elif args.saction == "update":
         return lmh.lib.packs.update(*args.pack)
-    elif args.action == "remove":
+    elif args.saction == "remove":
         return lmh.lib.packs.remove(*args.pack)
-    elif args.action == "reset":
+    elif args.saction == "reset":
         return lmh.lib.packs.reset(*args.pack)
     else:
         std("No setup action specefied, assuming --install. ")

@@ -15,22 +15,19 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-
-import argparse
 from lmh.lib.io import err
-from lmh.lib.packs import update
+from lmh.lib.env import install_dir
+from lmh.lib.git import pull
 
-def create_parser():
-  parser = argparse.ArgumentParser(description='Updates lmh itself. ')
-  add_parser_args(parser)
-  return parser
+from lmh.lib.packs.classes import Pack, UnsupportedAction
 
-def add_parser(subparsers, name="selfupdate"):
-  subparsers.add_parser(name, help='Updates lmh itself. ')
+class SelfPack(Pack):
+    """A Package representing lmh itself. """
+    def do_update(self, pack_dir, update):
+        return pull(install_dir)
+    def do_remove(self, pack_dir, params):
+        raise UnsupportedAction
+    def is_installed(self, pack_dir):
+        return True
 
-def add_parser_args(parser):
-  pass
-
-def do(args):
-    # Update the 'self' package
-    return update("self")
+setup = SelfPack("self")

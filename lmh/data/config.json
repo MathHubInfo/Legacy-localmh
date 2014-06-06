@@ -1,188 +1,188 @@
 {
 	"self::enable_colors": {
-		"type": "bool", 
+		"type": "bool",
 		"help": "Use colors in the output. ",
 		"default": false
-	}, 
+	},
 
 	"self::showfirstrun": {
-		"type": "bool", 
-		"help": "Show first run dialogs when first running lmh. ", 
+		"type": "bool",
+		"help": "Show first run dialogs when first running lmh. ",
 		"default": false
-	}, 
+	},
 
 	"self::issue_url": {
-		"type": "string", 
-		"help": "URL to issues page. ", 
+		"type": "string",
+		"help": "URL to issues page. ",
 		"default": "http://gl.mathhub.info/MathHub/localmh/issues/"
 	},
 
 	"env::git": {
-		"type": "string", 
+		"type": "string",
 		"help": "Path to the Git executable. Auto-detected if empty. ",
-		"default": "" 
-	}, 
+		"default": ""
+	},
 
 	"env::svn": {
-		"type": "string", 
+		"type": "string",
 		"help": "Path to the svn executable. Auto-detected if empty. ",
-		"default": "" 
-	}, 
+		"default": ""
+	},
 
 	"env::pdflatex": {
-		"type": "string", 
+		"type": "string",
 		"help": "Path to the pdflatex executable. Auto-detected if empty. ",
-		"default": "" 
-	}, 
+		"default": ""
+	},
 
 	"env::perl": {
-		"type": "string", 
+		"type": "string",
 		"help": "Path to the perl executable. Auto-detected if empty. ",
-		"default": "" 
-	}, 
+		"default": ""
+	},
 
 	"env::cpanm": {
-		"type": "string", 
+		"type": "string",
 		"help": "Path to the cpanm executable. Auto-detected if empty. ",
-		"default": "" 
-	}, 
+		"default": ""
+	},
 
 	"env::make": {
-		"type": "string", 
+		"type": "string",
 		"help": "Path to the make executable. Auto-detected if empty. ",
-		"default": "" 
-	}, 
+		"default": ""
+	},
 
 	"env::tar": {
-		"type": "string", 
+		"type": "string",
 		"help": "Path to the make executable. Auto-detected if empty. ",
-		"default": "" 
-	}, 
+		"default": ""
+	},
 
 	"env::pager": {
-		"type": "string", 
+		"type": "string",
 		"help": "A full path to a pager to use for long outputs. If empty, no pager is used. ",
-		"default": "" 
-	}, 
+		"default": ""
+	},
 
 	"state::lastversion": {
-		"type": "string", 
-		"help": "Contains the last used version of lmh. ", 
-		"default": "", 
+		"type": "string",
+		"help": "Contains the last used version of lmh. ",
+		"default": "",
 		"hidden": true
-	}, 
+	},
 
 	"install::sources": {
-		"type": "string", 
-		"help": "Url prefixes to clone git repositories from. Seperated by ;s. ", 
+		"type": "string",
+		"help": "Url prefixes to clone git repositories from. Seperated by ;s. ",
 		"default": "git@gl.mathhub.info:;http://gl.mathhub.info/"
-	}, 
+	},
 	"install::nomanifest": {
-		"type": "bool", 
-		"help": "Allow repositories to install without manifests. ", 
+		"type": "bool",
+		"help": "Allow repositories to install without manifests. ",
 		"default": false
-	},  
+	},
 
 	"setup::latexml::source": {
-		"type": "string", 
-		"help": "Default Source for latexml. ", 
+		"type": "string",
+		"help": "Default Source for latexml. ",
 		"default": "https://github.com/KWARC/LaTeXML.git"
-	}, 
+	},
 	"setup::latexml::branch": {
-		"type": "string", 
-		"help": "Default branch for latexml. Automatically uses the remote HEAD if undefined. ", 
+		"type": "string",
+		"help": "Default branch for latexml. Automatically uses the remote HEAD if undefined. ",
 		"default": ""
-	}, 
+	},
 
 	"setup::latexmls::source": {
-		"type": "string", 
-		"help": "Default Source for latexmls. ", 
+		"type": "string",
+		"help": "Default Source for latexmls. ",
 		"default": "https://github.com/dginev/LaTeXML-Plugin-latexmls"
-	}, 
+	},
 	"setup::latexmls::branch": {
-		"type": "string", 
-		"help": "Default branch for latexmls. Automatically uses the remote HEAD if undefined. ", 
+		"type": "string",
+		"help": "Default branch for latexmls. Automatically uses the remote HEAD if undefined. ",
 		"default": ""
-	}, 
+	},
 
 	"setup::latexmlstomp::source": {
-		"type": "string", 
-		"help": "Default Source for latexmlstomp. ", 
+		"type": "string",
+		"help": "Default Source for latexmlstomp. ",
 		"default": "https://github.com/KWARC/LaTeXML-Plugin-latexmlstomp.git"
-	}, 
+	},
 	"setup::latexmlstomp::branch": {
-		"type": "string", 
-		"help": "Default branch for latexmlstomp. Automatically uses the remote HEAD if undefined. ", 
+		"type": "string",
+		"help": "Default branch for latexmlstomp. Automatically uses the remote HEAD if undefined. ",
 		"default": ""
-	}, 
+	},
 
 
 	"setup::stex::source": {
-		"type": "string", 
-		"help": "Default Source for sTeX. ", 
+		"type": "string",
+		"help": "Default Source for sTeX. ",
 		"default": "https://github.com/KWARC/sTeX.git"
-	}, 
+	},
 	"setup::stex::branch": {
-		"type": "string", 
-		"help": "Default branch for sTeX. Automatically uses the remote HEAD if undefined. ", 
+		"type": "string",
+		"help": "Default branch for sTeX. Automatically uses the remote HEAD if undefined. ",
 		"default": ""
-	}, 
+	},
 
 
 	"setup::mmt::source": {
-		"type": "string", 
-		"help": "Default Source for MMT. ", 
+		"type": "string",
+		"help": "Default Source for MMT. ",
 		"default": "https://svn.kwarc.info/repos/MMT/deploy/"
-	}, 
+	},
 	"setup::mmt::branch": {
-		"type": "string", 
-		"help": "Default branch for MMT. Automatically uses TRUNK if empty. ", 
+		"type": "string",
+		"help": "Default branch for MMT. Automatically uses TRUNK if empty. ",
 		"default": ""
-	}, 
+	},
 
 	"setup::cpanm::selfcontained": {
-		"type": "bool", 
-		"help": "Use self-contained local CPANM repositories. ", 
+		"type": "bool",
+		"help": "Use self-contained local CPANM repositories. ",
 		"default": true
 	},
 
 
 	"gl::private_token": {
-		"type": "string", 
-		"help": "Gitlab Private token for gitlab interaction. Unused. ", 
+		"type": "string",
+		"help": "Gitlab Private token for gitlab interaction. Unused. ",
 		"default": ""
 	},
 
 	"gl::host": {
-		"type": "string", 
-		"help": "Host for gitlab interaction. Unused. ", 
+		"type": "string",
+		"help": "Host for gitlab interaction. Unused. ",
 		"default": "http://gl.mathub.info"
 	},
 
 
 	"init::allow_nonempty": {
-		"type": "bool", 
-		"help": "Allow to run lmh init in non-empty directories. ", 
+		"type": "bool",
+		"help": "Allow to run lmh init in non-empty directories. ",
 		"default": false
-	}, 
+	},
 
 
 	"gen::default_workers": {
-		"type": "int+", 
-		"help": "Default number of workers to use for generating pdf and omdoc. ", 
+		"type": "int+",
+		"help": "Default number of workers to use for generating pdf and omdoc. ",
 		"default": 8
-	}, 
+	},
 
 	"update::selfupdate": {
-		"type": "bool", 
-		"help": "When lmh update is called without arguments, also perform a selfupdate. ", 
+		"type": "bool",
+		"help": "When lmh update or lmh setup --update is called without arguments, also perform a selfupdate. ", 
 		"default": true
 	},
 
 	"::eastereggs": {
-		"type": "bool", 
-		"help": "Enable some eastereggs. ", 
-		"default": false, 
+		"type": "bool",
+		"help": "Enable some eastereggs. ",
+		"default": false,
 		"hidden": true
 	}
 }

@@ -60,9 +60,10 @@ def resolve_package_spec(packages):
 
 def import_pack(pack):
     # Imports a pack installer from a file
-    pimport = __import__("lmh.lib.packs."+pack)
+    pimport = __import__("lmh.lib.packs.setups."+pack)
     pimport = getattr(pimport, "lib")
     pimport = getattr(pimport, "packs")
+    pimport = getattr(pimport, "setups")
     pimport = getattr(pimport, pack)
     return pimport
 

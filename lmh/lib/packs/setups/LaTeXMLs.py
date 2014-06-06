@@ -14,23 +14,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
+from lmh.lib.packs import classes
+from lmh.lib.config import get_config
 
+latexmls_source = get_config("setup::latexmls::source")
+latexmls_branch = get_config("setup::latexmls::branch")
 
-import argparse
-from lmh.lib.io import err
-from lmh.lib.packs import update
-
-def create_parser():
-  parser = argparse.ArgumentParser(description='Updates lmh itself. ')
-  add_parser_args(parser)
-  return parser
-
-def add_parser(subparsers, name="selfupdate"):
-  subparsers.add_parser(name, help='Updates lmh itself. ')
-
-def add_parser_args(parser):
-  pass
-
-def do(args):
-    # Update the 'self' package
-    return update("self")
+setup = classes.GitPack("LaTeXMLs", latexmls_source, latexmls_branch, cpanm=True)

@@ -36,8 +36,7 @@ def run_setup(args):
 			action = "sk"
 
 	# LaTeXML: git, cpanm
-	latexml_source = get_config("setup::latexml::source")
-	latexml_branch = get_config("setup::latexml::branch")
+	
 	(success, latexml_source, latexml_branch) = git_run_setup("LaTeXML", args.latexml_action, True, args.latexml_source, ext_dir, action, latexml_source, latexml_branch)
 	if not success:
 		return False
