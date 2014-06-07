@@ -60,7 +60,7 @@ def gen_omdoc(modules, update, verbose, quiet, workers, nice, find_modules):
   jobs = []
   for mod in modules:
     if mod["type"] == "file":
-      if mod["file_pre"] != None and (not update or mod["file_time"] > mod["omdoc_time"]):
+      if (not update or mod["file_time"] > mod["omdoc_time"]):
         if find_modules:
           std(mod["file"])
         else:
@@ -128,10 +128,12 @@ def gen_omdoc(modules, update, verbose, quiet, workers, nice, find_modules):
 
 def omdoc_gen_job(module):
   # store parameters for omdoc job generation
-
-  args = [latexmlc, "--profile", "stex-module", "--path="+stydir, module["file"], "--destination="+module["omdoc_path"], "--log="+module["omdoc_log"]]
-  args.append("--preamble="+module["file_pre"])
-  args.append("--postamble="+module["file_post"])
+  if module["file_pre"] != None:
+      args = [latexmlc, "--profile", "stex-module", "--path="+stydir, module["file"], "--destination="+module["omdoc_path"], "--log="+module["omdoc_log"]]
+      args.append("--preamble="+module["file_pre"])
+      args.append("--postamble="+module["file_post"])
+  else:
+      args = [latexmlc, "--profile", "stex", "--path="+stydir, module["file"], "--destination="+module["omdoc_path"], "--log="+module["omdoc_log"]]
 
   _env = os.environ.copy()
   _env = perl5env(_env)
