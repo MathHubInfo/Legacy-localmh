@@ -1,4 +1,7 @@
-
+#
+# Old leftover code.
+# To be removed before merge to master. 
+#
 
 def install_autocomplete():
 	err("Autocomplete auto-installer is currently disabled. ")
@@ -36,7 +39,7 @@ def run_setup(args):
 			action = "sk"
 
 	# LaTeXML: git, cpanm
-	
+
 	(success, latexml_source, latexml_branch) = git_run_setup("LaTeXML", args.latexml_action, True, args.latexml_source, ext_dir, action, latexml_source, latexml_branch)
 	if not success:
 		return False
@@ -85,11 +88,6 @@ def run_setup(args):
 
 		set_config("setup::mmt::source", mmt_source)
 		set_config("setup::mmt::branch", mmt_branch)
-
-	if args.autocomplete:
-		std("Installing autocomplete ...")
-		install_autocomplete()
-
 	if args.add_private_token and len(args.add_private_token) == 1:
 		std("Adding private token ...")
 		set_config("gl::private_token", args.add_private_token[0])

@@ -21,6 +21,7 @@ from lmh.lib.about import version
 from lmh.lib.config import get_config, set_config
 
 def init():
+	"""Checks if init code has to be run. """
 	if get_config("state::lastversion") == version:
 		# First run is done
 		return
@@ -30,7 +31,7 @@ def init():
 	set_config("state::lastversion", version)
 
 def q_program(pgr):
-
+	"""Asks the user for the location for an executable. """
 	res = read_raw("Where is the "+pgr+" executable? Leave blank to autodetect at runtime. >")
 	if res != "":
 		res = which(res)
@@ -38,6 +39,7 @@ def q_program(pgr):
 		set_config("env::"+pgr, res)
 
 def first_run():
+	"""Inital run code for lmh. """
 	std("Welcome to lmh. ")
 	std("This seems to be the first time you are running this version of lmh. ")
 	std("This setup routine will automatically run and help you configure lmh automatically. ")

@@ -22,15 +22,16 @@ import shutil
 from subprocess import Popen, PIPE, STDOUT
 
 def term_colors(c):
+	"""returns terminal colors. """
 	colors = {
-		"grey": "\033[01;30m", 
-		"red": "\033[01;31m", 
-		"green": "\033[01;32m", 
-		"yellow": "\033[01;33m", 
-		"blue": "\033[01;34m", 
-		"magenta": "\033[01;35m", 
-		"cyan": "\033[01;36m", 
-		"white": "\033[01;37m", 
+		"grey": "\033[01;30m",
+		"red": "\033[01;31m",
+		"green": "\033[01;32m",
+		"yellow": "\033[01;33m",
+		"blue": "\033[01;34m",
+		"magenta": "\033[01;35m",
+		"cyan": "\033[01;36m",
+		"white": "\033[01;37m",
 		"normal": "\033[00m"
 	}
 
@@ -105,7 +106,7 @@ def std_paged(*args, **kwargs):
 			p = Popen([pager], stdout=sys.stdout, stderr=sys.stderr, stdin=PIPE)
 			p.communicate(" ".join([str(text) for text in args]) + ('\n' if newline else ''))
 		except:
-			err("Unable to run configured page. ") 
+			err("Unable to run configured page. ")
 			err("Please check your value for env::pager. ")
 			err("Falling back to STDOUT. ")
 			return std(*args, **kwargs)
@@ -173,7 +174,7 @@ def read_file_lines(filename = None):
 
 def copytree(src, dst, symlinks=False, ignore=None):
 	"""Replacement for shuitil.copytree"""
-	
+
 	for item in os.listdir(src):
 		s = os.path.join(src, item)
 		d = os.path.join(dst, item)
