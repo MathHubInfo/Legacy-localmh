@@ -1,11 +1,8 @@
 #TODO
 
-* unify latexmlstomp code
-* lmh translate
-* --version arg to __init__
-* sort out firstrun code
-* check on xhtml situation
-* version check for init.init()
+* make a repo-based glob
+* make a single matcher that matches a single name to a repository name
+* add ls and ls-remote
 
 
 # Future
