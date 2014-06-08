@@ -34,12 +34,12 @@ def add_parser(subparsers, name="depcrawl"):
 
 
 def add_parser_args(parser):
-  parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Option specifying that files should be changed")
+  parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Writes found dependencies to MANIFEST.MF")
 
-def do(rest):
-  res = calcDeps()
+def do(args):
+  res = calcDeps(args.apply)
   if res:
     return True
   else:
-    err("lmh depcrawl must be run from the root of a repository. ")
+    err("lmh depcrawl must be run from within a Repository. ")
     return False

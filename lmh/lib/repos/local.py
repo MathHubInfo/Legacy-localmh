@@ -24,7 +24,7 @@ import functools
 from string import Template
 
 from lmh.lib.env import install_dir, data_dir
-from lmh.lib.io import term_colors, std, std_paged, err, copytree, write_file, read_file_lines
+from lmh.lib.io import term_colors, std, std_paged, err, copytree, write_file, read_file, read_file_lines
 from lmh.lib.repos import is_valid_repo, matchRepo, find_dependencies
 from lmh.lib.repos.remote import install
 from lmh.lib.config import get_config
@@ -406,7 +406,14 @@ def find(rep, args):
 
 	return replacePath(rep, matcher, replaceFnc, args.apply)
 
-def calcDeps(dirname="."):
+def write_deps(dirname, deps):
+	f = os.path.join(data_dir, match_repository(dirname), "META-INF", "MANIFEST.MF")
+	n = re.sub(r"dependencies: (.*)", "dependencies: "+",".join(deps), read_file(f))
+	write_file(f, n)
+	std("Wrote new dependencies to", f)
+
+
+def calcDeps(apply = False, dirname="."):
 	"""Crawls for dependencies in a given directory. """
 
 	repo = match_repository(dirname)
@@ -486,5 +493,8 @@ def calcDeps(dirname="."):
 	std("---")
 	if len(ret["missing"]) > 0 or len(ret["not_needed"]) > 0:
 		std("Dependencies should be: ", ", ".join(ret["should_be"]))
+
+	if apply:
+		write_deps(dirname, ret["should_be"])
 
 	return ret
