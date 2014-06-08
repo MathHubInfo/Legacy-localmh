@@ -7,3 +7,4 @@ auto
 test.*
 .DS_Store
 bin/lmhc
+__pycache__

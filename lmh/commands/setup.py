@@ -17,6 +17,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 from lmh.lib.io import std
+from lmh.lib.extenv import check_deps
 from lmh.lib.config import get_config
 import lmh.lib.packs
 
@@ -37,6 +38,7 @@ def add_parser_args(parser):
   action.add_argument('--reset', '--reinstall', action="store_const", dest="saction", const="reset", help="Resets a package or group. ")
   action.add_argument('--remove', action="store_const", dest="saction", const="remove", help="Removes a package or group. ")
 
+  parser.add_argument('--no-check', '--force', action="store_true", help="Do not check for external dependencies. ")
   parser.add_argument('pack', nargs="*", metavar="PACK:SOURCE")
 
   # Extra Things to install: autocomplete
@@ -83,6 +85,12 @@ The following package groups are available:
   """
 
 def do(args):
+    if not args.no_check and not check_deps():
+        err("Dependency check failed. ")
+        err("Cannot perform specefied action. ")
+        err("Use --no-check to skip checking dependencies. ")
+        return False
+
     if len(args.pack) == 0:
         args.pack = ["default"]
         if args.saction == "update" and get_config("update::selfupdate"):
