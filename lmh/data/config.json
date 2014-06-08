@@ -41,6 +41,12 @@
 		"default": ""
 	},
 
+	"env::java": {
+		"type": "string",
+		"help": "Path to the java executable. Auto-detected if empty. ",
+		"default": ""
+	},
+
 	"env::cpanm": {
 		"type": "string",
 		"help": "Path to the cpanm executable. Auto-detected if empty. ",
@@ -175,7 +181,7 @@
 
 	"update::selfupdate": {
 		"type": "bool",
-		"help": "When lmh update or lmh setup --update is called without arguments, also perform a selfupdate. ", 
+		"help": "When lmh update or lmh setup --update is called without arguments, also perform a selfupdate. ",
 		"default": true
 	},
 

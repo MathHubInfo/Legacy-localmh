@@ -54,6 +54,12 @@ perl_executable = get_config("env::perl")
 if perl_executable == "":
 	perl_executable =  which("perl")
 
+"""The path to the java executable. """
+java_executable = get_config("env::java")
+
+if java_executable == "":
+	java_executable =  which("java")
+
 """The path to the cpanm executable. """
 cpanm_executable = get_config("env::cpanm")
 
