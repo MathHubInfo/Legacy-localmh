@@ -37,10 +37,9 @@ def setnice(nice, pid = None):
 
 def reduce(lst):
 	"""Flattens a list. """
-  return sum( ([x] if not isinstance(x, list) else reduce(x)
-         for x in lst), [] )
+	return sum( ([x] if not isinstance(x, list) else reduce(x) for x in lst), [] )
 def f7(seq):
 	"""Removes doubles from a list efficiently. """
-    seen = set()
-    seen_add = seen.add
-    return [ x for x in seq if x not in seen and not seen_add(x)]
+	seen = set()
+	seen_add = seen.add
+	return [ x for x in seq if x not in seen and not seen_add(x)]
