@@ -72,8 +72,10 @@ def gen_pdf(modules, update, verbose, quiet, workers, nice, add_bd, pdf_pipe_log
     elif workers == 1:
       if not quiet:
         std("PDF: Generating", len(jobs), "files")
+      res = True
       for job in jobs:
-        pdf_gen_do_master(job, quiet)
+        res = pdf_gen_do_master(job, quiet) and res
+      return res
     else:
       std("PDF: Generating", len(jobs), "files with", workers, "workers.")
       pool = multiprocessing.Pool(processes=workers)
@@ -81,9 +83,12 @@ def gen_pdf(modules, update, verbose, quiet, workers, nice, add_bd, pdf_pipe_log
         result = pool.map_async(functools.partial(pdf_gen_do_worker, quiet), jobs).get(9999999)
         try:
           res = result.get(9999999)
+          ret = True
+          for r in res:
+              ret = ret and r
         except:
           pass
-        res = True
+
       except KeyboardInterrupt:
         err("PDF: received <<KeyboardInterrupt>>")
         err("PDF: killing worker processes ...")
@@ -130,7 +135,7 @@ def pdf_gen_do_master(job, quiet, wid=""):
         text = read_file(pre)
         text += read_file(mod+".tex")
         text += post
-      
+
       if pdf_pipe_log:
         p = Popen([pdflatex_executable, "-jobname", mod, "-interaction", "scrollmode"], cwd=cwd, stdin=PIPE, stdout=sys.stdout, stderr=sys.stderr, env = _env)
         p.stdin.write(text)
@@ -152,13 +157,14 @@ def pdf_gen_do_master(job, quiet, wid=""):
 
   # move the log file
   shutil.move(file[:-4]+".log", pdflog)
-  
+
   if not quiet:
     if p.returncode == 0:
       std("PDF"+wid+": Generated", pdf_path)
     else:
       err("PDF"+wid+": Did not generate", pdf_path)
-  
+  return p.returncode == 0
+
 
 def pdf_gen_do_worker(quiet, job):
   wid = multiprocessing.current_process()._identity[0]
