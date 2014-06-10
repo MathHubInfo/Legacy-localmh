@@ -193,6 +193,10 @@ def do(cmd, args, *repos):
 
 	return ret
 
+def clean(repo, args):
+	"""Cleans up repositories. """
+	return do("clean", ["-f"], repo)
+
 def log(ordered, *repos):
 	"""Prints out log messages on all repositories. """
 	ret = True
@@ -315,36 +319,6 @@ If the new repository depends on other MathHub repositories, we can add them in 
 the repository can be used by others. """)
 	return True
 
-def clean(args, *modules):
-	"""Cleans up repositories. """
-	if args.verbose:
-		def rm(file):
-			std("Removing", file)
-			os.remove(file)
-	else:
-		def rm(file):
-			os.remove(file)
-
-	# remove all the modules
-	for mod in modules:
-		if mod["type"] == "file":
-			if os.path.isfile(mod["omdoc_path"]) and not args.keep_omdoc:
-				rm(mod["omdoc_path"])
-			if os.path.isfile(mod["omdoc_log"]) and not args.keep_omdoc_log:
-				rm(mod["omdoc_log"])
-			if os.path.isfile(mod["pdf_path"]) and not args.keep_pdf:
-				rm(mod["pdf_path"])
-			if os.path.isfile(mod["pdf_log"]) and not args.keep_pdf_log:
-				rm(mod["pdf_log"])
-			if os.path.isfile(mod["sms"]) and not args.keep_sms:
-				rm(mod["sms"])
-		else:
-			if os.path.isfile(mod["alltex_path"]) and not args.keep_alltex:
-				rm(mod["alltex_path"])
-			if os.path.isfile(mod["localpaths_path"]) and not args.keep_localpaths:
-				rm(mod["localpaths_path"])
-	return True
-
 def replace(replacer, replace_args, fullPath, m):
 	std("replacing at %r"%fullPath)
 	if replacer == None:
@@ -406,14 +380,17 @@ def find(rep, args):
 
 	return replacePath(rep, matcher, replaceFnc, args.apply)
 
+
 def write_deps(dirname, deps):
+	"""Writes dependencies into a given module. """
+
 	f = os.path.join(data_dir, match_repository(dirname), "META-INF", "MANIFEST.MF")
 	n = re.sub(r"dependencies: (.*)", "dependencies: "+",".join(deps), read_file(f))
 	write_file(f, n)
 	std("Wrote new dependencies to", f)
 
 
-def calcDeps(apply = False, dirname="."):
+def calc_deps(apply = False, dirname="."):
 	"""Crawls for dependencies in a given directory. """
 
 	repo = match_repository(dirname)

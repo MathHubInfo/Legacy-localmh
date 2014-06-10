@@ -21,7 +21,7 @@ import argparse
 
 
 from lmh.lib.io import std, err
-from lmh.lib.repos.local import calcDeps
+from lmh.lib.repos.local import calc_deps
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Path Management tool.')
@@ -37,7 +37,7 @@ def add_parser_args(parser):
   parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Writes found dependencies to MANIFEST.MF")
 
 def do(args):
-  res = calcDeps(args.apply)
+  res = calc_deps(args.apply)
   if res:
     return True
   else:
