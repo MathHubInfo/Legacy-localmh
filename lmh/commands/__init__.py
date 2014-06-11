@@ -39,11 +39,11 @@ def create_parser(submods = {}):
 	#
 
 	submodules = [
-		"init", "status", "install", "commit", "push", "update", "git", "log", "mine",
+		"init", "status", "install", "commit", "push", "update", "git", "log", "mine", "ls", 
 
-		"about", "setup", "config", "selfupdate", "issue", 
+		"about", "setup", "config", "selfupdate", "issue",
 
-		"gen", "clean", "xhtml", "shell", 
+		"gen", "clean", "xhtml", "shell",
 
 		"find", "depcrawl", "checkpaths", "mvmod", "symbols"
 	]
@@ -51,15 +51,15 @@ def create_parser(submods = {}):
 	for mod in submodules:
 		_mod = getattr(getattr(__import__("lmh.commands."+mod), "commands"), mod)
 		submods[mod] = _mod
-		_mod.add_parser(subparsers)	
+		_mod.add_parser(subparsers)
 
 	#
 	# Command aliases
 	#
 
 	aliases = {
-		"commit": "ci", 
-		"update": "up", 
+		"commit": "ci",
+		"update": "up",
 		"status": "st"
 	}
 
@@ -70,7 +70,7 @@ def create_parser(submods = {}):
 		_mod.add_parser(subparsers, mod)
 
 	#
-	# Special commands, directly implemented. 
+	# Special commands, directly implemented.
 	# TODO: Port all of these to seperate files
 	#
 
@@ -78,7 +78,7 @@ def create_parser(submods = {}):
 
 	add_parser_args(subparsers.add_parser('sms', help='generates sms files, alias for lmh gen --sms'), add_types=False).epilog = "Generate sms files. "
 	add_parser_args(subparsers.add_parser('omdoc', help='generates omdoc files, alias for lmh gen --omdoc'), add_types=False).epilog = "Generate omdoc files. "
-	
+
 	p = add_parser_args(subparsers.add_parser('pdf', help='generates pdf files, alias for lmh gen --pdf'), add_types=False)
 	p.add_argument('--pdf-add-begin-document', action="store_const", const=True, default=False, help="add \\begin{document} to LaTeX sources when generating pdfs. Backward compatibility for issue #82")
 	p.add_argument('--pdf-pipe-log', action="store_const", const=True, default=False, help="Displays only the pdf log as output. Implies --quiet. ")

@@ -45,7 +45,9 @@ from lmh.lib.git import root_dir as git_root_dir
 
 def is_repo_dir(path):
 	"""Checks if a directory is a repo directory. """
-
+	# we have to be a directory
+	if not os.path.isdir(path):
+		return False
 	try:
 		return (os.path.relpath(data_dir, os.path.abspath(path)) == "../..")
 	except:
@@ -72,6 +74,10 @@ def find_repo_subdirs(root):
 	"""Finds repository subdirectories of a directory. """
 
 	res = []
+
+	# if we are not a directory, do nothing.
+	if not os.path.isdir(root):
+		return res
 
 	#Subdirectories
 	for d in [name for name in os.listdir(root) if os.path.isdir(os.path.join(root, name))]:
@@ -101,7 +107,7 @@ def match_repo(repo, root=os.getcwd(), abs=False):
 	# try the full repo_path
 	repo_path = os.path.join(root, repo)
 
-	if is_in_repo(repo_path):
+	if is_repo_dir(repo_path) or is_in_repo(repo_path):
 		# figuzre out the path to the repository root
 		rel_path = os.path.relpath(data_dir, os.path.abspath(repo_path))
 		rel_path = rel_path[len("../.."):]
@@ -115,8 +121,7 @@ def match_repo(repo, root=os.getcwd(), abs=False):
 		else:
 			# return just the repo name, determined by teh relative name
 			return os.path.relpath(repo_path, os.path.abspath(data_dir))
-
-	elif not root == os.path.abspath(data_dir):
+	elif not (root == os.path.abspath(data_dir)):
 		#if the root is not already the data_dir, try that
 		return match_repo(repo, root=data_dir, abs=abs)
 	else:
@@ -137,7 +142,6 @@ def match_repos(repos, root=os.getcwd(), abs=False):
 	# If repos is a string, turn it into an array
 	if isinstance(repos, basestring):
 		repos = [repos]
-
 
 	repo_dirs = []
 	globs = []
