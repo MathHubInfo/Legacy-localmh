@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-This is the entry point for the Local Math Hub utility. 
+This is the entry point for the Local Math Hub utility.
 
 .. argparse::
    :module: xhtml
@@ -40,7 +40,6 @@ import argparse
 #from lmh.commands.gen import create_parser as gen_parser
 #from lmh.mmt import compile
 #from lmh import util
-from lmh.lib.repos import parseRepo
 
 #p = gen_parser()
 #attr = p.parse_args(["--omdoc"]);
@@ -55,7 +54,7 @@ def add_parser(subparsers, name="xhtml"):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=parseRepo, nargs='*', help="a list of repositories for which to generate XHTML")
+  parser.add_argument('repository', nargs='*', help="a list of repositories for which to generate XHTML")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs status on all repositories currently in lmh")
   pass
 
@@ -75,7 +74,7 @@ def do(args):
   if len(args.repository) == 0:
     args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
   if args.all:
-    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]  
+    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]
 
   for repo in args.repository:
     for rep in glob.glob(repo):

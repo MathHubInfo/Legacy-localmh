@@ -24,21 +24,21 @@ from argparse import Namespace
 from lmh.lib.io import std, err
 from lmh.lib.env import data_dir
 
-from lmh.lib.repos.local import match_repositories, find
+from lmh.lib.repos.local import match_repo_args, find
 
 def find_and_replace_all(search, replace):
 
 	args = Namespace()
 	args.__dict__.update({
-    "all": True, 
-    "matcher": search, 
-    "replace": replace, 
-    "apply": True, 
+    "all": True,
+    "matcher": search,
+    "replace": replace,
+    "apply": True,
     "repository": []
   })
 
 	ret = True
-	repos = match_repositories(args)
+	repos = match_repo_args(args.repository, args.all)
 	for rep in repos:
 		ret = find(rep, args) and ret
 
@@ -46,7 +46,7 @@ def find_and_replace_all(search, replace):
 
 def movemod(source, dest, modules, simulate = False):
   # change directory to MathHub root, makes paths easier
-  if simulate: 
+  if simulate:
     std("cd "+data_dir)
   else:
     os.chdir(data_dir)
@@ -59,7 +59,7 @@ def movemod(source, dest, modules, simulate = False):
     srcargs = (source + "/" + module).split("/")
     srcapath = "/".join(srcargs[:-1])
     srcbpath = srcargs[-1]
-    
+
     # Assemble all the commands
     oldcall = "[" + srcapath + "]{"+srcbpath+"}"
     oldcall_long = "[(.*)repos=" + srcapath + "(.*)]{"+srcbpath+"}"
@@ -79,7 +79,7 @@ def movemod(source, dest, modules, simulate = False):
           std("mv "+srcpath + pat +".tex"+ " "+ dest + " 2>/dev/null || true")
         except:
           pass
-      
+
     else:
       for pat in file_patterns:
         # try to move the file if it exists
@@ -87,7 +87,7 @@ def movemod(source, dest, modules, simulate = False):
           shutil.move(srcpath + pat + ".tex", dest)
         except:
           pass
-      
+
 
     def run_lmh_find(search, replace, simulate):
       if simulate:
@@ -95,7 +95,7 @@ def movemod(source, dest, modules, simulate = False):
         std("lmh find "+search+" --replace "+replace+" --apply")
         return True
       else:
-        # run lmmh find $search --replace $replace --apply 
+        # run lmmh find $search --replace $replace --apply
         #main(cmd)
         find_and_replace_all(search, replace)
 

@@ -18,9 +18,8 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
-from lmh.lib.repos import parseRepo
 from lmh.lib.modules import checkpaths
-from lmh.lib.repos.local import match_repositories
+from lmh.lib.repos.local import match_repo_args
 
 def create_parser():
 	parser = argparse.ArgumentParser(description='Local MathHub Path Checking tool.')
@@ -33,14 +32,14 @@ def add_parser(subparsers, name="checkpaths"):
 
 
 def add_parser_args(parser):
-	parser.add_argument('repository', type=parseRepo, nargs='*', help="a list of repositories for which to show the status. ")
-	parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="generates files for all repositories")  
+	parser.add_argument('repository', nargs='*', help="a list of repositories for which to show the status. ")
+	parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="generates files for all repositories")
 
 	parser.add_argument('--interactive', metavar='interactive', const=True, default=False, action="store_const", help="Should check paths be interactive")
 	parser.epilog = """
-Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
-	Example:  
-		*/*       - would match all repositories from all groups. 
+Repository names allow using the wildcard '*' to match any repository. It allows relative paths.
+	Example:
+		*/*       - would match all repositories from all groups.
 		mygroup/* - would match all repositories from group mygroup
 		.         - would run on local directory
 """
@@ -50,7 +49,7 @@ def do(args):
 	checkpaths.init()
 
 	ret = True
-	repos = match_repositories(args)
+	repos = match_repo_args(args.repository, args.all)
 	for rep in repos:
 			ret = checkpaths.checkpaths(rep, args) and ret
 

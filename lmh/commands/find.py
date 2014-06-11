@@ -17,8 +17,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
-from lmh.lib.repos import parseRepo
-from lmh.lib.repos.local import match_repositories, find
+from lmh.lib.repos.local import match_repo_args, find
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Find tool.')
@@ -34,12 +33,12 @@ def add_parser_args(parser):
   parser.add_argument('matcher', metavar='matcher', help="RegEx matcher on the path of the module")
   parser.add_argument('--replace', nargs=1, help="Replace string")
   parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Option specifying that files should be changed")
-  parser.add_argument('repository', type=parseRepo, nargs='*', help="a list of repositories for which to show the status. ")
+  parser.add_argument('repository', nargs='*', help="a list of repositories for which to show the status. ")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs a git command on all repositories currently in lmh")
 
 def do(args):
   ret = True
-  repos = match_repositories(args)
+  repos = match_repo_args(args.repository, args.all)
   for rep in repos:
       ret = find(rep, args) and ret
 

@@ -22,7 +22,7 @@ import subprocess
 import glob
 import os
 
-from lmh.lib.repos.local import match_repository
+from lmh.lib.repos.local import match_repo
 from lmh.lib.git import root_dir
 from lmh.lib.env import install_dir
 
@@ -59,7 +59,7 @@ def runMMTScript(src, path):
   cp = "{dir}/lib/*:{dir}/mmt/branches/informal/*:{dir}/lfcatalog/*:{dir}/mmt/*".format(dir=mmt_root)
   args = ["java", "-Xmx2048m", "-cp", cp, "info.kwarc.mmt.api.frontend.Run"];
   try:
-    print src 
+    print src
     comm = subprocess.Popen(args, cwd=path, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=src);
     print comm[0]
     print comm[1]
@@ -68,10 +68,9 @@ def runMMTScript(src, path):
 
 def compile(repository):
   print "Generating XHTML in %s"%repository
-  repoName = match_repository(repository)
+  repoName = match_repo(repository)
   repoPath = root_dir(repository)
 
   src = repoPath+"/source"
   script = initScript.format(lmhRoot=install_dir)+"\n"+buildScript.format(repoName=repoName)
   runMMTScript(script, repoPath)
-

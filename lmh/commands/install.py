@@ -18,7 +18,6 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import argparse
 
 from lmh.lib.io import err
-from lmh.lib.repos import repoType
 from lmh.lib.repos.remote import install
 
 def create_parser():
@@ -31,9 +30,9 @@ def add_parser(subparsers, name="install"):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=repoType, nargs='*', help="a list of remote repositories to fetch locally. Should have form mygroup/myproject. No wildcards allowed. ")
+  parser.add_argument('repository', nargs='*', help="a list of remote repositories to fetch locally. Should have form mygroup/myproject. No wildcards allowed. ")
   parser.epilogue = """
-  Use install::sources to configure the sources of repositories. 
+  Use install::sources to configure the sources of repositories.
   Use install::nomanifest to configure what happens to repositories without a manifest
   """
 

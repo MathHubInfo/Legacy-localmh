@@ -19,8 +19,7 @@ import argparse
 
 from lmh.lib.io import std
 from lmh.lib.packs import update
-from lmh.lib.repos import parseRepo
-from lmh.lib.repos.local import match_repositories, pull
+from lmh.lib.repos.local import match_repo_args, pull
 from lmh.lib.config import get_config
 
 def create_parser():
@@ -33,7 +32,7 @@ def add_parser(subparsers, name="update"):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=parseRepo, nargs='*', help="a list of repositories which should be updated. ")
+  parser.add_argument('repository', nargs='*', help="a list of repositories which should be updated. ")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="updates all repositories currently in lmh")
   parser.epilog = """
 If update::selfupdate is set to True, calling lomh update without any arguments will also call lmh selfupdate.
@@ -54,5 +53,5 @@ def do(args):
       if not update("self"):
         return False
 
-  repos = match_repositories(args)
+  repos = match_repo_args(args.repository, args.all)
   return pull(*repos)

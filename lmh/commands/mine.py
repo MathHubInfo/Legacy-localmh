@@ -20,7 +20,7 @@ import argparse
 
 from lmh.lib import config
 from lmh.lib.io import std, err
-from lmh.lib.repos.local import find_all_locals, export, restore
+from lmh.lib.repos.local import export, restore
 
 # import the root
 

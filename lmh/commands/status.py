@@ -17,8 +17,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
-from lmh.lib.repos import parseRepo
-from lmh.lib.repos.local import match_repositories, status
+from lmh.lib.repos.local import match_repo_args, status
 
 
 def create_parser():
@@ -32,17 +31,17 @@ def add_parser(subparsers, name="status"):
 
 
 def add_parser_args(parser):
-  parser.add_argument('repository', type=parseRepo, nargs='*', help="a list of repositories for which to show the status. ")
+  parser.add_argument('repository', nargs='*', help="a list of repositories for which to show the status. ")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs status on all repositories currently in lmh")
 
   parser.epilog = """
-Repository names allow using the wildcard '*' to match any repository. It allows relative paths. 
-  Example:  
-    */*       - would match all repositories from all groups. 
+Repository names allow using the wildcard '*' to match any repository. It allows relative paths.
+  Example:
+    */*       - would match all repositories from all groups.
     mygroup/* - would match all repositories from group mygroup
     .         - would be equivalent to "git status ."
 """
 
 def do(args):
-  repos = match_repositories(args)
+  repos = match_repo_args(args.repository, args.all)
   return status(*repos)
