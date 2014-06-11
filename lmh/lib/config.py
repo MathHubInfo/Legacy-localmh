@@ -19,7 +19,7 @@ import os.path
 import json
 
 from lmh.lib.env import install_dir
-from lmh.lib.io import std, err, read_file, write_file
+from lmh.lib.io import std, err, read_file, write_file, term_colors
 
 """Available configuration values. """
 config_meta = json.loads(read_file(install_dir + "/lmh/data/config.json"))
@@ -45,6 +45,17 @@ def get_config(key):
 
 	# return the default value
 	return config_meta[key]["default"]
+
+def format_type(t):
+	"""Formats a type. """
+	if t == "string":
+		return term_colors("yellow")+"<string>"+term_colors("normal")
+	elif t == "bool":
+		return term_colors("green")+"<bool>"+term_colors("normal")
+	elif t == "int":
+		return term_colors("blue")+"<int>"+term_colors("normal")
+	elif t == "int+":
+		return term_colors("cyan")+"<int+>"+term_colors("normal")
 
 def set_config(key, value):
 	"""Sets a given configuration setting. """
@@ -122,7 +133,7 @@ def get_config_help(key):
 
 	meta = config_meta[key]
 
-	std("<" + meta["type"] + "> "+key)
+	std(format_type(meta["type"]), key)
 	std(meta["help"])
 	std("Current Value: " + json.dumps(get_config(key)))
 	std("Default Value: " + json.dumps(meta["default"]))
@@ -138,4 +149,4 @@ def list_config():
 				continue
 		except:
 			pass
-		std(key +" = <" + config_meta[key]["type"] + "> " + json.dumps(get_config(key)))
+		std(key +" =", format_type(config_meta[key]["type"]), json.dumps(get_config(key)))
