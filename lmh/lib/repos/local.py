@@ -192,7 +192,6 @@ def do(cmd, args, *repos):
 		ret = git_do(rep, cmd, *args) and ret
 
 	return ret
-
 def clean(repo, args):
 	"""Cleans up repositories. """
 	return do("clean", ["-f"], repo)
@@ -475,3 +474,127 @@ def calc_deps(apply = False, dirname="."):
 		write_deps(dirname, ret["should_be"])
 
 	return ret
+
+def is_repo_dir(path):
+	"""Checks if a directory is a repo directory. """
+	try:
+		return (os.path.relpath(data_dir, os.path.abspath(path)) == "../..")
+	except:
+		return False
+
+def is_in_data(path):
+	"""Checks if a directory is contained within the data directory. """
+	try:
+		return os.path.abspath(path).startswith(os.path.abspath(data_dir))
+	except:
+		return False
+
+def is_in_repo(path):
+	"""Checks if a directory is contained inside of a repo. """
+	try:
+		if is_in_data(path):
+			return os.path.relpath(data_dir, os.path.abspath(path)).startsWith("../..")
+		else:
+			return False
+	except:
+		return False
+
+def find_repo_subdirs(root):
+	"""Finds repository subdirectories of a directory. """
+
+	res = []
+
+	#Subdirectories
+	for d in [name for name in os.listdir(root) if os.path.isdir(os.path.join(root, name))]:
+		d = os.path.join(root, d)
+		if is_repo_dir(d):
+			res = res + [d]
+		else:
+			res = res + find_repo_subdirs(d)
+
+	return res
+
+def match_repo(repo, root=os.getcwd(), abs=False):
+	"""Matches a single specefier to a repository. """
+
+	# 1) Resolve to absolute path repo (via root)
+	# 2) If it is (inside) a repository, return that repository
+	# 3) If not, try to repeat 1) and 2) with root = data_dir
+	# 4) If that fails, return None
+
+	# make sure the root is absolute
+	root = os.path.abspath(root)
+
+	# If repo is empty, make sure we use the current directory.
+	if repo == "":
+		repo = os.getcwd()
+
+	# try the full repo_path
+	repo_path = os.path.join(root, repo)
+
+	if is_in_repo(repo_path):
+		# figuzre out the path to the repository root
+		rel_path = os.path.relpath(data_dir, os.path.abspath(repo_path))
+		rel_path = rel_path[len("../.."):]
+		# make sure it does not start with a "/" to avoid abspaths
+		while rel_path.startswith("/"):
+			rel_path = rel_path[1:]
+		repo_path = os.path.abspath(os.path.join(repo_path, rel_path))
+		if abs:
+			# return the absolute path to the repo
+			return repo_path
+		else:
+			# return just the repo name, determined by teh relative name
+			return os.path.relpath(repo_path, os.path.abspath(data_dir))
+
+	elif not root == os.path.abspath(data_dir):
+		#if the root is not already the data_dir, try that
+		return match_repo(repo, root=data_dir, abs=abs)
+	else:
+		# nothing found
+		return None
+
+
+def match_repos(repos, root=os.getcwd(), abs=False):
+	"""Matches a list of specefiers to repositories. """
+
+	# For each element do the following:
+	# 1) Check if given directory exists relatively from current root.
+	# 	1a) If it is a repository or repository subdir, return that
+	#	 1b) If it is inside the data_dir, return all repo subdirectories
+	# 2) If it does not exist, resolve it as glob.glob from install_dir
+	# 3) For each of the found directories, run 1)
+
+	repo_dirs = []
+	globs = []
+
+	# Try and find actual directories from root
+	for r in repos:
+		r_abs = os.path.abspath(os.path.join(root, r))
+		if os.path.isdir(r_abs):
+			# its a directory
+			repo_dirs.append(r_abs)
+		else:
+			# Its not => treat as glob
+			globs.append(r)
+			# Try and reolsve th globs
+	os.chdir(data_dir)
+	for g in globs:
+		repo_dirs.extend(glob.glob(g))
+
+	rdirs = []
+
+	for d in repo_dirs:
+		m = match_repo(d)
+		if m:
+			rdirs.append(m)
+		elif is_in_data(d):
+			rdirs.extend(find_repo_subdirs(d))
+		else:
+			err("Failed to parse repo", d, ", not inside data_directory. ")
+
+	if not abs:
+		# its not absolute, return the relative paths
+		rdirs = [os.path.relpath(d, os.path.abspath(data_dir)) for d in rdirs]
+
+	return rdirs

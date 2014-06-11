@@ -32,13 +32,15 @@ from lmh.lib.io import std, err, read_file, effectively_readable
 from lmh.lib.env import install_dir, data_dir
 from lmh.lib.git import root_dir
 
+from lmh.lib.repos.local import find_repo_subdirs
+
 
 # The special files
 special_files = {"all.tex":True, "localpaths.tex": True}
 
 def needsPreamble(file):
   # echsk if we need to add the premable
-  return re.search(r"\\begin(\w)*{document}", read_file(file)) == None 
+  return re.search(r"\\begin(\w)*{document}", read_file(file)) == None
 
 def locate_module(path, git_root):
   # locates a single module if it exists
@@ -51,7 +53,7 @@ def locate_module(path, git_root):
   if not path.endswith(".tex") or os.path.basename(path) in special_files or not effectively_readable(path):
     return []
 
-  # you can use any directory, but if it is in the localmh directory, 
+  # you can use any directory, but if it is in the localmh directory,
   # it also has to be within MathHub
   if path.startswith(os.path.abspath(install_dir)) and not path.startswith(os.path.abspath(data_dir)):
     return []
@@ -64,30 +66,30 @@ def locate_module(path, git_root):
   pdfpath = basepth+".pdf"
   pdflog = basepth+".pdflog"
   smspath = basepth+".sms"
-  
+
 
   f = {
-    "type": "file", 
-    "mod": os.path.basename(basepth), 
-    "file": path, 
+    "type": "file",
+    "mod": os.path.basename(basepth),
+    "file": path,
 
-    "repo": git_root, 
-    "repo_name": os.path.relpath(git_root, data_dir), 
+    "repo": git_root,
+    "repo_name": os.path.relpath(git_root, data_dir),
 
-    "path": os.path.dirname(path), 
-    "file_time": os.path.getmtime(path), 
+    "path": os.path.dirname(path),
+    "file_time": os.path.getmtime(path),
     "file_root": git_root,
 
-    "omdoc": omdocpath if os.path.isfile(omdocpath) else None, 
-    "omdoc_path": omdocpath, 
-    "omdoc_time": os.path.getmtime(omdocpath) if os.path.isfile(omdocpath) else 0, 
+    "omdoc": omdocpath if os.path.isfile(omdocpath) else None,
+    "omdoc_path": omdocpath,
+    "omdoc_time": os.path.getmtime(omdocpath) if os.path.isfile(omdocpath) else 0,
     "omdoc_log": omdoclog,
-    "pdf": pdfpath if os.path.isfile(pdfpath) else None, 
-    "pdf_path": pdfpath, 
-    "pdf_time": os.path.getmtime(pdfpath) if os.path.isfile(pdfpath) else 0, 
-    "pdf_log": pdflog, 
-    "sms": smspath, 
-    "sms_time": os.path.getmtime(smspath) if os.path.isfile(smspath) else 0, 
+    "pdf": pdfpath if os.path.isfile(pdfpath) else None,
+    "pdf_path": pdfpath,
+    "pdf_time": os.path.getmtime(pdfpath) if os.path.isfile(pdfpath) else 0,
+    "pdf_log": pdflog,
+    "sms": smspath,
+    "sms_time": os.path.getmtime(smspath) if os.path.isfile(smspath) else 0,
   }
 
   if needsPreamble(path):
@@ -103,7 +105,7 @@ def locate_module(path, git_root):
 def locate_modules(path, depth=-1):
   # locates the submodules
 
-  # you can use any directory, but if it is in the localmh directory, 
+  # you can use any directory, but if it is in the localmh directory,
   # it also has to be within MathHub
   if path.startswith(os.path.abspath(install_dir)) and not path.startswith(os.path.abspath(data_dir)):
     return []
@@ -123,7 +125,7 @@ def locate_modules(path, depth=-1):
   if os.path.isfile(path):
     return locate_module(path, git_root)
 
-  if not os.path.isdir(path): 
+  if not os.path.isdir(path):
     # fail silently for non-existing directories
     return []
 
@@ -154,24 +156,24 @@ def locate_modules(path, depth=-1):
         post = m["file_post"]
 
     modules[:0] = [{
-      "type": "folder", 
-      "path": path, 
-      
-      "modules": [m["mod"] for m in modules], 
+      "type": "folder",
+      "path": path,
 
-      "repo": git_root, 
-      "repo_name": os.path.relpath(git_root, data_dir), 
-      "youngest": youngest, 
+      "modules": [m["mod"] for m in modules],
 
-      "alltex": alltexpath if os.path.isfile(alltexpath) else None, 
-      "alltex_path": alltexpath, 
+      "repo": git_root,
+      "repo_name": os.path.relpath(git_root, data_dir),
+      "youngest": youngest,
+
+      "alltex": alltexpath if os.path.isfile(alltexpath) else None,
+      "alltex_path": alltexpath,
       "alltex_time": os.path.getmtime(alltexpath) if os.path.isfile(alltexpath) else 0,
 
-      "localpaths": localpathstex if os.path.isfile(localpathstex) else None, 
-      "localpaths_path": localpathstex, 
+      "localpaths": localpathstex if os.path.isfile(localpathstex) else None,
+      "localpaths_path": localpathstex,
       "localpaths_time": os.path.getmtime(localpathstex) if os.path.isfile(localpathstex) else 0,
 
-      "file_pre": pre, 
+      "file_pre": pre,
       "file_post": post
     }]
 
@@ -198,42 +200,27 @@ def makeIndex(dir = "."):
 
   return index
 
-def find_repo_subdirs(root, is_repo):
-  """Finds repository subdirectories of a directory. """
-
-  res = []
-
-  #Subdirectories
-  for d in [name for name in os.listdir(root) if os.path.isdir(os.path.join(root, name))]:
-    d = os.path.join(root, d)
-    if is_repo(d):
-      res = res + [d]
-    else:
-      res = res + find_repo_subdirs(d, is_repo)
-
-  return res
-
 def resolve_pathspec(args, allow_files = True, allow_local = True, recursion_depth=None):
   # Resolves the path specification given by the arguments
 
   """
-    Resolving of paths: 
+    Resolving of paths:
 
-    1) If --all is given, assume **only** data_dir as argument. 
+    1) If --all is given, assume **only** data_dir as argument.
     2) If no arguments are given, assume **only** . as argument
 
-    If no arguments are given, assume "." as argument. 
-    
+    If no arguments are given, assume "." as argument.
 
 
-    Each argument s is treatde as glob. Then: 
+
+    Each argument s is treatde as glob. Then:
 
     1) Do a glob.glob($PATHSPEC). Then for each $GLOB:
       A) Check if a file $GLOB.tex exists => treat as module
       B) Check if a directory $GLOB exists
         B.1) Are we inside a repository => treat as a normal repo
         B.2) are we outside of a repository => search for all repositories contained in it
-    2) If that gives no results, do a glob.glob($PATHSPEC) realtive to data_dir and repeat 1B) 
+    2) If that gives no results, do a glob.glob($PATHSPEC) realtive to data_dir and repeat 1B)
   """
 
   # args.all is given => generate everywhere
@@ -243,7 +230,7 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, recursion_dep
   if recursion_depth == None:
       recursion_depth = args.recursion_depth
 
-  # We do not have any arguments, use nothing at all. 
+  # We do not have any arguments, use nothing at all.
   if(len(args.pathspec) == 0):
     args.pathspec = ["."]
 
@@ -283,7 +270,7 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, recursion_dep
             cont = False
           elif is_in_data(gl_abs):
             # Find all the subdirectories which match
-            paths = paths + find_repo_subdirs(gl_abs, is_repo)
+            paths = paths + find_repo_subdirs(gl_abs)
             cont = False
           else:
             err("Warning: Path", gl_abs, "is not within the lmh data directory, ignoring. ")
@@ -303,7 +290,7 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, recursion_dep
         elif is_in_data(gl_abs):
           didthings = True
           # Find all the subdirectories which match
-          paths = paths + find_repo_subdirs(gl_abs, is_repo)
+          paths = paths + find_repo_subdirs(gl_abs)
         else:
           err("Warning: Path", gl_abs, "is not within the lmh data directory, ignoring. ")
           continue
