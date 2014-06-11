@@ -32,7 +32,8 @@ def add_parser(subparsers, name="ls"):
 
 
 def add_parser_args(parser):
-  parser.add_argument('repository', nargs='*', help="a list of repositories to list. ")
+  parser.add_argument('repository', nargs='*', help="list of repository specefiers. ")
+  parser.add_argument('--abs', '-A', default=False, action="store_true", help="Print absolute repository paths. ")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="list all repositories")
 
   parser.epilog = """
@@ -40,11 +41,13 @@ Repository names allow using the wildcard '*' to match any repository. It allows
   Example:
     */*       - would match all repositories from all groups.
     mygroup/* - would match all repositories from group mygroup
-    .         - would be equivalent to "git status ."
+    .         - matches current repository
+Please remember that shell such as bash auto-expand glob arguments. You can use
+'s to avoid this.
 """
 
 def do(args):
-    repos = match_repo_args(args.repository, args.all)
+    repos = match_repo_args(args.repository, args.all, abs=args.abs)
     for r in repos:
       std(r)
     return True

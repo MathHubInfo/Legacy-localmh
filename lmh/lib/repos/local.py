@@ -171,7 +171,7 @@ def match_repos(repos, root=os.getcwd(), abs=False):
 		elif os.path.abspath(d) == os.path.abspath(install_dir):
 			rdirs.extend(find_repo_subdirs(install_dir))
 		else:
-			err("Failed to parse repo", d, " not inside data_directory. ")
+			err("Failed to parse", d, "as a repository, outside of data directory. ")
 
 	if not abs:
 		# its not absolute, return the relative paths
@@ -180,15 +180,15 @@ def match_repos(repos, root=os.getcwd(), abs=False):
 	return rdirs
 
 
-def match_repo_args(spec, all=False):
+def match_repo_args(spec, all=False, abs=False):
 	"""Matches repository arguments to an actual list of repositories"""
 
 	if all:
-		return match_repos(install_dir)
+		return match_repos(install_dir, abs=abs)
 	elif len(spec) == 0:
-		return match_repos(".")
+		return match_repos(".", abs=abs)
 	else:
-		return match_repos(spec)
+		return match_repos(spec, abs=abs)
 
 #
 # Import / Export of all existing repos to a certain file
