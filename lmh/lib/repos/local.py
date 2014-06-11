@@ -64,7 +64,7 @@ def is_in_repo(path):
 	"""Checks if a directory is contained inside of a repo. """
 	try:
 		if is_in_data(path):
-			return os.path.relpath(data_dir, os.path.abspath(path)).startsWith("../..")
+			return os.path.relpath(data_dir, os.path.abspath(path)).startswith("../..")
 		else:
 			return False
 	except:
