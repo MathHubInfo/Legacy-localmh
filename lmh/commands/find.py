@@ -17,7 +17,8 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
-from lmh.lib.repos.local import match_repo_args, find
+from lmh.lib.repos.local import match_repo_args
+from lmh.lib.repos.find_and_replace import find
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Find tool.')

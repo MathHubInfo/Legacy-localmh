@@ -19,13 +19,10 @@ import os
 import re
 import os.path
 import glob
-import functools
-
-from string import Template
 
 from lmh.lib.env import install_dir, data_dir
 from lmh.lib.io import term_colors, std, std_paged, err, copytree, write_file, read_file, read_file_lines
-from lmh.lib.repos import find_dependencies # TODO: Check if remove
+from lmh.lib.repos import find_dependencies
 from lmh.lib.repos.remote import install
 from lmh.lib.config import get_config
 from lmh.lib.extenv import get_template
@@ -415,67 +412,6 @@ If the new repository depends on other MathHub repositories, we can add them in 
 "dependencies:" in META-INF/MANIFEST.MF. Note that any changes have to be committed and pushed before
 the repository can be used by others. """)
 	return True
-
-def replace(replacer, replace_args, fullPath, m):
-	std("replacing at %r"%fullPath)
-	if replacer == None:
-		return m.group(0)
-	for idx, g in enumerate(m.groups()):
-		replace_args["g"+str(idx)] = g
-
-	res = Template(replacer).substitute(replace_args)
-
-	return res
-
-def replacePath(dirname, matcher, replaceFnc, apply=False):
-  try:
-    compMatch = re.compile(matcher)
-  except Exception as e:
-    err("failed to compile matcher %r"%matcher)
-    err(e)
-    return False
-
-  for root, dirs, files in os.walk(dirname):
-    path = root.split('/')
-    for file in files:
-      fileName, fileExtension = os.path.splitext(file)
-      if fileExtension != ".tex":
-        continue
-      fullpath = root+"/"+file
-      if not os.access(fullpath, os.R_OK): # ignoring files I cannot read
-        continue
-      changes = False
-      replaceContext = functools.partial(replaceFnc, fullpath)
-      for line in open(fullpath, "r"):
-        newLine = compMatch.sub(replaceContext, line)
-        if newLine != line:
-          changes = True
-          std(fullpath + ": \n " + line + newLine)
-
-        if apply:
-          write_file(fullpath+".tmp", newLine)
-      if apply:
-        if changes:
-          os.rename(fullpath+".tmp", fullpath)
-        else:
-          os.remove(fullpath+".tmp")
-
-def find(rep, args):
-	"""Finds pattern in repositories"""
-
-	replacer = None
-	repname = match_repo(rep)
-
-	matcher = Template(args.matcher).substitute(repo=repname)
-
-	if args.replace:
-		replacer = args.replace[0]
-
-	replace_args = {"repo" : repname}
-
-	replaceFnc = functools.partial(replace, replacer, replace_args)
-
-	return replacePath(rep, matcher, replaceFnc, args.apply)
 
 
 def write_deps(dirname, deps):

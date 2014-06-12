@@ -24,7 +24,8 @@ from argparse import Namespace
 from lmh.lib.io import std, err
 from lmh.lib.env import data_dir
 
-from lmh.lib.repos.local import match_repo_args, find
+from lmh.lib.repos.local import match_repo_args
+from lmh.lib.repos.find_and_replace import find
 
 def find_and_replace_all(search, replace):
 
