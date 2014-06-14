@@ -207,3 +207,17 @@ def effectively_readable(path):
 	groups = os.getgroups()
 	if st.st_gid == egid or st.st_gid in groups:
 		return st.st_mode & stat.S_IRGRP != 0
+
+def find_files(directory, *ext):
+	"""Finds files in a given directory"""
+	res = []
+
+	ext = ["."+e for e in ext]
+	res = [[] for e in ext]
+
+	for root, dirs, files in os.walk(directory):
+	    for file in files:
+			for (i, e) in enumerate(ext):
+				if file.endswith(e):
+					res[i].append(os.path.join(root, file))
+	return tuple(res)

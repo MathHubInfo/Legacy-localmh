@@ -21,7 +21,7 @@ import os.path
 import glob
 
 from lmh.lib.env import install_dir, data_dir
-from lmh.lib.io import term_colors, std, std_paged, err, copytree, write_file, read_file, read_file_lines
+from lmh.lib.io import term_colors, find_files, std, std_paged, err, copytree, write_file, read_file, read_file_lines
 from lmh.lib.repos import find_dependencies
 from lmh.lib.repos.remote import install
 from lmh.lib.config import get_config
@@ -177,7 +177,7 @@ def match_repos(repos, root=os.getcwd(), abs=False):
 	return rdirs
 
 
-def match_repo_args(spec, all=False, abs=False):
+def match_repo_args(spec, all=False, abs=True):
 	"""Matches repository arguments to an actual list of repositories"""
 
 	if all:
@@ -282,9 +282,25 @@ def do(cmd, args, *repos):
 		ret = git_do(rep, cmd, *args) and ret
 
 	return ret
-def clean(repo, args):
+
+def git_clean(repo, args):
 	"""Cleans up repositories. """
+
 	return do("clean", ["-f"], repo)
+
+def clean_orphans(d):
+	"""Cleans out orphaned files int he given directory"""
+	(texs, omdocs, pdfs, sms) = find_files(d, "tex", "omdoc", "sms")
+	std(texs)
+	for file in texs:
+		std(file)
+
+	return True
+
+def clean(repo, args):
+	res = clean_orphans(repo)
+	res = git_clean(repo, args) and res
+	return res
 
 def log(ordered, *repos):
 	"""Prints out log messages on all repositories. """

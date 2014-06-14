@@ -53,7 +53,7 @@ mathpath fs http://cds.omdoc.org/styles {lmhRoot}/styles
 base http://docs.omdoc.org/mmt
 """;
 
-mmt_root = install_dir+"/ext/MMT";
+mmt_root = os.path.join(install_dir, "ext", "MMT");
 
 def runMMTScript(src, path):
   cp = "{dir}/lib/*:{dir}/mmt/branches/informal/*:{dir}/lfcatalog/*:{dir}/mmt/*".format(dir=mmt_root)
@@ -71,6 +71,6 @@ def compile(repository):
   repoName = match_repo(repository)
   repoPath = root_dir(repository)
 
-  src = repoPath+"/source"
+  src = os.path.join(repoPath, "source")
   script = initScript.format(lmhRoot=install_dir)+"\n"+buildScript.format(repoName=repoName)
   runMMTScript(script, repoPath)

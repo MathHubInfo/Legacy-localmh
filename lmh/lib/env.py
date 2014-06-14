@@ -23,17 +23,20 @@ from lmh.lib.io import std
 """Installation directory of lmh"""
 install_dir = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../")
 
-"""Data directory of lmh"""
-data_dir = os.path.realpath(install_dir + "/MathHub")
+"""Name of the data directory. """
+data_dir_name = "MathHub"
 
-"""Excternale dependencies directory of lmh"""
-ext_dir = os.path.realpath(install_dir + "/ext")
+"""Data directory of lmh"""
+data_dir = os.path.realpath(os.path.join(install_dir, data_dir_name))
+
+"""External dependencies directory of lmh"""
+ext_dir = os.path.realpath(os.path.join(install_dir, "ext"))
 
 def which(program):
 	"""Returns the full path to program similar to the *nix command which"""
 	def is_exe(fpath):
 		return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
-	
+
 	fpath, fname = os.path.split(program)
 	if fpath:
 		if is_exe(program):
@@ -48,7 +51,7 @@ def which(program):
 	return None
 
 """sTex directory"""
-stexstydir = install_dir+"/ext/sTeX/sty"
+stexstydir = os.path.join(ext_dir, "sTeX", "sty")
 
 """LatexML directory"""
-latexmlstydir = install_dir+"/ext/sTeX/LaTeXML/lib/LaTeXML/texmf"
+latexmlstydir = os.path.join(ext_dir, "sTeX", "LaTeXML", "lib", "LaTeXML", "texmf")

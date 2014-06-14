@@ -28,21 +28,9 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from lmh.lib.io import err
-
+from lmh.lib.repos.local import match_repo_args
 
 import argparse
-
-#import os
-#from subprocess import call
-#import ConfigParser
-#import glob
-
-#from lmh.commands.gen import create_parser as gen_parser
-#from lmh.mmt import compile
-#from lmh import util
-
-#p = gen_parser()
-#attr = p.parse_args(["--omdoc"]);
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub XHTML tool.')
@@ -59,23 +47,19 @@ def add_parser_args(parser):
   pass
 
 def do_xhtml(rep):
-  # TODO: Rebuild this
-
   rep_root = util.git_root_dir(rep)
   def msg(m):
     pass
-  # prep_gen(rep, attr, msg)
-  # compile(rep_root)
   pass
 
 def do(args):
   err("Warning: lmh xhtml is currently outdated, whatever you are trying to do wont work. ")
+  err("If you really need it, you can ask a wizard to enlarge lmh. ")
   return False
-  if len(args.repository) == 0:
-    args.repository = [util.tryRepo(".", util.lmh_root()+"/MathHub/*/*")]
-  if args.all:
-    args.repository = [util.tryRepo(util.lmh_root()+"/MathHub", util.lmh_root()+"/MathHub")]
 
-  for repo in args.repository:
-    for rep in glob.glob(repo):
-      do_xhtml(rep);
+  mat_repo_args(arg)
+
+  repos = match_repo_args(args.repository, args.all)
+
+  for rep in repos:
+      do_xhtml(rep)

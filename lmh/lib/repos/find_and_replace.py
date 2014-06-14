@@ -56,7 +56,7 @@ def replacePath(dirname, matcher, replaceFnc, apply=False):
             fileName, fileExtension = os.path.splitext(file)
             if fileExtension != ".tex":
                 continue
-            fullpath = root+"/"+file
+            fullpath = os.path.join(root, file)
             if not os.access(fullpath, os.R_OK): # ignoring files I cannot read
                 continue
             changes = False

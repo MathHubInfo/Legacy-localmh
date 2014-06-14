@@ -49,7 +49,7 @@ def install_excepthook():
     err("a report will be generated in ")
     s = "cwd = {0}\n args = {1}\n".format(cwd, sys.argv)
     s = s + e 
-    write_file(install_dir+"/logs/"+time.strftime("%Y-%m-%d-%H-%M-%S.log"), s)
+    write_file(os.path.join(install_dir, "logs", time.strftime("%Y-%m-%d-%H-%M-%S.log")), s)
 
   sys.excepthook = my_excepthook
 
@@ -101,7 +101,7 @@ def main(argv = sys.argv[1:]):
   if args.action == "pdf":
     argv[0] = "gen"
     argv.append("--pdf")
-    return submods["gen"].do(parser.parse_args(argv)) 
+    return submods["gen"].do(parser.parse_args(argv))
 
   #
   # Normal run code
