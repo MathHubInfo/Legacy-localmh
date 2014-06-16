@@ -52,6 +52,7 @@ def movemod(source, dest, modules, simulate = False):
   else:
     os.chdir(data_dir)
 
+
   for module in modules:
     # Figure out the full path to the source
     srcpath = source + "/source/" +  module

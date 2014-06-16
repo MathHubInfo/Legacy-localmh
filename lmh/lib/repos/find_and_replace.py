@@ -23,38 +23,46 @@ from lmh.lib.io import find_files, std, err, read_file, write_file
 from lmh.lib.env import data_dir
 from lmh.lib.repos.local import find_repo_dir, match_repo
 
-def find_and_replace_file(file, match, replace):
+def find_and_replace_file(file, match, replace, replace_match = None):
     """Finds and replaces a single file. """
+
+    if len(match) != len(replace):
+        err("Find and Replace patterns are not of the same length. ")
+        return False
 
     # Compile thex regexp
     try:
-        match_regex = re.compile(match)
+        match_regex = [re.compile(m) for m in match]
     except:
-        err("Invalid regular Expression. ")
+        err("Unable to compile regular expressions. ")
         return False
 
     # get the repository
     repo = os.path.relpath(find_repo_dir(file), data_dir)
 
-    # Read file and search
-    file_content = read_file(file)
     # We did nothing yet
     did = False
+    if replace_match == None:
+        def replace_match(match, replace):
+            # we did something
+            did = True
 
-    def replace_match(match):
-        # we did something
-        did = True
+            # Make a template,
+            replacer_template = {}
+            replacer_template["repo"] = repo
+            for i, g in enumerate(match.groups()):
+                replacer_template["g"+str(i)] = g
 
-        # Make a template.
-        replacer_template = {}
-        replacer_template["repo"] = repo
-        for i, g in enumerate(match.groups()):
-            replacer_template["g"+str(i)] = g
+            # And replace in it
+            return Template(replace).substitute(replacer_template)
 
-        # And replace in it
-        return Template(replace).substitute(replacer_template)
+    # Read file and search
+    file_content = read_file(file)
+    new_file_content = file_content
 
-    new_file_content = re.sub(match_regex, replace_match, file_content)
+    # Iterate over the regexes and replace
+    for (m, r) in zip(match_regex, replace):
+        new_file_content = re.sub(m, lambda x:replace_match(x, r), new_file_content)
 
     if file_content != new_file_content:
         std(file)
@@ -69,28 +77,45 @@ def find_file(file, match):
 
     # Compile thex regexp
     try:
-        match_regex = re.compile(match)
+        match_regex = [re.compile(m) for m in match]
     except:
-        err("Invalid regular Expression. ")
+        err("Unable to compile regular expressions. ")
         return False
 
     # Read file and search
     file_content = read_file(file)
-    if re.search(match_regex, file_content) != None:
-        std(file)
-        return True
-    else:
-        return False
+
+    ret = False
+    for i, m in enumerate(match_regex):
+        if re.search(m, file_content) != None:
+            if len(match) > 1:
+                std(str(i), file)
+            else:
+                std(file)
+            ret = True
+
+    return ret
 
 
-def find_cached(files, match, replace = None):
+def find_cached(files, match, replace = None, replace_match = None):
     """Finds and replaces inside of files. """
+
+    # Make sure match and replace are arrays
+    match = [match] if isinstance(match, basestring) else match
+    if replace != None:
+        replace = [replace] if isinstance(replace, basestring) else replace
+
+        if len(replace) != len(match):
+            err("Find and Replace patterns are not of the same length. ")
+            return False
+
+
     rep = False
     for file in files:
         repo = os.path.relpath(find_repo_dir(file), data_dir)
-        matcher = Template(match).substitute(repo=repo)
+        matcher = [Template(m).substitute(repo=repo) for m in match]
         if replace != None:
-            rep = find_and_replace_file(file, matcher, replace) or rep
+            rep = find_and_replace_file(file, matcher, replace, replace_match = replace_match) or rep
         else:
             rep = find_file(file, matcher) or rep
     return rep
