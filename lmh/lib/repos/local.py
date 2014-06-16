@@ -175,6 +175,9 @@ def match_repos(repos, root=os.getcwd(), abs=False):
 		else:
 			err("Failed to parse", d, "as a repository, outside of data directory. ")
 
+	# Remove doubles
+	rdirs = list(set(rdirs))
+
 	if not abs:
 		# its not absolute, return the relative paths
 		rdirs = [os.path.relpath(d, os.path.abspath(data_dir)) for d in rdirs]
