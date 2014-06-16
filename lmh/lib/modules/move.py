@@ -82,12 +82,15 @@ def movemod(source, dest, modules, simulate = False):
 
 		# Run all the commands
 		m = "("+"|".join(["gimport", "guse", "gadopt"])+")"
-		run_lmh_find(r'\\\\'+m+oldcall, '\\$g0'+newcall)
-		run_lmh_find(r'\\\\'+m+oldcall_local, '\\$g0'+newcall)
+		run_lmh_find(r'\\'+m+oldcall, '\\$g0'+newcall)
+		run_lmh_find(r'\\'+m+oldcall_local, '\\$g0'+newcall)
 
 		m = "("+ "|".join(["importmhmodule", "usemhmodule", "adoptmhmodule", "usemhvocab"]) + ")"
 		run_lmh_find(r'\\'+m+oldcall_long, '\\$g0'+newcall_long)
 		run_lmh_find(r'\\'+m+oldcall_local, '\\$g0'+newcall_long)
+
+	for f in finds:
+		std(f)
 
 	files = reduce([find_files(r, "tex")[0] for r in match_repos(data_dir, abs=True)])
 

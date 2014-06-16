@@ -16,7 +16,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 
-import argparse 
+import argparse
 
 from lmh.lib.modules.move import movemod
 
@@ -37,14 +37,14 @@ def add_parser_args(parser):
 
 
   parser.epilog = """
-    Example: lmh mvmod smglom/smglom smglom/set set 
+    Example: lmh mvmod smglom/smglom smglom/set set
 
-    Which moves the multilingual set module from smglom/smglom into the new repository smglom/set. 
+    Which moves the multilingual set module from smglom/smglom into the new repository smglom/set.
 
-    It can be advisable to run an lmh clean before executing this command, as it speeds it up quite a lot. 
+    It can be advisable to run an lmh clean before executing this command, as it speeds it up quite a lot.
   """
 def do(args):
   args.source = args.source[0]
   args.dest = args.dest[0]
 
-  return movemod(args.source[0], args.dest[0], args.module, args.simulate)
+  return movemod(args.source, args.dest, args.module, args.simulate)
