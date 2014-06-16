@@ -33,7 +33,8 @@ def find_and_replace_file(file, match, replace, replace_match = None):
     # Compile thex regexp
     try:
         match_regex = [re.compile(m) for m in match]
-    except:
+    except Exception as e:
+        err(e)
         err("Unable to compile regular expressions. ")
         return False
 
@@ -78,7 +79,8 @@ def find_file(file, match):
     # Compile thex regexp
     try:
         match_regex = [re.compile(m) for m in match]
-    except:
+    except Exception as e:
+        err(e)
         err("Unable to compile regular expressions. ")
         return False
 

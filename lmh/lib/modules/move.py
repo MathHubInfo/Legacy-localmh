@@ -16,96 +16,79 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
+import re
 import sys
 import shutil
 
-from argparse import Namespace
-
-from lmh.lib.io import std, err
+from lmh.lib import reduce
+from lmh.lib.io import find_files, std, err
 from lmh.lib.env import data_dir
 
-from lmh.lib.repos.local import match_repo_args
-from lmh.lib.repos.find_and_replace import find
-
-def find_and_replace_all(search, replace):
-
-	args = Namespace()
-	args.__dict__.update({
-    "all": True,
-    "matcher": search,
-    "replace": replace,
-    "apply": True,
-    "repository": []
-  })
-
-	ret = True
-	repos = match_repo_args(args.repository, args.all)
-	for rep in repos:
-		ret = find(rep, args) and ret
-
-	return ret
+from lmh.lib.repos.local import match_repos
+from lmh.lib.repos.find_and_replace import find_cached
 
 def movemod(source, dest, modules, simulate = False):
-  # change directory to MathHub root, makes paths easier
-  if simulate:
-    std("cd "+data_dir)
-  else:
-    os.chdir(data_dir)
+	"""Moves modules from source to dest. """
 
+	# change directory to MathHub root, makes paths easier
+	if simulate:
+		std("cd "+data_dir)
+	else:
+		os.chdir(data_dir)
 
-  for module in modules:
-    # Figure out the full path to the source
-    srcpath = source + "/source/" +  module
+	finds = []
+	replaces = []
 
-    # Assemble source paths further
-    srcargs = (source + "/" + module).split("/")
-    srcapath = "/".join(srcargs[:-1])
-    srcbpath = srcargs[-1]
+	odest = dest
 
-    # Assemble all the commands
-    oldcall = "[" + srcapath + "]{"+srcbpath+"}"
-    oldcall_long = "[(.*)repos=" + srcapath + "(.*)]{"+srcbpath+"}"
-    oldcall_local = "{"+srcbpath+ "}"
-    newcall = "[" + dest + "]{"+srcbpath+"}"
-    newcall_long = "[$g1" + dest + "$g2]{"+srcbpath+"}"
+	for module in modules:
 
-    dest += "/source/"
+		dest = odest
 
-    file_patterns = ["", ".de", ".en"]
+		# Figure out the full path to the source
+		srcpath = source + "/source/" +  module
 
-    # Move the files
-    if simulate:
-      for pat in file_patterns:
-        # try to move the file if it exists
-        try:
-          std("mv "+srcpath + pat +".tex"+ " "+ dest + " 2>/dev/null || true")
-        except:
-          pass
+		# Assemble source paths further
+		srcargs = (source + "/" + module).split("/")
+		srcapath = "/".join(srcargs[:-1])
+		srcbpath = srcargs[-1]
 
-    else:
-      for pat in file_patterns:
-        # try to move the file if it exists
-        try:
-          shutil.move(srcpath + pat + ".tex", dest)
-        except:
-          pass
+		# Assemble all the commands
+		oldcall = "\[" + srcapath + "\]\{"+srcbpath+"\}"
+		oldcall_long = "\[(.*)repos=" + srcapath + "(.*)\]\{"+srcbpath+"\}"
+		oldcall_local = "\{"+srcbpath+ "\}"
+		newcall = "[" + dest + "]{"+srcbpath+"}"
+		newcall_long = "[$g1" + dest + "$g2]{"+srcbpath+"}"
 
+		dest += "/source/"
 
-    def run_lmh_find(search, replace, simulate):
-      if simulate:
-        # simulation
-        std("lmh find "+search+" --replace "+replace+" --apply")
-        return True
-      else:
-        # run lmmh find $search --replace $replace --apply
-        #main(cmd)
-        find_and_replace_all(search, replace)
+		file_patterns = ["", ".de", ".en"]
 
-    # Run all the commands
-    m = "("+"|".join(["gimport", "guse", "gadopt"])+")"
-    run_lmh_find('\\\\'+m+oldcall, '\\$g0'+newcall, simulate)
-    run_lmh_find('\\\\'+m+oldcall_local, '\\$g0'+newcall, simulate)
+		# Move the files
+		if simulate:
+			for pat in file_patterns:
+				std("mv "+srcpath + pat +".tex"+ " "+ dest + " 2>/dev/null || true")
+		else:
+			for pat in file_patterns:
+				# try to move the file if it exists
+				try:
+					shutil.move(srcpath + pat + ".tex", dest)
+				except:
+					pass
 
-    m = "("+ "|".join(["importmhmodule", "usemhmodule", "adoptmhmodule", "usemhvocab"]) + ")"
-    run_lmh_find('\\'+m+oldcall_long, '\\$g0'+newcall_long, simulate)
-    run_lmh_find('\\'+m+oldcall_local, '\\$g0'+newcall_long, simulate)
+		def run_lmh_find(find, replace):
+			finds.append(find)
+			replaces.append(replace)
+
+		# Run all the commands
+		m = "("+"|".join(["gimport", "guse", "gadopt"])+")"
+		run_lmh_find(r'\\\\'+m+oldcall, '\\$g0'+newcall)
+		run_lmh_find(r'\\\\'+m+oldcall_local, '\\$g0'+newcall)
+
+		m = "("+ "|".join(["importmhmodule", "usemhmodule", "adoptmhmodule", "usemhvocab"]) + ")"
+		run_lmh_find(r'\\'+m+oldcall_long, '\\$g0'+newcall_long)
+		run_lmh_find(r'\\'+m+oldcall_local, '\\$g0'+newcall_long)
+
+	files = reduce([find_files(r, "tex")[0] for r in match_repos(data_dir, abs=True)])
+
+	return find_cached(files, finds, replace=replaces)
