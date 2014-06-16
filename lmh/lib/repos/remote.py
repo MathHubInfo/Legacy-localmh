@@ -15,11 +15,33 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import sys
+import fnmatch
+
 from lmh.lib.io import std, err
 from lmh.lib.env import data_dir
 from lmh.lib.git import clone, exists
 from lmh.lib.repos import is_installed, find_dependencies
 from lmh.lib.config import get_config
+
+try:
+	from urllib2 import urlopen
+except:
+	from urllib.request import urlopen
+
+try:
+	from bs4 import BeautifulSoup
+except:
+	try:
+		from BeautifulSoup4 import BeautifulSoup
+	except:
+		err("Missing BeautifulSoup, please install it. ")
+		err("Some things may not be available and fail miserably. ")
+		err("See http://www.crummy.com/software/BeautifulSoup/")
+
+		BeautifulSoup = False
+
+
 
 def find_source(name):
 	"""Finds the source of a repository. """
@@ -69,10 +91,61 @@ def install(*reps):
 			std("Resolving dependencies for", rep)
 			for dep in find_dependencies(rep):
 				if not (dep in reps) and not is_installed(dep):
-					std("Found unsatisfied dependency:", dep) 
+					std("Found unsatisfied dependency:", dep)
 					reps.append(dep)
 		except:
 			if not get_config("install::nomanifest"):
 				err("Error parsing dependencies for", rep)
 				err("Set install::nomanifest to True to disable this. ")
 				return False
+
+def ls_remote(*spec):
+	"""Lists remote repositories matching some specification. """
+
+	if BeautifulSoup == False:
+		err("BeautifulSoup not found. ")
+		return False
+
+	if len(spec) == 0:
+		spec = ["*"]
+
+	# The basic url
+	base_url = get_config("self::projects_url")
+	projects = set()
+	def filter_page_name(p):
+		while(p.startswith("/")):
+			p = p[1:]
+		return p
+
+	for i in range(1, 100):
+		# the project pages url
+		url = base_url+'?page='+str(i)
+
+		# make the request
+		try:
+			response = urlopen(url)
+			soup = BeautifulSoup(response.read())
+		except:
+			err("Unable to make connection")
+			break
+
+		try:
+			# find the project pages
+			soup = soup.find("div", {"class": "public-projects"})
+			soup = soup.find("ul")
+
+			# Nothing here, break
+			if soup.find("div", {"class": "nothing-here-block"}):
+				break
+
+			for h4 in soup.findAll("h4"):
+				projects.add(filter_page_name(h4.find("a")["href"]))
+		except Exception as e:
+			err(e)
+			err("Parsing failure (make sure self::projects_url is correct)")
+
+	matched_projects = set()
+
+	for s in spec:
+		matched_projects.update([p for p in projects if fnmatch.fnmatch(p, s)])
+	return sorted(matched_projects)

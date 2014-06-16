@@ -10,7 +10,11 @@
 		"help": "Show first run dialogs when first running lmh. ",
 		"default": false
 	},
-
+	"self::projects_url": {
+		"type": "string",
+		"help": "URL to (public) projects url. Used for ls-remote. ",
+		"default": "http://gl.mathhub.info/public/"
+	},
 	"self::issue_url": {
 		"type": "string",
 		"help": "URL to issues page. ",

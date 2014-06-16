@@ -1,18 +1,18 @@
 # LocalMH
-LocalMH is an infrastructure for local (in a working tree) management of the content in http://MathHub.info. 
+LocalMH is an infrastructure for local (in a working tree) management of the content in http://MathHub.info.
 
-The infrastructure consists of set of resources (Makefiles, LaTeX Packages, LaTeXML, sTeX) and a management tool lmh. 
+The infrastructure consists of set of resources (Makefiles, LaTeX Packages, LaTeXML, sTeX) and a management tool lmh.
 
 ## Installation
 
-There are several ways to install lmh. The easiest way is: 
+There are several ways to install lmh. The easiest way is:
 
 ```bash
 pip install lmh
 lmh core --install
 ```
 
-This will clone lmh from http://gl.mathhub.info/MathHub/localmh. To manually install lmh, simply installed the dependencies and then clone lmh to a directory of your choice. Then add the subdirectory bin to your $PATH. 
+This will clone lmh from http://gl.mathhub.info/MathHub/localmh. To manually install lmh, simply installed the dependencies and then clone lmh to a directory of your choice. Then add the subdirectory bin to your $PATH.
 
 Once lmh is installed, you will have to run
 
@@ -20,15 +20,15 @@ Once lmh is installed, you will have to run
 lmh setup
 ```
 
-for lmh to install and configure dependencies correctly. 
+for lmh to install and configure dependencies correctly.
 
 ### Dependencies
 
-Currently only *nix-based systems are supported. 
+Currently only *nix-based systems are supported.
 
 #### Installer dependencies
 
-The installer requires the following programs installed to function properly. Whenever possible the installer will warn if these are missing: 
+The installer requires the following programs installed to function properly. Whenever possible the installer will warn if these are missing:
 
 * pip
 	* python module: psutil
@@ -41,15 +41,15 @@ In addition to the installer dependencies the following are required for lmh to 
 * svn
 * pdflatex, preferably TexLive 2013 or newer
 * perl with cpanminus installed
-* libxml2 
+* libxml2
 * libxslt
 
 ### System-specific instructions
 
-On newer Ubuntu / Debian systems, all required packages may be installed with the following command: 
+On newer Ubuntu / Debian systems, all required packages may be installed with the following command:
 
 ```bash
-sudo apt-get install python python-pip python-psutil subversion git texlive cpanminus libxml2-dev libxslt-dev libgdbm-dev 
+sudo apt-get install python python-pip python-psutil python-beautifulsoup4 subversion git texlive cpanminus libxml2-dev libxslt-dev libgdbm-dev 
 ```
 
 ## Directory Structure

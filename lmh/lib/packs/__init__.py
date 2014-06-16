@@ -31,7 +31,7 @@ from lmh.lib.packs import classes
 av_packs = json.loads(read_file(install_dir + "/lmh/data/packs.json"))
 
 # Generate the all group, which is everything except for self.
-av_packs["groups"]["all"] = av_packs["packs"].keys()
+av_packs["groups"]["all"] = list(av_packs["packs"].keys())
 av_packs["groups"]["all"].remove("self")
 
 #
@@ -70,7 +70,11 @@ def import_pack(pack):
 def get_pack_setup(pack):
     try:
          return import_pack(pack).setup
-    except ImportError, AttibuteError:
+    except ImportError:
+        err("Unable to load pack setup for pack", pack)
+        err("Please check that the pack exists. ")
+        return False
+    except AttibuteError:
         err("Unable to load pack setup for pack", pack)
         err("Please check that the pack exists. ")
         return False

@@ -216,7 +216,7 @@ def find_files(directory, *ext):
 	res = [[] for e in ext]
 
 	for root, dirs, files in os.walk(directory):
-	    for file in files:
+		for file in files:
 			for (i, e) in enumerate(ext):
 				if file.endswith(e):
 					res[i].append(os.path.join(root, file))
