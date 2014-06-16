@@ -23,7 +23,7 @@ import functools
 from lmh.lib.io import std, err, read_raw
 from lmh.lib.env import data_dir
 from lmh.lib.modules import makeIndex
-from lmh.lib.repos.find_and_replace import replacePath
+#from lmh.lib.repos.find_and_replace import replacePath
 
 fileIndex = {}
 remChoices = {}
@@ -95,6 +95,9 @@ def replaceFnc(args, fullPath, m):
 def checkpaths(dir, args):
 	# TODO: UnHardcode the MathHub subdir somehow
 	replacePath(dir, r"\\MathHub{([^}]*)", functools.partial(replaceFnc, args), True)
+	err("Checkpaths currently broken. ")
+	return False
+
 
 def init():
 	fileIndex = makeIndex(data_dir)

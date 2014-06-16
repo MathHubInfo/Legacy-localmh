@@ -16,81 +16,92 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
-import os.path
-
-import functools
-
-from lmh.lib.io import std, err
+import re
 from string import Template
 
-def replace(replacer, replace_args, fullPath, m):
-    # replace
-    std("Replacing in", fullPath)
+from lmh.lib.io import find_files, std, err, read_file, write_file
+from lmh.lib.env import data_dir
+from lmh.lib.repos.local import find_repo_dir, match_repo
 
-    # nothing to replace => return the first group
-    if replacer == None:
-        return m.group(0)
+def find_and_replace_file(file, match, replace):
+    """Finds and replaces a single file. """
 
-    # generate all the files
-    for idx, g in enumerate(m.groups()):
-        replace_args["g"+str(idx)] = g
-
-    # do the subitution
-    res = Template(replacer).substitute(replace_args)
-
-    return res
-
-def replacePath(dirname, matcher, replaceFnc, apply=False):
-    # compile the matcher
-
+    # Compile thex regexp
     try:
-        compMatch = re.compile(matcher)
-    except Exception as e:
-        err("failed to compile matcher %r"%matcher)
-        err(e)
+        match_regex = re.compile(match)
+    except:
+        err("Invalid regular Expression. ")
         return False
 
-    for root, dirs, files in os.walk(dirname):
-        path = root.split('/')
-        for file in files:
-            fileName, fileExtension = os.path.splitext(file)
-            if fileExtension != ".tex":
-                continue
-            fullpath = os.path.join(root, file)
-            if not os.access(fullpath, os.R_OK): # ignoring files I cannot read
-                continue
-            changes = False
-            replaceContext = functools.partial(replaceFnc, fullpath)
-            for line in open(fullpath, "r"):
-                newLine = compMatch.sub(replaceContext, line)
-                if newLine != line:
-                    changes = True
-                    std(fullpath + ": \n " + line + newLine)
+    # get the repository
+    repo = os.path.relpath(find_repo_dir(file), data_dir)
 
-                if apply:
-                    write_file(fullpath+".tmp", newLine)
-            if apply:
-                if changes:
-                    os.rename(fullpath+".tmp", fullpath)
-            else:
-                os.remove(fullpath+".tmp")
+    # Read file and search
+    file_content = read_file(file)
+    # We did nothing yet
+    did = False
+
+    def replace_match(match):
+        # we did something
+        did = True
+
+        # Make a template.
+        replacer_template = {}
+        replacer_template["repo"] = repo
+        for i, g in enumerate(match.groups()):
+            replacer_template["g"+str(i)] = g
+
+        # And replace in it
+        return Template(replace).substitute(replacer_template)
+
+    new_file_content = re.sub(match_regex, replace_match, file_content)
+
+    if file_content != new_file_content:
+        std(file)
+        # If something has changed, write back the file.
+        write_file(file, new_file_content)
+    if did:
+        std(file)
+    return did
+
+def find_file(file, match):
+    """Finds inside a single file. """
+
+    # Compile thex regexp
+    try:
+        match_regex = re.compile(match)
+    except:
+        err("Invalid regular Expression. ")
+        return False
+
+    # Read file and search
+    file_content = read_file(file)
+    if re.search(match_regex, file_content) != None:
+        std(file)
+        return True
+    else:
+        return False
+
+
+def find_cached(files, match, replace = None):
+    """Finds and replaces inside of files. """
+    rep = False
+    for file in files:
+        repo = os.path.relpath(find_repo_dir(file), data_dir)
+        matcher = Template(match).substitute(repo=repo)
+        if replace != None:
+            rep = find_and_replace_file(file, matcher, replace) or rep
+        else:
+            rep = find_file(file, matcher) or rep
+    return rep
 
 def find(rep, args):
     """Finds pattern in repositories"""
 
-    # Find the given repository
-    replacer = None
-    repname = match_repo(rep)
+    match = args.matcher
+    replace = args.replace[0] if args.apply else None
 
-    # create a Template that subsitutes $repo with the repository name
-    matcher = Template(args.matcher).substitute(repo=repname)
+    # Find files in the repository
+    files = find_files(match_repo(rep, abs=True), "tex")[0]
 
-    if args.replace:
-        replacer = args.replace[0]
-    # some more arguments for the replacer
-    replace_args = {"repo" : repname}
-
-    # calll the replacer function
-    replaceFnc = functools.partial(replace, replacer, replace_args)
-
-    return replacePath(rep, matcher, replaceFnc, args.apply)
+    return find_cached(files, match, replace)

@@ -86,6 +86,16 @@ def find_repo_subdirs(root):
 
 	return res
 
+def find_repo_dir(root):
+	"""Finds the repository belonging to a file or directory. """
+	root = os.path.abspath(root)
+	if is_repo_dir(root):
+		return root
+	if not is_in_repo(root):
+		return False
+	else:
+		return find_repo_dir(os.path.join(root, ".."))
+
 def match_repo(repo, root=os.getcwd(), abs=False):
 	"""Matches a single specefier to a repository. """
 
@@ -105,13 +115,8 @@ def match_repo(repo, root=os.getcwd(), abs=False):
 	repo_path = os.path.join(root, repo)
 
 	if is_repo_dir(repo_path) or is_in_repo(repo_path):
-		# figuzre out the path to the repository root
-		rel_path = os.path.relpath(data_dir, os.path.abspath(repo_path))
-		rel_path = rel_path[len("../.."):]
-		# make sure it does not start with a "/" to avoid abspaths
-		while rel_path.startswith("/"):
-			rel_path = rel_path[1:]
-		repo_path = os.path.abspath(os.path.join(repo_path, rel_path))
+		# figure out the path to the repository root
+		repo_path = find_repo_dir(repo_path)
 		if abs:
 			# return the absolute path to the repo
 			return repo_path
