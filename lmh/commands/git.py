@@ -18,6 +18,7 @@ import argparse
 
 from lmh.lib.repos.local import match_repo_args
 from lmh.lib.repos.local import do as local_do
+from lmh.lib.help import repo_wildcard_local
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Git Wrapper.')
@@ -33,13 +34,7 @@ def add_parser_args(parser):
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs a git command on all repositories currently in lmh")
   parser.add_argument('--args', nargs='+', help="Arguments to add to each of the git commands. ")
   parser.add_argument('repository', nargs='*', help="a list of repositories for which to run the git command.")
-  parser.epilog = """
-Repository names allow using the wildcard '*' to match any repository. It allows relative paths.
-  Example:
-    */*       - would match all repositories from all groups.
-    mygroup/* - would match all repositories from group mygroup
-    .         - would be equivalent to "git status ."
-""";
+  parser.epilog = repo_wildcard_local
 
 def do(args):
   repos = match_repo_args(args.repository, args.all)

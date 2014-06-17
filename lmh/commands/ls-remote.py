@@ -19,6 +19,7 @@ import argparse
 
 from lmh.lib.io import std
 from lmh.lib.repos.remote import ls_remote
+from lmh.lib.help import repo_wildcard_remote
 
 
 def create_parser():
@@ -33,15 +34,7 @@ def add_parser(subparsers, name="ls-remote"):
 
 def add_parser_args(parser):
   parser.add_argument('spec', nargs='*', help="list of repository specefiers. ")
-
-  parser.epilog = """
-Repository names allow using the wildcard '*' to match any repository. It allows relative paths.
-  Example:
-    */*       - would match all repositories from all groups.
-    mygroup/* - would match all repositories from group mygroup
-Please remember that shell such as bash auto-expand glob arguments. You can use
-'s to avoid this.
-"""
+  parser.epilog = repo_wildcard_remote
 
 def do(args):
     res = ls_remote(*args.spec)

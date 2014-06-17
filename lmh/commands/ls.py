@@ -19,6 +19,7 @@ import argparse
 
 from lmh.lib.io import std
 from lmh.lib.repos.local import match_repo_args, status
+from lmh.lib.help import repo_wildcard_local
 
 
 def create_parser():
@@ -35,16 +36,7 @@ def add_parser_args(parser):
   parser.add_argument('repository', nargs='*', help="list of repository specefiers. ")
   parser.add_argument('--abs', '-A', default=False, action="store_true", help="Print absolute repository paths. ")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="list all repositories")
-
-  parser.epilog = """
-Repository names allow using the wildcard '*' to match any repository. It allows relative paths.
-  Example:
-    */*       - would match all repositories from all groups.
-    mygroup/* - would match all repositories from group mygroup
-    .         - matches current repository
-Please remember that shell such as bash auto-expand glob arguments. You can use
-'s to avoid this.
-"""
+  parser.epilog = repo_wildcard_local
 
 def do(args):
     repos = match_repo_args(args.repository, args.all, abs=args.abs)

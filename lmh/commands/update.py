@@ -21,6 +21,7 @@ from lmh.lib.io import std
 from lmh.lib.packs import update
 from lmh.lib.repos.local import match_repo_args, pull
 from lmh.lib.config import get_config
+from lmh.lib.help import repo_wildcard_local
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Update tool.')
@@ -35,15 +36,11 @@ def add_parser_args(parser):
   parser.add_argument('repository', nargs='*', help="a list of repositories which should be updated. ")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="updates all repositories currently in lmh")
   parser.epilog = """
-If update::selfupdate is set to True, calling lomh update without any arguments will also call lmh selfupdate.
+If update::selfupdate is set to True, calling lomh update without any arguments
+will also call lmh selfupdate.
 
-Note: LMH will check for tool updates only if run at the root of the LMH folder.
-Repository names allow using the wildcard '*' to match any repository. It allows relative paths.
-  Example:
-    */*       - would match all repositories from all groups.
-    mygroup/* - would match all repositories from group mygroup
-    .         - would be equivalent to updating current repository
-"""
+Note: LMH will check for tool updates only if run at the root of the LMH
+folder. """+repo_wildcard_local
 
 def do(args):
 

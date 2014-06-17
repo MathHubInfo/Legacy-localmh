@@ -29,6 +29,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 from lmh.lib.io import err
 from lmh.lib.repos.local import match_repo_args
+from lmh.lib.help import repo_wildcard_local
 
 import argparse
 
@@ -44,7 +45,7 @@ def add_parser(subparsers, name="xhtml"):
 def add_parser_args(parser):
   parser.add_argument('repository', nargs='*', help="a list of repositories for which to generate XHTML")
   parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs status on all repositories currently in lmh")
-  pass
+  parser.epilog = repo_wildcard_local
 
 def do_xhtml(rep):
   rep_root = util.git_root_dir(rep)

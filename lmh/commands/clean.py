@@ -18,6 +18,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import argparse
 
 from lmh.lib.repos.local import match_repo_args, clean
+from lmh.lib.help import repo_wildcard_local
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Clean tool.')
@@ -32,6 +33,7 @@ def add_parser_args(parser):
   ps = parser.add_mutually_exclusive_group()
   ps.add_argument('repository', nargs='*', default=[], help="A list of paths or repositories to generate things in. ")
   ps.add_argument('--all', "-a", default=False, const=True, action="store_const", help="generates files for all repositories")
+  parser.epilog = repo_wildcard_local
 
 def do(args):
     repos = match_repo_args(args.repository, args.all)
