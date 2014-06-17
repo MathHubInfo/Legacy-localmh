@@ -20,6 +20,7 @@ from lmh.lib.io import std
 from lmh.lib.extenv import check_deps
 from lmh.lib.config import get_config
 import lmh.lib.packs
+import lmh.lib.init
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Local MathHub Setup tool.')
@@ -39,10 +40,12 @@ def add_parser_args(parser):
   action.add_argument('--remove', action="store_const", dest="saction", const="remove", help="Removes a package or group. ")
 
   parser.add_argument('--no-check', '--force', action="store_true", help="Do not check for external dependencies. ")
+  frun = parser.add_mutually_exclusive_group(required=False)
+  frun.add_argument('--no-firstrun', action="store_const", const=False, dest="firstrun", help="Skip the firstrun routine. ")
+  frun.add_argument('--firstrun', action="store_const", const=True, default=None, help="Skip the firstrun routine. ")
   parser.add_argument('pack', nargs="*", metavar="PACK:SOURCE")
 
   # Extra Things to install: autocomplete
-  #parser.add_argument('--store-source-selections', default=False, const=True, action="store_const", help="If set all source and branch selections are stored and used as default in the future. ", metavar="")
 
   parser.epilog = """
 lmh setup --- Manages extra software required or useful for work with lmh.
@@ -90,6 +93,15 @@ def do(args):
         err("Cannot perform specefied action. ")
         err("Use --no-check to skip checking dependencies. ")
         return False
+
+    if args.firstrun == None:
+        # Call firstrun if required
+        if not lmh.lib.init.init():
+            err("Firstrun routine failed. ")
+            return False
+    elif args.firstrun == True:
+        # Force call firstrun
+        return lmh.lib.init.first_run()
 
     if len(args.pack) == 0:
         args.pack = ["default"]

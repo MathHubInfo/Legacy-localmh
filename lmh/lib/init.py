@@ -24,11 +24,13 @@ def init():
 	"""Checks if init code has to be run. """
 	if get_config("state::lastversion") == version:
 		# First run is done
-		return
+		return True
 
 	# First run
 	first_run()
 	set_config("state::lastversion", version)
+
+	return True
 
 def q_program(pgr):
 	"""Asks the user for the location for an executable. """
@@ -78,6 +80,7 @@ def first_run():
 	q_program("svn")
 	q_program("pdflatex")
 	q_program("perl")
+	q_program("java")
 	q_program("cpanm")
 	q_program("make")
 	q_program("tar")
@@ -90,4 +93,14 @@ def first_run():
 		std("Setup disabled for future versions. ")
 		set_config("self::showfirstrun", False)
 
+	#res = ""
+	#while not res in ["y", "n"]:
+	#	res = read_raw("Do you want lmh to enable some eastereggs[y/n]? >").lower()
+
+	res = "y" # TODO: Set this back to normal.
+
+	if res == "y":
+		set_config("::eastereggs", True)
+
 	read_raw("Setup complete. Press enter to continue. ")
+	return True
