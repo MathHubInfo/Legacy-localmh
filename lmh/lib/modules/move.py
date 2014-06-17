@@ -97,4 +97,5 @@ def movemod(source, dest, modules, simulate = False):
 		for (f, r) in zip(finds, replaces):
 			std("lmh find", json.dumps(f), "--replace", json.dumps(r), "--apply")
 	else:
+		std("updating paths in the following files: ")
 		return find_cached(files, finds, replace=replaces)
