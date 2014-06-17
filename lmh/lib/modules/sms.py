@@ -49,19 +49,19 @@ def gen_sms(modules, update, verbose, quiet, workers, nice, find_modules):
     try:
         if verbose:
             std("# SMS Generation")
-        for job in jobs:
-            sms_gen_dump(job)
-    else:
-        if not quiet:
-            std("SMS: Generating", len(jobs), "files")
-        for job in jobs:
-            sms_gen_do(job, quiet)
+            for job in jobs:
+                sms_gen_dump(job)
+        else:
+            if not quiet:
+                std("SMS: Generating", len(jobs), "files")
+            for job in jobs:
+                sms_gen_do(job, quiet)
     except Exception as e:
         err("SMS generation failed. ")
         err(traceback.format_exc())
         return False
 
-  return True
+    return True
 
 def sms_gen_job(module):
   # store parameters for sms job generation
