@@ -65,4 +65,4 @@ def is_valid_repo(dir):
 	# TODO: Validate if we have the MANIFEST or a git repository here.
 	# Maybe even somehow generalise install::nodeps
 
-	return (os.path.relpath(data_dir, os.path.abspath(path)) == "../..")
+	return (os.path.relpath(data_dir, os.path.abspath(dir)) == "../..")

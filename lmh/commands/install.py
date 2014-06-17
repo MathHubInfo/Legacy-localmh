@@ -17,8 +17,9 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
-from lmh.lib.io import err
-from lmh.lib.repos.remote import install
+from lmh.lib.io import std, err
+from lmh.lib.config import get_config
+from lmh.lib.repos.remote import install, ls_remote
 
 def create_parser():
   parser = argparse.ArgumentParser(description='Installs MathHub repositories. ')
@@ -30,14 +31,20 @@ def add_parser(subparsers, name="install"):
   add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', nargs='*', help="a list of remote repositories to fetch locally. Should have form mygroup/myproject. No wildcards allowed. ")
+  parser.add_argument('spec', nargs='*', help="A list of repository specs to install. ")
   parser.epilogue = """
   Use install::sources to configure the sources of repositories.
-  Use install::nomanifest to configure what happens to repositories without a manifest
+  Use install::nomanifest to configure what happens to repositories without a manifest.
+  Use install::noglobs to disable globbing for lmh install.
   """
 
 def do(args):
-  if len(args.repository) == 0:
-    err("Nothing to do here ...")
-    return True
-  return install(*args.repository)
+    if len(args.spec) == 0:
+        err("Nothing to do here ...")
+        return True
+
+    if not get_config("install::noglobs"):
+        args.spec = ls_remote(*args.spec)
+        std("Picked", len(args.spec), "repositories to install. ")
+
+    return install(*args.spec)

@@ -97,6 +97,11 @@
 		"help": "Allow repositories to install without manifests. ",
 		"default": false
 	},
+	"install::noglobs": {
+		"type": "bool",
+		"help": "Disable globs when installing repositories. ",
+		"default": false
+	},
 
 	"setup::latexml::source": {
 		"type": "string",
