@@ -42,5 +42,5 @@ def do(args):
     repos = match_repo_args(args.repository, args.all)
     res = True
     for repo in repos:
-        res = clean(repo, args) and res
+        res = clean(repo, git_clean = args.git_clean) and res
     return res

@@ -292,7 +292,7 @@ def do(cmd, args, *repos):
 
 	return ret
 
-def git_clean(repo, args):
+def git_clean(repo):
 	"""Cleans up repositories. """
 
 	return do("clean", ["-f"], repo)
@@ -301,7 +301,7 @@ def rm_untracked(file, t = ""):
 	if not is_tracked(file):
 		try:
 			os.remove(file)
-			std("Removed orphaned", t, file)
+			std("Removed", t, file)
 		except:
 			err("Unable to remove", file)
 			return False
@@ -320,7 +320,7 @@ def clean_orphans(d):
 
 	for file in omdocs:
 		if not (file[:-len(".omdoc")]+".tex" in texs):
-			if not rm_untracked(file, "omdoc"):
+			if not rm_untracked(file, "orphaned omdoc"):
 				res = False
 
 	#
@@ -329,7 +329,7 @@ def clean_orphans(d):
 
 	for file in pdfs:
 		if not (file[:-len(".pdf")]+".tex" in texs):
-			if not rm_untracked(file, "pdf"):
+			if not rm_untracked(file, "orphaned pdf"):
 				res = False
 
 	#
@@ -338,7 +338,7 @@ def clean_orphans(d):
 
 	for file in sms:
 		if not (file[:-len(".sms")]+".tex" in texs):
-			if not rm_untracked(file, "sms"):
+			if not rm_untracked(file, "orphaned sms"):
 				res = False
 
 	return res
@@ -349,20 +349,17 @@ def clean_logs(d):
 	(ltxlog, pdflog) = find_files(d, "ltxlog", "pdflog")
 
 	for f in ltxlog+pdflog:
-		try:
-			os.remove(f)
-			std("Removed log file", f)
-		except:
-			err("Unable to remove", f)
+		if not rm_untracked(f, "log file"):
 			res = False
 	res = True
 
 	return res
 
-def clean(repo, args):
+def clean(repo, git_clean = False):
 	res = clean_orphans(repo)
 	res = clean_logs(repo) and res
-	if args.git_clean:
+
+	if git_clean:
 		res = git_clean(repo, args) and res
 	return res
 
