@@ -15,6 +15,11 @@
 		"help": "URL to (public) projects url. Used for ls-remote. ",
 		"default": "http://gl.mathhub.info/public/"
 	},
+	"self::raw_url": {
+		"type": "string",
+		"help": "URL to raw projects url. Used for ls-remote. ",
+		"default": "http://gl.mathhub.info/$repo/raw/HEAD/"
+	},
 	"self::issue_url": {
 		"type": "string",
 		"help": "URL to issues page. ",

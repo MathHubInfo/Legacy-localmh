@@ -18,6 +18,8 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import fnmatch
 
+from string import Template
+
 from lmh.lib.io import std, err
 from lmh.lib.env import data_dir
 from lmh.lib.git import clone, exists
@@ -57,6 +59,19 @@ def find_source(name):
 	err("Can not find remote repository", name)
 	err("Please check install::sources and check your network connection. ")
 	return False
+
+def is_valid(name):
+	"""Checks if a remote repository is a valid repository. """
+
+	raw = Template(get_config("self::raw_url")).substitute(repo=name)+"META-INF/MANIFEST.MF"
+
+	try:
+		urlopen(raw)
+		return True
+	except:
+		return False
+
+
 
 #
 # Installing a repository
@@ -148,4 +163,6 @@ def ls_remote(*spec):
 
 	for s in spec:
 		matched_projects.update([p for p in projects if fnmatch.fnmatch(p, s)])
-	return sorted(matched_projects)
+
+
+	return filter(is_valid, sorted(matched_projects))

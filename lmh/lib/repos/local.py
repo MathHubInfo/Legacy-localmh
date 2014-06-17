@@ -163,21 +163,21 @@ def match_repos(repos, root=os.getcwd(), abs=False):
 	for g in globs:
 		repo_dirs.extend(glob.glob(g))
 
-	rdirs = []
+	rdirs = set()
 
 	for d in repo_dirs:
 		m = match_repo(d)
 		if m:
 			rdirs.append(m)
 		elif is_in_data(d):
-			rdirs.extend(find_repo_subdirs(d))
+			rdirs.update(find_repo_subdirs(d))
 		elif os.path.abspath(d) == os.path.abspath(install_dir):
-			rdirs.extend(find_repo_subdirs(install_dir))
+			rdirs.update(find_repo_subdirs(install_dir))
 		else:
 			err("Failed to parse", d, "as a repository, outside of data directory. ")
 
 	# Remove doubles
-	rdirs = list(set(rdirs))
+	rdirs = sorted(rdirs)
 
 	if not abs:
 		# its not absolute, return the relative paths
