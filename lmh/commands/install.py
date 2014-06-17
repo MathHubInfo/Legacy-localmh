@@ -32,9 +32,11 @@ def add_parser(subparsers, name="install"):
 
 def add_parser_args(parser):
   parser.add_argument('spec', nargs='*', help="A list of repository specs to install. ")
-  parser.epilogue = """
+  parser.epilog = """
   Use install::sources to configure the sources of repositories.
+
   Use install::nomanifest to configure what happens to repositories without a manifest.
+  
   Use install::noglobs to disable globbing for lmh install.
   """
 

@@ -118,11 +118,13 @@ def match_repo(repo, root=os.getcwd(), abs=False):
 	if is_repo_dir(repo_path) or is_in_repo(repo_path):
 		# figure out the path to the repository root
 		repo_path = find_repo_dir(repo_path)
+		if not repo_path:
+			return None
 		if abs:
 			# return the absolute path to the repo
 			return repo_path
 		else:
-			# return just the repo name, determined by teh relative name
+			# return just the repo name, determined by the relative name
 			return os.path.relpath(repo_path, os.path.abspath(data_dir))
 	elif not (root == os.path.abspath(data_dir)):
 		#if the root is not already the data_dir, try that
@@ -163,25 +165,25 @@ def match_repos(repos, root=os.getcwd(), abs=False):
 	for g in globs:
 		repo_dirs.extend(glob.glob(g))
 
-	rdirs = set()
+	rdirs = []
 
 	for d in repo_dirs:
 		m = match_repo(d)
 		if m:
 			rdirs.append(m)
 		elif is_in_data(d):
-			rdirs.update(find_repo_subdirs(d))
+			rdirs.extend(find_repo_subdirs(d))
 		elif os.path.abspath(d) == os.path.abspath(install_dir):
-			rdirs.update(find_repo_subdirs(install_dir))
+			rdirs.extend(find_repo_subdirs(install_dir))
 		else:
 			err("Failed to parse", d, "as a repository, outside of data directory. ")
 
 	# Remove doubles
-	rdirs = sorted(rdirs)
+	rdirs = sorted(set(rdirs))
 
 	if not abs:
 		# its not absolute, return the relative paths
-		rdirs = [os.path.relpath(d, os.path.abspath(data_dir)) for d in rdirs]
+		rdirs = [os.path.relpath(d, data_dir) for d in rdirs]
 
 	return rdirs
 
