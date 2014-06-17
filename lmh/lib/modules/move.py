@@ -18,6 +18,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import re
 import sys
+import json
 import shutil
 
 from lmh.lib import reduce
@@ -89,9 +90,11 @@ def movemod(source, dest, modules, simulate = False):
 		run_lmh_find(r'\\'+m+oldcall_long, '\\$g0'+newcall_long)
 		run_lmh_find(r'\\'+m+oldcall_local, '\\$g0'+newcall_long)
 
-	for f in finds:
-		std(f)
 
 	files = reduce([find_files(r, "tex")[0] for r in match_repos(data_dir, abs=True)])
 
-	return find_cached(files, finds, replace=replaces)
+	if simulate:
+		for (f, r) in zip(finds, replaces):
+			std("lmh find", json.dumps(f), "--replace", json.dumps(r), "--apply")
+	else:
+		return find_cached(files, finds, replace=replaces)
