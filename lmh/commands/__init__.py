@@ -43,7 +43,7 @@ def create_parser(submods = {}):
 
 		"about", "setup", "config", "selfupdate", "issue", "ls-remote",
 
-		"gen", "clean", "xhtml", "shell",
+		"gen", "update-build", "clean", "xhtml", "shell",
 
 		"find", "depcrawl", "checkpaths", "mvmod", "symbols"
 	]
