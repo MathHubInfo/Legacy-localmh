@@ -59,7 +59,7 @@ def push(dest, *arg):
 
 def do(dest, cmd, *arg):
 	"""Does an arbitrary git command and returns if it suceeded. """
-	
+
 	args = [git_executable, cmd]
 	args.extend(arg)
 	proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
@@ -92,7 +92,7 @@ def status(dest, *arg):
 
 def exists(dest):
 	"""Checks if a git repository exists. """
-	
+
 	args = [git_executable, "ls-remote", dest]
 	proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 	proc.wait()
@@ -104,17 +104,26 @@ def root_dir(dir = "."):
 	if os.path.isfile(dir):
 		dir = os.path.dirname(dir)
 
-	rootdir = subprocess.Popen([git_executable, "rev-parse", "--show-toplevel"], 
+	rootdir = subprocess.Popen([git_executable, "rev-parse", "--show-toplevel"],
 								stdout=subprocess.PIPE,
 								cwd=dir,
 								).communicate()[0]
 	rootdir = rootdir.strip()
 	return rootdir
 
+def is_tracked(file):
+	f = os.path.abspath(file)
+	p = os.path.dirname(f)
+
+	args = [git_executable, "ls-files", f, "--error-unmatch"]
+	proc = subprocess.Popen(args, cwd=p, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+	proc.wait()
+	return (proc.returncode == 0)
+
 def origin(dir="."):
 	"""Finds the origin of a given git repository. """
 
-	return subprocess.Popen([git_executable, "remote", "show", "origin", "-n"], 
+	return subprocess.Popen([git_executable, "remote", "show", "origin", "-n"],
 							stdout=subprocess.PIPE,
 							cwd=rootdir,
 							).communicate()[0]

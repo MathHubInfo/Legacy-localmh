@@ -35,6 +35,7 @@ from lmh.lib.git import commit as git_commit
 from lmh.lib.git import do as git_do
 from lmh.lib.git import do_data as git_do_data
 from lmh.lib.git import root_dir as git_root_dir
+from lmh.lib.git import is_tracked
 
 #
 # Repo Matching
@@ -296,18 +297,73 @@ def git_clean(repo, args):
 
 	return do("clean", ["-f"], repo)
 
+def rm_untracked(file, t = ""):
+	if not is_tracked(file):
+		try:
+			os.remove(file)
+			std("Removed orphaned", t, file)
+		except:
+			err("Unable to remove", file)
+			return False
+	return True
+
 def clean_orphans(d):
 	"""Cleans out orphaned files int he given directory"""
-	(texs, omdocs, pdfs, sms) = find_files(d, "tex", "omdoc", "sms")
-	std(texs)
-	for file in texs:
-		std(file)
 
-	return True
+	res = True
+
+	(texs, omdocs, pdfs, sms) = find_files(d, "tex", "omdoc", "pdf", "sms")
+
+	#
+	# Orphaned omdocs
+	#
+
+	for file in omdocs:
+		if not (file[:-len(".omdoc")]+".tex" in texs):
+			if not rm_untracked(file, "omdoc"):
+				res = False
+
+	#
+	# Orphaned pdf
+	#
+
+	for file in pdfs:
+		if not (file[:-len(".pdf")]+".tex" in texs):
+			if not rm_untracked(file, "pdf"):
+				res = False
+
+	#
+	# Orphaned sms
+	#
+
+	for file in sms:
+		if not (file[:-len(".sms")]+".tex" in texs):
+			if not rm_untracked(file, "sms"):
+				res = False
+
+	return res
+
+def clean_logs(d):
+	"""Cleans out logs in the given directory. """
+
+	(ltxlog, pdflog) = find_files(d, "ltxlog", "pdflog")
+
+	for f in ltxlog+pdflog:
+		try:
+			os.remove(f)
+			std("Removed log file", f)
+		except:
+			err("Unable to remove", f)
+			res = False
+	res = True
+
+	return res
 
 def clean(repo, args):
 	res = clean_orphans(repo)
-	res = git_clean(repo, args) and res
+	res = clean_logs(repo) and res
+	if args.git_clean:
+		res = git_clean(repo, args) and res
 	return res
 
 def log(ordered, *repos):
