@@ -29,31 +29,37 @@ regStrings = [r'\\(guse|gadopt|symdef|abbrdef|symvariant|keydef|listkeydef|impor
 regs = map(re.compile, regStrings)
 
 def gen_sms(modules, update, verbose, quiet, workers, nice, find_modules):
-  # general sms generation
-  jobs = []
-  for mod in modules:
-    if mod["type"] == "file":
-      if not update or mod["file_time"] > mod["sms_time"]:
-        if find_modules:
-          std(module["file"])
-        else:
-          jobs.append(sms_gen_job(mod))
-  if find_modules:
-    return True
-  try:
-    if verbose:
-      std("# SMS Generation")
-      for job in jobs:
-        sms_gen_dump(job)
+    # general sms generation
+    jobs = []
+    for mod in modules:
+        if mod["type"] == "file":
+            if update == "force" or update == "update_log":
+                pass
+            elif mod["file_time"] > mod["sms_time"]:
+                pass
+            else:
+                continue
+
+            if find_modules:
+                std(module["file"])
+            else:
+                jobs.append(sms_gen_job(mod))
+    if find_modules:
+        return True
+    try:
+        if verbose:
+            std("# SMS Generation")
+        for job in jobs:
+            sms_gen_dump(job)
     else:
-      if not quiet:
-        std("SMS: Generating", len(jobs), "files")
-      for job in jobs:
-        sms_gen_do(job, quiet)
-  except Exception as e:
-    err("SMS generation failed. ")
-    err(traceback.format_exc())
-    return False
+        if not quiet:
+            std("SMS: Generating", len(jobs), "files")
+        for job in jobs:
+            sms_gen_do(job, quiet)
+    except Exception as e:
+        err("SMS generation failed. ")
+        err(traceback.format_exc())
+        return False
 
   return True
 

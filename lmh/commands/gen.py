@@ -48,8 +48,9 @@ def add_parser_args(parser, add_types=True):
   f1.add_argument('-s', '--single',  action="store_const", dest="workers", const=1, help='Use only a single process. Shortcut for -w 1')
 
   f2 = flags.add_mutually_exclusive_group()
-  f2.add_argument('-u', '--update', const=True, default=True, action="store_const", help="Only generate files which have been changed. DEFAULT. ")
-  f2.add_argument('-f', '--force', const=False, dest="update", action="store_const", help="Force to regenerate all files. ")
+  f2.add_argument('-u', '--update', const="update", default="update", action="store_const", help="Only generate files which have been changed. DEFAULT. ")
+  f2.add_argument('-ul', '--update-log', const="update_log", dest="update", action="store_const", help="Only generate files which have been changed, based on log files. Treated as -u for sms files. UNIMPLEMENTED and currently trated as --force. ")
+  f2.add_argument('-f', '--force', const="force", dest="update", action="store_const", help="Force to regenerate all files. ")
 
   f3 = flags.add_mutually_exclusive_group()
   f3.add_argument('-n', '--nice', type=int, default=1, help="Assign the worker processes the given niceness. ")
@@ -67,7 +68,7 @@ def add_parser_args(parser, add_types=True):
     whattogen.add_argument('--sms', action="store_const", const=True, default=False, help="generate sms files")
     whattogen.add_argument('--omdoc', action="store_const", const=True, default=False, help="generate omdoc files, implies --sms, --alltex, --localpaths")
     whattogen.add_argument('--pdf', action="store_const", const=True, default=False, help="generate pdf files, implies --sms, --alltex, --localpaths")
-    
+
     whattogen.add_argument('--alltex', action="store_const", const=True, default=False, help="Generate all.tex files")
     whattogen.add_argument('--localpaths', action="store_const", const=True, default=False, help="Generate localpaths.tex files")
 
@@ -82,10 +83,10 @@ def add_parser_args(parser, add_types=True):
 
   wheretogen = parser.add_argument_group("Where to generate")
   wheretogen.add_argument('-d', '--recursion-depth', type=int, default=-1, help="Recursion depth for paths and repositories. ")
-  
+
   wheretogen = wheretogen.add_mutually_exclusive_group()
   wheretogen.add_argument('pathspec', metavar="PATH_OR_REPOSITORY", nargs='*', default=[], help="A list of paths or repositories to generate things in. ")
-  wheretogen.add_argument('--all', "-a", default=False, const=True, action="store_const", help="generates files for all repositories")  
+  wheretogen.add_argument('--all', "-a", default=False, const=True, action="store_const", help="generates files for all repositories")
 
   return parser
 
@@ -135,7 +136,7 @@ def do(args):
   if (args.pdf or args.omdoc) and not args.skip_implies:
     args.sms = True
     args.localpaths = True
-    args.alltex = True  
+    args.alltex = True
 
   if args.sms:
     if not gen_sms(modules, args.update, args.verbose, args.quiet, args.workers, args.nice, args.find_modules):
@@ -144,25 +145,25 @@ def do(args):
       return False
 
   if args.localpaths and not args.find_modules:
-    if not gen_localpaths(modules, args.update, args.verbose, args.quiet, args.workers, args.nice):
+    if not gen_localpaths(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice):
       if not args.quiet:
         err("LOCALPATHS: Generation aborted prematurely, skipping further generation. ")
       return False
 
   if args.alltex and not args.find_modules:
-    if not gen_alltex(modules, args.update, args.verbose, args.quiet, args.workers, args.nice):
+    if not gen_alltex(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice):
       if not args.quiet:
         err("ALLTEX: Generation aborted prematurely, skipping further generation. ")
       return False
 
   if args.omdoc:
-    if not gen_omdoc(modules, args.update, args.verbose, args.quiet, args.workers, args.nice, args.find_modules):
+    if not gen_omdoc(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice, args.find_modules):
       if not args.quiet:
         err("OMDOC: Generation aborted prematurely, skipping further generation. ")
       return False
 
   if args.pdf:
-    if not gen_pdf(modules, args.update, args.verbose, args.quiet, args.workers, args.nice, args.pdf_add_begin_document, args.pdf_pipe_log, args.find_modules):
+    if not gen_pdf(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice, args.pdf_add_begin_document, args.pdf_pipe_log, args.find_modules):
       if not args.quiet:
         err("PDF: Generation aborted prematurely, skipping further generation. ")
       return False
