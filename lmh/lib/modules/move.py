@@ -51,7 +51,7 @@ def movemod(source, dest, modules, simulate = False):
 
 		# Assemble source paths further
 		srcargs = (source + "/" + module).split("/")
-		srcapath = "/".join(srcargs[:-1])
+		srcapath = "\\/".join(srcargs[:-1])
 		srcbpath = srcargs[-1]
 
 		# Assemble all the commands
