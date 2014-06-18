@@ -25,6 +25,7 @@ import subprocess
 import traceback
 
 from lmh.lib.env import install_dir
+import lmh.lib.io
 from lmh.lib.io import write_file, std, err
 from lmh.lib.config import get_config
 from lmh.lib.init import init
@@ -36,84 +37,90 @@ from lmh.commands import gen
 submods = {}
 
 def install_excepthook():
-  #
-  # Exception handler
-  #
-  cwd = os.getcwd()
-  def my_excepthook(exctype, value, tb):
-    if exctype == KeyboardInterrupt:
-      return
-    e = ''.join(traceback.format_exception(exctype, value, tb))
-    err(e)
-    err("lmh seems to have crashed with %s"%exctype)
-    err("a report will be generated in ")
-    s = "cwd = {0}\n args = {1}\n".format(cwd, sys.argv)
-    s = s + e 
-    write_file(os.path.join(install_dir, "logs", time.strftime("%Y-%m-%d-%H-%M-%S.log")), s)
+    #
+    # Exception handler
+    #
+    cwd = os.getcwd()
+    def my_excepthook(exctype, value, tb):
+        if exctype == KeyboardInterrupt:
+            return
+        e = ''.join(traceback.format_exception(exctype, value, tb))
+        err(e)
+        err("lmh seems to have crashed with %s"%exctype)
+        err("a report will be generated in ")
+        s = "cwd = {0}\n args = {1}\n".format(cwd, sys.argv)
+        s = s + e
+        write_file(os.path.join(install_dir, "logs", time.strftime("%Y-%m-%d-%H-%M-%S.log")), s)
 
-  sys.excepthook = my_excepthook
+    sys.excepthook = my_excepthook
 
 def main(argv = sys.argv[1:]):
-  """Calls the main program with given arguments. """
+    """Calls the main program with given arguments. """
+    parser = create_parser(submods)
 
-  parser = create_parser(submods)
-  try:
-    argcomplete.autocomplete(parser)
-  except:
-    pass
-  if len(argv) == 0:
-    parser.print_help();
-    return
+    try:
+        argcomplete.autocomplete(parser)
+    except:
+        pass
+    if len(argv) == 0:
+        parser.print_help();
+        return
 
-  args = parser.parse_args(argv)
+    args = parser.parse_args(argv)
 
-  #
-  # Default action
-  #
+    if args.quiet:
+        lmh.lib.io.__supressStd__ = True
+        lmh.lib.io.__supressErr__ = True
+    if args.non_interactive:
+        lmh.lib.io.__supressIn__ = True
 
-  if args.action == None:
-    init()
-    parser.print_help()
-    return
+    #
+    # Default action
+    #
 
-  #
-  # Quick Aliases
-  # TODO: Port them to actual commands
-  #
+    if args.action == None:
+        init()
+        parser.print_help()
+        return
 
-  if args.action == "root":
-    std(install_dir)
-    return True
+    #
+    # Quick Aliases
+    # TODO: Port them to actual commands
+    #
 
-  #
-  # Aliases for lmh gen --$action
-  #
-  if args.action == "sms":
-    argv[0] = "gen"
-    argv.append("--sms")
-    return submods["gen"].do(parser.parse_args(argv))
+    if args.action == "root":
+        std(install_dir)
+        return True
 
-  if args.action == "omdoc":
-    argv[0] = "gen"
-    argv.append("--omdoc")
-    return submods["gen"].do(parser.parse_args(argv))
+    #
+    # Aliases for lmh gen --$action
+    #
+    if args.action == "sms":
+        argv[0] = "gen"
+        argv.append("--sms")
+        return submods["gen"].do(parser.parse_args(argv))
 
-  if args.action == "pdf":
-    argv[0] = "gen"
-    argv.append("--pdf")
-    return submods["gen"].do(parser.parse_args(argv))
+    if args.action == "omdoc":
+        argv[0] = "gen"
+        argv.append("--omdoc")
+        return submods["gen"].do(parser.parse_args(argv))
 
-  #
-  # Normal run code
-  #
+    if args.action == "pdf":
+        argv[0] = "gen"
+        argv.append("--pdf")
+        return submods["gen"].do(parser.parse_args(argv))
 
-  return submods[args.action].do(args)
+    #
+    # Normal run code
+    #
+
+    return submods[args.action].do(args)
 
 def run(argv = sys.argv[1:]):
-  install_excepthook()
-  if(get_config("::eastereggs") == True and argv == ["what", "is", "the", "answer", "to", "life", "the", "universe", "and", "everything?"]):
-    sys.exit(42)
-  if main(argv):
-    sys.exit(0)
-  else:
-    sys.exit(1)
+    install_excepthook()
+    if(get_config("::eastereggs") == True and argv == ["what", "is", "the", "answer", "to", "life", "the", "universe", "and", "everything?"]):
+        sys.exit(42)
+    if main(argv):
+        sys.exit(0)
+    else:
+        sys.exit(1)

@@ -16,6 +16,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import sys
+import os
 import os.path
 import shutil
 
@@ -50,6 +51,7 @@ def term_colors(c):
 # Allow supression of outputs
 __supressStd__ = False
 __supressErr__ = False
+__supressIn__ = False
 
 def std(*args, **kwargs):
 	"""Prints some values to stdout"""
@@ -112,30 +114,14 @@ def std_paged(*args, **kwargs):
 			return std(*args, **kwargs)
 
 
-
-
 def read_raw(query = None):
 	"""Reads a line of text form stdin. """
-
+	if __supressIn__:
+		err("Interactivity disabled, aborting. ")
+		os._exit(1)
 	if query != None:
 		std(query, newline=False)
 	return sys.stdin.readline().strip()
-
-def block_std():
-	"""Blocks stdout"""
-	__supressStd__ = True
-
-def unblock_std():
-	"""Unblocks stdout"""
-	__supressStd__ = False
-
-def block_err():
-	"""Blocks stderr"""
-	__supressErr__ = True
-
-def unblock_err():
-	"""Unblocks stderr"""
-	__supressErr__ = False
 
 #
 # File reading / writing
