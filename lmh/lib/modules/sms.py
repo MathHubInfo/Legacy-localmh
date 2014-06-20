@@ -64,53 +64,53 @@ def gen_sms(modules, update, verbose, quiet, workers, nice, find_modules):
     return True
 
 def sms_gen_job(module):
-  # store parameters for sms job generation
-  return (module["file"], module["sms"])
+    # store parameters for sms job generation
+    return (module["file"], module["sms"])
 
 def sms_gen_do(job, quiet, worker=None, cwd="."):
-  # run a sms generation job
-  (input, out) = job
+    # run a sms generation job
+    (input, out) = job
 
-  if not quiet:
-    std("SMS: Generating ", os.path.relpath(out, cwd))
+    if not quiet:
+        std("SMS: Generating ", os.path.relpath(out, cwd))
 
-  output = open(out, "w")
+    output = open(out, "w")
 
-  for line in open(input):
-    idx = line.find("%")
-    if idx == -1:
-      line = line[0:idx];
+    for line in open(input):
+        idx = line.find("%")
+        if idx == -1:
+            line = line[0:idx];
 
-    if ignore.search(line):
-      continue
+        if ignore.search(line):
+            continue
 
-    for reg in regs:
-      if reg.search(line):
-        text = line.strip()+"%\n"
-        output.write(text)
-        break
+        for reg in regs:
+            if reg.search(line):
+                text = line.strip()+"%\n"
+                output.write(text)
+                break
 
-  output.close()
+    output.close()
 
-  if not quiet:
-    std("SMS: Generated ", os.path.relpath(out, cwd))
+    if not quiet:
+        std("SMS: Generated ", os.path.relpath(out, cwd))
 
 def sms_gen_dump(job):
-  # dump an sms generation jump to STDOUT
-  (input, out) = job
+    # dump an sms generation jump to STDOUT
+    (input, out) = job
 
-  std("# generate ", out)
-  std("echo -n '' > "+shellquote(out))
+    std("# generate ", out)
+    std("echo -n '' > "+shellquote(out))
 
-  for line in open(input):
-    idx = line.find("%")
-    if idx == -1:
-      line = line[0:idx];
+    for line in open(input):
+        idx = line.find("%")
+        if idx == -1:
+            line = line[0:idx];
 
-    if ignore.search(line):
-      continue
+        if ignore.search(line):
+            continue
 
-    for reg in regs:
-      if reg.search(line):
-        text = line.strip()+"%\n"
-        std("echo -n "+shellquote(text)+" >> "+shellquote(out))
+        for reg in regs:
+            if reg.search(line):
+            text = line.strip()+"%\n"
+            std("echo -n "+shellquote(text)+" >> "+shellquote(out))

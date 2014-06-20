@@ -133,7 +133,7 @@ def do(args):
     return True
 
   # Check what we need to do
-  if (args.pdf or args.omdoc) and not args.skip_implies:
+  if (args.pdf or args.om doc) and not args.skip_implies:
     args.sms = True
     args.localpaths = True
     args.alltex = True
