@@ -30,58 +30,58 @@ all_textpl = Template(get_template("alltex_struct.tpl"))
 def gen_alltex(modules, update, verbose, quiet, workers, nice):
   """Generates all.tex files"""
 
-  jobs = []
-  for mod in modules:
-    if mod["type"] == "folder":
-      if (not update or mod["youngest"] > mod["alltex_time"]) and mod["file_pre"] != None:
-        jobs.append(alltex_gen_job(mod))
-  try:
-    if verbose:
-      std("# all.tex Generation")
-      for job in jobs:
-        alltex_gen_dump(job)
-    else:
-      if not quiet:
-        std("ALLTEX: Generating", len(jobs), "files. ")
-      for job in jobs:
-        alltex_gen_do(job, quiet)
-  except Exception as e:
-    err("ALLTEX generation failed. ")
-    err(traceback.format_exc())
-    return False
+    jobs = []
+    for mod in modules:
+        if mod["type"] == "folder":
+            if (not update or mod["youngest"] > mod["alltex_time"]) and mod["file_pre"] != None:
+                jobs.append(alltex_gen_job(mod))
+    try:
+        if verbose:
+            std("# all.tex Generation")
+            for job in jobs:
+                alltex_gen_dump(job)
+        else:
+            if not quiet:
+                std("ALLTEX: Generating", len(jobs), "files. ")
+                for job in jobs:
+                    alltex_gen_do(job, quiet)
+    except Exception as e:
+        err("ALLTEX generation failed. ")
+        err(traceback.format_exc())
+        return False
 
   return True
 
 def alltex_gen_job(module):
-  # store parameters for all.tex job generation
-  pre = read_file(module["file_pre"])
-  post = read_file(module["file_post"])
-  return (module["alltex_path"], pre, post, module["modules"])
+    # store parameters for all.tex job generation
+    pre = read_file(module["file_pre"])
+    post = read_file(module["file_post"])
+    return (module["alltex_path"], pre, post, module["modules"])
 
 
 def alltex_gen_do(job, quiet, worker=None, cwd="."):
-  # run a all.tex job
-  (dest, pre, post, modules) = job
+    # run a all.tex job
+    (dest, pre, post, modules) = job
 
-  if not quiet:
-    std("ALLTEX: Generating", dest)
+    if not quiet:
+        std("ALLTEX: Generating", dest)
 
-  content = [all_modtpl.substitute(file=m) for m in modules]
-  text = all_textpl.substitute(pre_tex=pre, post_tex=post, mods="\n".join(content))
+    content = [all_modtpl.substitute(file=m) for m in modules]
+    text = all_textpl.substitute(pre_tex=pre, post_tex=post, mods="\n".join(content))
 
-  write_file(dest, text+"\n")
+    write_file(dest, text+"\n")
 
-  if not quiet:
-    std("ALLTEX: Generated", dest)
+    if not quiet:
+        std("ALLTEX: Generated", dest)
 
 def alltex_gen_dump(job):
-  # dump an all.tex generation jump to STDOUT
-  (dest, pre, post, modules) = job
+    # dump an all.tex generation jump to STDOUT
+    (dest, pre, post, modules) = job
 
-  std("# generate", dest)
+    std("# generate", dest)
 
-  content = [all_modtpl.substitute(file=m) for m in modules]
-  text = all_textpl.substitute(pre_tex=pre, post_tex=post, mods="\n".join(content))
+    content = [all_modtpl.substitute(file=m) for m in modules]
+    text = all_textpl.substitute(pre_tex=pre, post_tex=post, mods="\n".join(content))
 
-  std("echo -n " + shellquote(text)+ " > "+shellquote(dest))
-  std("echo > "+shellquote(dest))
+    std("echo -n " + shellquote(text)+ " > "+shellquote(dest))
+    std("echo > "+shellquote(dest))
