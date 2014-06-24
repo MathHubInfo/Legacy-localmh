@@ -21,7 +21,7 @@ import argparse
 from lmh.lib.modules.move import movemod
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Views or changes lmh configuration. ')
+  parser = argparse.ArgumentParser(description='Moves a multilingual module to a new repository')
   add_parser_args(parser)
   return parser
 

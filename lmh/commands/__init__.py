@@ -48,7 +48,7 @@ def create_parser(submods = {}):
 
 		"gen", "update-build", "clean", "xhtml", "shell",
 
-		"find", "depcrawl", "checkpaths", "mvmod", "symbols"
+		"find", "depcrawl", "checkpaths", "mvmod", "translate", "symbols"
 	]
 
 	for mod in submodules:
