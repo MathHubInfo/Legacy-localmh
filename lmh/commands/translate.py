@@ -39,7 +39,7 @@ def add_parser_args(parser):
     parser.epilog = """
     Example: lmh translate functions.en.tex functions.de.tex
 
-    Which trabnslates the english version functions.en.tex to a new german version functions.de.tex
+    Which translates the english version functions.en.tex to a new german version functions.de.tex
 
     Will require manual completion of the translation.
     """
