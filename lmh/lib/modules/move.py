@@ -43,6 +43,21 @@ def movemod(source, dest, modules, simulate = False):
 
 	odest = dest
 
+	# Make a list of all the moved files.
+	moved_files = []
+
+	local_finds = []
+	local_replaces = []
+
+	def run_lmh_find_moved(find, replace):
+		if simulate:
+			# We will run it over dest only.
+			std("lmh", "find", json.dumps(find), "--replace", json.dumps(replace), "--apply", odest)
+		else:
+			# Append it to to a list.
+			local_finds.append(find)
+			local_replaces.append(replace)
+
 	for module in modules:
 
 		dest = odest
@@ -71,6 +86,7 @@ def movemod(source, dest, modules, simulate = False):
 		else:
 			try:
 				shutil.move(srcpath + ".tex", dest)
+				moved_files.append(os.path.join(dest, os.path.basename(srcpath + ".tex")))
 			except:
 				pass
 
@@ -78,15 +94,16 @@ def movemod(source, dest, modules, simulate = False):
 				# try to move the file if it exists
 				try:
 					shutil.move(pat, dest)
+					moved_files.append(os.path.join(dest, os.path.basename(pat)))
 				except:
 					pass
+
 
 		def run_lmh_find(find, replace):
 			finds.append(find)
 			replaces.append(replace)
 
 		# Run all the commands
-		# TODO: Run this only over the moved files (figure out how exactly)
 		m = "("+"|".join(["gimport", "guse", "gadopt"])+")"
 		run_lmh_find(r'\\'+m+oldcall, '\\$g0'+newcall)
 		run_lmh_find(r'\\'+m+oldcall_local, '\\$g0'+newcall)
@@ -94,6 +111,13 @@ def movemod(source, dest, modules, simulate = False):
 		m = "("+ "|".join(["importmhmodule", "usemhmodule", "adoptmhmodule", "usemhvocab"]) + ")"
 		run_lmh_find(r'\\'+m+oldcall_long, '\\$g0'+newcall_long)
 		run_lmh_find(r'\\'+m+oldcall_local, '\\$g0'+newcall_long)
+
+		# For the moved files, repalce gimport, guse, gadpot 
+		run_lmh_find_moved(r"\\("+"|".join(["gimport", "guse", "gadopt"])+")\["+dest[-len("/source/")]+"\]\{(.*)\}", "\\$g1{$g2}")
+
+	# Update the moved files.
+	run_lmh_find_moved(r"\\("+"|".join(["gimport", "guse", "gadopt"])+")\{(((?!(?<=\{)("+modules.join("|")+")\}).)*?)\}", "\\$g1{$g2}")
+
 
 
 	files = reduce([find_files(r, "tex")[0] for r in match_repos(data_dir, abs=True)])
@@ -103,4 +127,8 @@ def movemod(source, dest, modules, simulate = False):
 			std("lmh find", json.dumps(f), "--replace", json.dumps(r), "--apply")
 	else:
 		std("updating paths in the following files: ")
-		return find_cached(files, finds, replace=replaces)
+
+		res1 = find_cached(files, finds, replace=replaces)
+		res2 = find_cached(moved_files, local_finds, replace=local_replaces)
+
+		return res1 and res2
