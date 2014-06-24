@@ -112,11 +112,11 @@ def movemod(source, dest, modules, simulate = False):
 		run_lmh_find(r'\\'+m+oldcall_long, '\\$g0'+newcall_long)
 		run_lmh_find(r'\\'+m+oldcall_local, '\\$g0'+newcall_long)
 
-		# For the moved files, repalce gimport, guse, gadpot 
+		# For the moved files, repalce gimport, guse, gadpot
 		run_lmh_find_moved(r"\\("+"|".join(["gimport", "guse", "gadopt"])+")\["+dest[-len("/source/")]+"\]\{(.*)\}", "\\$g1{$g2}")
 
 	# Update the moved files.
-	run_lmh_find_moved(r"\\("+"|".join(["gimport", "guse", "gadopt"])+")\{(((?!(?<=\{)("+modules.join("|")+")\}).)*?)\}", "\\$g1{$g2}")
+	run_lmh_find_moved(r"\\("+"|".join(["gimport", "guse", "gadopt"])+")\{(((?!(?<=\{)("+"|".join(modules)+")\}).)*?)\}", "\\$g1{$g2}")
 
 
 
