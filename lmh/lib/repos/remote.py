@@ -162,7 +162,10 @@ def ls_remote(*spec):
 	matched_projects = set()
 
 	for s in spec:
-		matched_projects.update([p for p in projects if fnmatch.fnmatch(p, s)])
+		matches = [p for p in projects if fnmatch.fnmatch(p, s)]
+		if len(matches) == 0:
+			matches = [p for p in projects if fnmatch.fnmatch(p, s+"/*")]
+		matched_projects.update(matches)
 
 
 	return filter(is_valid, sorted(matched_projects))

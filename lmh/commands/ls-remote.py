@@ -17,7 +17,8 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
-from lmh.lib.io import std
+from lmh.lib.io import std, term_colors
+from lmh.lib.repos import is_installed
 from lmh.lib.repos.remote import ls_remote
 from lmh.lib.help import repo_wildcard_remote
 
@@ -41,5 +42,9 @@ def do(args):
     if res == False:
         return False
     else:
-        [std(r) for r in res]
+        for r in res:
+            if is_installed(r):
+                std(term_colors("green")+r+term_colors("normal"))
+            else:
+                std(term_colors("red")+r+term_colors("normal"))
         return True

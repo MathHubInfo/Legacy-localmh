@@ -18,6 +18,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import re
 import sys
+import glob
 import json
 import shutil
 
@@ -42,6 +43,21 @@ def movemod(source, dest, modules, simulate = False):
 
 	odest = dest
 
+	# Make a list of all the moved files.
+	moved_files = []
+
+	local_finds = []
+	local_replaces = []
+
+	def run_lmh_find_moved(find, replace):
+		if simulate:
+			# We will run it over dest only.
+			std("lmh", "find", json.dumps(find), "--replace", json.dumps(replace), "--apply", odest)
+		else:
+			# Append it to to a list.
+			local_finds.append(find)
+			local_replaces.append(replace)
+
 	for module in modules:
 
 		dest = odest
@@ -63,19 +79,25 @@ def movemod(source, dest, modules, simulate = False):
 
 		dest += "/source/"
 
-		file_patterns = ["", ".de", ".en"]
-
 		# Move the files
 		if simulate:
-			for pat in file_patterns:
-				std("mv "+srcpath + pat +".tex"+ " "+ dest + " 2>/dev/null || true")
+			std("mv "+srcpath + ".*.tex"+ " "+ dest + " 2>/dev/null || true")
+			std("mv "+srcpath + ".tex"+ " "+ dest + " 2>/dev/null || true")
 		else:
-			for pat in file_patterns:
+			try:
+				shutil.move(srcpath + ".tex", dest)
+				moved_files.append(os.path.join(dest, os.path.basename(srcpath + ".tex")))
+			except:
+				pass
+
+			for pat in glob.glob(srcpath + ".*.tex"):
 				# try to move the file if it exists
 				try:
-					shutil.move(srcpath + pat + ".tex", dest)
+					shutil.move(pat, dest)
+					moved_files.append(os.path.join(dest, os.path.basename(pat)))
 				except:
 					pass
+
 
 		def run_lmh_find(find, replace):
 			finds.append(find)
@@ -90,6 +112,13 @@ def movemod(source, dest, modules, simulate = False):
 		run_lmh_find(r'\\'+m+oldcall_long, '\\$g0'+newcall_long)
 		run_lmh_find(r'\\'+m+oldcall_local, '\\$g0'+newcall_long)
 
+		# For the moved files, repalce gimport, guse, gadpot
+		run_lmh_find_moved(r"\\("+"|".join(["gimport", "guse", "gadopt"])+")\["+dest[-len("/source/")]+"\]\{(.*)\}", "\\$g1{$g2}")
+
+	# Update the moved files.
+	run_lmh_find_moved(r"\\("+"|".join(["gimport", "guse", "gadopt"])+")\{(((?!(?<=\{)("+"|".join(modules)+")\}).)*?)\}", "\\$g1{$g2}")
+
+
 
 	files = reduce([find_files(r, "tex")[0] for r in match_repos(data_dir, abs=True)])
 
@@ -98,4 +127,8 @@ def movemod(source, dest, modules, simulate = False):
 			std("lmh find", json.dumps(f), "--replace", json.dumps(r), "--apply")
 	else:
 		std("updating paths in the following files: ")
-		return find_cached(files, finds, replace=replaces)
+
+		res1 = find_cached(files, finds, replace=replaces)
+		res2 = find_cached(moved_files, local_finds, replace=local_replaces)
+
+		return res1 and res2
