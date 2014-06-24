@@ -28,8 +28,7 @@ all_modtpl = Template(get_template("alltex_mod.tpl"))
 all_textpl = Template(get_template("alltex_struct.tpl"))
 
 def gen_alltex(modules, update, verbose, quiet, workers, nice):
-  """Generates all.tex files"""
-
+    """Generates all.tex files"""
     jobs = []
     for mod in modules:
         if mod["type"] == "folder":
@@ -50,7 +49,7 @@ def gen_alltex(modules, update, verbose, quiet, workers, nice):
         err(traceback.format_exc())
         return False
 
-  return True
+    return True
 
 def alltex_gen_job(module):
     # store parameters for all.tex job generation
