@@ -18,6 +18,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import re
 import sys
+import glob
 import json
 import shutil
 
@@ -63,17 +64,20 @@ def movemod(source, dest, modules, simulate = False):
 
 		dest += "/source/"
 
-		file_patterns = ["", ".de", ".en"]
-
 		# Move the files
 		if simulate:
-			for pat in file_patterns:
-				std("mv "+srcpath + pat +".tex"+ " "+ dest + " 2>/dev/null || true")
+			std("mv "+srcpath + ".*.tex"+ " "+ dest + " 2>/dev/null || true")
+			std("mv "+srcpath + ".tex"+ " "+ dest + " 2>/dev/null || true")
 		else:
-			for pat in file_patterns:
+			try:
+				shutil.move(srcpath + ".tex", dest)
+			except:
+				pass
+
+			for pat in glob.glob(srcpath + ".*.tex"):
 				# try to move the file if it exists
 				try:
-					shutil.move(srcpath + pat + ".tex", dest)
+					shutil.move(pat, dest)
 				except:
 					pass
 
@@ -82,6 +86,7 @@ def movemod(source, dest, modules, simulate = False):
 			replaces.append(replace)
 
 		# Run all the commands
+		# TODO: Run this only over the moved files (figure out how exactly)
 		m = "("+"|".join(["gimport", "guse", "gadopt"])+")"
 		run_lmh_find(r'\\'+m+oldcall, '\\$g0'+newcall)
 		run_lmh_find(r'\\'+m+oldcall_local, '\\$g0'+newcall)
