@@ -62,7 +62,7 @@ def do(args):
         return False
 
     if not os.path.isfile(os.path.abspath(args.source)):
-        err("File", lang, " does not exist. ")
+        err("File", args.source, " does not exist. ")
         return False
 
     for lang in args.dest:

@@ -32,10 +32,11 @@ def transmod(modname, org_lang, dest_lang):
 		err("Unable to read original module", orfn)
 		return False
 
+	# Replace modnl 3rd argument
+	content = re.sub(r"(\\begin\{modnl\}\[[^\]]*\]\{[^\}]*\})\{"+org_lang+r"\}", r"\1{"+dest_lang+"}", content)
+
 	def replacer(match):
 		content = match.group(2)
-		# Replace modnl 3rd argument
-		content = re.sub(r"(\\begin\{modnl\}\[[^\]]*\]\{[^\}]*\})\{"+org_lang+r"\}", r"\1{"+dest_lang+"}", content)
 
 		# trefi -> mtrefi
 		content = re.sub(r"\\trefi\[([^\]]*)\]\{([^\}]*)\}", r"\\mtrefi[\1?\2]{\\ttl{\2}}", content)
