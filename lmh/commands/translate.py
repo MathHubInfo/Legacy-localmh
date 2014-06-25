@@ -37,9 +37,10 @@ def add_parser_args(parser):
     parser.add_argument('dest', nargs="+", help="Name(s) of the new language(s). ")
 
     parser.epilog = """
-    Example: lmh translate functions.en.tex functions.de.tex
+    Example: lmh translate functions.en.tex de
 
-    Which translates the english version functions.en.tex to a new german version functions.de.tex
+    Which translates the english version functions.en.tex to a new german version
+    which will be called functions.de.tex.
 
     Will require manual completion of the translation.
     """
@@ -65,28 +66,13 @@ def do(args):
         return False
 
     for lang in args.dest:
-        olang = os.path.abspath(lang)
-        try:
-            olang = re.findall(multiregex, olang)[0]
-        except:
-            err("Module", lang, "does not seem to be multi-lingual. ")
-            err("(Can not extract language from filename. )")
-            err("Please set it to <module>.<language>.tex and try again. ")
-            ret = False
-            continue
-
-        if olang[0] != ofn[0]:
-            err("Module names do not match for destination", lang)
-            err("Skipping module. ")
-            ret = False
-            continue
-
-        if not args.force and os.path.isfile(lang):
-            err("File", lang, "exists, skipping. ")
+        langfn = ofn[0]+"."+lang+".tex"
+        if not args.force and os.path.isfile(langfn):
+            err("File", langfn, "exists, skipping. ")
             err("Use --force to overwrite. ")
             ret = False
             continue
 
-        ret = transmod(ofn[0], ofn[1], olang[1]) and ret
+        ret = transmod(ofn[0], ofn[1], lang) and ret
 
     return ret
