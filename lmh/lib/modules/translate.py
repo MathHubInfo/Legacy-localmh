@@ -32,8 +32,9 @@ def transmod(modname, org_lang, dest_lang):
 		err("Unable to read original module", orfn)
 		return False
 
-	# Replace modnl 3rd argument
+	# Replace modnl and viewnl 3rd argument
 	content = re.sub(r"(\\begin\{modnl\}\[[^\]]*\]\{[^\}]*\})\{"+org_lang+r"\}", r"\1{"+dest_lang+"}", content)
+	content = re.sub(r"(\\begin\{viewnl\}\[[^\]]*\]\{[^\}]*\})\{"+org_lang+r"\}", r"\1{"+dest_lang+"}", content)
 
 	def replacer(match):
 		content = match.group(2)
@@ -83,7 +84,9 @@ def transmod(modname, org_lang, dest_lang):
 
 		return match.group(1)+content+match.group(4)
 
+	# Run it over viewnl and modnl environments
 	content = re.sub(r"(\\begin{modnl})((.|\n)*)(\\end{modnl})", replacer, content)
+	content = re.sub(r"(\\begin{viewnl})((.|\n)*)(\\end{viewnl})", replacer, content)
 
 	try:
 		write_file(newfn, content)
