@@ -16,8 +16,8 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
-import re
 import os.path
+import re
 import glob
 
 from lmh.lib.env import install_dir, data_dir
@@ -527,7 +527,7 @@ def calc_deps(apply = False, dirname="."):
 				continue
 
 			# read the file
-			for f in read_file_lines(root+"/"+file):
+			for f in read_file_lines(os.path.join(root, file)):
 
 				for find in re.findall(r"\\(usemhvocab|usemhmodule|adoptmhmodule|importmhmodule)\[(([^\]]*),)?repos=([^,\]]+)(\s*)(,([^\]])*)?\]", f):
 					real_paths[find[3]] = True
