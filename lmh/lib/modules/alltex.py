@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import os
 import traceback
 from string import Template
 
@@ -55,15 +56,22 @@ def alltex_gen_job(module):
     # store parameters for all.tex job generation
     pre = read_file(module["file_pre"])
     post = read_file(module["file_post"])
-    return (module["alltex_path"], pre, post, module["modules"])
+    aux = module["alltex_path"][:-len("tex")]+"aux"
+
+    return (module["alltex_path"], aux, pre, post, module["modules"])
 
 
 def alltex_gen_do(job, quiet, worker=None, cwd="."):
     # run a all.tex job
-    (dest, pre, post, modules) = job
+    (dest, aux, pre, post, modules) = job
 
     if not quiet:
         std("ALLTEX: Generating", dest)
+
+    try:
+        os.remove(aux)
+    except:
+        pass
 
     content = [all_modtpl.substitute(file=m) for m in modules]
     text = all_textpl.substitute(pre_tex=pre, post_tex=post, mods="\n".join(content))
@@ -75,12 +83,13 @@ def alltex_gen_do(job, quiet, worker=None, cwd="."):
 
 def alltex_gen_dump(job):
     # dump an all.tex generation jump to STDOUT
-    (dest, pre, post, modules) = job
+    (dest, aux, pre, post, modules) = job
 
     std("# generate", dest)
 
     content = [all_modtpl.substitute(file=m) for m in modules]
     text = all_textpl.substitute(pre_tex=pre, post_tex=post, mods="\n".join(content))
 
+    std("rm", shellquote(aux), "2> /dev/null")
     std("echo -n " + shellquote(text)+ " > "+shellquote(dest))
     std("echo > "+shellquote(dest))
