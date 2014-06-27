@@ -33,6 +33,7 @@ def add_parser_args(parser):
   parser.add_argument('source', nargs=1, help="name of old repository. ")
   parser.add_argument('dest', nargs=1, help="Name of new repository. Assumed to be initalised correctly. ", default=None)
   parser.add_argument('module', nargs="+", help="Relative path(s) of source module(s) in old repository")
+  parser.add_argument('--no-depcrawl', action="store_const", default=False, const=True, help="Do not call depcrawl on source and destination. ")
   parser.add_argument('--simulate', action="store_const", default=False, const=True, help="Simulate only. ")
 
 
@@ -47,4 +48,4 @@ def do(args):
   args.source = args.source[0]
   args.dest = args.dest[0]
 
-  return movemod(args.source, args.dest, args.module, args.simulate)
+  return movemod(args.source, args.dest, args.module, args.no_depcrawl, simulate=args.simulate)

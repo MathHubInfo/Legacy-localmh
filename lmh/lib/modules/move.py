@@ -26,10 +26,10 @@ from lmh.lib import reduce
 from lmh.lib.io import find_files, std, err
 from lmh.lib.env import data_dir
 
-from lmh.lib.repos.local import match_repos
+from lmh.lib.repos.local import match_repo, match_repos, calc_deps
 from lmh.lib.repos.find_and_replace import find_cached
 
-def movemod(source, dest, modules, simulate = False):
+def movemod(source, dest, modules, no_depcrawl, simulate = False):
 	"""Moves modules from source to dest. """
 
 	# change directory to MathHub root, makes paths easier
@@ -41,6 +41,23 @@ def movemod(source, dest, modules, simulate = False):
 	finds = []
 	replaces = []
 
+	# Match the repos
+	source = match_repo(source, root=data_dir)
+	dest = match_repo(dest, root=data_dir)
+
+	if source == None:
+		err("Source repository does not exist, make sure it is installed. ")
+		return False
+	if dest == None:
+		err("Destination repository does not exist, make sure it is installed. ")
+		return False
+
+	if source == dest:
+		err("Cannot move modules when source and destination are the same. ")
+		return False
+
+	# Store original source and destination
+	osource = source
 	odest = dest
 
 	# Make a list of all the moved files.
@@ -118,17 +135,33 @@ def movemod(source, dest, modules, simulate = False):
 	# Update the moved files.
 	run_lmh_find_moved(r"\\("+"|".join(["gimport", "guse", "gadopt"])+")\{(((?!(?<=\{)("+"|".join(modules)+")\}).)*?)\}", "\\$g1{$g2}")
 
-
+	# Make the repo paths absolute
+	osource = match_repo(osource, abs=True)
+	odest = match_repo(odest, abs=True)
 
 	files = reduce([find_files(r, "tex")[0] for r in match_repos(data_dir, abs=True)])
 
 	if simulate:
 		for (f, r) in zip(finds, replaces):
 			std("lmh find", json.dumps(f), "--replace", json.dumps(r), "--apply")
+
+		if not no_depcrawl:
+			calc_deps(False, dirname=osource)
+			calc_deps(False, dirname=odest)
+
+		return True
+
 	else:
 		std("updating paths in the following files: ")
 
 		res1 = find_cached(files, finds, replace=replaces)
 		res2 = find_cached(moved_files, local_finds, replace=local_replaces)
 
-		return res1 and res2
+		if not no_depcrawl:
+			res3 = calc_deps(True, osource)
+			res4 = calc_deps(True, odest)
+		else:
+			res3 = True
+			res4 = True
+
+		return res1 and res2 and res3 and res4
