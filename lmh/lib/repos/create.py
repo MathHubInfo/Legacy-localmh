@@ -22,7 +22,7 @@ from string import Template
 
 from lmh.lib import mkdir_p
 from lmh.lib.env import install_dir
-from lmh.lib.io import read_file, write_file, find_files, find_all_files, std, err
+from lmh.lib.io import read_file, write_file, find_files, find_all_files, std, err, read_raw
 from lmh.lib.env import data_dir
 from lmh.lib.config import get_config
 from lmh.lib.repos.local import is_repo_dir
@@ -73,7 +73,60 @@ def copy_template_dir(source, destination, vars):
 	return True
 
 def create_remote(group, name):
-	pass
+	"""Create a remote repository interactively. """
+
+	if gitlab == False:
+		err("Missing pyapi-gitlab, unable to create remote repository. ")
+		return False
+
+	remote_host = get_config("self::gitlab_url")
+
+	std("Attempting to create repository", remote_host+group+"/"+name)
+
+	gl = gitlab.Gitlab(remote_host)
+
+	username = read_raw("Username for "+remote_host+":")
+	password = read_raw("Password for "+username+":", True)
+
+	try:
+		if not gl.login(username, password):
+			raise Exception
+	except Exception as e:
+		err("Gitlab Authentication failed. ")
+		return False
+
+	std("Authentication successfull, creating project. ")
+
+	# Find group Id
+	try:
+		gid = None
+		if group == username:
+			gid = ""
+		for g in gl.getgroups():
+			if g["path"] == group:
+				gid = g["id"]
+				break
+
+		if gid == None:
+			raise Exception
+
+	except:
+		err("Unable to determine group id, make sure")
+		err("you have access to the group "+group)
+		return False
+
+	# Create the project on the given id
+	try:
+		p = gl.createproject(name, gid, description="lmh auto-created project "+group+"/"+name, public=1)
+		if not p:
+			raise Exception
+
+		return find_source(p["path_with_namespace"])
+	except:
+		err("Project creation failed. ")
+		return False
+
+	return False
 
 def create(reponame, type="none", remote = True):
 	"""Creates a new repository in the given directory"""
@@ -170,9 +223,10 @@ def create(reponame, type="none", remote = True):
 		return True
 	# Source does not exist => we will have to create it.
 	if not source:
-		std("Remote does not exist, creating. ")
-		err("create_remote is unimplemented. ")
-		return False
+		source = create_remote(repo_group, repo_name)
+		if not source:
+			err("local repository created but remote creation failed. ")
+			return False
 
 	# Add the origin.
 	if not git_do(absrepo, "remote", "add", "origin", source):
@@ -180,7 +234,7 @@ def create(reponame, type="none", remote = True):
 		err("git is suddenly weird. ")
 		return False
 
-	if not git_push(absrepo):
+	if not git_push(absrepo, "--all"):
 		err("Repository created but could not push created repository. ")
 		err("Check your network connection and try again using git push. ")
 		return False

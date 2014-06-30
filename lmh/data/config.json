@@ -10,6 +10,12 @@
 		"help": "Show first run dialogs when first running lmh. ",
 		"default": false
 	},
+
+	"self::gitlab_url": {
+		"type": "string",
+		"help": "Gitlab URL. ",
+		"default": "http://gl.mathhub.info/"
+	},
 	"self::projects_url": {
 		"type": "string",
 		"help": "URL to (public) projects url. Used for ls-remote. ",
