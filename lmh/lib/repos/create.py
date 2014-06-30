@@ -35,6 +35,18 @@ from lmh.lib.git import root_dir as git_root
 from lmh.lib.git import push as git_push
 from lmh.lib.git import commit as git_commit
 
+try:
+	import gitlab
+except:
+	err("Missing pyapi-gitlab, please install it. ")
+	err("You may want to: ")
+	err("	pip install pyapi-gitlab")
+	err("or")
+	err("	pip install lmh --upgrade")
+	err("Some things may not be available and fail miserably. ")
+	err("See https://github.com/Itxaka/pyapi-gitlab")
+	gitlab = False
+
 def copy_template_dir(source, destination, vars):
 	"""Copies over a template directory. """
 
@@ -59,6 +71,9 @@ def copy_template_dir(source, destination, vars):
 		return False
 
 	return True
+
+def create_remote(group, name):
+	pass
 
 def create(reponame, type="none", remote = True):
 	"""Creates a new repository in the given directory"""

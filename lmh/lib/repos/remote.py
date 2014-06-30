@@ -37,9 +37,14 @@ except:
 	try:
 		from BeautifulSoup4 import BeautifulSoup
 	except:
-		err("Missing BeautifulSoup, please install it. ")
+		err("Missing beautifulsoup4, please install it. ")
+		err("You may want to: ")
+		err("	pip install beautifulsoup4")
+		err("or")
+		err("	pip install lmh --upgrade")
 		err("Some things may not be available and fail miserably. ")
 		err("See http://www.crummy.com/software/BeautifulSoup/")
+
 
 		BeautifulSoup = False
 
