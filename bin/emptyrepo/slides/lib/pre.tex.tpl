@@ -1,4 +1,4 @@
 \documentclass[notes]{mikoslides}
 \input{localpaths}
-\input{\MathHub{MiKoMH/GenCS/lib/preamble}}
+\input{\MathHub{${repo}/lib/preamble}}
 \begin{document}

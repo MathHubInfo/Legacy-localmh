@@ -1,4 +1,4 @@
 \documentclass{smglom}
 \input{localpaths}
-\input{\MathHub{smglom/smglom/lib/preamble}}
+\input{\MathHub{${repo}/lib/preamble}}
 \begin{document}
