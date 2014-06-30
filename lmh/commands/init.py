@@ -17,19 +17,22 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
-from lmh.lib.repos.local import create
+from lmh.lib.repos.create import create
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub Init tool.')
-  add_parser_args(parser)
-  return parser
+    parser = argparse.ArgumentParser(description='Local MathHub Init tool.')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="init"):
-  parser_status = subparsers.add_parser(name, help='initialize repository with MathHub repository structure')
-  add_parser_args(parser_status)
+    parser_status = subparsers.add_parser(name, help='initialize repository with MathHub repository structure')
+    add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('--use-git-root', '-g', action="store_const", default=False, const=True, help="initialise repository in the current git repository root. ")
+    parser.add_argument('--remote-readonly', '-l', action="store_const", const=True, default=False, help="Do not change anything on the remote (no pushing or creating). ")
+    parser.add_argument('name', nargs='?', default=".", help="Name or path of repository to create. Defaults to current directory. ")
+    parser.add_argument('--type', '-t', default="none", help="Repository type")
 
-def do(args): 
-  return create("./", args.use_git_root)
+
+def do(args):
+    return create(args.name, type=args.type, remote=not args.remote_readonly)

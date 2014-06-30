@@ -19,6 +19,7 @@ import sys
 import os
 import os.path
 import shutil
+import getpass
 
 from subprocess import Popen, PIPE, STDOUT
 
@@ -114,14 +115,17 @@ def std_paged(*args, **kwargs):
 			return std(*args, **kwargs)
 
 
-def read_raw(query = None):
+def read_raw(query = None, hidden = False):
 	"""Reads a line of text form stdin. """
 	if __supressIn__:
 		err("Interactivity disabled, aborting. ")
 		os._exit(1)
 	if query != None:
 		std(query, newline=False)
-	return sys.stdin.readline().strip()
+	if hidden:
+		return getpass.getpass("").strip()
+	else:
+		return sys.stdin.readline().strip()
 
 #
 # File reading / writing
@@ -207,3 +211,12 @@ def find_files(directory, *ext):
 				if file.endswith(e):
 					res[i].append(os.path.join(root, file))
 	return tuple(res)
+
+def find_all_files(directory):
+	"""Finds all files in a given directory. """
+	files = set()
+	for d, s, f in os.walk(directory):
+	    for fn in f:
+	        rd = os.path.relpath(d, directory)
+	        files.add(os.path.join(rd, fn))
+	return list(files)

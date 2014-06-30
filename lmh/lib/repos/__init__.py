@@ -22,6 +22,7 @@ import os.path
 from lmh.lib.io import err, read_file_lines
 from lmh.lib.git import root_dir
 from lmh.lib.env import install_dir, data_dir
+from lmh.lib.config import get_config
 
 """A regular expression for repository names"""
 nameExpression = '[\w-]+/[\w-]+'
@@ -29,7 +30,7 @@ nameExpression = '[\w-]+/[\w-]+'
 def is_installed(repo):
 	"""Checks if a repository is is installed"""
 
-	possible_dir = data_dir + "/" + repo
+	possible_dir = os.path.join(data_dir, repo)
 
 	return os.path.isdir(possible_dir) and is_valid_repo(possible_dir)
 
@@ -45,8 +46,8 @@ def find_dependencies(repo):
 	res = []
 	try:
 		# Find the root directory
-		dir = root_dir(repo)
-		metafile = read_file_lines(dir+"/META-INF/MANIFEST.MF")
+		d = root_dir(repo)
+		metafile = read_file_lines(os.path.join(d, "META-INF", "MANIFEST.MF"))
 
 		# Find the right line for dependencies
 		for line in metafile:
@@ -59,10 +60,25 @@ def find_dependencies(repo):
 
 	return res
 
-def is_valid_repo(dir):
+def is_valid_repo(d):
 	"""Validates if dir contains a valid local repository. """
+	d = os.path.abspath(d)
 
-	# TODO: Validate if we have the MANIFEST or a git repository here.
-	# Maybe even somehow generalise install::nodeps
+	if not os.path.isdir(d):
+		return False
+	try:
+		if not (os.path.relpath(data_dir, os.path.abspath(d)) == "../.."):
+			return False
 
-	return (os.path.relpath(data_dir, os.path.abspath(dir)) == "../..")
+		# Check for the manuifest, unless it is disabled by some setting.
+		if not get_config("install::nomanifest"):
+			return os.path.isfile(os.path.join(d, "META-INF", "MANIFEST.MF"))
+
+		# Check if we are git-controlled and the root dir is equal to the current dir
+		d = os.path.realpath(d)
+		if root_dir(d) != d:
+			return False
+
+		return True
+	except Exception as e:
+		return False

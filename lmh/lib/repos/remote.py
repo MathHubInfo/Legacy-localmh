@@ -45,7 +45,7 @@ except:
 
 
 
-def find_source(name):
+def find_source(name, quiet = False):
 	"""Finds the source of a repository. """
 
 	root_urls = get_config("install::sources").rsplit(";")
@@ -55,9 +55,9 @@ def find_source(name):
 		url_suf = root_suffix[i]
 		if exists(url+name+url_suf):
 			return url+name+url_suf
-
-	err("Can not find remote repository", name)
-	err("Please check install::sources and check your network connection. ")
+	if not quiet:
+		err("Can not find remote repository", name)
+		err("Please check install::sources and check your network connection. ")
 	return False
 
 def is_valid(name):

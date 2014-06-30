@@ -7,13 +7,13 @@ log file build.log
 //log+ controller
 //log+ extman
 //log+ reader
-log+ archive 
-log+ steximporter
+log+ archive
 //log+ checker
 //log+ object-checker
 //log+ query
 //log+ catalog
-//log+ server
+log+ server
+log+ planetary
 //log+ uom
 //log+ abox
 //log+ structure-parser
@@ -21,14 +21,13 @@ log+ steximporter
 //log+ scanner
 //log+ lf
 
+
 extension info.kwarc.mmt.planetary.PlanetaryPlugin
 extension info.kwarc.mmt.stex.STeXImporter
 
 archive add .
 
-build {1} stex-omdoc
-build {1} index
-build {1} mws-content
-build {1} mws-narration
+mathpath fs http://cds.omdoc.org/styles ${install_dir}/ext/MMT/styles
+base http://docs.omdoc.org/${repo_group}/${repo_name}
 
-exit
+server on 8081

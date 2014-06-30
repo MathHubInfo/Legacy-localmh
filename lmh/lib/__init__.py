@@ -14,6 +14,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
+import os, errno
 
 # Set the version information
 from lmh.lib.about import version as __version__
@@ -43,3 +44,12 @@ def f7(seq):
 	seen = set()
 	seen_add = seen.add
 	return [ x for x in seq if x not in seen and not seen_add(x)]
+def mkdir_p(path):
+	"""Make a direcories and its parents"""
+	try:
+		os.makedirs(path)
+	except OSError as exc: # Python >2.5
+		if exc.errno == errno.EEXIST and os.path.isdir(path):
+			pass
+		else:
+			raise
