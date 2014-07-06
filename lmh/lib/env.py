@@ -48,6 +48,9 @@ def which(program):
 			if is_exe(exe_file):
 				return exe_file
 
+	# Windows: Maybe its a .exe?
+	if os.name == "nt" and not program.endswith(".exe"):
+		return which(program+".exe")
 	return None
 
 """sTex directory"""

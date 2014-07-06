@@ -16,7 +16,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import argparse
-from lmh.lib.io import std
+from lmh.lib.io import std, err
 from lmh.lib.extenv import check_deps
 from lmh.lib.config import get_config
 import lmh.lib.packs
@@ -88,11 +88,6 @@ The following package groups are available:
   """
 
 def do(args):
-    if not args.no_check and not check_deps():
-        err("Dependency check failed. ")
-        err("Cannot perform specefied action. ")
-        err("Use --no-check to skip checking dependencies. ")
-        return False
 
     if args.firstrun == None:
         # Call firstrun if required
@@ -102,6 +97,12 @@ def do(args):
     elif args.firstrun == True:
         # Force call firstrun
         return lmh.lib.init.first_run()
+
+    if not args.no_check and not check_deps():
+        err("Dependency check failed. ")
+        err("Cannot perform specefied action. ")
+        err("Use --no-check to skip checking dependencies. ")
+        return False
 
     if len(args.pack) == 0:
         args.pack = ["default"]

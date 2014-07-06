@@ -27,7 +27,7 @@ for lmh to install and configure run-time dependencies correctly.
 
 ### Upgrade
 
-To upgrade onyl lmh itself run:
+To upgrade only lmh itself run:
 
 ```bash
 lmh selfupdate
@@ -62,11 +62,57 @@ In addition to the installer dependencies the following are required for lmh to 
 
 ### System-specific instructions
 
+#### Ubuntu / Debian
+
 On newer Ubuntu / Debian systems, all required packages may be installed with the following command:
 
 ```bash
 sudo apt-get install python python-pip python-dev subversion git texlive cpanminus libxml2-dev libxslt-dev libgdbm-dev
 ```
+
+#### Windows
+
+On Windows, dependencies are more difficult to install.
+
+Installing of the lmh core (no pdflatex etc) can be achieved by doing the following:
+
+** This has been tested on Windows 8 only and may not work at all on your system. **
+
+1) Install [Python](https://www.python.org/download/) 2.7
+
+2) Install a version of Visual Studio, preferably [Visual Studio 2010 Express](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-2010-express).
+
+3) Install [Git](http://git-scm.com/download/win).
+
+4) Open the "Git bash" and install pip:
+
+```
+easy_install pip
+```
+
+5) Now  download the lmh installer:
+
+```
+pip install lmh
+```
+
+If this fails and complains about not being unable to find "vcvarsall.bat",
+you will have to make sure that the environment variable "VS90COMNTOOLS" is set
+correctly. If you check your environment variables there should already be a
+variable like VS100COMNTOOLS there, use the value of that one. The error occurs
+because Visual Studio is installed in the wrong version (or not at all). Please
+also refer to
+[this thread](http://stackoverflow.com/questions/17658092/unable-to-find-vcvarsall-bat-using-python-3-3-in-windows-8).
+
+6) Now you should be able to run:
+
+```
+lmh core --install
+```
+
+to install lmh.
+
+7) Instruction on the runtime dependencies have not yet been tested. Coming soon.
 
 ## Directory Structure
 
