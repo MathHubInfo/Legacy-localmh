@@ -25,6 +25,10 @@ def which(program):
             if is_exe(exe_file):
                 return exe_file
 
+    # Windows: Maybe its an exe?
+    if os.name == "nt" and not program.endswith(".exe"):
+        return which(program + ".exe")
+
     return None
 
 def install_lmh(install, setupuri = "http://gl.mathhub.info/MathHub/localmh.git", branch=""):
@@ -37,7 +41,7 @@ def install_lmh(install, setupuri = "http://gl.mathhub.info/MathHub/localmh.git"
     if git == None:
         print "Unable to locate the git executable. "
         print "Please make sure it is in the $PATH environment variable. "
-        if islinux: 
+        if islinux:
           print "On a typical Ubuntu system you may install this with:"
           print "    sudo apt-get install git"
         if iswin:
@@ -59,7 +63,7 @@ def update_lmh(install, setupuri = "http://gl.mathhub.info/MathHub/localmh.git",
     if git == None:
         print "Unable to locate the git executable. "
         print "Please make sure it is in the $PATH environment variable. "
-        if islinux: 
+        if islinux:
           print "On a typical Ubuntu system you may install this with:"
           print "    sudo apt-get install git"
         if iswin:
@@ -104,7 +108,7 @@ def run_lmh_legacy(install):
             do_the_run()
 
     do_the_run()
-    
+
     sys.exit(runner.returncode)
 
 def has_lmh(install):
@@ -122,7 +126,7 @@ def run_core(args, install):
     ins3.add_argument('-in', '--install', action="store_const", const="in", dest="action", default="", help='Create a new instalation. ')
     ins3.add_argument('-up', '--upgrade-install', action="store_const", const="up", dest="action", help='Upgrade installation in place. ')
     ins3.add_argument('-rm', '--remove-install', action="store_const", const="rm", dest="action", help='Remove existing installation including all installed repositories. ')
-    
+
     ins4 = parser.add_argument_group('Core sources')
     ins4.add_argument('-s', '--source', metavar="source@branch", default="", help='Set source to get repository from. ')
 
@@ -191,7 +195,7 @@ def run_core(args, install):
         except:
             print "Warning: Unable to store new location in ~/.lmhpath. Please fix this manually. "
 
-        install = to        
+        install = to
         print "Done. "
 
         new = "skip"
@@ -250,7 +254,7 @@ def run_core(args, install):
         try:
             shutil.rmtree(install)
         except:
-            print "Unable to remove installation, please remove '"+install+"' manually. " 
+            print "Unable to remove installation, please remove '"+install+"' manually. "
         print "Done. "
 
 def get_lmh_path():
