@@ -74,9 +74,10 @@ sudo apt-get install python python-pip python-dev subversion git texlive cpanmin
 
 On Windows, dependencies are more difficult to install.
 
-Installing of the lmh core (no pdflatex etc) can be achieved by doing the following:
-
-** This has been tested on Windows 8 only and may not work at all on your system. **
+**
+    This has been tested on Windows 8 only and may not work at all on your system.
+    Windows support is still experimental. 
+**
 
 1) Install [Python](https://www.python.org/download/) 2.7
 
@@ -84,7 +85,7 @@ Installing of the lmh core (no pdflatex etc) can be achieved by doing the follow
 
 3) Install [Git](http://git-scm.com/download/win).
 
-4) Open the "Git bash" and install pip:
+4) Open the "Git bash" (with administrator rights) and install pip:
 
 ```
 easy_install pip
@@ -109,10 +110,32 @@ also refer to
 ```
 lmh core --install
 ```
+to install lmh. Now we are ready to install all the runtime dependencies.
 
-to install lmh.
+7) Install Subversion. If you also want a GUI client, you can use [TortoiseSVN](http://tortoisesvn.net/). Make sure the executables are added to the $PATH environment variable.
+(You can check this by opening a prompt and typing svn which should ouput something like "Type 'svn help' for usage. " )
 
-7) Instruction on the runtime dependencies have not yet been tested. Coming soon.
+8) Install [TexLive](https://www.tug.org/texlive/). This should install both "pdflatex" and "perl" executables. ** Depending on your network speed, this might take some time. **
+
+9) Open git bash again and install cpanminus:
+
+```
+cpan App::cpanminus
+```
+
+10) Download [GNU Make](http://gnuwin32.sourceforge.net/packages/make.htm) and put it in your $PATH. You should be able to run "make" from the command line without getting any errors.
+
+11) Download [GNU tar](http://gnuwin32.sourceforge.net/packages/gtar.htm) and put it in your $PATH. This will provide the tar executable.
+
+12) Now you should be able to run
+
+```
+lmh setup --install
+```
+
+without problems.
+
+12) You are ready to use lmh.
 
 ## Directory Structure
 
