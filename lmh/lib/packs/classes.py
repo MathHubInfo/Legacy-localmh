@@ -101,17 +101,18 @@ else:
     cpanm_installdeps_args = [cpanm_executable, "--installdeps", "--prompt", "."]
     cpanm_installself_args = [cpanm_executable, "--notest", "--prompt", "."]
 
+
 def cpanm_make(pack_dir):
     """Run CPANM make commands for a package. """
 
     _env = perl5env(os.environ)
     _env.pop("STEXSTYDIR", None)
-
     try:
         call(cpanm_installdeps_args, env=_env, cwd=pack_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
         call(cpanm_installself_args, env=_env, cwd=pack_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
         return True
     except Exception as e:
+        err(e)
         err("Failed to run cpanm on", pack_dir)
         return False
 

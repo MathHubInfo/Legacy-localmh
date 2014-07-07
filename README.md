@@ -70,14 +70,26 @@ On newer Ubuntu / Debian systems, all required packages may be installed with th
 sudo apt-get install python python-pip python-dev subversion git texlive cpanminus libxml2-dev libxslt-dev libgdbm-dev
 ```
 
+Then you can install lmh normally using:
+
+```bash
+pip install lmh # May require sudo
+lmh core --install
+lmh setup --install
+```
+
+
+
 #### Windows
 
 On Windows, dependencies are more difficult to install.
 
 **
     This has been tested on Windows 8 only and may not work at all on your system.
-    Windows support is still experimental. 
+    Windows support is still experimental.
 **
+
+Even if 64bit versions are available, try to install 32 bit versions as otherwise some compatibility issues can occur.
 
 1) Install [Python](https://www.python.org/download/) 2.7
 
@@ -117,15 +129,13 @@ to install lmh. Now we are ready to install all the runtime dependencies.
 
 8) Install [TexLive](https://www.tug.org/texlive/). This should install both "pdflatex" and "perl" executables. ** Depending on your network speed, this might take some time. **
 
-9) Open git bash again and install cpanminus:
-
-```
-cpan App::cpanminus
-```
+9) Install [Strawberry Perl](http://strawberryperl.com/). This will setup cpanminus as well.
 
 10) Download [GNU Make](http://gnuwin32.sourceforge.net/packages/make.htm) and put it in your $PATH. You should be able to run "make" from the command line without getting any errors.
 
 11) Download [GNU tar](http://gnuwin32.sourceforge.net/packages/gtar.htm) and put it in your $PATH. This will provide the tar executable.
+
+For Make and Tar, If you use the automated installer, make sure to add "C:\Program Files (x86)\GnuWin32\bin" to the PATH.
 
 12) Now you should be able to run
 
@@ -133,9 +143,9 @@ cpan App::cpanminus
 lmh setup --install
 ```
 
-without problems.
+**NOTICE: ** Currently anything that needs cpanm needs to be installed manually on Windows as installation fails. 
 
-12) You are ready to use lmh.
+13) You are ready to use lmh.
 
 ## Directory Structure
 

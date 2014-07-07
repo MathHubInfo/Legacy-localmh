@@ -64,7 +64,10 @@ if java_executable == "":
 cpanm_executable = get_config("env::cpanm")
 
 if cpanm_executable == "":
-	cpanm_executable =  which("cpanm")
+	if os.name == "nt":
+		cpanm_executable =  which("cpanm.bat")
+	else:
+		cpanm_executable =  which("cpanm")
 
 """The path to the make executable. """
 make_executable = get_config("env::make")
