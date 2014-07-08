@@ -1,4 +1,5 @@
 lmh
+lmh.bat
 setup.py
 lmh.egg-info/PKG-INFO
 lmh.egg-info/SOURCES.txt
