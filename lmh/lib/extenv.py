@@ -156,16 +156,16 @@ else:
 	perl5root = []
 
 """Perl5 binary directories"""
-perl5bindir = ":".join([p5r+"bin" for p5r in perl5root])+":"+install_dir+"/ext/LaTeXML/bin"+":"+install_dir+"/ext/LaTeXMLs/bin"
+perl5bindir = os.pathsep.join([p5r+"bin" for p5r in perl5root])+os.pathsep+install_dir+"/ext/LaTeXML/bin"+os.pathsep+install_dir+"/ext/LaTeXMLs/bin"
 
 """Perl5 lib directories"""
-perl5libdir = ":".join([p5r+"lib/perl5" for p5r in perl5root])+":"+install_dir+"/ext/LaTeXML/blib/lib"+":"+install_dir+"/ext/LaTeXMLs/blib/lib"
+perl5libdir = os.pathsep.join([p5r+"lib/perl5" for p5r in perl5root])+os.pathsep+install_dir+"/ext/LaTeXML/blib/lib"+os.pathsep+install_dir+"/ext/LaTeXMLs/blib/lib"
 
 def perl5env(_env = {}):
 	"""perl 5 environment generator"""
-	_env["PATH"]=perl5bindir+":"+_env["PATH"]
+	_env["PATH"]=perl5bindir+os.pathsep+_env["PATH"]
 	try:
-		_env["PERL5LIB"] = perl5libdir+":"+ _env["PERL5LIB"]
+		_env["PERL5LIB"] = perl5libdir+os.pathsep+ _env["PERL5LIB"]
 	except:
 		_env["PERL5LIB"] = perl5libdir
 	_env["STEXSTYDIR"] = stexstydir
@@ -176,7 +176,14 @@ def run_shell(shell = None, args=""):
 	"""Runs a shell that is ready for any perl5 things"""
 
 	if shell == None:
-		shell = os.environ["SHELL"] or which("bash")
+		try:
+			shell = os.environ["SHELL"] or which("bash")
+		except:
+			shell = which("bash")
+
+			if shell == None:
+				err("Unable to find bash shell, please provide another one. ")
+				return 127
 	else:
 		shell = which(shell)
 		if shell == None:
