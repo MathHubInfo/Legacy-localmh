@@ -170,6 +170,8 @@ def ls_remote(*spec):
 		matches = [p for p in projects if fnmatch.fnmatch(p, s)]
 		if len(matches) == 0:
 			matches = [p for p in projects if fnmatch.fnmatch(p, s+"/*")]
+		if len(matches) == 0:
+			err("Warning: No modules matching", s, "found. ")
 		matched_projects.update(matches)
 
 

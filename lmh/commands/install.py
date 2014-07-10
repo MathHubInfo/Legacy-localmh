@@ -17,7 +17,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
-from lmh.lib.io import std, err
+from lmh.lib.io import std, err, read_raw
 from lmh.lib.config import get_config
 from lmh.lib.repos.remote import install, ls_remote
 
@@ -32,11 +32,12 @@ def add_parser(subparsers, name="install"):
 
 def add_parser_args(parser):
   parser.add_argument('spec', nargs='*', help="A list of repository specs to install. ")
+  parser.add_argument('-y', '--no-confirm-install', action="store_true", default=False, help="Do not prompt before installing. ")
   parser.epilog = """
   Use install::sources to configure the sources of repositories.
 
   Use install::nomanifest to configure what happens to repositories without a manifest.
-  
+
   Use install::noglobs to disable globbing for lmh install.
   """
 
@@ -47,6 +48,17 @@ def do(args):
 
     if not get_config("install::noglobs"):
         args.spec = ls_remote(*args.spec)
-        std("Picked", len(args.spec), "repositories to install. ")
+        if len(args.spec) == 0:
+            err("Nothing to install...")
+            return True
+        if args.no_confirm_install:
+            std("Picked", len(args.spec),"repositories. ")
+        else:
+            std("Picked", len(args.spec),"repositories: ")
+            std(*args.spec)
+            if read_raw("Continue (y/N)?").lower() != "y":
+                err("Installation aborted. ")
+                return False
+
 
     return install(*args.spec)
