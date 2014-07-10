@@ -25,7 +25,7 @@ def create_parser(submods = {}):
 	#
 	# The main parser
 	#
-	parser = argparse.ArgumentParser(description='Local MathHub Tool.')
+	parser = argparse.ArgumentParser(prog="lmh", description='Local MathHub Tool.')
 
 	parser.add_argument("-q", "--quiet", action="store_true", default=False, help="Disables any output to stdout and stderr. ")
 	parser.add_argument("--non-interactive", "-ni",  action="store_true", default=False, help="Disables interactivity (prompts from stdin) and causes lmh to abort in those cases. ")
