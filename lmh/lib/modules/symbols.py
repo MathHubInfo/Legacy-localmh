@@ -104,27 +104,29 @@ def add_symbols(fname):
 
   # FInd all the symbolds and definitions
   defs = find_all_defis(content)
+
+  # This is what we have
   syms = find_all_symis(modcontent)
   symdefs = find_all_symdefs(modcontent)
-  
+
   if defs == None:
     defs = []
   if syms == None:
     syms = []
 
   # check if we still need them
-  def has_syms(d):
+  def need_sym(d):
     # negated
     req = ["sym", d[1], d[2]]
     try:
-      name = d[2][0]
+      name = "-".join(d[2])
     except:
       name = ""
 
     return not (req in syms) and not (name in symdefs)
 
   # OK filter them out
-  required = filter(has_syms, defs)
+  required = filter(need_sym, defs)
 
   # Add them if we need to
   if len(required) >= 0:

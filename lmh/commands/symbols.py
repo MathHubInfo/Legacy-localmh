@@ -21,21 +21,23 @@ import argparse
 from lmh.lib.modules.symbols import check_symbols
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Generates smybols needed by language bindings. ')
-  add_parser_args(parser)
-  return parser
+    parser = argparse.ArgumentParser(description='Generates smybols needed by language bindings. ')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="symbols"):
-  parser_status = subparsers.add_parser(name, help='Generates smybols needed by language bindings. ')
-  add_parser_args(parser_status)
+    parser_status = subparsers.add_parser(name, help='Generates smybols needed by language bindings. ')
+    add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  pass
-
-
-  parser.epilog = """
-      TBD
-  """
+    parser.add_argument("path", nargs="*", default=[], help="Path to modules where to generate symbols. ")
 
 def do(args):
-  return check_symbols(os.getcwd())
+    if len(args.path) == 0:
+        args.path = [os.getcwd()]
+
+    res = True
+    for p in args.path:
+        res = check_symbols(p) and res
+
+    return res
