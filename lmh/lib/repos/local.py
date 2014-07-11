@@ -262,14 +262,24 @@ def pull(*repos):
 
 	return ret
 
-def status(*repos):
+def is_clean(repo):
+	"""Checks if a working directory is clean. """
+	return git_do_data(repo, "status", "--porcelain")[0] == ""
+
+def status(repos, show_unchanged, *args):
 	"""Does git status on all installed repositories """
 
 	ret = True
 
 	for rep in repos:
+
+		# If we are clean, do nothing
+		if is_clean(rep) and not show_unchanged:
+			continue
+
 		std("git status", rep)
-		val = git_status(rep)
+
+		val = git_status(rep, *args)
 		if not val:
 			err("Unable to run git status on", rep)
 			ret = False
