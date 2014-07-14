@@ -39,7 +39,7 @@ def create_multi(modname, *langs):
 	# Module content
 	module_content_regex = r"^((?:.|\n)*)\\begin\{module\}\[(?:(.*),\s*)?id=([^,\]]*)(?:\s*(.*))\]((?:.|\n)*?)\\end\{module\}((?:.|\n)*)$"
 	module_not_def_regex = r"(?:^|\\end\{definition\})((?:.|\n)*?)(?:\\begin\{definition\}|$)"
-	module_def_regex = r"(\\begin\{definition\}\[for=([^\]]+)\]((?:.|\n)*?)\\end\{definition\})"
+	module_def_regex = r"(\\begin\{definition\}(?:(?:.|\n)*?)\\end\{definition\})"
 
 	# Find the module
 	mod_content = re.findall(module_content_regex, content)
@@ -63,14 +63,14 @@ def create_multi(modname, *langs):
 	mod_meta = mod_content[1]+mod_content[3]
 
 	# Definition code
-	mod_env_defs = [d[0] for d in re.findall(module_def_regex, mod_content[4])]
+	mod_env_defs = re.findall(module_def_regex, mod_content[4])
 	mod_env_nodefs = list(re.findall(module_not_def_regex, mod_content[4]))
 
 	# Assemble the main module
 	main_module = mod_prefix
 	main_module += "\\begin{modsig}{"+lang+"}"
-	main_module += "\n".join(mod_env_nodefs)
-	main_module += "\n\\end{modsig}"
+	main_module += "".join(mod_env_nodefs)
+	main_module += "\\end{modsig}"
 	main_module += mod_suffix
 
 	try:
@@ -81,9 +81,9 @@ def create_multi(modname, *langs):
 
 	# Assemble the main language binding
 	main_language = mod_prefix
-	main_language += "\\begin{modnl}["+mod_meta+"]{"+mod_id+"}{"+lang+"}"
-	main_language += "".join(mod_env_defs)
-	main_language += "\\end{modnl}"
+	main_language += "\\begin{modnl}["+mod_meta+"]{"+mod_id+"}{"+lang+"}\n"
+	main_language += "\n".join(mod_env_defs)
+	main_language += "\n\\end{modnl}"
 	main_language += mod_suffix
 
 	try:
