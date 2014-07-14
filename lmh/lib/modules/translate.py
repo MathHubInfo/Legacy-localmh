@@ -18,7 +18,98 @@ import os
 import re
 import shutil
 
+from lmh.lib.modules.symbols import add_symbols
+
+import lmh.lib.io
 from lmh.lib.io import read_file, write_file, std, err
+
+def create_multi(modname, *langs):
+	if len(langs) == 0:
+		err("You need to create at least one language. ")
+		return False
+	lang = langs[0]
+
+	# Read the module
+	try:
+		content = read_file(modname+".tex")
+	except:
+		err("Unable to read original module", modname+".tex")
+		return False
+
+	# Module content
+	module_content_regex = r"^((?:.|\n)*)\\begin\{module\}\[(?:(.*),\s*)?id=([^,\]]*)(?:\s*(.*))\]((?:.|\n)*?)\\end\{module\}((?:.|\n)*)$"
+	module_not_def_regex = r"(?:^|\\end\{definition\})((?:.|\n)*?)(?:\\begin\{definition\}|$)"
+	module_def_regex = r"(\\begin\{definition\}\[for=([^\]]+)\]((?:.|\n)*?)\\end\{definition\})"
+
+	# Find the module
+	mod_content = re.findall(module_content_regex, content)
+
+	if len(mod_content) != 1:
+		err("Expected exactly one module environment. (Is the module really monolingual?)")
+		return False
+
+	mod_content = mod_content[0]
+
+	# Main Language Content
+	main_module = ""
+	main_language = ""
+
+	# Prefix and suffix to add to the module
+	mod_prefix = mod_content[0]
+	mod_suffix = mod_content[5]
+
+	# Id of the module
+	mod_id = mod_content[2]
+	mod_meta = mod_content[1]+mod_content[3]
+
+	# Definition code
+	mod_env_defs = [d[0] for d in re.findall(module_def_regex, mod_content[4])]
+	mod_env_nodefs = list(re.findall(module_not_def_regex, mod_content[4]))
+
+	# Assemble the main module
+	main_module = mod_prefix
+	main_module += "\\begin{modsig}{"+lang+"}"
+	main_module += "\n".join(mod_env_nodefs)
+	main_module += "\n\\end{modsig}"
+	main_module += mod_suffix
+
+	try:
+		write_file(modname+".tex", main_module)
+	except:
+		err("Unable to write", modname+".tex")
+		return False
+
+	# Assemble the main language binding
+	main_language = mod_prefix
+	main_language += "\\begin{modnl}["+mod_meta+"]{"+mod_id+"}{"+lang+"}"
+	main_language += "".join(mod_env_defs)
+	main_language += "\\end{modnl}"
+	main_language += mod_suffix
+
+	try:
+		write_file(modname+"."+lang+".tex", main_language)
+	except:
+		err("Unable to write", modname+"."+lang+".tex")
+		return False
+
+	lmh.lib.io.__supressStd__ = True
+
+	# Add the symbols frome the language file name
+	add_symbols(modname+"."+lang+".tex")
+
+	# Translate to all the other languages
+	for l in langs[1:]:
+		if not transmod(modname, lang, l):
+			lmh.lib.io.__supressStd__ = False
+			return False
+	lmh.lib.io.__supressStd__ = False
+
+	std("Created multilingual module", modname+".tex")
+
+	# Thats it.
+	return True
+
+
 
 def transmod(modname, org_lang, dest_lang):
 	"""Translate a module from one language to another. """
