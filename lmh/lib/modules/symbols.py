@@ -155,7 +155,7 @@ def add_symbols(fname):
     required = filter(need_sym, defs)
 
     # Add them if we need to
-    if len(required) >= 0:
+    if len(required) > 0:
         std("Adding", len(required), "symbol definition(s) from", fname)
         towrite = add_symis(modcontent, required)
         write_file(fmodname, towrite)
