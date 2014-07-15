@@ -33,4 +33,4 @@ def add_parser_args(parser):
 	pass
 
 def do(args):
-	return webbrowser.open(get_config("self::issue_url"))
+	return webbrowser.open(get_config("gl::issue_url"))

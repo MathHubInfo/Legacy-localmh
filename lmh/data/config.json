@@ -11,27 +11,6 @@
 		"default": false
 	},
 
-	"self::gitlab_url": {
-		"type": "string",
-		"help": "Gitlab URL. ",
-		"default": "http://gl.mathhub.info/"
-	},
-	"self::projects_url": {
-		"type": "string",
-		"help": "URL to (public) projects url. Used for ls-remote. ",
-		"default": "http://gl.mathhub.info/public/"
-	},
-	"self::raw_url": {
-		"type": "string",
-		"help": "URL to raw projects url. Used for ls-remote. ",
-		"default": "http://gl.mathhub.info/$repo/raw/HEAD/"
-	},
-	"self::issue_url": {
-		"type": "string",
-		"help": "URL to issues page. ",
-		"default": "http://gl.mathhub.info/MathHub/localmh/issues/"
-	},
-
 	"env::git": {
 		"type": "string",
 		"help": "Path to the Git executable. Auto-detected if empty. ",
@@ -114,6 +93,7 @@
 		"help": "Default Source for latexml. ",
 		"default": "https://github.com/KWARC/LaTeXML.git"
 	},
+
 	"setup::latexml::branch": {
 		"type": "string",
 		"help": "Default branch for latexml. Automatically uses the remote HEAD if undefined. ",
@@ -175,14 +155,32 @@
 
 	"gl::private_token": {
 		"type": "string",
-		"help": "Gitlab Private token for gitlab interaction. Unused. ",
+		"help": "Gitlab Private token for gitlab interaction. Leave blank to prompt for username / password. ",
 		"default": ""
 	},
 
 	"gl::host": {
 		"type": "string",
-		"help": "Host for gitlab interaction. Unused. ",
-		"default": "http://gl.mathub.info"
+		"help": "Host for gitlab interaction. Shoudl have a final slash. ",
+		"default": "http://gl.mathub.info/"
+	},
+
+	"gl::projects_url": {
+		"type": "string",
+		"help": "URL to (public) projects url. Used for ls-remote. ",
+		"default": "http://gl.mathhub.info/public/"
+	},
+
+	"gl::raw_url": {
+		"type": "string",
+		"help": "URL to raw projects url. Used for ls-remote. ",
+		"default": "http://gl.mathhub.info/$repo/raw/HEAD/"
+	},
+
+	"gl::issue_url": {
+		"type": "string",
+		"help": "URL to issues page. ",
+		"default": "http://gl.mathhub.info/MathHub/localmh/issues/"
 	},
 
 

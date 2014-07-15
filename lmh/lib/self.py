@@ -1,6 +1,6 @@
 #
 # Old leftover code.
-# To be removed before merge to master. 
+# To be removed before merge to master.
 #
 
 def install_autocomplete():

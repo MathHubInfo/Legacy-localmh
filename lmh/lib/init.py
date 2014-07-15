@@ -18,6 +18,10 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 from lmh.lib.env import which
 from lmh.lib.io import std, read_raw
 from lmh.lib.about import version
+
+# Force reload lmh.lib.config
+import lmh.lib.config
+reload(lmh.lib.config)
 from lmh.lib.config import get_config, set_config
 
 def init():
@@ -49,6 +53,10 @@ def first_run():
 	if read_raw("Do you wish to continue? hit enter to continue or enter s to skip. ") != "":
 		std("Skipping setup. ")
 		return
+
+	# Query for the API key
+	res = read_raw("Enter your gitlab private token. Leave blank to prompt for username / password when needed. >")
+	set_config("gl::private_token", res)
 
 	res = ""
 	while not res in ["y", "n"]:

@@ -25,7 +25,7 @@ def create_parser():
     return parser
 
 def add_parser(subparsers, name="init"):
-    parser_status = subparsers.add_parser(name, help='initialize repository with MathHub repository structure')
+    parser_status = subparsers.add_parser(name, help='initialize repository with MathHub repository structure', formatter_class=argparse.RawDescriptionHelpFormatter)
     add_parser_args(parser_status)
 
 def add_parser_args(parser):
@@ -33,6 +33,21 @@ def add_parser_args(parser):
     parser.add_argument('name', nargs='?', default=".", help="Name or path of repository to create. Defaults to current directory. ")
     parser.add_argument('--type', '-t', default="none", help="Repository type (one of "+", ".join(find_types())+")")
 
+    parser.epilog = """
+Creates a local MathHub repository and also creates and pushes it to Gitlab.
+
+Remote repository creation requires access to the Gitlab API. This needs
+either your gitlab username and password or your private token. The private
+token can be configured via
+
+    lmh config gl::private_token <token>
+
+The private token can be found under Profile -> Account -> Private Token.
+
+If no private token is configured, lmh will automatically ask for your
+username and password.
+
+To disable any interaction with Gitlab, use the --remote-readonly parameter. """
 
 def do(args):
     return create(args.name, type=args.type, remote=not args.remote_readonly)

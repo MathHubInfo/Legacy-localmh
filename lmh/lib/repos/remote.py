@@ -68,7 +68,7 @@ def find_source(name, quiet = False):
 def is_valid(name):
 	"""Checks if a remote repository is a valid repository. """
 
-	raw = Template(get_config("self::raw_url")).substitute(repo=name)+"META-INF/MANIFEST.MF"
+	raw = Template(get_config("gl::raw_url")).substitute(repo=name)+"META-INF/MANIFEST.MF"
 
 	try:
 		urlopen(raw)
@@ -130,7 +130,7 @@ def ls_remote(*spec):
 		spec = ["*"]
 
 	# The basic url
-	base_url = get_config("self::projects_url")
+	base_url = get_config("gl::projects_url")
 	projects = set()
 	def filter_page_name(p):
 		while(p.startswith("/")):
@@ -162,7 +162,7 @@ def ls_remote(*spec):
 				projects.add(filter_page_name(h4.find("a")["href"]))
 		except Exception as e:
 			err(e)
-			err("Parsing failure (make sure self::projects_url is correct)")
+			err("Parsing failure (make sure gl::projects_url is correct)")
 
 	matched_projects = set()
 

@@ -85,21 +85,35 @@ def create_remote(group, name):
 		err("Missing pyapi-gitlab, unable to create remote repository. ")
 		return False
 
-	remote_host = get_config("self::gitlab_url")
-
+	remote_host = get_config("gl::host")
 	std("Attempting to create repository", remote_host+group+"/"+name)
 
-	gl = gitlab.Gitlab(remote_host)
-
-	username = read_raw("Username for "+remote_host+":")
-	password = read_raw("Password for "+username+":", True)
+	# Get the private token
+	token = get_config("gl::private_token")
 
 	try:
-		if not gl.login(username, password):
-			raise Exception
+		if token != "":
+			gl = gitlab.Gitlab(remote_host, token=token)
+			username = gl.currentuser()["username"]
+		else:
+			raise "NoToken"
 	except Exception as e:
-		err("Gitlab Authentication failed. ")
-		return False
+		print e
+		std("Unable to login with private token. ")
+		std("To use it, please run")
+		std("	lmh config gl::private_token <token>")
+		std("Your private token can be found under Profile -> Account -> Private token")
+		std("Switching to username / password authentication. ")
+
+		username = read_raw("Username for "+remote_host+":")
+		password = read_raw("Password for "+username+":", True)
+
+		try:
+			if not gl.login(username, password):
+				raise Exception
+		except:
+			err("Gitlab Username/Password Authentication failed. ")
+			return False
 
 	std("Authentication successfull, creating project. ")
 
