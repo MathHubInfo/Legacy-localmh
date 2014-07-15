@@ -127,7 +127,13 @@ def create_remote(group, name):
 		if not p:
 			raise Exception
 
-		return find_source(p["path_with_namespace"])
+
+		res = find_source(p["path_with_namespace"], quiet=True)
+		if not res:
+			return res
+		else:
+			# Fallback to ssh url
+			return p["ssh_url_to_repo"]
 	except:
 		err("Project creation failed. ")
 		return False
@@ -224,6 +230,7 @@ def create(reponame, type="none", remote = True):
 			std("Skipping remote creation because --no-remote is given. ")
 		std("Repository created successfully. ")
 		return True
+
 	# Source does not exist => we will have to create it.
 	if not source:
 		source = create_remote(repo_group, repo_name)
