@@ -47,6 +47,12 @@ except:
 	err("See https://github.com/Itxaka/pyapi-gitlab")
 	gitlab = False
 
+# Create the local repository
+emptyrepo_dir = os.path.join(install_dir, "bin", "emptyrepo")
+
+def find_types():
+	return [name for name in os.listdir(emptyrepo_dir) if os.path.isdir(os.path.join(emptyrepo_dir, name)) and name != "none"]
+
 def copy_template_dir(source, destination, vars):
 	"""Copies over a template directory. """
 
@@ -164,9 +170,6 @@ def create(reponame, type="none", remote = True):
 			err("If you want to enable lmh init on non-empty directories, please run")
 			err("    lmh config init::allow_nonempty true")
 			return False
-
-	# Create the local repository
-	emptyrepo_dir = os.path.join(install_dir, "bin", "emptyrepo")
 
 	# Template Variables.
 	tpl_vars = {

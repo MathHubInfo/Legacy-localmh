@@ -17,7 +17,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
-from lmh.lib.repos.create import create
+from lmh.lib.repos.create import create, find_types
 
 def create_parser():
     parser = argparse.ArgumentParser(description='Local MathHub Init tool.')
@@ -31,7 +31,7 @@ def add_parser(subparsers, name="init"):
 def add_parser_args(parser):
     parser.add_argument('--remote-readonly', '-l', action="store_const", const=True, default=False, help="Do not change anything on the remote (no pushing or creating). ")
     parser.add_argument('name', nargs='?', default=".", help="Name or path of repository to create. Defaults to current directory. ")
-    parser.add_argument('--type', '-t', default="none", help="Repository type")
+    parser.add_argument('--type', '-t', default="none", help="Repository type (one of "+", ".join(find_types())+")")
 
 
 def do(args):
