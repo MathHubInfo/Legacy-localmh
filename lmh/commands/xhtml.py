@@ -30,6 +30,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 from lmh.lib.io import err
 from lmh.lib.repos.local import match_repo_args
 from lmh.lib.help import repo_wildcard_local
+from lmh.mmt import compile
 
 import argparse
 
@@ -54,13 +55,8 @@ def do_xhtml(rep):
   pass
 
 def do(args):
-  err("Warning: lmh xhtml is currently outdated, whatever you are trying to do wont work. ")
-  err("If you really need it, you can ask a wizard to enlarge lmh. ")
-  return False
-
-  mat_repo_args(arg)
 
   repos = match_repo_args(args.repository, args.all)
 
   for rep in repos:
-      do_xhtml(rep)
+      compile(rep)

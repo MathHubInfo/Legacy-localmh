@@ -22,6 +22,8 @@ import subprocess
 import glob
 import os
 
+from lmh.lib.extenv import java_executable
+from lmh.lib.io import std, err
 from lmh.lib.repos.local import match_repo
 from lmh.lib.git import root_dir
 from lmh.lib.env import install_dir
@@ -57,17 +59,17 @@ mmt_root = os.path.join(install_dir, "ext", "MMT");
 
 def runMMTScript(src, path):
   cp = "{dir}/lib/*:{dir}/mmt/branches/informal/*:{dir}/lfcatalog/*:{dir}/mmt/*".format(dir=mmt_root)
-  args = ["java", "-Xmx2048m", "-cp", cp, "info.kwarc.mmt.api.frontend.Run"];
+  args = [java_executable, "-Xmx2048m", "-cp", cp, "info.kwarc.mmt.api.frontend.Run"];
   try:
     print src
     comm = subprocess.Popen(args, cwd=path, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=src);
-    print comm[0]
-    print comm[1]
+    std(comm[0])
+    std(comm[1])
   except OSError, o:
-    print o
+    err(o)
 
 def compile(repository):
-  print "Generating XHTML in %s"%repository
+  std("Generating XHTML in", repository)
   repoName = match_repo(repository)
   repoPath = root_dir(repository)
 
