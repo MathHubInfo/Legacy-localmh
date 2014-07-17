@@ -31,27 +31,19 @@ from lmh.lib.env import install_dir
 
 initScript = """
 extension info.kwarc.mmt.planetary.PlanetaryPlugin
+extension info.kwarc.mmt.planetary.PlanetaryPresenter
 extension info.kwarc.mmt.stex.STeXImporter
-extension info.kwarc.mmt.api.archives.PresentationNarrationExporter html http://cds.omdoc.org/styles/omdoc/mathml.omdoc?html5
-
-
-mathpath fs http://cds.omdoc.org/styles {lmhRoot}/styles
-base http://docs.omdoc.org/mmt
 """;
 
 buildScript = """
-archive add .
-build {repoName} stex-omdoc*
-build {repoName} index*
-build {repoName} mws-content*
-build {repoName} mws-narration*
-build {repoName} narration_present_html*
+archive add {repoPath}
+build {repoName} stex-omdoc
+build {repoName} planetary
 """;
 
 loadScript = """
 archive add .
 
-mathpath fs http://cds.omdoc.org/styles {lmhRoot}/styles
 base http://docs.omdoc.org/mmt
 """;
 
@@ -74,5 +66,5 @@ def compile(repository):
   repoPath = root_dir(repository)
 
   src = os.path.join(repoPath, "source")
-  script = initScript.format(lmhRoot=install_dir)+"\n"+buildScript.format(repoName=repoName)
+  script = initScript.format(lmhRoot=install_dir)+"\n"+buildScript.format(repoName=repoName,repoPath=repoPath)
   runMMTScript(script, repoPath)
