@@ -39,6 +39,7 @@ buildScript = """
 archive add {repoPath}
 build {repoName} stex-omdoc
 build {repoName} planetary
+exit
 """;
 
 loadScript = """
