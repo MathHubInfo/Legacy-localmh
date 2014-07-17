@@ -85,15 +85,16 @@ lmh setup --install
 On Windows, dependencies are more difficult to install.
 
 **
-    This has been tested on Windows 8 only and may not work at all on your system.
-    Windows support is still experimental.
+    This has been tested to the minimum and may not work at all on your system.
+    Windows support is experimental. Whenever possible, try to use either Linux
+    or Mac OS for lmh.
 **
 
 Even if 64bit versions are available, try to install 32 bit versions as otherwise some compatibility issues can occur.
 
-1) Install [Python](https://www.python.org/download/) 2.7
+1) Install [Python](https://www.python.org/download/) 2.7. Make sure to select "Add Python.exe to PATH".
 
-2) Install a version of Visual Studio, preferably [Visual Studio 2010 Express](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-2010-express).
+2) Install a version of Visual Studio, preferably [Visual Studio 2010 C++ Express](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-2010-express). (Note: This step may take a while depending on the speed of your network connection. )
 
 3) Install [Git](http://git-scm.com/download/win).
 
@@ -124,7 +125,7 @@ lmh core --install
 ```
 to install lmh. Now we are ready to install all the runtime dependencies.
 
-7) Install Subversion. If you also want a GUI client, you can use [TortoiseSVN](http://tortoisesvn.net/). Make sure the executables are added to the $PATH environment variable.
+7) Install Subversion. If you also want a GUI client, you can use [TortoiseSVN](http://tortoisesvn.net/). Make sure the executables are added to the $PATH environment variable. ("Install Command Line Tools" option in the trotoise svn installer. )
 (You can check this by opening a prompt and typing svn which should ouput something like "Type 'svn help' for usage. " )
 
 8) Install [TexLive](https://www.tug.org/texlive/). This should install both "pdflatex" and "perl" executables. ** Depending on your network speed, this might take some time. **
@@ -143,7 +144,7 @@ For Make and Tar, If you use the automated installer, make sure to add "C:\Progr
 lmh setup --install
 ```
 
-**NOTICE: ** Currently anything that needs cpanm needs to be installed manually on Windows as installation fails. 
+**NOTICE: ** Currently anything that needs cpanm needs to be installed manually on Windows as installation fails.
 
 13) You are ready to use lmh.
 
