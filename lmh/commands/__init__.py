@@ -49,10 +49,10 @@ def create_parser(submods = {}):
 		"gen", "update-build", "clean", "xhtml", "shell",
 
 		"find", "depcrawl", "checkpaths", "mvmod", "translate", "multiling",
-		"symbols", "symcomplete", "ls-modules"
+		"symbols", "symcomplete", "ls-modules", "rename"
 	]
 
-	for mod in submodules:
+	for mod in sorted(submodules):
 		_mod = getattr(getattr(__import__("lmh.commands."+mod), "commands"), mod)
 		submods[mod] = _mod
 		_mod.add_parser(subparsers)
