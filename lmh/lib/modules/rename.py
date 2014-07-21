@@ -44,56 +44,36 @@ def rename(where, renamings, simulate = False):
 	# Compile regexes
 	i = 0
 	while i< len(renamings):
+
+		# What we need to find
 		find = renamings[i]
 		find_parts = find.split("-")
-		fl = len(find_parts)
+		find_args = r"\{"+(r"\}\{".join(find_parts))+r"\}"
+		find_i = "i"*len(find_parts)
+
+		# What we need to replace
 		replace = renamings[i+1]
 		replace_parts = replace.split("-")
-		rl = len(replace_parts)
+		replace_args = "{"+("}{".join(replace_parts))+"}"
+		replace_i = "i"*len(replace_parts)
 
-		#
-		# Defi(i{1, 3})
-		#
+		# defi
+		regexes.append(re.compile(r"\\def"+find_i+r"\["+find+r"\]"+find_args))
+		replaces.append("\\def"+replace_i+"["+replace+"]"+replace_args)
 
-		if fl > rl:
-			# we need fewer stuff => remove some arguments form the end.
-			need = fl - rl
-			regexes.append(re.compile(r"\\def(?:i{"+str(fl)+r"})\["+find+r"\]((?:\{(?:[^\}])*\}){"+str(rl)+r"})((?:\{(?:[^\}])*\}){"+str(need)+r"})"))
-			replaces.append("\\def"+("i"*rl)+"["+replace+"]\\1")
-		else:
-			need = rl - fl # we need this many more element
-			regexes.append(re.compile(r"\\def(?:i{"+str(fl)+r"})\["+find+r"\]"))
-			replaces.append("\\def"+("i"*rl)+"["+replace+"]"+("{dummy}"*need))
+		# trefi
+		regexes.append(re.compile(r"\\tref"+find_i+r"\[([^\]]*)\]"+find_args))
+		replaces.append("\\\\tref"+replace_i+"[\\1]"+replace_args)
 
-		# TODO: terfi, atrefi, mtrefi
+		# atrefi
+		regexes.append(re.compile(r"\\atref"+find_i+r"\[([^\]]*)\]\{([^\}]*)\}"+find_args))
+		replaces.append("\\\\atref"+replace_i+"[\\1]{\\2}"+replace_args)
 
-		# # Trefi
-		# regexes.append(re.compile(r"(\\trefi\[[^\]]*\])\{"+find+r"\}"))
-		# replaces.append("\\1{"+replace+"}")
-		#
-		# # Atrefi
-		# regexes.append(re.compile(r"(\\atrefi\[[^\]]*\]\{[^\}]*\})\{"+find+r"\}"))
-		# replaces.append("\\1{"+replace+"}")
-		#
-		# # Mtrefi
-		# regexes.append(re.compile(r"(\\mtrefi\[([^\?\]]*)\?)"+find+r"\]"))
-		# replaces.append("\\1"+replace+"]")
-		# # Defii
-		# regexes.append(re.compile(r"(\\defii)\["+find[0]+r"\-"+find[1]+r"\]"))
-		# replaces.append("\\defii["+replace+"]")
-		#
-		# #Trefii
-		# regexes.append(re.compile(r"(\\trefi\[[^\]]*\])\{"+find[0]+r"\}\{"+find[1]+r"\}"))
-		# replaces.append("\\1{"+replace[0]+"}{"+replace[1]+"}")
-		#
-		# # Atrefii => Not supported, see ticket
-		#
-		# # Mtrefii
-		# regexes.append(re.compile(r"(\\mtrefii\[([^\?\]]*)\?)"+find[0]+r"\-"+find[1]+r"\]"))
-		# replaces.append("\\1"+replace[0]+"-"+replace[1]+"]")
+		# mtrefi
+		regexes.append(re.compile(r"\\mtref"+find_i+r"\[([^\]\?]*)\?"+find+r"\]"+find_args))
+		replaces.append("\\mtref"+replace_i+"[\\1?"+replace+"]"+replace_args)
 
-
-
+		# go to the next pattern. 
 		i = i+2
 
 	actions = zip(regexes, replaces)
