@@ -61,6 +61,10 @@ def rename(where, renamings, simulate = False):
 		regexes.append(re.compile(r"\\def"+find_i+r"\["+find+r"\]"+find_args))
 		replaces.append("\\def"+replace_i+"["+replace+"]"+replace_args)
 
+		# defi (Michael)
+		regexes.append(re.compile(r"(\\def(?:i{1,3}))\["+find+r"\](\{(?:[^\}]*)\})"))
+		replaces.append("\\1["+replace+"]\\2")
+
 		# trefi
 		regexes.append(re.compile(r"\\tref"+find_i+r"\[([^\]]*)\]"+find_args))
 		replaces.append("\\\\tref"+replace_i+"[\\1]"+replace_args)
@@ -73,7 +77,7 @@ def rename(where, renamings, simulate = False):
 		regexes.append(re.compile(r"\\mtref"+find_i+r"\[([^\]\?]*)\?"+find+r"\]"+find_args))
 		replaces.append("\\mtref"+replace_i+"[\\1?"+replace+"]"+replace_args)
 
-		# go to the next pattern. 
+		# go to the next pattern.
 		i = i+2
 
 	actions = zip(regexes, replaces)
