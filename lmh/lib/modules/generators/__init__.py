@@ -2,10 +2,10 @@ from multiprocessing import current_process
 from multiprocessing.pool import Pool
 import atexit
 
-from lmh.lib.init import std, err
+from lmh.lib.io import std, err
 
 class Generator():
-    def __init__(self, verbose, quiet, **config):
+    def __init__(self, quiet, **config):
         # Inits options
         self.supportsMoreThanOneWorker = True # Do we allow more than one worker?
         self.prefix = "GEN" # Some prefix for logs
@@ -34,16 +34,16 @@ class Generator():
         # Dumps a job to the command line.
         return True
 
-def run(modules, simulate, update_mode, verbose, quiet, num_workers, GeneratorClass, **config):
+def run(modules, simulate, update_mode, quiet, num_workers, GeneratorClass, **config):
 
     # Create generator and job list
-    the_generator = GeneratorClass(verbose, quiet, **config)
+    the_generator = GeneratorClass(quiet, **config)
     jobs = []
 
     # All the modules which need to be generated should be added in the list
     for m in modules:
         if the_generator.needs_file(m, update_mode):
-            jobs.append((m, the_generator.make_job()))
+            jobs.append((m, the_generator.make_job(m)))
 
     if simulate:
         return run_simulate(the_generator, jobs, quiet)
@@ -51,7 +51,7 @@ def run(modules, simulate, update_mode, verbose, quiet, num_workers, GeneratorCl
         return run_generate(the_generator, num_workers, jobs, quiet)
 
 
-def run_simulate(the_generator, jobs, quiet, verbose):
+def run_simulate(the_generator, jobs, quiet):
 
     # Initialise dumping or fail
     if not the_generator.dump_init():
@@ -124,13 +124,13 @@ def worker_initer(the_generator):
     worker_id = current_process()
 
     def worker_deiniter():
-        if not the_generator.run_deinit(worker_id)
+        if not the_generator.run_deinit(worker_id):
             err("Unable to deinitalise worker", worker_id)
             raise "UnableToDeInit"
 
     atexit.register(lambda: worker_deiniter)
 
-    if not the_generator.run_init(worker_id)
+    if not the_generator.run_init(worker_id):
         err("Unable to initalise worker", worker_id)
         raise "UnableToInit"
 
@@ -162,3 +162,8 @@ def run_generate_single(the_generator, worker_id, job, quiet):
 
     # Run a job
     return the_generator.run_job(j, worker_id)
+
+
+# Import all the generators.
+# This has to be at the end of the file
+from lmh.lib.modules.generators.sms import generate as sms

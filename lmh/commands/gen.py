@@ -20,6 +20,8 @@ import argparse
 from lmh.lib import setnice
 from lmh.lib.io import std, err
 
+import lmh.lib.modules.generators
+
 
 from lmh.lib.modules import resolve_pathspec
 from lmh.lib.modules.sms import gen_sms
@@ -139,10 +141,10 @@ def do(args):
     args.alltex = True
 
   if args.sms:
-    if not gen_sms(modules, args.update, args.verbose, args.quiet, args.workers, args.nice, args.find_modules):
-      if not args.quiet:
-        err("SMS: Generation aborted prematurely, skipping further generation. ")
-      return False
+      if not lmh.lib.modules.generators.run(modules, args.verbose, args.update, args.quiet, args.workers, lmh.lib.modules.generators.sms, nice = args.nice):
+        if not args.quiet:
+            err("SMS: Generation failed, skipping further generation. ")
+            return False
 
   if args.localpaths and not args.find_modules:
     if not gen_localpaths(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice):
