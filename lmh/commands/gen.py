@@ -24,7 +24,6 @@ import lmh.lib.modules.generators
 
 
 from lmh.lib.modules import resolve_pathspec
-from lmh.lib.modules.sms import gen_sms
 from lmh.lib.modules.localpaths import gen_localpaths
 from lmh.lib.modules.alltex import gen_alltex
 from lmh.lib.modules.omdoc import gen_omdoc
@@ -70,6 +69,7 @@ def add_parser_args(parser, add_types=True):
     whattogen.add_argument('--sms', action="store_const", const=True, default=False, help="generate sms files")
     whattogen.add_argument('--omdoc', action="store_const", const=True, default=False, help="generate omdoc files, implies --sms, --alltex, --localpaths")
     whattogen.add_argument('--pdf', action="store_const", const=True, default=False, help="generate pdf files, implies --sms, --alltex, --localpaths")
+    whattogen.add_argument('--xhtml', action="store_const", const=True, default=False, help="generate xhtml files, implies --sms, --alltex, --localpaths")
 
     whattogen.add_argument('--alltex', action="store_const", const=True, default=False, help="Generate all.tex files")
     whattogen.add_argument('--localpaths', action="store_const", const=True, default=False, help="Generate localpaths.tex files")
@@ -93,81 +93,89 @@ def add_parser_args(parser, add_types=True):
   return parser
 
 def do(args):
-  if args.nice != 0:
-    # set niceness
-    setnice(args.nice)
+    # Make sure we are nice
+    if args.nice != 0:
+        setnice(args.nice)
 
-  if args.verbose:
-    args.quiet = True
+    # We should be verbose and run simulate
+    if args.verbose:
+        args.quiet = True
 
-  try:
-    if args.pdf_pipe_log:
-      args.quiet = True
-      args.workers = 1
-  except:
-    pass
+    # if we are piping pdf log, we need to be quiet and single.
+    try:
+        if args.pdf_pipe_log:
+            args.quiet = True
+            args.workers = 1
+    except:
+        pass
 
-  if args.find_modules:
-    args.skip_implies = True
-    args.quiet = True
-
-  if not args.pdf and not args.omdoc and not args.sms and not args.list and not args.localpaths and not args.alltex:
-    if not args.quiet:
-      std("Nothing to do ...")
-    return True
-
-  # Find all the modules
-  try:
-    if not args.quiet:
-      std("Checking modules ...")
-    modules = resolve_pathspec(args)
-    if not args.quiet:
-      std("Found", len(modules), "paths to work on. ")
-  except KeyboardInterrupt:
-    err("<<KeyboardInterrupt>>")
-    return False
-
-  # if we just need to list modules
-  if args.list:
-    for m in modules:
-      if m["type"] == "file":
-        std("./"+os.path.relpath(m["file"], "./"))
-    return True
-
-  # Check what we need to do
-  if (args.pdf or args.omdoc) and not args.skip_implies:
-    args.sms = True
-    args.localpaths = True
-    args.alltex = True
-
-  if args.sms:
-      if not lmh.lib.modules.generators.run(modules, args.verbose, args.update, args.quiet, args.workers, lmh.lib.modules.generators.sms, nice = args.nice):
+    # When we have nothing to do
+    # TODO: Make a joke
+    if not args.pdf and not args.omdoc and not args.sms and not args.list and not args.localpaths and not args.alltex and not args.xhtml:
         if not args.quiet:
-            err("SMS: Generation failed, skipping further generation. ")
+            std("Nothing to do ...")
+        return True
+
+    # Find all the modules
+    try:
+        if not args.quiet:
+            std("Checking modules, this may take a while ...")
+        modules = resolve_pathspec(args)
+        if not args.quiet:
+            std("Found", len(modules), "paths to work on. ")
+    except KeyboardInterrupt:
+        err("<<KeyboardInterrupt>>")
+        return False
+
+    # We want to list all the files
+    if args.list:
+        for m in modules:
+            if m["type"] == "file":
+                std(os.path.relpath(m["file"], "."))
+        return True
+
+    # Implications to set
+    if (args.pdf or args.omdoc or args.xhtml) and not args.skip_implies:
+        args.sms = True
+        args.localpaths = True
+        args.alltex = True
+
+    # SMS Generation
+    if args.sms:
+        (res, d, f) = lmh.lib.modules.generators.run(modules, args.verbose, args.update, args.quiet, args.workers, lmh.lib.modules.generators.sms, nice = args.nice)
+        std("SMS: Generated", len(d), "file(s), skipped", len(f), "file(s). ")
+        if not res:
+            if not args.quiet:
+                err("SMS: Generation failed, skipping further generation. ")
             return False
 
-  if args.localpaths and not args.find_modules:
-    if not gen_localpaths(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice):
-      if not args.quiet:
-        err("LOCALPATHS: Generation aborted prematurely, skipping further generation. ")
-      return False
 
-  if args.alltex and not args.find_modules:
-    if not gen_alltex(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice):
-      if not args.quiet:
-        err("ALLTEX: Generation aborted prematurely, skipping further generation. ")
-      return False
+    if args.localpaths and not args.find_modules:
+        if not gen_localpaths(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice):
+            if not args.quiet:
+                err("LOCALPATHS: Generation aborted prematurely, skipping further generation. ")
+            return False
 
-  if args.omdoc:
-    if not gen_omdoc(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice, args.find_modules):
-      if not args.quiet:
-        err("OMDOC: Generation aborted prematurely, skipping further generation. ")
-      return False
+    if args.alltex and not args.find_modules:
+        if not gen_alltex(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice):
+            if not args.quiet:
+                err("ALLTEX: Generation aborted prematurely, skipping further generation. ")
+            return False
 
-  if args.pdf:
-    if not gen_pdf(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice, args.pdf_add_begin_document, args.pdf_pipe_log, args.find_modules):
-      if not args.quiet:
-        err("PDF: Generation aborted prematurely, skipping further generation. ")
-      return False
+    if args.omdoc:
+        if not gen_omdoc(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice, args.find_modules):
+            if not args.quiet:
+                err("OMDOC: Generation aborted prematurely, skipping further generation. ")
+            return False
 
-  return True
+    if args.pdf:
+        if not gen_pdf(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice, args.pdf_add_begin_document, args.pdf_pipe_log, args.find_modules):
+            if not args.quiet:
+                err("PDF: Generation aborted prematurely, skipping further generation. ")
+                return False
+
+    if args.xhtml:
+        err("XHTML: Not yet implemented. Please use lmh xhtml instead. ")
+
+
+    return True

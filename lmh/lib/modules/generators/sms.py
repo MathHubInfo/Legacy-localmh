@@ -1,5 +1,6 @@
 from . import Generator
-from lmh.lib.io import read_file_lines
+from lmh.lib import shellquote
+from lmh.lib.io import std, err, read_file_lines
 
 import re
 
@@ -9,7 +10,7 @@ regs = map(re.compile, regStrings)
 
 class generate(Generator):
     def __init__(self, quiet, **config):
-        self.supportsMoreThanOneWorker = False # Do we allow more than one worker?
+        self.supportsMoreThanOneWorker = True # Do we allow more than one worker?
         self.prefix = "SMS"
     def needs_file(self,module, gen_mode):
         if module["type"] != "file":

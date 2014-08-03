@@ -50,6 +50,12 @@ def run(modules, simulate, update_mode, quiet, num_workers, GeneratorClass, **co
     else:
         return run_generate(the_generator, num_workers, jobs, quiet)
 
+class WorkRunnerJob(object):
+    def __init__(self, quiet, the_generator):
+        self.quiet = quiet
+        self.the_generator = the_generator
+    def __call__(self, j):
+        return worker_runner(j, self.quiet, self.the_generator)
 
 def run_simulate(the_generator, jobs, quiet):
 
@@ -86,9 +92,9 @@ def run_generate(the_generator, num_workers, jobs, quiet):
             return False
 
         # Create the worker Pool
-        the_worker_pool = Pool(processes=num_workers, initaliser=worker_initer,initargs=[the_generator])
+        the_worker_pool = Pool(num_workers, worker_initer, [the_generator])
 
-        res = the_worker_pool.map(lambda j:worker_runner(j, quiet, the_generator), jobs)
+        res = the_worker_pool.map(WorkRunnerJob(quiet, the_generator), jobs)
 
         the_worker_pool.close()
         the_worker_pool.join()
@@ -107,12 +113,12 @@ def run_generate(the_generator, num_workers, jobs, quiet):
         for (m, j) in jobs:
             if not run_generate_single(the_generator, None, (m, j), quiet):
                 if not quiet:
-                    err(the_generator.prefix, "Did not generate", m)
+                    err(the_generator.prefix, "Did not generate", m["file"])
                     return (False, successes, fails)
                 fails.append(m)
             else:
                 if not quiet:
-                    std(the_generator.prefix, "Generated", m)
+                    std(the_generator.prefix, "Generated", m["file"])
                 successes.append(m)
 
         if not the_generator.run_deinit(None):
@@ -121,7 +127,7 @@ def run_generate(the_generator, num_workers, jobs, quiet):
     return (True, successes, fails)
 
 def worker_initer(the_generator):
-    worker_id = current_process()
+    worker_id = current_process()._identity[0]
 
     def worker_deiniter():
         if not the_generator.run_deinit(worker_id):
@@ -135,18 +141,18 @@ def worker_initer(the_generator):
         raise "UnableToInit"
 
 def worker_runner(job, quiet, the_generator):
-    worker_id = current_process()
-    prefix = the_generator.prefix+"["+str(current_process())+"]:"
+    worker_id = current_process()._identity[0]
+    prefix = the_generator.prefix+"["+str(worker_id)+"]:"
     (m, j) = job
 
     if not run_generate_single(the_generator, worker_id, (m, j), quiet):
         if not quiet:
-            err(prefix, "Did not generate", m)
+            err(prefix, "Did not generate", m["file"])
             return (False, successes, fails)
         return False
     else:
         if not quiet:
-            std(prefix, "Generated", m)
+            std(prefix, "Generated", m["file"])
         return True
 
 
@@ -156,9 +162,9 @@ def run_generate_single(the_generator, worker_id, job, quiet):
     #Print out a debug message
     if not quiet:
         if worker_id == None:
-            std(the_generator.prefix+": Generating", m)
+            std(the_generator.prefix+": Generating", m["file"])
         else:
-            std(the_generator.prefix+"["+str(worker_id)+"]: Generating", m)
+            std(the_generator.prefix+"["+str(worker_id)+"]: Generating", m["file"])
 
     # Run a job
     return the_generator.run_job(j, worker_id)
