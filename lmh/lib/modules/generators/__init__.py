@@ -176,3 +176,4 @@ def run_generate_single(the_generator, worker_id, job, quiet):
 # This has to be at the end of the file
 from lmh.lib.modules.generators.sms import generate as sms
 from lmh.lib.modules.generators.localpaths import generate as localpaths
+from lmh.lib.modules.generators.alltex import generate as alltex

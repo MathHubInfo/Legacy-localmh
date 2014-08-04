@@ -24,7 +24,6 @@ import lmh.lib.modules.generators
 
 
 from lmh.lib.modules import resolve_pathspec
-from lmh.lib.modules.alltex import gen_alltex
 from lmh.lib.modules.omdoc import gen_omdoc
 from lmh.lib.modules.pdf import gen_pdf
 
@@ -161,9 +160,12 @@ def do(args):
             return False
 
     if args.alltex and not args.list:
-        if not gen_alltex(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice):
+        (res, d, f) = lmh.lib.modules.generators.run(modules, args.verbose, args.update, args.quiet, args.workers, lmh.lib.modules.generators.alltex, args.grep_log)
+        if not args.quiet:
+            std("ALLTEX: Generated", len(d), "file(s), failed", len(f), "file(s). ")
+        if not res:
             if not args.quiet:
-                err("ALLTEX: Generation aborted prematurely, skipping further generation. ")
+                err("ALLTEX: Generation failed, skipping further generation. ")
             return False
 
     if args.omdoc:

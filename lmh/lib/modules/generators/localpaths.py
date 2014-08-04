@@ -16,7 +16,7 @@ class generate(Generator):
         self.supportsMoreThanOneWorker = True
         self.prefix = "LOCALPATHS"
     def needs_file(self, module, gen_mode, text=None):
-        if module["type"] == "file":
+        if module["type"] != "folder":
             return False
         if gen_mode == "force" or gen_mode == "update_log" or gen_mode == "grep_log":
             return True
