@@ -2,5 +2,5 @@
 \input{localpaths}
 \usepackage[utf8]{inputenc}
 \usepackage[russian]{babel}
-\input{\MathHub{smglom/sets/lib/preamble}}
+\input{\MathHub{${repo}/lib/preamble}}
 \begin{document}

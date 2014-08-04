@@ -1,6 +1,6 @@
 \documentclass{smglom}
 \input{localpaths}
 \usepackage[utf8]{inputenc}
-\usepackage[langfiles,ngerman]{smultiling}
-\input{\MathHub{smglom/sets/lib/preamble}}
+\usepackage[ngerman]{babel}
+\input{\MathHub{${repo}/lib/preamble}}
 \begin{document}
