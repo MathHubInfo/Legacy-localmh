@@ -9,7 +9,7 @@ class Generator():
         # Inits options
         self.supportsMoreThanOneWorker = True # Do we allow more than one worker?
         self.prefix = "GEN" # Some prefix for logs
-    def needs_file(self,module, gen_mode):
+    def needs_file(self,module, gen_mode, text=None):
         # Check if we need a job
         return False
     def make_job(self,module):
@@ -33,8 +33,10 @@ class Generator():
     def dump_job(self, job):
         # Dumps a job to the command line.
         return True
+    def get_log_name(self, module):
+        return module["file"]
 
-def run(modules, simulate, update_mode, quiet, num_workers, GeneratorClass, **config):
+def run(modules, simulate, update_mode, quiet, num_workers, GeneratorClass, text, **config):
 
     # Create generator and job list
     the_generator = GeneratorClass(quiet, **config)
@@ -42,7 +44,7 @@ def run(modules, simulate, update_mode, quiet, num_workers, GeneratorClass, **co
 
     # All the modules which need to be generated should be added in the list
     for m in modules:
-        if the_generator.needs_file(m, update_mode):
+        if the_generator.needs_file(m, update_mode, text=text):
             jobs.append((m, the_generator.make_job(m)))
 
     if simulate:
@@ -113,12 +115,12 @@ def run_generate(the_generator, num_workers, jobs, quiet):
         for (m, j) in jobs:
             if not run_generate_single(the_generator, None, (m, j), quiet):
                 if not quiet:
-                    err(the_generator.prefix, "Did not generate", m["file"])
+                    err(the_generator.prefix, "Did not generate", the_generator.get_log_name(m))
                     return (False, successes, fails)
                 fails.append(m)
             else:
                 if not quiet:
-                    std(the_generator.prefix, "Generated", m["file"])
+                    std(the_generator.prefix, "Generated", the_generator.get_log_name(m))
                 successes.append(m)
 
         if not the_generator.run_deinit(None):
@@ -147,12 +149,12 @@ def worker_runner(job, quiet, the_generator):
 
     if not run_generate_single(the_generator, worker_id, (m, j), quiet):
         if not quiet:
-            err(prefix, "Did not generate", m["file"])
+            err(prefix, "Did not generate", the_generator.get_log_name(m))
             return (False, successes, fails)
         return False
     else:
         if not quiet:
-            std(prefix, "Generated", m["file"])
+            std(prefix, "Generated", the_generator.get_log_name(m))
         return True
 
 
@@ -162,9 +164,9 @@ def run_generate_single(the_generator, worker_id, job, quiet):
     #Print out a debug message
     if not quiet:
         if worker_id == None:
-            std(the_generator.prefix+": Generating", m["file"])
+            std(the_generator.prefix+": Generating", the_generator.get_log_name(m))
         else:
-            std(the_generator.prefix+"["+str(worker_id)+"]: Generating", m["file"])
+            std(the_generator.prefix+"["+str(worker_id)+"]: Generating", the_generator.get_log_name(m))
 
     # Run a job
     return the_generator.run_job(j, worker_id)
@@ -173,3 +175,4 @@ def run_generate_single(the_generator, worker_id, job, quiet):
 # Import all the generators.
 # This has to be at the end of the file
 from lmh.lib.modules.generators.sms import generate as sms
+from lmh.lib.modules.generators.localpaths import generate as localpaths

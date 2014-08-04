@@ -21,6 +21,11 @@ import os.path
 import shutil
 import getpass
 
+import lolcat
+import argparse
+import random
+import datetime
+
 from subprocess import Popen, PIPE, STDOUT
 
 def term_colors(c):
@@ -44,6 +49,35 @@ def term_colors(c):
 	else:
 		return ""
 
+loloptions = {
+    "spread": 3.0,
+    "freq": 0.1,
+    "seed": 0,
+    "animate": False,
+    "force": False,
+    "os": random.randint(0, 256)
+}
+loloptions = argparse.Namespace(**loloptions)
+
+def lol_write(text):
+	from lmh.lib.config import get_config
+	if get_config("self::enable_colors") and get_config("::eastereggs"):
+		a = lolcat.LolCat(mode = lolcat.detect_mode())
+		a.cat([text], loloptions)
+		loloptions.os += len(text.split("\n"))
+		lolcat.reset()
+		return
+	sys.__stdout__.write(text)
+
+now = datetime.datetime.now()
+if now.month == 4 and now.day == 1:
+	sys.stdout = {
+		"write": lambda x:lol_write(x),
+		"flush": lambda:True
+	}
+
+	sys.stdout = argparse.Namespace(**sys.stdout)
+
 
 #
 # Error & Normal Output
@@ -66,8 +100,9 @@ def std(*args, **kwargs):
 		else:
 			newline = kwargs["newline"]
 
+	text = " ".join([str(text) for text in args]) + ('\n' if newline else '')
+
 	if not __supressStd__:
-		text = " ".join([str(text) for text in args]) + ('\n' if newline else '')
 		sys.stdout.write(text)
 
 def err(*args, **kwargs):

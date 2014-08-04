@@ -10,12 +10,12 @@ regs = map(re.compile, regStrings)
 
 class generate(Generator):
     def __init__(self, quiet, **config):
-        self.supportsMoreThanOneWorker = True # Do we allow more than one worker?
+        self.supportsMoreThanOneWorker = True
         self.prefix = "SMS"
-    def needs_file(self,module, gen_mode):
+    def needs_file(self, module, gen_mode, text=None):
         if module["type"] != "file":
             return False
-        if gen_mode == "force" or gen_mode == "update_log":
+        if gen_mode == "force" or gen_mode == "update_log" or gen_mode == "grep_log":
             return True
         elif module["file_time"] > module["sms_time"]:
             return True

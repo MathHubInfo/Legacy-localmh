@@ -24,7 +24,6 @@ import lmh.lib.modules.generators
 
 
 from lmh.lib.modules import resolve_pathspec
-from lmh.lib.modules.localpaths import gen_localpaths
 from lmh.lib.modules.alltex import gen_alltex
 from lmh.lib.modules.omdoc import gen_omdoc
 from lmh.lib.modules.pdf import gen_pdf
@@ -42,57 +41,58 @@ def add_parser(subparsers, name="gen"):
 
 def add_parser_args(parser, add_types=True):
 
-  flags = parser.add_argument_group("Generation options")
+    f = parser.add_argument_group("Generic Options")
 
-  f1 = flags.add_mutually_exclusive_group()
-  f1.add_argument('-w', '--workers',  metavar='number', default=get_config("gen::default_workers"), type=int, help='Number of worker processes to use. Default determined by gen::default_workers. ')
-  f1.add_argument('-s', '--single',  action="store_const", dest="workers", const=1, help='Use only a single process. Shortcut for -w 1')
+    f1 = f.add_mutually_exclusive_group()
+    f1.add_argument('-w', '--workers',  metavar='number', default=get_config("gen::default_workers"), type=int, help='Number of worker processes to use. Default determined by gen::default_workers. ')
+    f1.add_argument('-s', '--single',  action="store_const", dest="workers", const=1, help='Use only a single process. Shortcut for -w 1')
 
-  f2 = flags.add_mutually_exclusive_group()
-  f2.add_argument('-u', '--update', const="update", default="update", action="store_const", help="Only generate files which have been changed. DEFAULT. ")
-  f2.add_argument('-ul', '--update-log', const="update_log", dest="update", action="store_const", help="Only generate files which have been changed, based on log files. Treated as -u for sms files. UNIMPLEMENTED and currently trated as --force. ")
-  f2.add_argument('-f', '--force', const="force", dest="update", action="store_const", help="Force to regenerate all files. ")
+    f2 = f.add_mutually_exclusive_group()
+    f2.add_argument('-n', '--nice', type=int, default=1, help="Assign the worker processes the given niceness. ")
+    f2.add_argument('-H', '--high', const=0, dest="nice", action="store_const", help="Generate files using the same priority as the main process. ")
 
-  f3 = flags.add_mutually_exclusive_group()
-  f3.add_argument('-n', '--nice', type=int, default=1, help="Assign the worker processes the given niceness. ")
-  f3.add_argument('-H', '--high', const=0, dest="nice", action="store_const", help="Generate files using the same priority as the main process. ")
+    f3 = f.add_mutually_exclusive_group()
+    f3.add_argument('-v', '--verbose', '--simulate', const=True, default=False, action="store_const", help="Dump commands for generation to STDOUT instead of running them. Implies --quiet. ")
+    f3.add_argument('-q', '--quiet', const=True, default=False, action="store_const", help="Do not write log messages to STDOUT while generating files. ")
 
-  f4 = flags.add_mutually_exclusive_group()
-  f4.add_argument('-v', '--verbose', '--simulate', const=True, default=False, action="store_const", help="Dump commands for generation to STDOUT instead of running them. Implies --quiet. ")
-  f4.add_argument('-q', '--quiet', const=True, default=False, action="store_const", help="Do not write log messages to STDOUT while generating files. ")
-  f4.add_argument('-m', '--find-modules', const=True, default=False, action="store_const", help="Find modules to generate and dump them to STDOUT. Implies --skip-implies, --quiet. Incompatible with --localpaths and --alltex. ")
+    f4 = parser.add_argument_group("Which files to generate").add_mutually_exclusive_group()
+    f4.add_argument('-u', '--update', const="update", default="update", action="store_const", help="Only generate files which have been changed, based on original files. Default. ")
+    f4.add_argument('-ul', '--update-log', const="update_log", dest="update", action="store_const", help="Only generate files which have been changed, based on log files. Treated as --force by some generators. ")
+    f4.add_argument('-gl', '--grep-log', metavar="PATTERN", dest="grep_log", default=None, help="grep for PATTERN in log files and generate based on those. Treated as --force by some generators. ")
+    f4.add_argument('-f', '--force', const="force", dest="update", action="store_const", help="Force to regenerate all files. ")
 
-  whattogen = parser.add_argument_group("What to generate")
+    whattogen = parser.add_argument_group("What to generate")
 
-  if add_types:
-
-    whattogen.add_argument('--sms', action="store_const", const=True, default=False, help="generate sms files")
-    whattogen.add_argument('--omdoc', action="store_const", const=True, default=False, help="generate omdoc files, implies --sms, --alltex, --localpaths")
-    whattogen.add_argument('--pdf', action="store_const", const=True, default=False, help="generate pdf files, implies --sms, --alltex, --localpaths")
-    whattogen.add_argument('--xhtml', action="store_const", const=True, default=False, help="generate xhtml files, implies --sms, --alltex, --localpaths")
-
-    whattogen.add_argument('--alltex', action="store_const", const=True, default=False, help="Generate all.tex files")
-    whattogen.add_argument('--localpaths', action="store_const", const=True, default=False, help="Generate localpaths.tex files")
-
-    whattogen.add_argument('--list', action="store_const", const=True, default=False, help="Lists all modules which exist in the given paths. If enabled, --sms --omdoc and --pdf are ignored. ")
+    if add_types:
+        whattogen.add_argument('--sms', action="store_const", const=True, default=False, help="generate sms files")
+        whattogen.add_argument('--omdoc', action="store_const", const=True, default=False, help="generate omdoc files, implies --sms, --alltex, --localpaths")
+        whattogen.add_argument('--pdf', action="store_const", const=True, default=False, help="generate pdf files, implies --sms, --alltex, --localpaths")
+        whattogen.add_argument('--xhtml', action="store_const", const=True, default=False, help="generate xhtml files, implies --sms, --alltex, --localpaths")
+        whattogen.add_argument('--alltex', action="store_const", const=True, default=False, help="Generate all.tex files")
+        whattogen.add_argument('--localpaths', action="store_const", const=True, default=False, help="Generate localpaths.tex files")
+        whattogen.add_argument('--list', action="store_const", const=True, default=False, help="Lists all modules which exist in the given paths. Blocks all other generation. ")
 
 
-    parser.add_argument('--pdf-add-begin-document', action="store_const", const=True, default=False, help="add \\begin{document} to LaTeX sources when generating pdfs. Backward compatibility for issue #82")
-    parser.add_argument('--pdf-pipe-log', action="store_const", const=True, default=False, help="Displays only the pdf log as output. Implies --quiet, --single")
+        parser.add_argument('--pdf-add-begin-document', action="store_const", const=True, default=False, help="add \\begin{document} to LaTeX sources when generating pdfs. Backward compatibility for issue #82")
+        parser.add_argument('--pdf-pipe-log', action="store_const", const=True, default=False, help="Displays only the pdf log as output. Implies --quiet, --single")
 
+    whattogen.add_argument('--skip-implies', action="store_const", const=True, default=False, help="Ignore all implications from --omdoc, --pdf and --xhtml. Might cause generation to fail. ")
 
-  whattogen.add_argument('--skip-implies', action="store_const", const=True, default=False, help="Generate only what is requested explicitly. Might fail if some files are missing. ")
+    wheretogen = parser.add_argument_group("Where to generate")
+    wheretogen.add_argument('-d', '--recursion-depth', type=int, default=-1, help="Recursion depth for paths and repositories. ")
 
-  wheretogen = parser.add_argument_group("Where to generate")
-  wheretogen.add_argument('-d', '--recursion-depth', type=int, default=-1, help="Recursion depth for paths and repositories. ")
+    wheretogen = wheretogen.add_mutually_exclusive_group()
+    wheretogen.add_argument('pathspec', metavar="PATH_OR_REPOSITORY", nargs='*', default=[], help="A list of paths or repositories to generate things in. ")
+    wheretogen.add_argument('--all', "-a", default=False, const=True, action="store_const", help="Generates all files in all repositories. Might take a long time. ")
 
-  wheretogen = wheretogen.add_mutually_exclusive_group()
-  wheretogen.add_argument('pathspec', metavar="PATH_OR_REPOSITORY", nargs='*', default=[], help="A list of paths or repositories to generate things in. ")
-  wheretogen.add_argument('--all', "-a", default=False, const=True, action="store_const", help="generates files for all repositories")
-
-  return parser
+    return parser
 
 def do(args):
+    # If we
+    if args.grep_log != None:
+        args.update = "grep_log"
+
+
     # Make sure we are nice
     if args.nice != 0:
         setnice(args.nice)
@@ -142,21 +142,25 @@ def do(args):
 
     # SMS Generation
     if args.sms:
-        (res, d, f) = lmh.lib.modules.generators.run(modules, args.verbose, args.update, args.quiet, args.workers, lmh.lib.modules.generators.sms, nice = args.nice)
-        std("SMS: Generated", len(d), "file(s), skipped", len(f), "file(s). ")
+        (res, d, f) = lmh.lib.modules.generators.run(modules, args.verbose, args.update, args.quiet, args.workers, lmh.lib.modules.generators.sms, args.grep_log)
+        if not args.quiet:
+            std("SMS: Generated", len(d), "file(s), failed", len(f), "file(s). ")
         if not res:
             if not args.quiet:
                 err("SMS: Generation failed, skipping further generation. ")
             return False
 
 
-    if args.localpaths and not args.find_modules:
-        if not gen_localpaths(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice):
+    if args.localpaths and not args.list:
+        (res, d, f) = lmh.lib.modules.generators.run(modules, args.verbose, args.update, args.quiet, args.workers, lmh.lib.modules.generators.localpaths, args.grep_log)
+        if not args.quiet:
+            std("LOCALPATHS: Generated", len(d), "file(s), failed", len(f), "file(s). ")
+        if not res:
             if not args.quiet:
-                err("LOCALPATHS: Generation aborted prematurely, skipping further generation. ")
+                err("LOCALPATHS: Generation failed, skipping further generation. ")
             return False
 
-    if args.alltex and not args.find_modules:
+    if args.alltex and not args.list:
         if not gen_alltex(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice):
             if not args.quiet:
                 err("ALLTEX: Generation aborted prematurely, skipping further generation. ")
