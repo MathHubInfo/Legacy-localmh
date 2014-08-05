@@ -24,7 +24,6 @@ import lmh.lib.modules.generators
 
 
 from lmh.lib.modules import resolve_pathspec
-from lmh.lib.modules.omdoc import gen_omdoc
 from lmh.lib.modules.pdf import gen_pdf
 
 from lmh.lib.config import get_config
@@ -169,9 +168,12 @@ def do(args):
             return False
 
     if args.omdoc:
-        if not gen_omdoc(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice, args.find_modules):
+        (res, d, f) = lmh.lib.modules.generators.run(modules, args.verbose, args.update, args.quiet, args.workers, lmh.lib.modules.generators.omdoc, args.grep_log)
+        if not args.quiet:
+            std("OMDOC: Generated", len(d), "file(s), failed", len(f), "file(s). ")
+        if not res:
             if not args.quiet:
-                err("OMDOC: Generation aborted prematurely, skipping further generation. ")
+                err("OMDOC: Generation failed, skipping further generation. ")
             return False
 
     if args.pdf:

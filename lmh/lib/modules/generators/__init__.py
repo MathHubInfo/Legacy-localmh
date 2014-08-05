@@ -2,7 +2,7 @@ from multiprocessing import current_process
 from multiprocessing.pool import Pool
 import atexit
 
-from lmh.lib.io import std, err
+from lmh.lib.io import std, err, term_colors
 
 class Generator():
     def __init__(self, quiet, **config):
@@ -57,7 +57,13 @@ class WorkRunnerJob(object):
         self.quiet = quiet
         self.the_generator = the_generator
     def __call__(self, j):
-        return worker_runner(j, self.quiet, self.the_generator)
+        try:
+            return worker_runner(j, self.quiet, self.the_generator)
+        except KeyboardInterrupt:
+            err("Generation aborted. ")
+        except Exception as e:
+            err("Exception in Worker Process: ", e)
+        return False
 
 def run_simulate(the_generator, jobs, quiet):
 
@@ -115,12 +121,12 @@ def run_generate(the_generator, num_workers, jobs, quiet):
         for (m, j) in jobs:
             if not run_generate_single(the_generator, None, (m, j), quiet):
                 if not quiet:
-                    err(the_generator.prefix, "Did not generate", the_generator.get_log_name(m))
+                    err(the_generator.prefix, "Did not generate", term_colors("green")+the_generator.get_log_name(m)+term_colors("normal"), colors=False)
                     return (False, successes, fails)
                 fails.append(m)
             else:
                 if not quiet:
-                    std(the_generator.prefix, "Generated", the_generator.get_log_name(m))
+                    std(term_colors("green")+the_generator.prefix, "Generated", the_generator.get_log_name(m)+term_colors("normal"))
                 successes.append(m)
 
         if not the_generator.run_deinit(None):
@@ -149,12 +155,11 @@ def worker_runner(job, quiet, the_generator):
 
     if not run_generate_single(the_generator, worker_id, (m, j), quiet):
         if not quiet:
-            err(prefix, "Did not generate", the_generator.get_log_name(m))
-            return (False, successes, fails)
+            err(prefix, "Did not generate", term_colors("red")+the_generator.get_log_name(m)+term_colors("normal"), colors=False)
         return False
     else:
         if not quiet:
-            std(prefix, "Generated", the_generator.get_log_name(m))
+            std(prefix, "Generated", term_colors("green")+the_generator.get_log_name(m)+term_colors("normal"))
         return True
 
 
@@ -177,3 +182,4 @@ def run_generate_single(the_generator, worker_id, job, quiet):
 from lmh.lib.modules.generators.sms import generate as sms
 from lmh.lib.modules.generators.localpaths import generate as localpaths
 from lmh.lib.modules.generators.alltex import generate as alltex
+from lmh.lib.modules.generators.omdoc import generate as omdoc

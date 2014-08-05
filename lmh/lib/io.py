@@ -109,17 +109,22 @@ def err(*args, **kwargs):
 	"""Prints some text to stderr"""
 
 	newline = True
+	color = True
 
 	# allow only the newline kwarg
 	for k in kwargs:
-		if k != "newline":
-			raise TypeError("std() got an unexpected keyword argument '"+k+"'")
+		if k != "newline" and k != "color":
+			raise TypeError("err() got an unexpected keyword argument '"+k+"'")
 		else:
 			newline = kwargs["newline"]
+			color = kwargs["color"]
 
 	if not __supressErr__:
 		text = " ".join([str(text) for text in args]) + ('\n' if newline else '')
-		sys.stderr.write(term_colors("red")+text+term_colors("normal"))
+		if color:
+			sys.stderr.write(term_colors("red")+text+term_colors("normal"))
+		else:
+			sys.stderr.write(text)
 
 def std_paged(*args, **kwargs):
 	"""Pages output if a pager is available. """
