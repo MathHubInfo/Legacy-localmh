@@ -116,9 +116,10 @@ def locate_preamables(mods):
         for m in mods:
             if m["type"] == "folder" and m["path"] == f:
                 return m
-
-        for m in mods:
-            if m["type"] == "folder" and os.path.relpath(f, m["path"]).startswith("../"):
+                
+        # we still need to create it.
+        for m in locate_modules(f, depth=0):
+            if m["type"] == "folder" and m["path"] == f:
                 return m
 
         return None

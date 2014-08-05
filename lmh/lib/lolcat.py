@@ -5,7 +5,6 @@
 # From: https://github.com/tehmaze/lolcat
 #
 
-import atexit
 import math
 import os
 import random
@@ -18,8 +17,6 @@ import time
 def reset():
     sys.__stdout__.write('\x1b[0m')
     sys.__stdout__.flush()
-
-atexit.register(reset)
 
 
 STRIP_ANSI = re.compile(r'\x1b\[(\d+)(;\d+)?(;\d+)?[m|K]')
