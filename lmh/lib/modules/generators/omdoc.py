@@ -40,6 +40,7 @@ class generate(Generator):
         return False
     def make_job(self, module):
         # store parameters for all.tex job generation
+
         if module["file_pre"] != None:
             args = [latexmlc, "--profile", "stex-module", "--path="+stydir, module["file"], "--destination="+module["omdoc_path"], "--log="+module["omdoc_log"]]
             args.append("--preamble="+module["file_pre"])

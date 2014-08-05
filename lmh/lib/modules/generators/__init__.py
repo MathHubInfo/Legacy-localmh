@@ -60,7 +60,7 @@ class WorkRunnerJob(object):
         try:
             return worker_runner(j, self.quiet, self.the_generator)
         except KeyboardInterrupt:
-            err("Generation aborted. ")
+            err(self.the_generator.prefix+":", "Generation aborted, use CTRL-Z to terminate pool. ")
         except Exception as e:
             err("Exception in Worker Process: ", e)
         return False
@@ -99,6 +99,8 @@ def run_generate(the_generator, num_workers, jobs, quiet):
             err("Unable to intialise main Worker. ")
             return False
 
+        std(the_generator.prefix+":", len(jobs), "file(s) to generate using", num_workers,"workers. ")
+
         # Create the worker Pool
         the_worker_pool = Pool(num_workers, worker_initer, [the_generator])
 
@@ -118,6 +120,8 @@ def run_generate(the_generator, num_workers, jobs, quiet):
             return (False, successes, fails)
 
         # Run all of the jobs
+        std(the_generator.prefix+":", len(jobs), "file(s) to generate using 1 worker. ")
+
         for (m, j) in jobs:
             if not run_generate_single(the_generator, None, (m, j), quiet):
                 if not quiet:

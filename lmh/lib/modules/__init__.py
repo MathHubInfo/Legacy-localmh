@@ -92,9 +92,17 @@ def locate_module(path, git_root):
     }
 
     if needsPreamble(path):
-        # TODO: Check for other premables here.
-        f["file_pre"] = git_root + "/lib/pre.tex"
-        f["file_post"] = git_root + "/lib/post.tex"
+
+        # Find the extension.
+        ext = re.search(r"(\.(.*)\.tex|.tex)$", f["file"]).group(1)
+
+        # Load the correct preamble.
+        f["file_pre"] = os.path.join(git_root, "lib", "pre"+ext)
+        f["file_pre"] = f["file_pre"] if os.path.isfile(f["file_pre"]) else os.path.join(git_root, "lib", "pre.tex")
+
+        # Load the correct postable - this will problaly have to fallback to the default
+        f["file_post"] = os.path.join(git_root, "lib", "post"+ext)
+        f["file_post"] = f["file_pre"] if os.path.isfile(f["file_post"]) else os.path.join(git_root, "lib", "post.tex")
     else:
         f["file_pre"] = None
         f["file_post"] = None
@@ -142,7 +150,7 @@ def locate_preamables(mods):
                     "all_file": alltex_file,
                     "all_time": os.path.getmtime(alltex_file) if os.path.isfile(alltex_file) else 0,
                     "pre_file": pre_file,
-                    "post_file": os.path.join(libdir, "post.tex"), 
+                    "post_file": os.path.join(libdir, "post.tex"),
                     "youngest": youngest,
                     "mods": langmods
                 })
