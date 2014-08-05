@@ -66,3 +66,5 @@ class generate(Generator):
                     std("echo -n "+shellquote(text)+" >> "+shellquote(out))
 
         return True
+    def get_log_name(self, m):
+        return m["sms"]
