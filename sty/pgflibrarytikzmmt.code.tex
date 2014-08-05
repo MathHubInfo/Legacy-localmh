@@ -12,7 +12,7 @@
 
 %%% 1. Theories
 % a generic theory
-\tikzstyle{thy}=[draw,outer sep=.6mm,rounded corners]
+\tikzstyle{thy}=[draw,outer sep=.3mm,rounded corners,inner sep=.5mm]
 % a primitive theory
 \tikzstyle{primthy}=[thy,double]
 % a theory graph 
@@ -40,6 +40,7 @@
 \tikzstyle{struct}=[-\@mmtarrowtip,thick]
 % inclusions: regular, partial, and left variants
 \tikzstyle{include}=[\@mmtarrowtipmonoright-\@mmtarrowtip,thick]
+\tikzstyle{revinclude}=[\@mmtarrowtip-\@mmtarrowtipmonoright,thick]
 \tikzstyle{pinclude}=[\@mmtarrowtipmonoright-\@mmtarrowtippartial,thick]
 \tikzstyle{includeleft}=[\@mmtarrowtipmonoleft-\@mmtarrowtip,thick]
 \tikzstyle{pincludeleft}=[\@mmtarrowtipmonoleft-\@mmtarrowtippartialleft,thick]
@@ -60,7 +61,7 @@
 \tikzstyle{pmviewleft}=[preview,\@mmtarrowtipmonoleft-\@mmtarrowtippartialleft]
 \tikzstyle{adoption}=[preview,thin,double,-\@mmtarrowtip]
 % biviews: regular, partial, and left variants
-\tikzstyle{biview}=[preview,\@mmtreversearrowtip-\@mmtarrowtip]
+\tikzstyle{biview}=[preview,\@mmtarrowtip-\@mmtarrowtip]
 \tikzstyle{pbiview}=[preview,\@mmtreversearrowtippartial-\@mmtarrowtippartial]
 \tikzstyle{pbiviewleft}=[preview,\@mmtreversearrowtippartialleft-\@mmtarrowtippartialleft]
 % defining views (experimental)
