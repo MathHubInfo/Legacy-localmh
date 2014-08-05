@@ -116,7 +116,7 @@ def locate_preamables(mods):
         for m in mods:
             if m["type"] == "folder" and m["path"] == f:
                 return m
-                
+
         # we still need to create it.
         for m in locate_modules(f, depth=0):
             if m["type"] == "folder" and m["path"] == f:
@@ -133,7 +133,8 @@ def locate_preamables(mods):
             the_mods = y["modules"]
             for pre_file in glob.glob(libdir+"/pre.*.tex"):
                 # The alltex file
-                alltex_file = re.sub(r"^(.*)pre\.(.*)\.tex$", r"\1all.\2.tex", pre_file)
+                alltex_file = re.sub(r"^(.*)pre\.(.*)\.tex$", r"all.\2.tex", pre_file)
+                alltex_file = os.path.join(r, "source", alltex_file)
 
                 # The language and its mods
                 language = "."+re.search(r"^(.*)pre\.(.*)\.tex$", pre_file).group(2)
@@ -157,7 +158,7 @@ def locate_preamables(mods):
                 })
             # Now take care of the others, if there are any.
             if len(the_mods) > 0:
-                alltex_file = os.path.join(libdir, "all.tex")
+                alltex_file = os.path.join(r, "source", "all.tex")
                 # Find the youngest one
                 youngest = [os.path.join(y["path"], k+".tex") for k in the_mods]
                 youngest = max([os.path.getmtime(fn) if os.path.isfile(fn) else 0 for fn in youngest])
