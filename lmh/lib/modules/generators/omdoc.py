@@ -6,6 +6,7 @@ import re
 import sys
 import signal
 import time
+import json
 import traceback
 import functools
 import multiprocessing
@@ -19,10 +20,12 @@ from lmh.lib.env import install_dir, stexstydir, which
 from lmh.lib.extenv import perl5bindir, perl5libdir, perl5env
 
 if get_config("setup::cpanm::selfcontained"):
-  latexmlc = install_dir+"/ext/perl5lib/bin/latexmlc"
+    latexmlc = install_dir+"/ext/perl5lib/bin/latexmlc"
 else:
-  latexmlc = which("latexmlc")
+    latexmlc = which("latexmlc")
 stydir = install_dir+"/sty"
+
+successRegex = r"Wrote (.*)(?:$|\n)"
 
 class generate(Generator):
     def __init__(self, quiet, **config):
@@ -65,25 +68,34 @@ class generate(Generator):
     def run_job(self,job,worker_id):
         (args, mod, path, _env) = job
 
+        res = False
+
         if worker_id == None:
             worker_id = 0
 
         port = worker_id+3535
 
         args.extend(["--expire=10", "--port="+str(port)])
-
         try:
-            if self.quiet:
-                p = Popen(args, cwd=path, env=_env, stdin=None, stdout=PIPE, stderr=PIPE, bufsize=1)
-            else:
-                p = Popen(args, cwd=path, env=_env, stdin=None, stdout=sys.stdout, stderr=sys.stderr, bufsize=1)
-                p.wait()
+            p = Popen(args, cwd=path, env=_env, stdin=None, stdout=PIPE, stderr=PIPE, bufsize=1)
+            p.wait()
+
+            (s, e) = p.communicate()
+
+            if mod in re.findall(successRegex, e):
+                res = True
+
+
+            if not self.quiet:
+                sys.stdout.write(s)
+                sys.stderr.write(e)
+
         except KeyboardInterrupt as k:
           p.terminate()
           p.wait()
           raise k
 
-        return p.returncode == 0
+        return res and p.returncode == 0
     def dump_init(self):
         std("# OMDOC Generation")
         std("export STEXSTYDIR=\""+stexstydir+"\"")

@@ -1,6 +1,7 @@
 from multiprocessing import current_process
 from multiprocessing.pool import Pool
 import atexit
+import traceback
 import re
 
 from lmh.lib.io import std, err, term_colors
@@ -73,7 +74,8 @@ class WorkRunnerJob(object):
         except KeyboardInterrupt:
             err(self.the_generator.prefix+":", "Generation aborted, use CTRL-Z to terminate pool. ")
         except Exception as e:
-            err("Exception in Worker Process: ", e)
+            err("Exception in Worker Process: ")
+            err(traceback.format_exc())
         return False
 
 def run_simulate(the_generator, jobs, quiet):
@@ -136,7 +138,7 @@ def run_generate(the_generator, num_workers, jobs, quiet):
         for (m, j) in jobs:
             if not run_generate_single(the_generator, None, (m, j), quiet):
                 if not quiet:
-                    err(the_generator.prefix, "Did not generate", term_colors("green")+the_generator.get_log_name(m)+term_colors("normal"), colors=False)
+                    err(the_generator.prefix+":", "Did not generate", term_colors("green")+the_generator.get_log_name(m)+term_colors("normal"), colors=False)
                     return (False, successes, fails)
                 fails.append(m)
             else:

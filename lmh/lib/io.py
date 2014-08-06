@@ -113,15 +113,21 @@ def err(*args, **kwargs):
 
 	# allow only the newline kwarg
 	for k in kwargs:
-		if k != "newline" and k != "color":
+		if k != "newline" and k != "colors":
 			raise TypeError("err() got an unexpected keyword argument '"+k+"'")
 		else:
-			newline = kwargs["newline"]
-			color = kwargs["color"]
+			try:
+				newline = kwargs["newline"]
+			except:
+				pass
+			try:
+				colors = kwargs["colors"]
+			except:
+				pass
 
 	if not __supressErr__:
 		text = " ".join([str(text) for text in args]) + ('\n' if newline else '')
-		if color:
+		if colors:
 			sys.stderr.write(term_colors("red")+text+term_colors("normal"))
 		else:
 			sys.stderr.write(text)
