@@ -15,8 +15,11 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from lmh.lib.env import which
-from lmh.lib.io import std, read_raw
+from glob import glob
+import os.path
+
+from lmh.lib.env import which, install_dir
+from lmh.lib.io import std, read_raw, find_files
 from lmh.lib.about import version
 
 # Force reload lmh.lib.config
@@ -34,6 +37,12 @@ def init():
 	first_run()
 	set_config("state::lastversion", version)
 
+	return True
+
+def post_update():
+	# Find the files
+	cache = [os.remove(f) for f in find_files(os.path.join(install_dir, "lmh"), "pyc")[0]]
+	std("Cleared python cache, removed", len(cache), "files. ")
 	return True
 
 def q_program(pgr):

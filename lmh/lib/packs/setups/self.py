@@ -26,10 +26,15 @@ class SelfPack(Pack):
     def do_update(self, pack_dir, update):
         if not pull(install_dir):
             return False
-        # Force reload init and then run it.
-        std("Re-running firstrun scripts ...")
+
+        std("reloading scripts")
         import lmh.lib.init
         reload(lmh.lib.init)
+        std("Running post-update scripts ...")
+        if not lmh.lib.init.post_update():
+            return False
+        # Force reload init and then run it.
+        std("Running firstrun scripts ...")
         return lmh.lib.init.init()
     def do_remove(self, pack_dir, params):
         raise UnsupportedAction

@@ -289,7 +289,7 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, recursion_dep
       B) Check if a directory $GLOB exists
         B.1) Are we inside a repository => treat as a normal repo
         B.2) are we outside of a repository => search for all repositories contained in it
-    2) If that gives no results, do a glob.glob($PATHSPEC) realtive to data_dir and repeat 1B)
+    2) If that gives no results, do a glob.glob($PATHSPEC) relative to data_dir and repeat 1B)
   """
 
   # args.all is given => generate everywhere
