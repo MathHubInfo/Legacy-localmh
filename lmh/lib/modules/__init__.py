@@ -83,10 +83,12 @@ def locate_module(path, git_root):
         "omdoc_path": omdocpath,
         "omdoc_time": os.path.getmtime(omdocpath) if os.path.isfile(omdocpath) else 0,
         "omdoc_log": omdoclog,
+        "omdoc_log_time": os.path.getmtime(omdoclog) if os.path.isfile(omdoclog) else 0,
         "pdf": pdfpath if os.path.isfile(pdfpath) else None,
         "pdf_path": pdfpath,
         "pdf_time": os.path.getmtime(pdfpath) if os.path.isfile(pdfpath) else 0,
         "pdf_log": pdflog,
+        "pdf_log_time": os.path.getmtime(pdflog) if os.path.isfile(pdflog) else 0,
         "sms": smspath,
         "sms_time": os.path.getmtime(smspath) if os.path.isfile(smspath) else 0,
     }

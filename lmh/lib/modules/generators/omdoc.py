@@ -31,10 +31,12 @@ class generate(Generator):
     def needs_file(self, module, gen_mode, text=None):
         if module["type"] != "file":
             return False
-        if gen_mode == "force" or gen_mode == "update_log" or gen_mode == "grep_log":
+        if gen_mode == "force" or gen_mode == "grep_log":
             return True
-        elif module["file_time"] > module["omdoc_time"]:
-            return True
+        elif gen_mode == "update_log":
+            return module["file_time"] > module["omdoc_log_time"]
+        elif gen_mode == "update":
+            return module["file_time"] > module["omdoc_time"]
         else:
             return False
         return False
