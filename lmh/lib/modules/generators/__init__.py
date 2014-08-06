@@ -1,6 +1,7 @@
 from multiprocessing import current_process
 from multiprocessing.pool import Pool
 import atexit
+import re
 
 from lmh.lib.io import std, err, term_colors
 
@@ -41,6 +42,16 @@ def run(modules, simulate, update_mode, quiet, num_workers, GeneratorClass, text
     # Create generator and job list
     the_generator = GeneratorClass(quiet, **config)
     jobs = []
+
+    if text != None:
+        try:
+            std("Compiling regular expression: ")
+            std(text)
+            text = re.compile(text)
+        except:
+            err("Invalid regular expression. ")
+            return (False, [], [])
+
 
     # All the modules which need to be generated should be added in the list
     for m in modules:
