@@ -59,6 +59,17 @@ def run(modules, simulate, update_mode, quiet, num_workers, GeneratorClass, text
         if the_generator.needs_file(m, update_mode, text=text):
             jobs.append((m, the_generator.make_job(m)))
 
+    if len(jobs) == 0:
+        std(the_generator.prefix+":", "No jobs, nothing to do. ")
+        return (True, [], [])
+
+    # If we have fewer jobs than workers, scale down the number of workers
+    # We assume the number of jobs is non-empty, as above.
+    if len(jobs) < num_workers:
+        if not quiet:
+            std(the_generator.prefix+":", "Less jobs then available workers, using fewer workers. ")
+        num_workers = len(jobs)
+
     if simulate:
         return run_simulate(the_generator, jobs, quiet)
     else:
@@ -138,12 +149,12 @@ def run_generate(the_generator, num_workers, jobs, quiet):
         for (m, j) in jobs:
             if not run_generate_single(the_generator, None, (m, j), quiet):
                 if not quiet:
-                    err(the_generator.prefix+":", "Did not generate", term_colors("green")+the_generator.get_log_name(m)+term_colors("normal"), colors=False)
+                    err(the_generator.prefix+":", "Did not generate", term_colors("red")+the_generator.get_log_name(m)+term_colors("normal"), colors=False)
                     return (False, successes, fails)
                 fails.append(m)
             else:
                 if not quiet:
-                    std(term_colors("green")+the_generator.prefix, "Generated", the_generator.get_log_name(m)+term_colors("normal"))
+                    std(the_generator.prefix+":", "Generated", term_colors("green")+the_generator.get_log_name(m)+term_colors("normal"))
                 successes.append(m)
 
         if not the_generator.run_deinit(None):

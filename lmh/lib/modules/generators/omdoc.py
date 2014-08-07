@@ -4,12 +4,7 @@ import os
 import os.path
 import re
 import sys
-import signal
 import time
-import json
-import traceback
-import functools
-import multiprocessing
 
 from subprocess import Popen
 from subprocess import PIPE
