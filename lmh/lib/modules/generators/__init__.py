@@ -150,7 +150,6 @@ def run_generate(the_generator, num_workers, jobs, quiet):
             if not run_generate_single(the_generator, None, (m, j), quiet):
                 if not quiet:
                     err(the_generator.prefix+":", "Did not generate", term_colors("red")+the_generator.get_log_name(m)+term_colors("normal"), colors=False)
-                    return (False, successes, fails)
                 fails.append(m)
             else:
                 if not quiet:
@@ -211,3 +210,4 @@ from lmh.lib.modules.generators.sms import generate as sms
 from lmh.lib.modules.generators.localpaths import generate as localpaths
 from lmh.lib.modules.generators.alltex import generate as alltex
 from lmh.lib.modules.generators.omdoc import generate as omdoc
+from lmh.lib.modules.generators.pdf import generate as pdf

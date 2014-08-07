@@ -177,10 +177,13 @@ def do(args):
             return False
 
     if args.pdf:
-        if not gen_pdf(modules, args.update == "update", args.verbose, args.quiet, args.workers, args.nice, args.pdf_add_begin_document, args.pdf_pipe_log, args.find_modules):
+        (res, d, f) = lmh.lib.modules.generators.run(modules, args.verbose, args.update, args.quiet, args.workers, lmh.lib.modules.generators.pdf, args.grep_log, add_bd=args.pdf_add_begin_document, pdf_pipe_log=args.pdf_pipe_log)
+        if not args.quiet:
+            std("PDF: Generated", len(d), "file(s), failed", len(f), "file(s). ")
+        if not res:
             if not args.quiet:
-                err("PDF: Generation aborted prematurely, skipping further generation. ")
-                return False
+                err("PDF: Generation failed, skipping further generation. ")
+            return False
 
     if args.xhtml:
         err("XHTML: Not yet implemented. Please use lmh xhtml instead. ")
