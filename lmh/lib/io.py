@@ -109,7 +109,7 @@ def err(*args, **kwargs):
 	"""Prints some text to stderr"""
 
 	newline = True
-	color = True
+	colors = True
 
 	# allow only the newline kwarg
 	for k in kwargs:
