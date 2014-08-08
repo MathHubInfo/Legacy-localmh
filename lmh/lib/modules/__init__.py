@@ -132,7 +132,10 @@ def locate_preamables(mods):
         libdir = os.path.join(r, "lib")
         if os.path.isdir(libdir):
             y = find_folder(r)
-            the_mods = y["modules"]
+            try:
+                the_mods = y["modules"]
+            except:
+                the_mods = []
             for pre_file in glob.glob(libdir+"/pre.*.tex"):
                 # The alltex file
                 alltex_file = re.sub(r"^(.*)pre\.(.*)\.tex$", r"all.\2.tex", pre_file)
@@ -144,7 +147,10 @@ def locate_preamables(mods):
 
                 # We need to find the youngest
                 youngest = [os.path.join(y["path"], k+".tex") for k in langmods]
-                youngest = max([os.path.getmtime(fn) if os.path.isfile(fn) else 0 for fn in youngest])
+                if youngest == []:
+                    youngest = float("inf")
+                else:
+                    youngest = max([os.path.getmtime(fn) if os.path.isfile(fn) else 0 for fn in youngest])
                 # We dont want the others anymore.
                 [the_mods.remove(l) for l in langmods]
                 # Now make the thing

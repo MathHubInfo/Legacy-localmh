@@ -6,7 +6,7 @@ import re
 import sys
 import time
 
-from subprocess import Popen
+from subprocess import call
 from subprocess import PIPE
 
 from lmh.lib.config import get_config, read_file
