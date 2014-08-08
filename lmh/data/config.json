@@ -197,6 +197,12 @@
 		"default": 8
 	},
 
+	"gen::pdf::timeout": {
+		"type": "int+",
+		"help": "Timeout when generating PDFs. In seconds. ",
+		"default": 60
+	},
+
 	"update::selfupdate": {
 		"type": "bool",
 		"help": "When lmh update or lmh setup --update is called without arguments, also perform a selfupdate. ",

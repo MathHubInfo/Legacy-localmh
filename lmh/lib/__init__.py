@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os, errno
+from time import sleep
 
 # Set the version information
 from lmh.lib.about import version as __version__
@@ -53,3 +54,19 @@ def mkdir_p(path):
             pass
         else:
             raise
+
+def popen_wait_timeout(process, time):
+    """Like process.wait, but with a timeout in milliseconds"""
+    polling_interval = 0.1
+
+    while True:
+        sleep(polling_interval)
+        time = time - polling_interval
+        process.poll()
+        if process.returncode != None:
+            process.wait()
+            return True
+        elif time < 0:
+            # we ran out of time, kill the child
+            process.kill()
+            return False

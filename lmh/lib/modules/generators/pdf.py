@@ -12,9 +12,10 @@ import multiprocessing
 from subprocess import Popen
 from subprocess import PIPE
 
-from lmh.lib import shellquote
-from lmh.lib.io import std, err, read_file
+from lmh.lib import shellquote, popen_wait_timeout
+from lmh.lib.io import std, err, read_file, write_file
 from lmh.lib.env import install_dir, latexmlstydir, stexstydir
+from lmh.lib.config import get_config
 from lmh.lib.extenv import pdflatex_executable
 
 stydir = install_dir+"/sty"
@@ -66,10 +67,18 @@ class generate(Generator):
         # pdf generation in master process
         (pre, post, mod, _env, file, cwd, pdf_path, pdflog, add_bd, pdf_pipe_log) = job
 
+        if worker_id != None:
+            prefix = "PDF["+str(worker_id)+"]:"
+        else:
+            prefix = "PDF:"
+
         os.chdir(cwd)
+
+        tempfile = mod+".tmp"
 
         try:
             if pre != None:
+
                 if add_bd:
                     text = read_file(pre)
                     text += "\\begin{document}"
@@ -80,28 +89,38 @@ class generate(Generator):
                     text += read_file(mod+".tex")
                     text += read_file(post)
 
-                # In case we habng, up, we want to end
-                # This should usually be ignored.
-                text += "\\end"
+                # Write into .tex.tmp
+                write_file(tempfile, text)
 
                 if pdf_pipe_log:
-                    p = Popen([pdflatex_executable, "-jobname", mod, "-interaction", "scrollmode"], cwd=cwd, stdin=PIPE, stdout=sys.stdout, stderr=sys.stderr, env = _env)
-                    p.stdin.write(text)
-                    p.stdin = sys.stdin
+                    p = Popen([pdflatex_executable, tempfile, "-jobname", mod, "-interaction", "scrollmode"], cwd=cwd, stdin=PIPE, stdout=sys.stdout, stderr=sys.stderr, env = _env, timeout=1000)
                 else:
-                    p = Popen([pdflatex_executable, "-jobname", mod], cwd=cwd, stdin=PIPE, stdout=PIPE, stderr=PIPE, env = _env)
-                    p.stdin.write(text)
-                    p.stdin = None
+                    p = Popen([pdflatex_executable, "-jobname", mod, tempfile, "-halt-on-error"], cwd=cwd, stdin=PIPE, stdout=PIPE, stderr=PIPE, env = _env)
             else:
                 if pdf_pipe_log:
                     p = Popen([pdflatex_executable, file, "-interaction", "scrollmode"], cwd=cwd, stdin=sys.stdin, stdout=sys.stdout, env=_env)
                 else:
-                    p = Popen([pdflatex_executable, file], cwd=cwd, stdin=None, stdout=PIPE, env=_env)
-            p.wait()
+                    p = Popen([pdflatex_executable, file, "-halt-on-error"], cwd=cwd, stdin=PIPE, stdout=PIPE, env=_env)
+
+            timeout = get_config("gen::pdf::timeout")
+
+            if not popen_wait_timeout(p, timeout):
+                err(prefix, "Worker did not finish within "+str(timeout)+"s, sending SIGKILL. ")
         except KeyboardInterrupt as k:
+            try:
+                os.remove(tempfile)
+            except:
+                pass
             p.terminate()
             p.wait()
             raise k
+
+        try:
+            os.remove(tempfile)
+        except:
+            pass
+
+
 
         # move the log file
         try:

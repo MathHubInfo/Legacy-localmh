@@ -161,8 +161,11 @@ def run_generate(the_generator, num_workers, jobs, quiet):
             return (False, successes, fails)
     return (True, successes, fails)
 
+def get_wid():
+    return current_process()._identity[0]
+
 def worker_initer(the_generator):
-    worker_id = current_process()._identity[0]
+    worker_id = get_wid()
 
     def worker_deiniter():
         if not the_generator.run_deinit(worker_id):
@@ -176,7 +179,7 @@ def worker_initer(the_generator):
         raise "UnableToInit"
 
 def worker_runner(job, quiet, the_generator):
-    worker_id = current_process()._identity[0]
+    worker_id = get_wid()
     prefix = the_generator.prefix+"["+str(worker_id)+"]:"
     (m, j) = job
 
