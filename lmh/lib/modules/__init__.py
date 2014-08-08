@@ -135,7 +135,11 @@ def locate_preamables(mods):
             try:
                 the_mods = y["modules"]
             except:
-                std(y)
+                err("A weird error has occured. ")
+                err(y)
+                err("lmh has recovered, but all.tex generation might fail. ")
+                err("for more information and help, please contact the lmh developers with the above message or create an issue on the issue tracker. ")
+                err("To open the issue tracker, use lmh issue. ")
                 the_mods = []
             for pre_file in glob.glob(libdir+"/pre.*.tex"):
                 # The alltex file
