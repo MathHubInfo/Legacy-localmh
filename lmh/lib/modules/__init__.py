@@ -135,6 +135,7 @@ def locate_preamables(mods):
             try:
                 the_mods = y["modules"]
             except:
+                std(y)
                 the_mods = []
             for pre_file in glob.glob(libdir+"/pre.*.tex"):
                 # The alltex file
