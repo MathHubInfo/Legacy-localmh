@@ -23,17 +23,17 @@ from lmh.lib.modules import locate_modules
 
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub List Modules tool.')
-  add_parser_args(parser)
-  return parser
+    parser = argparse.ArgumentParser(description='Local MathHub List Modules tool.')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="ls-modules"):
-  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='lists installed modules')
-  add_parser_args(parser_status)
+    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='lists installed modules')
+    add_parser_args(parser_status)
 
 
 def add_parser_args(parser):
-  parser.add_argument('module', nargs='*', default=[os.getcwd()], help="list of module specefiers. ")
+    parser.add_argument('module', nargs='*', default=[os.getcwd()], help="list of module specefiers. ")
 
 def do(args):
     modules = set()

@@ -23,29 +23,29 @@ from lmh.lib.repos.local import match_repo_args
 from lmh.lib.help import repo_wildcard_local
 
 def create_parser():
-	parser = argparse.ArgumentParser(description='Local MathHub Path Checking tool.')
-	add_parser_args(parser)
-	return parser
+    parser = argparse.ArgumentParser(description='Local MathHub Path Checking tool.')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="checkpaths"):
-	parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='check paths for validity')
-	add_parser_args(parser_status)
+    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='check paths for validity')
+    add_parser_args(parser_status)
 
 
 def add_parser_args(parser):
-	parser.add_argument('repository', nargs='*', help="a list of repositories for which to show the status. ")
-	parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="generates files for all repositories")
+    parser.add_argument('repository', nargs='*', help="a list of repositories for which to show the status. ")
+    parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="generates files for all repositories")
 
-	parser.add_argument('--interactive', metavar='interactive', const=True, default=False, action="store_const", help="Should check paths be interactive")
-	parser.epilog = repo_wildcard_local
+    parser.add_argument('--interactive', metavar='interactive', const=True, default=False, action="store_const", help="Should check paths be interactive")
+    parser.epilog = repo_wildcard_local
 
 def do(args):
 
-	checkpaths.init()
+    checkpaths.init()
 
-	ret = True
-	repos = match_repo_args(args.repository, args.all)
-	for rep in repos:
-			ret = checkpaths.checkpaths(rep, args) and ret
+    ret = True
+    repos = match_repo_args(args.repository, args.all)
+    for rep in repos:
+        ret = checkpaths.checkpaths(rep, args) and ret
 
-	return ret
+    return ret

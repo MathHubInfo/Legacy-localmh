@@ -25,36 +25,36 @@ from lmh.lib.repos.local import export, restore
 # import the root
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Manages all locally installed repositories. ')
-  add_parser_args(parser)
-  return parser
+    parser = argparse.ArgumentParser(description='Manages all locally installed repositories. ')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="mine"):
-  parser_status = subparsers.add_parser(name, help='Manages all locally installed repositories. ')
-  add_parser_args(parser_status)
+    parser_status = subparsers.add_parser(name, help='Manages all locally installed repositories. ')
+    add_parser_args(parser_status)
 
 def add_parser_args(parser):
 
-  group = parser.add_mutually_exclusive_group()
+    group = parser.add_mutually_exclusive_group()
 
-  group.add_argument("--export", dest="dump_action", action="store_const", const=0, default=0, help="Dump list of installed repositories in file. ")
-  group.add_argument("--import", dest="dump_action", action="store_const", const=1, help="Install repositories listed in file. ")
+    group.add_argument("--export", dest="dump_action", action="store_const", const=0, default=0, help="Dump list of installed repositories in file. ")
+    group.add_argument("--import", dest="dump_action", action="store_const", const=1, help="Install repositories listed in file. ")
 
-  parser.add_argument("file", nargs="?", help="File to use. If not given, assume STDIn or STDOUT respectivelsy. ")
+    parser.add_argument("file", nargs="?", help="File to use. If not given, assume STDIn or STDOUT respectivelsy. ")
 
 def do(args):
-  if args.dump_action == 0:
-    # Export
-    if not args.file:
-      #Print them to stdout
-      return export()
+    if args.dump_action == 0:
+        # Export
+        if not args.file:
+            #Print them to stdout
+            return export()
+        else:
+            #Put them in a file
+            return export(os.path.abspath(args.file[0]))
     else:
-      #Put them in a file
-      return export(os.path.abspath(args.file[0]))
-  else:
-    if not args.file:
-      #Read frm stdin
-      return restore()
-    else:
-      #Read from file
-      return restore(os.path.abspath(args.file[0]))
+        if not args.file:
+            #Read frm stdin
+            return restore()
+        else:
+            #Read from file
+            return restore(os.path.abspath(args.file[0]))

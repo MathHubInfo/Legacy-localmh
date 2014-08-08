@@ -24,18 +24,18 @@ from lmh.lib.help import repo_wildcard_remote
 
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub  Remote List tool.')
-  add_parser_args(parser)
-  return parser
+    parser = argparse.ArgumentParser(description='Local MathHub  Remote List tool.')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="ls-remote"):
-  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='list remote repositories')
-  add_parser_args(parser_status)
+    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='list remote repositories')
+    add_parser_args(parser_status)
 
 
 def add_parser_args(parser):
-  parser.add_argument('spec', nargs='*', help="list of repository specefiers. ")
-  parser.epilog = repo_wildcard_remote
+    parser.add_argument('spec', nargs='*', help="list of repository specefiers. ")
+    parser.epilog = repo_wildcard_remote
 
 def do(args):
     res = ls_remote(*args.spec)

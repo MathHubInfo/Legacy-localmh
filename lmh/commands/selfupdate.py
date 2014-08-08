@@ -21,15 +21,15 @@ from lmh.lib.io import err
 from lmh.lib.packs import update
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Updates lmh itself. ')
-  add_parser_args(parser)
-  return parser
+    parser = argparse.ArgumentParser(description='Updates lmh itself. ')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="selfupdate"):
-  subparsers.add_parser(name, help='Updates lmh itself. ')
+    subparsers.add_parser(name, help='Updates lmh itself. ')
 
 def add_parser_args(parser):
-  pass
+    pass
 
 def do(args):
     # Update the 'self' package

@@ -24,22 +24,22 @@ from lmh.lib.io import std, err
 from lmh.lib.repos.local import calc_deps
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub Path Management tool.')
-  add_parser_args(parser)
-  return parser
+    parser = argparse.ArgumentParser(description='Local MathHub Path Management tool.')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="depcrawl"):
-  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='crawls current repository for dependencies')
-  add_parser_args(parser_status)
+    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='crawls current repository for dependencies')
+    add_parser_args(parser_status)
 
 
 def add_parser_args(parser):
-  parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Writes found dependencies to MANIFEST.MF")
+    parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Writes found dependencies to MANIFEST.MF")
 
 def do(args):
-  res = calc_deps(args.apply)
-  if res:
-    return True
-  else:
-    err("lmh depcrawl must be run from within a Repository. ")
-    return False
+    res = calc_deps(args.apply)
+    if res:
+        return True
+    else:
+        err("lmh depcrawl must be run from within a Repository. ")
+        return False

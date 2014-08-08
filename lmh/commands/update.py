@@ -24,31 +24,31 @@ from lmh.lib.config import get_config
 from lmh.lib.help import repo_wildcard_local
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub Update tool.')
-  add_parser_args(parser)
-  return parser
+    parser = argparse.ArgumentParser(description='Local MathHub Update tool.')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="update"):
-  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='get repository and tool updates')
-  add_parser_args(parser_status)
+    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='get repository and tool updates')
+    add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('repository', nargs='*', help="a list of repositories which should be updated. ")
-  parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="updates all repositories currently in lmh")
-  parser.epilog = """
-If update::selfupdate is set to True, calling lomh update without any arguments
-will also call lmh selfupdate.
+    parser.add_argument('repository', nargs='*', help="a list of repositories which should be updated. ")
+    parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="updates all repositories currently in lmh")
+    parser.epilog = """
+  If update::selfupdate is set to True, calling lomh update without any arguments
+  will also call lmh selfupdate.
 
-Note: LMH will check for tool updates only if run at the root of the LMH
-folder. """+repo_wildcard_local
+  Note: LMH will check for tool updates only if run at the root of the LMH
+  folder. """+repo_wildcard_local
 
 def do(args):
 
-  if len(args.repository) == 0:
-    if get_config("update::selfupdate"):
-      std("Selfupdate: ")
-      if not update("self"):
-        return False
+    if len(args.repository) == 0:
+        if get_config("update::selfupdate"):
+            std("Selfupdate: ")
+            if not update("self"):
+                return False
 
-  repos = match_repo_args(args.repository, args.all)
-  return pull(*repos)
+    repos = match_repo_args(args.repository, args.all)
+    return pull(*repos)

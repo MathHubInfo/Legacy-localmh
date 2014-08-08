@@ -23,69 +23,69 @@ import lmh.lib.packs
 import lmh.lib.init
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub Setup tool.')
-  add_parser_args(parser)
-  return parser
+    parser = argparse.ArgumentParser(description='Local MathHub Setup tool.')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="setup"):
-  parser_status = subparsers.add_parser('setup', formatter_class=argparse.RawTextHelpFormatter, help='sets up local math hub and fetches external requirements')
-  add_parser_args(parser_status)
+    parser_status = subparsers.add_parser('setup', formatter_class=argparse.RawTextHelpFormatter, help='sets up local math hub and fetches external requirements')
+    add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  action = parser.add_argument_group('Setup actions').add_mutually_exclusive_group()
+    action = parser.add_argument_group('Setup actions').add_mutually_exclusive_group()
 
-  action.add_argument('--install', action="store_const", dest="saction", const="install", default="", help="Installs a package or group. ")
-  action.add_argument('--update', action="store_const", dest="saction", const="update", help="Updates a package or group. ")
-  action.add_argument('--reset', '--reinstall', action="store_const", dest="saction", const="reset", help="Resets a package or group. ")
-  action.add_argument('--remove', action="store_const", dest="saction", const="remove", help="Removes a package or group. ")
+    action.add_argument('--install', action="store_const", dest="saction", const="install", default="", help="Installs a package or group. ")
+    action.add_argument('--update', action="store_const", dest="saction", const="update", help="Updates a package or group. ")
+    action.add_argument('--reset', '--reinstall', action="store_const", dest="saction", const="reset", help="Resets a package or group. ")
+    action.add_argument('--remove', action="store_const", dest="saction", const="remove", help="Removes a package or group. ")
 
-  parser.add_argument('--no-check', '--force', action="store_true", help="Do not check for external dependencies. ")
-  frun = parser.add_mutually_exclusive_group(required=False)
-  frun.add_argument('--no-firstrun', action="store_const", const=False, dest="firstrun", help="Skip the firstrun routine. ")
-  frun.add_argument('--firstrun', action="store_const", const=True, default=None, help="Skip the firstrun routine. ")
-  parser.add_argument('pack', nargs="*", metavar="PACK:SOURCE")
+    parser.add_argument('--no-check', '--force', action="store_true", help="Do not check for external dependencies. ")
+    frun = parser.add_mutually_exclusive_group(required=False)
+    frun.add_argument('--no-firstrun', action="store_const", const=False, dest="firstrun", help="Skip the firstrun routine. ")
+    frun.add_argument('--firstrun', action="store_const", const=True, default=None, help="Skip the firstrun routine. ")
+    parser.add_argument('pack', nargs="*", metavar="PACK:SOURCE")
 
-  # Extra Things to install: autocomplete
+    # Extra Things to install: autocomplete
 
-  parser.epilog = """
-lmh setup --- Manages extra software required or useful for work with lmh.
+    parser.epilog = """
+  lmh setup --- Manages extra software required or useful for work with lmh.
 
-Packages are specefied in the format:
+  Packages are specefied in the format:
 
-PACKAGE_NAME[:SOURCE]
+  PACKAGE_NAME[:SOURCE]
 
-Packages can be installed, updated, removed and reset (reinstalled) via
---install, --update and --reset respectively.
+  Packages can be installed, updated, removed and reset (reinstalled) via
+  --install, --update and --reset respectively.
 
-Some packages are installed via git or svn. For those the optional argument
-SOURCE specefies which source repository should be used. These can be given in
-the format URL[@BRANCH_OR_REVISION]
-An example for this is:
+  Some packages are installed via git or svn. For those the optional argument
+  SOURCE specefies which source repository should be used. These can be given in
+  the format URL[@BRANCH_OR_REVISION]
+  An example for this is:
 
-lmh setup --install LaTeXML:@dev
+  lmh setup --install LaTeXML:@dev
 
-which will install the dev branch of LaTeXML.
+  which will install the dev branch of LaTeXML.
 
-The following packages are available:
+  The following packages are available:
 
-"LaTeXML"        LaTeXML
-"LaTeXMLs"       LaTeXML PLugin latexmls
-"LaTeXMLStomp"   LaTeXML Plugin latexmlstomp
-"sTeX"           sTeX
-"MMT"            MMT
-"autocomplete"   Automcplete support for lmh. Currently unsupported.
-"self"           Meta Package which only supports the update option. Can be used
-                 to update lmh.
+  "LaTeXML"        LaTeXML
+  "LaTeXMLs"       LaTeXML PLugin latexmls
+  "LaTeXMLStomp"   LaTeXML Plugin latexmlstomp
+  "sTeX"           sTeX
+  "MMT"            MMT
+  "autocomplete"   Automcplete support for lmh. Currently unsupported.
+  "self"           Meta Package which only supports the update option. Can be used
+                   to update lmh.
 
-There are also package groups which simply install several packages at once.
-Furthermore, if no packages are given, the "default" package group is used.
+  There are also package groups which simply install several packages at once.
+  Furthermore, if no packages are given, the "default" package group is used.
 
-The following package groups are available:
+  The following package groups are available:
 
-"all"            Contains all packages except for the self package.
-"default"        Contains LaTeXML, LaTeXMLs, sTeX and MMT.
-"LaTeXML-all"    Installs LaTeXML and plugins.
-  """
+  "all"            Contains all packages except for the self package.
+  "default"        Contains LaTeXML, LaTeXMLs, sTeX and MMT.
+  "LaTeXML-all"    Installs LaTeXML and plugins.
+    """
 
 def do(args):
 

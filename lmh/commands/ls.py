@@ -23,23 +23,23 @@ from lmh.lib.help import repo_wildcard_local
 
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub List tool.')
-  add_parser_args(parser)
-  return parser
+    parser = argparse.ArgumentParser(description='Local MathHub List tool.')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="ls"):
-  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='lists installed repositories')
-  add_parser_args(parser_status)
+    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='lists installed repositories')
+    add_parser_args(parser_status)
 
 
 def add_parser_args(parser):
-  parser.add_argument('repository', nargs='*', help="list of repository specefiers. ")
-  parser.add_argument('--abs', '-A', default=False, action="store_true", help="Print absolute repository paths. ")
-  parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="list all repositories")
-  parser.epilog = repo_wildcard_local
+    parser.add_argument('repository', nargs='*', help="list of repository specefiers. ")
+    parser.add_argument('--abs', '-A', default=False, action="store_true", help="Print absolute repository paths. ")
+    parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="list all repositories")
+    parser.epilog = repo_wildcard_local
 
 def do(args):
     repos = match_repo_args(args.repository, args.all, abs=args.abs)
     for r in repos:
-      std(r)
+        std(r)
     return True

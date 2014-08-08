@@ -26,11 +26,11 @@ from lmh.lib.git import do_data
 version = read_file(install_dir + "/" + "/lmh/data/version")
 
 def git_version():
-  """Checks the current gi version of the core"""
-  try:
-    return do_data(install_dir, "rev-parse", "HEAD")[0].rstrip()
-  except:
-    return "<Not under source control>"
+    """Checks the current gi version of the core"""
+    try:
+        return do_data(install_dir, "rev-parse", "HEAD")[0].rstrip()
+    except:
+        return "<Not under source control>"
 
 """lmh license text"""
 license = \
@@ -46,5 +46,5 @@ license = \
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """

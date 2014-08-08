@@ -91,43 +91,43 @@ def warn_symbols(fname, syms, symdefs):
 
 def find_sds(fname):
         # skip non-language bindings
-        languageFilePattern = r"\.(\w+)\.tex$"
+    languageFilePattern = r"\.(\w+)\.tex$"
 
-        # Find the associated module
-        fmodname = re.sub(languageFilePattern, ".tex", fname)
-        content = read_file(fname)
+    # Find the associated module
+    fmodname = re.sub(languageFilePattern, ".tex", fname)
+    content = read_file(fname)
 
-        if len(re.findall(languageFilePattern, fname)) == 0:
+    if len(re.findall(languageFilePattern, fname)) == 0:
             # This is what we have
-            syms = find_all_symis(content)
-            symdefs = find_all_symdefs(content)
+        syms = find_all_symis(content)
+        symdefs = find_all_symdefs(content)
 
-            # for non-language-bndings
-            return [warn_symbols(fname, syms, symdefs)]
+        # for non-language-bndings
+        return [warn_symbols(fname, syms, symdefs)]
 
-        # Try and read the other file
-        try:
-            modcontent = read_file(fmodname)
-        except IOError:
-            err("Missing module:", fmodname)
-            return [False]
+    # Try and read the other file
+    try:
+        modcontent = read_file(fmodname)
+    except IOError:
+        err("Missing module:", fmodname)
+        return [False]
 
-        # FInd all the symbolds and definitions
-        defs = find_all_defis(content)
+    # FInd all the symbolds and definitions
+    defs = find_all_defis(content)
 
-        # This is what we have
-        syms = find_all_symis(modcontent)
-        symdefs = find_all_symdefs(modcontent)
+    # This is what we have
+    syms = find_all_symis(modcontent)
+    symdefs = find_all_symdefs(modcontent)
 
-        # Warn about symbols
-        warn_symbols(fmodname, syms, symdefs)
+    # Warn about symbols
+    warn_symbols(fmodname, syms, symdefs)
 
-        if defs == None:
-            defs = []
-        if syms == None:
-            syms = []
+    if defs == None:
+        defs = []
+    if syms == None:
+        syms = []
 
-        return (fmodname, defs, syms, symdefs, modcontent)
+    return (fmodname, defs, syms, symdefs, modcontent)
 
 
 def add_symbols(fname):
@@ -135,7 +135,7 @@ def add_symbols(fname):
 
     q = find_sds(fname)
     if len(q) == 1:
-        # we have already done something
+    # we have already done something
         return q[0]
 
     (fmodname, defs, syms, symdefs, modcontent) = q

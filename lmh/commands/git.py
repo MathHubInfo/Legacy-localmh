@@ -21,21 +21,21 @@ from lmh.lib.repos.local import do as local_do
 from lmh.lib.help import repo_wildcard_local
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub Git Wrapper.')
-  add_parser_args(parser)
-  return parser
+    parser = argparse.ArgumentParser(description='Local MathHub Git Wrapper.')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="git"):
-  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='run git command on multiple repositories')
-  add_parser_args(parser_status)
+    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='run git command on multiple repositories')
+    add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('cmd', nargs=1, help="a git command to be run.")
-  parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs a git command on all repositories currently in lmh")
-  parser.add_argument('--args', nargs='+', help="Arguments to add to each of the git commands. ")
-  parser.add_argument('repository', nargs='*', help="a list of repositories for which to run the git command.")
-  parser.epilog = repo_wildcard_local
+    parser.add_argument('cmd', nargs=1, help="a git command to be run.")
+    parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs a git command on all repositories currently in lmh")
+    parser.add_argument('--args', nargs='+', help="Arguments to add to each of the git commands. ")
+    parser.add_argument('repository', nargs='*', help="a list of repositories for which to run the git command.")
+    parser.epilog = repo_wildcard_local
 
 def do(args):
-  repos = match_repo_args(args.repository, args.all)
-  return local_do(args.cmd[0], args.args, *repos)
+    repos = match_repo_args(args.repository, args.all)
+    return local_do(args.cmd[0], args.args, *repos)

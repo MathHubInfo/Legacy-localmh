@@ -69,7 +69,7 @@ def import_pack(pack):
 
 def get_pack_setup(pack):
     try:
-         return import_pack(pack).setup
+        return import_pack(pack).setup
     except ImportError:
         err("Unable to load pack setup for pack", pack)
         err("Please check that the pack exists. ")

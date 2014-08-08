@@ -37,46 +37,46 @@ destination = destination[0]
 
 @contextlib.contextmanager
 def stdout_redirect(where):
-  sys.stdout = where
-  try:
-    yield where
-  finally:
-    sys.stdout = sys.__stdout__
+    sys.stdout = where
+    try:
+        yield where
+    finally:
+        sys.stdout = sys.__stdout__
 
 class MyListener(object):
-  
-  def __init__(self, conn):
-    self.conn = conn
-    self.count = 0
-    self.start = time.time()
-  
-  def on_error(self, headers, message):
-    print('received an error %s' % message)
 
-  def exec_lmh(self, headers, message):
-    if not "reply-to" in headers:
-      return
-    result = {};
-    p = shlex.split(message)[1:]
-    new_stdout = cStringIO.StringIO()
-    try:
-      with stdout_redirect(new_stdout):
-        lmh.main(p)
-    except Exception, e:
-      print "exception", e
-      result["err"] = str(e)
-    finally:
-      if "reply-to" in headers:
-        result["out"] = new_stdout.getvalue()
-        self.conn.send(headers["reply-to"], json.dumps(result))
+    def __init__(self, conn):
+        self.conn = conn
+        self.count = 0
+        self.start = time.time()
 
-  def on_message(self, headers, message):
-    try:
-      t = threading.Thread(target=self.exec_lmh, args = (headers, message))
-      t.daemon = True
-      t.start()
-    except Exception, e:
-      print e
+    def on_error(self, headers, message):
+        print('received an error %s' % message)
+
+    def exec_lmh(self, headers, message):
+        if not "reply-to" in headers:
+            return
+        result = {};
+        p = shlex.split(message)[1:]
+        new_stdout = cStringIO.StringIO()
+        try:
+            with stdout_redirect(new_stdout):
+                lmh.main(p)
+        except Exception, e:
+            print "exception", e
+            result["err"] = str(e)
+        finally:
+            if "reply-to" in headers:
+                result["out"] = new_stdout.getvalue()
+                self.conn.send(headers["reply-to"], json.dumps(result))
+
+    def on_message(self, headers, message):
+        try:
+            t = threading.Thread(target=self.exec_lmh, args = (headers, message))
+            t.daemon = True
+            t.start()
+        except Exception, e:
+            print e
 
 conn = stomp.Connection(host_and_ports = [(host, port)])
 conn.set_listener('', MyListener(conn))

@@ -20,20 +20,20 @@ import argparse
 from lmh.lib import io, about
 
 def create_parser():
-	parser = argparse.ArgumentParser(description='Shows license and version information about lmh. ')
-	add_parser_args(parser)
-	return parser
+    parser = argparse.ArgumentParser(description='Shows license and version information about lmh. ')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="about"):
-	about_parser = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='shows version and general information. ')
-	add_parser_args(about_parser)
+    about_parser = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='shows version and general information. ')
+    add_parser_args(about_parser)
 
 def add_parser_args(parser):
-	pass
+    pass
 
 def do(args):
-	io.std("lmh, Version", about.version, "( git", about.git_version(), ")")
-	io.std()
-	io.std(about.license)
+    io.std("lmh, Version", about.version, "( git", about.git_version(), ")")
+    io.std()
+    io.std(about.license)
 
-	return True
+    return True

@@ -23,13 +23,13 @@ import lmh.commands.clean
 from lmh.lib.help import repo_wildcard_local
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub Update-Build tool.')
-  add_parser_args(parser)
-  return parser
+    parser = argparse.ArgumentParser(description='Local MathHub Update-Build tool.')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="update-build"):
-  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='Updates the build. ')
-  add_parser_args(parser_status)
+    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='Updates the build. ')
+    add_parser_args(parser_status)
 
 def add_parser_args(parser):
     parser = lmh.commands.gen.add_parser_args(parser)

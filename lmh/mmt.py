@@ -51,21 +51,21 @@ base http://docs.omdoc.org/mmt
 mmt_root = os.path.join(install_dir, "ext", "MMT");
 
 def runMMTScript(src, path):
-  cp = "{dir}/lib/*:{dir}/mmt/branches/informal/*:{dir}/lfcatalog/*:{dir}/mmt/*".format(dir=mmt_root)
-  args = [java_executable, "-Xmx2048m", "-cp", cp, "info.kwarc.mmt.api.frontend.Run"];
-  try:
-    print src
-    comm = subprocess.Popen(args, cwd=path, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=src);
-    std(comm[0])
-    std(comm[1])
-  except OSError, o:
-    err(o)
+    cp = "{dir}/lib/*:{dir}/mmt/branches/informal/*:{dir}/lfcatalog/*:{dir}/mmt/*".format(dir=mmt_root)
+    args = [java_executable, "-Xmx2048m", "-cp", cp, "info.kwarc.mmt.api.frontend.Run"];
+    try:
+        print src
+        comm = subprocess.Popen(args, cwd=path, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=src);
+        std(comm[0])
+        std(comm[1])
+    except OSError, o:
+        err(o)
 
 def compile(repository):
-  std("Generating XHTML in", repository)
-  repoName = match_repo(repository)
-  repoPath = root_dir(repository)
+    std("Generating XHTML in", repository)
+    repoName = match_repo(repository)
+    repoPath = root_dir(repository)
 
-  src = os.path.join(repoPath, "source")
-  script = initScript.format(lmhRoot=install_dir)+"\n"+buildScript.format(repoName=repoName,repoPath=repoPath)
-  runMMTScript(script, repoPath)
+    src = os.path.join(repoPath, "source")
+    script = initScript.format(lmhRoot=install_dir)+"\n"+buildScript.format(repoName=repoName,repoPath=repoPath)
+    runMMTScript(script, repoPath)

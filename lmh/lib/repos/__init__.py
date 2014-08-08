@@ -28,57 +28,57 @@ from lmh.lib.config import get_config
 nameExpression = '[\w-]+/[\w-]+'
 
 def is_installed(repo):
-	"""Checks if a repository is is installed"""
+    """Checks if a repository is is installed"""
 
-	possible_dir = os.path.join(data_dir, repo)
+    possible_dir = os.path.join(data_dir, repo)
 
-	return os.path.isdir(possible_dir) and is_valid_repo(possible_dir)
+    return os.path.isdir(possible_dir) and is_valid_repo(possible_dir)
 
 def find_dependencies(repo):
-	"""Finds the dependencies of a module. """
+    """Finds the dependencies of a module. """
 
-	if not is_installed(repo):
-		err("Repository", repo, "is not installed. Failed to parse dependencies. ")
-		return []
+    if not is_installed(repo):
+        err("Repository", repo, "is not installed. Failed to parse dependencies. ")
+        return []
 
-	repo = data_dir +"/" + repo
+    repo = data_dir +"/" + repo
 
-	res = []
-	try:
-		# Find the root directory
-		d = root_dir(repo)
-		metafile = read_file_lines(os.path.join(d, "META-INF", "MANIFEST.MF"))
+    res = []
+    try:
+        # Find the root directory
+        d = root_dir(repo)
+        metafile = read_file_lines(os.path.join(d, "META-INF", "MANIFEST.MF"))
 
-		# Find the right line for dependencies
-		for line in metafile:
-			if line.startswith("dependencies: "):
-				# TODO: Maybe find a better alternative for this.
-				for dep in re.findall(nameExpression, line):
-					res.append(dep)
-	except Exception as e:
-		return False
+        # Find the right line for dependencies
+        for line in metafile:
+            if line.startswith("dependencies: "):
+                # TODO: Maybe find a better alternative for this.
+                for dep in re.findall(nameExpression, line):
+                    res.append(dep)
+    except Exception as e:
+        return False
 
-	return res
+    return res
 
 def is_valid_repo(d):
-	"""Validates if dir contains a valid local repository. """
-	d = os.path.abspath(d)
+    """Validates if dir contains a valid local repository. """
+    d = os.path.abspath(d)
 
-	if not os.path.isdir(d):
-		return False
-	try:
-		if not (os.path.relpath(data_dir, os.path.abspath(d)) == "../.."):
-			return False
+    if not os.path.isdir(d):
+        return False
+    try:
+        if not (os.path.relpath(data_dir, os.path.abspath(d)) == "../.."):
+            return False
 
-		# Check for the manuifest, unless it is disabled by some setting.
-		if not get_config("install::nomanifest"):
-			return os.path.isfile(os.path.join(d, "META-INF", "MANIFEST.MF"))
+        # Check for the manuifest, unless it is disabled by some setting.
+        if not get_config("install::nomanifest"):
+            return os.path.isfile(os.path.join(d, "META-INF", "MANIFEST.MF"))
 
-		# Check if we are git-controlled and the root dir is equal to the current dir
-		d = os.path.realpath(d)
-		if root_dir(d) != d:
-			return False
+        # Check if we are git-controlled and the root dir is equal to the current dir
+        d = os.path.realpath(d)
+        if root_dir(d) != d:
+            return False
 
-		return True
-	except Exception as e:
-		return False
+        return True
+    except Exception as e:
+        return False

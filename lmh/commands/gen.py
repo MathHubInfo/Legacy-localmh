@@ -29,13 +29,13 @@ from lmh.lib.modules.pdf import gen_pdf
 from lmh.lib.config import get_config
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub Generation tool.')
-  add_parser_args(parser)
-  return parser
+    parser = argparse.ArgumentParser(description='Local MathHub Generation tool.')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="gen"):
-  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='updates generated content')
-  add_parser_args(parser_status)
+    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='updates generated content')
+    add_parser_args(parser_status)
 
 def add_parser_args(parser, add_types=True):
 

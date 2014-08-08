@@ -21,12 +21,12 @@ stydir = install_dir+"/sty"
 
 # pdf inputs
 def genTEXInputs():
-  res = ".:"+stydir+":";
-  for (root, files, dirs) in os.walk(stexstydir):
-    res += root+":"
-  for (root, files, dirs) in os.walk(latexmlstydir):
-    res += root+":"
-  return res+":"+latexmlstydir+":"+stexstydir
+    res = ".:"+stydir+":";
+    for (root, files, dirs) in os.walk(stexstydir):
+        res += root+":"
+    for (root, files, dirs) in os.walk(latexmlstydir):
+        res += root+":"
+    return res+":"+latexmlstydir+":"+stexstydir
 
 TEXINPUTS = genTEXInputs()
 
@@ -69,39 +69,39 @@ class generate(Generator):
         os.chdir(cwd)
 
         try:
-          if pre != None:
-            if add_bd:
-              text = read_file(pre)
-              text += "\\begin{document}"
-              text += read_file(mod+".tex")
-              text += read_file(post)
-            else:
-              text = read_file(pre)
-              text += read_file(mod+".tex")
-              text += read_file(post)
+            if pre != None:
+                if add_bd:
+                    text = read_file(pre)
+                    text += "\\begin{document}"
+                    text += read_file(mod+".tex")
+                    text += read_file(post)
+                else:
+                    text = read_file(pre)
+                    text += read_file(mod+".tex")
+                    text += read_file(post)
 
-            # In case we habng, up, we want to end
-            # This should usually be ignored.
-            text += "\\end"
+                # In case we habng, up, we want to end
+                # This should usually be ignored.
+                text += "\\end"
 
-            if pdf_pipe_log:
-              p = Popen([pdflatex_executable, "-jobname", mod, "-interaction", "scrollmode"], cwd=cwd, stdin=PIPE, stdout=sys.stdout, stderr=sys.stderr, env = _env)
-              p.stdin.write(text)
-              p.stdin = sys.stdin
+                if pdf_pipe_log:
+                    p = Popen([pdflatex_executable, "-jobname", mod, "-interaction", "scrollmode"], cwd=cwd, stdin=PIPE, stdout=sys.stdout, stderr=sys.stderr, env = _env)
+                    p.stdin.write(text)
+                    p.stdin = sys.stdin
+                else:
+                    p = Popen([pdflatex_executable, "-jobname", mod], cwd=cwd, stdin=PIPE, stdout=PIPE, stderr=PIPE, env = _env)
+                    p.stdin.write(text)
+                    p.stdin = None
             else:
-              p = Popen([pdflatex_executable, "-jobname", mod], cwd=cwd, stdin=PIPE, stdout=PIPE, stderr=PIPE, env = _env)
-              p.stdin.write(text)
-              p.stdin = None
-          else:
-            if pdf_pipe_log:
-              p = Popen([pdflatex_executable, file, "-interaction", "scrollmode"], cwd=cwd, stdin=sys.stdin, stdout=sys.stdout, env=_env)
-            else:
-              p = Popen([pdflatex_executable, file], cwd=cwd, stdin=None, stdout=PIPE, env=_env)
-          p.wait()
+                if pdf_pipe_log:
+                    p = Popen([pdflatex_executable, file, "-interaction", "scrollmode"], cwd=cwd, stdin=sys.stdin, stdout=sys.stdout, env=_env)
+                else:
+                    p = Popen([pdflatex_executable, file], cwd=cwd, stdin=None, stdout=PIPE, env=_env)
+            p.wait()
         except KeyboardInterrupt as k:
-          p.terminate()
-          p.wait()
-          raise k
+            p.terminate()
+            p.wait()
+            raise k
 
         # move the log file
         try:
@@ -122,10 +122,10 @@ class generate(Generator):
         std("cd "+cwd)
 
         if pre != None:
-          if add_bd:
-            std("echo \"\\begin{document}\\n\" | cat "+shellquote(pre)+" - "+shellquote(file)+" "+shellquote(post)+" | "+pdflatex_executable+" -jobname " + mod+"-interaction scrollmode")
-          else:
-            std("cat "+shellquote(pre)+" "+shellquote(file)+" "+shellquote(post)+" | "+pdflatex_executable+" -jobname " + mod+ "-interaction scrollmode")
+            if add_bd:
+                std("echo \"\\begin{document}\\n\" | cat "+shellquote(pre)+" - "+shellquote(file)+" "+shellquote(post)+" | "+pdflatex_executable+" -jobname " + mod+"-interaction scrollmode")
+            else:
+                std("cat "+shellquote(pre)+" "+shellquote(file)+" "+shellquote(post)+" | "+pdflatex_executable+" -jobname " + mod+ "-interaction scrollmode")
 
         else:
             std(pdflatex_executable+" "+file)

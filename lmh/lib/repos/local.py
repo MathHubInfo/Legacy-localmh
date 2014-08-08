@@ -41,492 +41,492 @@ from lmh.lib.git import is_tracked
 #
 
 def is_repo_dir(path, existence = True):
-	"""Checks if a directory is a repo directory. """
-	if existence and (not os.path.isdir(path)):
-		return False
-	try:
-		if not (os.path.relpath(data_dir, os.path.abspath(path)) == "../.."):
-			return False
+    """Checks if a directory is a repo directory. """
+    if existence and (not os.path.isdir(path)):
+        return False
+    try:
+        if not (os.path.relpath(data_dir, os.path.abspath(path)) == "../.."):
+            return False
 
-		# Check for the manuifest, unless it is disabled by some setting.
-		if not get_config("install::nomanifest") and existence:
-			return os.path.isfile(os.path.join(path, "META-INF", "MANIFEST.MF"))
+        # Check for the manuifest, unless it is disabled by some setting.
+        if not get_config("install::nomanifest") and existence:
+            return os.path.isfile(os.path.join(path, "META-INF", "MANIFEST.MF"))
 
-		return True
-	except:
-		return False
+        return True
+    except:
+        return False
 
 def is_in_data(path):
-	"""Checks if a directory is contained within the data directory. """
-	try:
-		return os.path.abspath(path).startswith(os.path.abspath(data_dir))
-	except:
-		return False
+    """Checks if a directory is contained within the data directory. """
+    try:
+        return os.path.abspath(path).startswith(os.path.abspath(data_dir))
+    except:
+        return False
 
 def is_in_repo(path):
-	"""Checks if a directory is contained inside of a repo. """
-	try:
-		if is_in_data(path):
-			return os.path.relpath(data_dir, os.path.abspath(path)).startswith("../..")
-		else:
-			return False
-	except:
-		return False
+    """Checks if a directory is contained inside of a repo. """
+    try:
+        if is_in_data(path):
+            return os.path.relpath(data_dir, os.path.abspath(path)).startswith("../..")
+        else:
+            return False
+    except:
+        return False
 
 def find_repo_subdirs(root):
-	"""Finds repository subdirectories of a directory. """
+    """Finds repository subdirectories of a directory. """
 
-	res = []
+    res = []
 
-	# if we are not a directory, do nothing.
-	if not os.path.isdir(root):
-		return res
+    # if we are not a directory, do nothing.
+    if not os.path.isdir(root):
+        return res
 
-	#Subdirectories
-	for d in [name for name in os.listdir(root) if os.path.isdir(os.path.join(root, name))]:
-		d = os.path.join(root, d)
-		if is_repo_dir(d):
-			res = res + [d]
-		else:
-			res = res + find_repo_subdirs(d)
+    #Subdirectories
+    for d in [name for name in os.listdir(root) if os.path.isdir(os.path.join(root, name))]:
+        d = os.path.join(root, d)
+        if is_repo_dir(d):
+            res = res + [d]
+        else:
+            res = res + find_repo_subdirs(d)
 
-	return res
+    return res
 
 def find_repo_dir(root):
-	"""Finds the repository belonging to a file or directory. """
-	root = os.path.abspath(root)
-	if is_repo_dir(root):
-		return root
-	if not is_in_repo(root):
-		return False
-	else:
-		return find_repo_dir(os.path.join(root, ".."))
+    """Finds the repository belonging to a file or directory. """
+    root = os.path.abspath(root)
+    if is_repo_dir(root):
+        return root
+    if not is_in_repo(root):
+        return False
+    else:
+        return find_repo_dir(os.path.join(root, ".."))
 
 def match_repo(repo, root=os.getcwd(), abs=False):
-	"""Matches a single specefier to a repository. """
+    """Matches a single specefier to a repository. """
 
-	# 1) Resolve to absolute path repo (via root)
-	# 2) If it is (inside) a repository, return that repository
-	# 3) If not, try to repeat 1) and 2) with root = data_dir
-	# 4) If that fails, return None
+    # 1) Resolve to absolute path repo (via root)
+    # 2) If it is (inside) a repository, return that repository
+    # 3) If not, try to repeat 1) and 2) with root = data_dir
+    # 4) If that fails, return None
 
-	# make sure the root is absolute
-	root = os.path.abspath(root)
+    # make sure the root is absolute
+    root = os.path.abspath(root)
 
-	# If repo is empty, make sure we use the current directory.
-	if repo == "":
-		repo = os.getcwd()
+    # If repo is empty, make sure we use the current directory.
+    if repo == "":
+        repo = os.getcwd()
 
-	# try the full repo_path
-	repo_path = os.path.join(root, repo)
+    # try the full repo_path
+    repo_path = os.path.join(root, repo)
 
-	if is_repo_dir(repo_path) or is_in_repo(repo_path):
-		# figure out the path to the repository root
-		repo_path = find_repo_dir(repo_path)
-		if not repo_path:
-			return None
-		if abs:
-			# return the absolute path to the repo
-			return repo_path
-		else:
-			# return just the repo name, determined by the relative name
-			return os.path.relpath(repo_path, os.path.abspath(data_dir))
-	elif not (root == os.path.abspath(data_dir)):
-		#if the root is not already the data_dir, try that
-		return match_repo(repo, root=data_dir, abs=abs)
-	else:
-		# nothing found
-		return None
+    if is_repo_dir(repo_path) or is_in_repo(repo_path):
+        # figure out the path to the repository root
+        repo_path = find_repo_dir(repo_path)
+        if not repo_path:
+            return None
+        if abs:
+            # return the absolute path to the repo
+            return repo_path
+        else:
+            # return just the repo name, determined by the relative name
+            return os.path.relpath(repo_path, os.path.abspath(data_dir))
+    elif not (root == os.path.abspath(data_dir)):
+        #if the root is not already the data_dir, try that
+        return match_repo(repo, root=data_dir, abs=abs)
+    else:
+        # nothing found
+        return None
 
 
 def match_repos(repos, root=os.getcwd(), abs=False):
-	"""Matches a list of specefiers to repositories. """
+    """Matches a list of specefiers to repositories. """
 
-	# For each element do the following:
-	# 1) Check if given directory exists relatively from current root.
-	# 	1a) If it is a repository or repository subdir, return that
-	#	 1b) If it is inside the data_dir, return all repo subdirectories
-	# 2) If it does not exist, resolve it as glob.glob from install_dir
-	# 3) For each of the found directories, run 1)
+    # For each element do the following:
+    # 1) Check if given directory exists relatively from current root.
+    #       1a) If it is a repository or repository subdir, return that
+    #        1b) If it is inside the data_dir, return all repo subdirectories
+    # 2) If it does not exist, resolve it as glob.glob from install_dir
+    # 3) For each of the found directories, run 1)
 
-	# If repos is a string, turn it into an array
-	if isinstance(repos, basestring):
-		repos = [repos]
+    # If repos is a string, turn it into an array
+    if isinstance(repos, basestring):
+        repos = [repos]
 
-	repo_dirs = []
-	globs = []
+    repo_dirs = []
+    globs = []
 
-	# Try and find actual directories from root
-	for r in repos:
-		r_abs = os.path.abspath(os.path.join(root, r))
-		if os.path.isdir(r_abs):
-			# its a directory
-			repo_dirs.append(r_abs)
-		else:
-			# Its not => treat as glob
-			globs.append(r)
-			# Try and reolsve th globs
-	os.chdir(data_dir)
-	for g in globs:
-		repo_dirs.extend(glob.glob(g))
+    # Try and find actual directories from root
+    for r in repos:
+        r_abs = os.path.abspath(os.path.join(root, r))
+        if os.path.isdir(r_abs):
+            # its a directory
+            repo_dirs.append(r_abs)
+        else:
+            # Its not => treat as glob
+            globs.append(r)
+            # Try and reolsve th globs
+    os.chdir(data_dir)
+    for g in globs:
+        repo_dirs.extend(glob.glob(g))
 
-	rdirs = []
+    rdirs = []
 
-	for d in repo_dirs:
-		m = match_repo(d)
-		if m:
-			rdirs.append(m)
-		elif is_in_data(d):
-			rdirs.extend(find_repo_subdirs(d))
-		elif os.path.abspath(d) == os.path.abspath(install_dir):
-			rdirs.extend(find_repo_subdirs(install_dir))
-		else:
-			err("Failed to parse", d, "as a repository, outside of data directory. ")
+    for d in repo_dirs:
+        m = match_repo(d)
+        if m:
+            rdirs.append(m)
+        elif is_in_data(d):
+            rdirs.extend(find_repo_subdirs(d))
+        elif os.path.abspath(d) == os.path.abspath(install_dir):
+            rdirs.extend(find_repo_subdirs(install_dir))
+        else:
+            err("Failed to parse", d, "as a repository, outside of data directory. ")
 
-	# Remove doubles
-	rdirs = sorted(set(rdirs))
+    # Remove doubles
+    rdirs = sorted(set(rdirs))
 
-	if not abs:
-		# its not absolute, return the relative paths
-		rdirs = [os.path.relpath(d, data_dir) for d in rdirs]
+    if not abs:
+        # its not absolute, return the relative paths
+        rdirs = [os.path.relpath(d, data_dir) for d in rdirs]
 
-	return rdirs
+    return rdirs
 
 
 def match_repo_args(spec, all=False, abs=True):
-	"""Matches repository arguments to an actual list of repositories"""
+    """Matches repository arguments to an actual list of repositories"""
 
-	if all:
-		return match_repos(install_dir, abs=abs)
-	elif len(spec) == 0:
-		return match_repos(".", abs=abs)
-	else:
-		return match_repos(spec, abs=abs)
+    if all:
+        return match_repos(install_dir, abs=abs)
+    elif len(spec) == 0:
+        return match_repos(".", abs=abs)
+    else:
+        return match_repos(spec, abs=abs)
 
 #
 # Import / Export of all existing repos to a certain file
 #
 
 def export(file = None):
-	"""Exports the list of currently installed repositories. """
+    """Exports the list of currently installed repositories. """
 
-	# Get all locally installed directories
-	installed = match_repos(install_dir)
+    # Get all locally installed directories
+    installed = match_repos(install_dir)
 
-	if(file == None):
-		for mod in installed:
-			std(mod)
-		return True
-	try:
-		write_file(file, s.linesep.join(things))
-		return True
-	except:
-		err("Unable to write "+fn)
-		return False
+    if(file == None):
+        for mod in installed:
+            std(mod)
+        return True
+    try:
+        write_file(file, s.linesep.join(things))
+        return True
+    except:
+        err("Unable to write "+fn)
+        return False
 
 def restore(file = None):
-	"""Restores a list of currently installed repositories. """
+    """Restores a list of currently installed repositories. """
 
-	# read all lines from the file
-	lines = read_file_lines(file)
-	lines = [l.strip() for l in lines]
-	return install(*lines)
+    # read all lines from the file
+    lines = read_file_lines(file)
+    lines = [l.strip() for l in lines]
+    return install(*lines)
 
 #
 # Git actions
 #
 
 def push(*repos):
-	"""Pushes all currently installed repositories. """
+    """Pushes all currently installed repositories. """
 
-	ret = True
+    ret = True
 
-	for rep in repos:
-		std("git push", rep)
-		ret = git_push(rep) and ret
+    for rep in repos:
+        std("git push", rep)
+        ret = git_push(rep) and ret
 
-	return ret
+    return ret
 
 def pull(*repos):
-	"""Pulls all currently installed repositories and updates dependencies"""
+    """Pulls all currently installed repositories and updates dependencies"""
 
-	ret = True
+    ret = True
 
-	for rep in repos:
-		std("git pull", rep)
+    for rep in repos:
+        std("git pull", rep)
 
-		ret = git_pull(rep) and ret
+        ret = git_pull(rep) and ret
 
-		rep = match_repo(rep)
-		ret = install(rep) and ret
+        rep = match_repo(rep)
+        ret = install(rep) and ret
 
-	return ret
+    return ret
 
 def is_clean(repo):
-	"""Checks if a working directory is clean. """
-	return git_do_data(repo, "status", "--porcelain")[0] == ""
+    """Checks if a working directory is clean. """
+    return git_do_data(repo, "status", "--porcelain")[0] == ""
 
 def status(repos, show_unchanged, *args):
-	"""Does git status on all installed repositories """
+    """Does git status on all installed repositories """
 
-	ret = True
+    ret = True
 
-	for rep in repos:
+    for rep in repos:
 
-		# If we are clean, do nothing
-		if is_clean(rep) and not show_unchanged:
-			continue
+        # If we are clean, do nothing
+        if is_clean(rep) and not show_unchanged:
+            continue
 
-		std("git status", rep)
+        std("git status", rep)
 
-		val = git_status(rep, *args)
-		if not val:
-			err("Unable to run git status on", rep)
-			ret = False
-		else:
-			std(val)
+        val = git_status(rep, *args)
+        if not val:
+            err("Unable to run git status on", rep)
+            ret = False
+        else:
+            std(val)
 
-	return ret
+    return ret
 
 def commit(msg, *repos):
-	"""Commits all installed repositories """
+    """Commits all installed repositories """
 
-	ret = True
+    ret = True
 
-	for rep in repos:
-		std("git commit", rep)
-		ret = git_commit(rep, "-a", "-m", msg) and ret
+    for rep in repos:
+        std("git commit", rep)
+        ret = git_commit(rep, "-a", "-m", msg) and ret
 
-	return ret
+    return ret
 
 def do(cmd, args, *repos):
-	"""Does an arbitraty git commit on all repositories. """
-	ret = True
-	if args == None:
-		args = [""]
-	args = args[0].split(" ")
-	for rep in repos:
-		std("git "+cmd, args[0], rep)
-		ret = git_do(rep, cmd, *args) and ret
+    """Does an arbitraty git commit on all repositories. """
+    ret = True
+    if args == None:
+        args = [""]
+    args = args[0].split(" ")
+    for rep in repos:
+        std("git "+cmd, args[0], rep)
+        ret = git_do(rep, cmd, *args) and ret
 
-	return ret
+    return ret
 
 def git_clean(repo):
-	"""Cleans up repositories. """
+    """Cleans up repositories. """
 
-	return do("clean", ["-f"], repo)
+    return do("clean", ["-f"], repo)
 
 def rm_untracked(file, t = ""):
-	if not is_tracked(file):
-		try:
-			os.remove(file)
-			std("Removed", t, file)
-		except:
-			err("Unable to remove", file)
-			return False
-	return True
+    if not is_tracked(file):
+        try:
+            os.remove(file)
+            std("Removed", t, file)
+        except:
+            err("Unable to remove", file)
+            return False
+    return True
 
 def clean_orphans(d):
-	"""Cleans out orphaned files int he given directory"""
+    """Cleans out orphaned files int he given directory"""
 
-	res = True
+    res = True
 
-	(texs, omdocs, pdfs, sms) = find_files(d, "tex", "omdoc", "pdf", "sms")
+    (texs, omdocs, pdfs, sms) = find_files(d, "tex", "omdoc", "pdf", "sms")
 
-	#
-	# Orphaned omdocs
-	#
+    #
+    # Orphaned omdocs
+    #
 
-	for file in omdocs:
-		if not (file[:-len(".omdoc")]+".tex" in texs):
-			if not rm_untracked(file, "orphaned omdoc"):
-				res = False
+    for file in omdocs:
+        if not (file[:-len(".omdoc")]+".tex" in texs):
+            if not rm_untracked(file, "orphaned omdoc"):
+                res = False
 
-	#
-	# Orphaned pdf
-	#
+    #
+    # Orphaned pdf
+    #
 
-	for file in pdfs:
-		if not (file[:-len(".pdf")]+".tex" in texs):
-			if not rm_untracked(file, "orphaned pdf"):
-				res = False
+    for file in pdfs:
+        if not (file[:-len(".pdf")]+".tex" in texs):
+            if not rm_untracked(file, "orphaned pdf"):
+                res = False
 
-	#
-	# Orphaned sms
-	#
+    #
+    # Orphaned sms
+    #
 
-	for file in sms:
-		if not (file[:-len(".sms")]+".tex" in texs):
-			if not rm_untracked(file, "orphaned sms"):
-				res = False
+    for file in sms:
+        if not (file[:-len(".sms")]+".tex" in texs):
+            if not rm_untracked(file, "orphaned sms"):
+                res = False
 
-	return res
+    return res
 
 def clean_logs(d):
-	"""Cleans out logs in the given directory. """
+    """Cleans out logs in the given directory. """
 
-	(ltxlog, pdflog) = find_files(d, "ltxlog", "pdflog")
+    (ltxlog, pdflog) = find_files(d, "ltxlog", "pdflog")
 
-	for f in ltxlog+pdflog:
-		if not rm_untracked(f, "log file"):
-			res = False
-	res = True
+    for f in ltxlog+pdflog:
+        if not rm_untracked(f, "log file"):
+            res = False
+    res = True
 
-	return res
+    return res
 
 def clean(repo, git_clean = False):
-	res = clean_orphans(repo)
-	res = clean_logs(repo) and res
+    res = clean_orphans(repo)
+    res = clean_logs(repo) and res
 
-	if git_clean:
-		res = git_clean(repo, args) and res
-	return res
+    if git_clean:
+        res = git_clean(repo, args) and res
+    return res
 
 def log(ordered, *repos):
-	"""Prints out log messages on all repositories. """
-	ret = True
+    """Prints out log messages on all repositories. """
+    ret = True
 
-	def get_log(repo):
-		get_format = lambda frm:git_do_data(repo, "log", "--pretty=format:"+frm+"")[0].split("\n")
+    def get_log(repo):
+        get_format = lambda frm:git_do_data(repo, "log", "--pretty=format:"+frm+"")[0].split("\n")
 
-		hash_short = get_format("%h")
-		commit_titles = get_format("%s")
-		dates = get_format("%at")
-		dates_human = get_format("%ad")
-		author_names = get_format("%an")
-		author_mails = get_format("%ae")
+        hash_short = get_format("%h")
+        commit_titles = get_format("%s")
+        dates = get_format("%at")
+        dates_human = get_format("%ad")
+        author_names = get_format("%an")
+        author_mails = get_format("%ae")
 
-		res = [{
-			"hash": hash_short[i],
-			"subject": commit_titles[i],
-			"date": int(dates[i]),
-			"date_human": dates_human[i],
-			"author": author_names[i],
-			"author_mail": author_mails[i],
-			"repo": match_repo(repo)
-		} for i in range(len(hash_short))]
+        res = [{
+                "hash": hash_short[i],
+                "subject": commit_titles[i],
+                "date": int(dates[i]),
+                "date_human": dates_human[i],
+                "author": author_names[i],
+                "author_mail": author_mails[i],
+                "repo": match_repo(repo)
+        } for i in range(len(hash_short))]
 
-		return res
+        return res
 
-	entries = []
+    entries = []
 
-	for rep in repos:
-		try:
-			entries.extend(get_log(rep))
-		except Exception as e:
-			err(e)
-			ret = False
+    for rep in repos:
+        try:
+            entries.extend(get_log(rep))
+        except Exception as e:
+            err(e)
+            ret = False
 
 
-	if ordered:
-		entries.sort(key=lambda e: -e["date"])
+    if ordered:
+        entries.sort(key=lambda e: -e["date"])
 
-	strout = ""
+    strout = ""
 
-	for entry in entries:
-		strout += "\nRepo:    " + entry["repo"]
-		strout += "\nSubject: " + entry["subject"]
-		strout += "\nHash:    " + entry["hash"]
-		strout += "\nAuthor:  " + entry["author"] + " <" + entry["author_mail"] + ">"
-		strout += "\nDate:    " + entry["date_human"]
-		strout += "\n"
+    for entry in entries:
+        strout += "\nRepo:    " + entry["repo"]
+        strout += "\nSubject: " + entry["subject"]
+        strout += "\nHash:    " + entry["hash"]
+        strout += "\nAuthor:  " + entry["author"] + " <" + entry["author_mail"] + ">"
+        strout += "\nDate:    " + entry["date_human"]
+        strout += "\n"
 
-	std_paged(strout, newline=False)
+    std_paged(strout, newline=False)
 
-	return ret
+    return ret
 
 
 def write_deps(dirname, deps):
-	"""Writes dependencies into a given module. """
+    """Writes dependencies into a given module. """
 
-	f = os.path.join(data_dir, match_repo(dirname), "META-INF", "MANIFEST.MF")
-	n = re.sub(r"dependencies: (.*)", "dependencies: "+",".join(deps), read_file(f))
-	write_file(f, n)
-	std("Wrote new dependencies to", f)
+    f = os.path.join(data_dir, match_repo(dirname), "META-INF", "MANIFEST.MF")
+    n = re.sub(r"dependencies: (.*)", "dependencies: "+",".join(deps), read_file(f))
+    write_file(f, n)
+    std("Wrote new dependencies to", f)
 
 
 def calc_deps(apply = False, dirname="."):
-	"""Crawls for dependencies in a given directory. """
+    """Crawls for dependencies in a given directory. """
 
-	repo = match_repo(dirname)
+    repo = match_repo(dirname)
 
-	if not repo:
-		return False
+    if not repo:
+        return False
 
-	std("Checking dependencies for:   ", repo)
+    std("Checking dependencies for:   ", repo)
 
-	# Getting the real dependencies
-	given_dependencies = find_dependencies(match_repo(dirname))+[repo]
-	given_dependencies = list(set(given_dependencies))
+    # Getting the real dependencies
+    given_dependencies = find_dependencies(match_repo(dirname))+[repo]
+    given_dependencies = list(set(given_dependencies))
 
-	# All the required paths
-	real_paths = {}
+    # All the required paths
+    real_paths = {}
 
-	for root, dirs, files in os.walk(dirname):
-		path = root.split('/')
-		for file in files:
-			fileName, fileExtension = os.path.splitext(file)
-			if fileExtension != ".tex":
-				continue
+    for root, dirs, files in os.walk(dirname):
+        path = root.split('/')
+        for file in files:
+            fileName, fileExtension = os.path.splitext(file)
+            if fileExtension != ".tex":
+                continue
 
-			# read the file
-			for f in read_file_lines(os.path.join(root, file)):
+            # read the file
+            for f in read_file_lines(os.path.join(root, file)):
 
-				for find in re.findall(r"\\(usemhvocab|usemhmodule|adoptmhmodule|importmhmodule)\[(([^\]]*),)?repos=([^,\]]+)(\s*)(,([^\]])*)?\]", f):
-					real_paths[find[3]] = True
+                for find in re.findall(r"\\(usemhvocab|usemhmodule|adoptmhmodule|importmhmodule)\[(([^\]]*),)?repos=([^,\]]+)(\s*)(,([^\]])*)?\]", f):
+                    real_paths[find[3]] = True
 
-				for find in re.findall(r"\\(usemodule|adoptmodule|importmodule|usevocab)\[([^\]]+)\]", f):
-					real_paths[find[1]] = True
+                for find in re.findall(r"\\(usemodule|adoptmodule|importmodule|usevocab)\[([^\]]+)\]", f):
+                    real_paths[find[1]] = True
 
-				for find in re.findall(r"\\(MathHub){([^\}]+)}", f):
-					real_paths[find[1]] = True
+                for find in re.findall(r"\\(MathHub){([^\}]+)}", f):
+                    real_paths[find[1]] = True
 
-				for find in re.findall(r"\\(gimport|guse|gadpot)\[([^\]]+)\]", f):
-					real_paths[find[1]] = True
+                for find in re.findall(r"\\(gimport|guse|gadpot)\[([^\]]+)\]", f):
+                    real_paths[find[1]] = True
 
-	# Now only take paths which have exactly two parts
-	real_dependencies = []
-	for path in real_paths:
-		comps = path.split("/")
-		if len(comps) < 2:
-			continue
-		real_dependencies.append(comps[0]+"/"+comps[1])
+    # Now only take paths which have exactly two parts
+    real_dependencies = []
+    for path in real_paths:
+        comps = path.split("/")
+        if len(comps) < 2:
+            continue
+        real_dependencies.append(comps[0]+"/"+comps[1])
 
-	real_dependencies = list(set(real_dependencies))
+    real_dependencies = list(set(real_dependencies))
 
-	# No need to require itself
-	while repo in real_dependencies: real_dependencies.remove(repo)
-	while repo in given_dependencies: given_dependencies.remove(repo)
+    # No need to require itself
+    while repo in real_dependencies: real_dependencies.remove(repo)
+    while repo in given_dependencies: given_dependencies.remove(repo)
 
 
-	# we are missing the ones that are real but not given
-	missing = filter(lambda x:not x in given_dependencies, real_dependencies)
+    # we are missing the ones that are real but not given
+    missing = filter(lambda x:not x in given_dependencies, real_dependencies)
 
-	# we do not need those that are given but not real
-	not_needed = filter(lambda x:not x in real_dependencies, given_dependencies)
+    # we do not need those that are given but not real
+    not_needed = filter(lambda x:not x in real_dependencies, given_dependencies)
 
-	# the others are fine
-	fine  = filter(lambda x:x in real_dependencies, given_dependencies)
+    # the others are fine
+    fine  = filter(lambda x:x in real_dependencies, given_dependencies)
 
-	ret = {
-		"fine": fine,
-		"missing": missing,
-		"not_needed": not_needed,
-		"should_be": real_dependencies
-	}
+    ret = {
+            "fine": fine,
+            "missing": missing,
+            "not_needed": not_needed,
+            "should_be": real_dependencies
+    }
 
-	std("---")
-	if len(ret["fine"]) > 0:
-		std(term_colors("green"),  "Used dependencies:         ", term_colors("normal"), ", ".join(ret["fine"]))
-	if len(ret["not_needed"]) > 0:
-		std(term_colors("yellow"), "Superfluous dependencies:  ", term_colors("normal"), ", ".join(ret["not_needed"]))
-	if len(ret["missing"]) > 0:
-		std(term_colors("red"),    "Missing dependencies:      ", term_colors("normal"), ", ".join(ret["missing"]))
-	std("---")
-	if len(ret["missing"]) > 0 or len(ret["not_needed"]) > 0:
-		std("Dependencies should be: ", ", ".join(ret["should_be"]))
+    std("---")
+    if len(ret["fine"]) > 0:
+        std(term_colors("green"),  "Used dependencies:         ", term_colors("normal"), ", ".join(ret["fine"]))
+    if len(ret["not_needed"]) > 0:
+        std(term_colors("yellow"), "Superfluous dependencies:  ", term_colors("normal"), ", ".join(ret["not_needed"]))
+    if len(ret["missing"]) > 0:
+        std(term_colors("red"),    "Missing dependencies:      ", term_colors("normal"), ", ".join(ret["missing"]))
+    std("---")
+    if len(ret["missing"]) > 0 or len(ret["not_needed"]) > 0:
+        std("Dependencies should be: ", ", ".join(ret["should_be"]))
 
-	if apply:
-		write_deps(dirname, ret["should_be"])
+    if apply:
+        write_deps(dirname, ret["should_be"])
 
-	return ret
+    return ret

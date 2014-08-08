@@ -21,18 +21,18 @@ import argparse
 from lmh.lib.extenv import run_shell
 
 def create_parser():
-  parser = argparse.ArgumentParser(description='Local MathHub Shell wrapper. ')
-  add_parser_args(parser)
-  return parser
+    parser = argparse.ArgumentParser(description='Local MathHub Shell wrapper. ')
+    add_parser_args(parser)
+    return parser
 
 def add_parser(subparsers, name="shell"):
-  parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='launch a shell with everything set to run build commands. ')
-  add_parser_args(parser_status)
+    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='launch a shell with everything set to run build commands. ')
+    add_parser_args(parser_status)
 
 def add_parser_args(parser):
-  parser.add_argument('shell', nargs="?", help="shell to use")
-  parser.add_argument('--args', default="", help="Arguments to append to the shell. ")
+    parser.add_argument('shell', nargs="?", help="shell to use")
+    parser.add_argument('--args', default="", help="Arguments to append to the shell. ")
 
 def do(args):
-  code = run_shell(args.shell, args.args)
-  sys.exit(code)
+    code = run_shell(args.shell, args.args)
+    sys.exit(code)

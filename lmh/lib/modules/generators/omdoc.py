@@ -86,9 +86,9 @@ class generate(Generator):
                 sys.stderr.write(e)
 
         except KeyboardInterrupt as k:
-          p.terminate()
-          p.wait()
-          raise k
+            p.terminate()
+            p.wait()
+            raise k
 
         return res and p.returncode == 0
     def dump_init(self):

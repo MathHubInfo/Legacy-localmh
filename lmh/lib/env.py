@@ -33,25 +33,25 @@ data_dir = os.path.realpath(os.path.join(install_dir, data_dir_name))
 ext_dir = os.path.realpath(os.path.join(install_dir, "ext"))
 
 def which(program):
-	"""Returns the full path to program similar to the *nix command which"""
-	def is_exe(fpath):
-		return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+    """Returns the full path to program similar to the *nix command which"""
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
-	fpath, fname = os.path.split(program)
-	if fpath:
-		if is_exe(program):
-			return program
-	else:
-		for path in os.environ["PATH"].split(os.pathsep):
-			path = path.strip('"')
-			exe_file = os.path.join(path, program)
-			if is_exe(exe_file):
-				return exe_file
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
 
-	# Windows: Maybe its a .exe?
-	if os.name == "nt" and not program.endswith(".exe"):
-		return which(program+".exe")
-	return None
+    # Windows: Maybe its a .exe?
+    if os.name == "nt" and not program.endswith(".exe"):
+        return which(program+".exe")
+    return None
 
 """sTex directory"""
 stexstydir = os.path.join(ext_dir, "sTeX", "sty")
