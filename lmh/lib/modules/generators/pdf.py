@@ -89,7 +89,7 @@ class generate(Generator):
                     text += read_file(mod+".tex")
                     text += read_file(post)
 
-                # Write into .tex.tmp
+                # Write into .tmp
                 write_file(tempfile, text)
 
                 if pdf_pipe_log:

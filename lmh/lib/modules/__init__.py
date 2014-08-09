@@ -104,7 +104,7 @@ def locate_module(path, git_root):
 
         # Load the correct postable - this will problaly have to fallback to the default
         f["file_post"] = os.path.join(git_root, "lib", "post"+ext)
-        f["file_post"] = f["file_pre"] if os.path.isfile(f["file_post"]) else os.path.join(git_root, "lib", "post.tex")
+        f["file_post"] = f["file_post"] if os.path.isfile(f["file_post"]) else os.path.join(git_root, "lib", "post.tex")
     else:
         f["file_pre"] = None
         f["file_post"] = None
