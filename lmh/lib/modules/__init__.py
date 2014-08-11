@@ -119,8 +119,6 @@ def locate_preamables(mods):
             if m["type"] == "folder" and m["path"] == f:
                 return m
 
-        print f
-
         # we still need to create it.
         for m in locate_modules(f):
             if m["type"] == "folder" and m["path"] == f:

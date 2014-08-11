@@ -142,13 +142,14 @@ class generate(Generator):
 
         if pre != None:
             if add_bd:
-                std("echo \"\\begin{document}\\n\" | cat "+shellquote(pre)+" - "+shellquote(file)+" "+shellquote(post)+" | "+pdflatex_executable+" -jobname " + mod+"-interaction scrollmode")
+                std("echo \"\\begin{document}\\n\" | cat "+shellquote(pre)+" - "+shellquote(file)+" "+shellquote(post)+" | "+pdflatex_executable+" -jobname " + mod+" -interaction scrollmode")
             else:
                 std("cat "+shellquote(pre)+" "+shellquote(file)+" "+shellquote(post)+" | "+pdflatex_executable+" -jobname " + mod+ "-interaction scrollmode")
 
         else:
             std(pdflatex_executable+" "+file)
-        std("mv "+job+".log "+pdflog)
+
+        std("mv", os.path.join(cwd, mod+".log"), pdflog)
 
         return True
     def get_log_name(self, m):

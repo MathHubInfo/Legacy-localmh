@@ -60,7 +60,10 @@ def run(modules, simulate, update_mode, quiet, num_workers, GeneratorClass, text
             jobs.append((m, the_generator.make_job(m)))
 
     if len(jobs) == 0:
-        std(the_generator.prefix+":", "No jobs, nothing to do. ")
+        if simulate:
+            std("#"+the_generator.prefix+":", "No jobs, nothing to do. ")
+        else:
+            std(the_generator.prefix+":", "No jobs, nothing to do. ")
         return (True, [], [])
 
     # If we have fewer jobs than workers, scale down the number of workers
