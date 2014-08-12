@@ -71,8 +71,7 @@ def create_parser(submods = {}):
             'symcomplete',
             'translate',
             'update',
-            'update-build',
-            'xhtml'
+            'update-build'
     ]
 
     for mod in submodules:
@@ -98,13 +97,13 @@ def create_parser(submods = {}):
 
     #
     # Special commands, directly implemented.
-    # TODO: Port all of these to seperate files
     #
 
     subparsers.add_parser('root', help='prints the root directory of the Local Math Hub repository')
 
     add_parser_args(subparsers.add_parser('sms', help='generates sms files, alias for lmh gen --sms'), add_types=False).epilog = "Generate sms files. "
     add_parser_args(subparsers.add_parser('omdoc', help='generates omdoc files, alias for lmh gen --omdoc'), add_types=False).epilog = "Generate omdoc files. "
+    add_parser_args(subparsers.add_parser('xhtml', help='generates omdoc files, alias for lmh gen --xhtml'), add_types=False).epilog = "Generate xhtml files. "
 
     p = add_parser_args(subparsers.add_parser('pdf', help='generates pdf files, alias for lmh gen --pdf'), add_types=False)
     p.add_argument('--pdf-add-begin-document', action="store_const", const=True, default=False, help="add \\begin{document} to LaTeX sources when generating pdfs. Backward compatibility for issue #82")

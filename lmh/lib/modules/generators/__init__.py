@@ -217,3 +217,4 @@ from lmh.lib.modules.generators.localpaths import generate as localpaths
 from lmh.lib.modules.generators.alltex import generate as alltex
 from lmh.lib.modules.generators.omdoc import generate as omdoc
 from lmh.lib.modules.generators.pdf import generate as pdf
+from lmh.lib.modules.generators.xhtml import generate as xhtml

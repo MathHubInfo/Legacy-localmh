@@ -110,6 +110,11 @@ def main(argv = sys.argv[1:]):
         argv.append("--pdf")
         return submods["gen"].do(parser.parse_args(argv))
 
+    if args.action == "xhtml":
+        argv[0] = "gen"
+        argv.append("--xhtml")
+        return submods["gen"].do(parser.parse_args(argv))
+
     #
     # Normal run code
     #

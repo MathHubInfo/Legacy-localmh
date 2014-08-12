@@ -26,7 +26,7 @@ from lmh.lib.extenv import java_executable
 from lmh.lib.io import std, err
 from lmh.lib.repos.local import match_repo
 from lmh.lib.git import root_dir
-from lmh.lib.env import install_dir
+from lmh.lib.env import install_dir, data_dir
 
 
 initScript = """
@@ -37,8 +37,8 @@ extension info.kwarc.mmt.stex.STeXImporter
 
 buildScript = """
 archive add {repoPath}
-build {repoName} stex-omdoc
-build {repoName} planetary
+build {repoName} stex-omdoc http://mathhub.info/{repoName}/{fileName}
+build {repoName} planetary http://mathhub.info/{repoName}/{fileName}
 exit
 """;
 
@@ -50,22 +50,26 @@ base http://docs.omdoc.org/mmt
 
 mmt_root = os.path.join(install_dir, "ext", "MMT");
 
-def runMMTScript(src, path):
+def runMMTScript(src, path, filename):
     cp = "{dir}/lib/*:{dir}/mmt/branches/informal/*:{dir}/lfcatalog/*:{dir}/mmt/*".format(dir=mmt_root)
     args = [java_executable, "-Xmx2048m", "-cp", cp, "info.kwarc.mmt.api.frontend.Run"];
     try:
-        print src
         comm = subprocess.Popen(args, cwd=path, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=src);
         std(comm[0])
-        std(comm[1])
+        err(comm[1])
+        return True
     except OSError, o:
         err(o)
+        return False
 
-def compile(repository):
-    std("Generating XHTML in", repository)
+def compile(repository, filename):
+
+    # Find the repo paths
     repoName = match_repo(repository)
-    repoPath = root_dir(repository)
-
+    repoPath = match_repo(repository, abs=True)
     src = os.path.join(repoPath, "source")
-    script = initScript.format(lmhRoot=install_dir)+"\n"+buildScript.format(repoName=repoName,repoPath=repoPath)
-    runMMTScript(script, repoPath)
+    # What do we need to do?
+    script = initScript.format(lmhRoot=install_dir)+"\n"+buildScript.format(repoName=repoName,repoPath=repoPath,fileName=filename)
+
+    # Lets run it.
+    return runMMTScript(script, repoPath, filename)

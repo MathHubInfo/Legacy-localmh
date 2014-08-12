@@ -63,13 +63,17 @@ def locate_module(path, git_root):
     omdocpath = basepth+".omdoc"
     omdoclog = basepth+".ltxlog"
     pdfpath = basepth+".pdf"
+    xhtmlpath = basepth+".xhtml"
     pdflog = basepth+".pdflog"
     smspath = basepth+".sms"
+
+    uri = os.path.relpath(omdocpath, os.path.join(git_root, "source"))
 
 
     f = {
         "type": "file",
         "mod": os.path.basename(basepth),
+        "local_uri": uri,
         "file": path,
 
         "repo": git_root,
@@ -84,6 +88,8 @@ def locate_module(path, git_root):
         "omdoc_time": os.path.getmtime(omdocpath) if os.path.isfile(omdocpath) else 0,
         "omdoc_log": omdoclog,
         "omdoc_log_time": os.path.getmtime(omdoclog) if os.path.isfile(omdoclog) else 0,
+
+        "xhtml": xhtmlpath,
         "pdf": pdfpath if os.path.isfile(pdfpath) else None,
         "pdf_path": pdfpath,
         "pdf_time": os.path.getmtime(pdfpath) if os.path.isfile(pdfpath) else 0,

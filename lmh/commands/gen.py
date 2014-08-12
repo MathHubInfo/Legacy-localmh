@@ -21,11 +21,7 @@ from lmh.lib import setnice
 from lmh.lib.io import std, err
 
 import lmh.lib.modules.generators
-
-
 from lmh.lib.modules import resolve_pathspec
-from lmh.lib.modules.pdf import gen_pdf
-
 from lmh.lib.config import get_config
 
 def create_parser():
@@ -186,7 +182,13 @@ def do(args):
             return False
 
     if args.xhtml:
-        err("XHTML: Not yet implemented. Please use lmh xhtml instead. ")
+            (res, d, f) = lmh.lib.modules.generators.run(modules, args.verbose, args.update, args.quiet, args.workers, lmh.lib.modules.generators.xhtml, args.grep_log)
+            if not args.quiet:
+                std("XHTML: Generated", len(d), "file(s), failed", len(f), "file(s). ")
+            if not res:
+                if not args.quiet:
+                    err("XHTML: Generation failed, skipping further generation. ")
+                return False
 
 
     return True
