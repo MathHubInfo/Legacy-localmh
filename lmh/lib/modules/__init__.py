@@ -63,12 +63,13 @@ def locate_module(path, git_root):
     omdocpath = basepth+".omdoc"
     omdoclog = basepth+".ltxlog"
     pdfpath = basepth+".pdf"
-    xhtmlpath = basepth+".xhtml"
+
     pdflog = basepth+".pdflog"
     smspath = basepth+".sms"
 
     uri = os.path.relpath(omdocpath, os.path.join(git_root, "source"))
-
+    repo_rel = os.path.relpath(git_root, data_dir)
+    xhtmlpath = os.path.join(git_root, "export", "planetary", "content", "http..mathhub.info", repo_rel, uri+"/")
 
     f = {
         "type": "file",
@@ -77,7 +78,7 @@ def locate_module(path, git_root):
         "file": path,
 
         "repo": git_root,
-        "repo_name": os.path.relpath(git_root, data_dir),
+        "repo_name": repo_rel,
 
         "path": os.path.dirname(path),
         "file_time": os.path.getmtime(path),

@@ -21,6 +21,7 @@ import socket
 import subprocess
 import glob
 import os
+import re
 
 from lmh.lib.extenv import java_executable
 from lmh.lib.io import std, err
@@ -48,16 +49,19 @@ archive add .
 base http://docs.omdoc.org/mmt
 """;
 
-mmt_root = os.path.join(install_dir, "ext", "MMT");
+mmt_root = os.path.join(install_dir, "ext", "MMT")
 
 def runMMTScript(src, path, filename):
     cp = "{dir}/lib/*:{dir}/mmt/branches/informal/*:{dir}/lfcatalog/*:{dir}/mmt/*".format(dir=mmt_root)
     args = [java_executable, "-Xmx2048m", "-cp", cp, "info.kwarc.mmt.api.frontend.Run"];
     try:
-        comm = subprocess.Popen(args, cwd=path, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=src);
-        std(comm[0])
-        err(comm[1])
-        return True
+        comm = subprocess.Popen(args, cwd=path, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=src)
+        #std(comm[0])
+        #err(comm[1])
+        if len(comm[1]) != 0:
+            return False
+        else:
+            return True
     except OSError, o:
         err(o)
         return False
