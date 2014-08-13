@@ -62,6 +62,16 @@ def runMMTScript(src, path, filename):
         err(o)
         return False
 
+def runMMTScript_dump(src, path, filename):
+    cp = "{dir}/lib/*:{dir}/mmt/branches/informal/*:{dir}/lfcatalog/*:{dir}/mmt/*".format(dir=mmt_root)
+    args = [java_executable, "-Xmx2048m", "-cp", cp, "info.kwarc.mmt.api.frontend.Run"]
+
+    std("cd", path)
+    std("cat <<EOF |", " ".join(args), "\n", str(src), "\nEOF")
+
+    return True
+
+
 def compile(repository, filename):
 
     # Find the repo paths
@@ -73,3 +83,14 @@ def compile(repository, filename):
 
     # Lets run it.
     return runMMTScript(script, repoPath, filename)
+
+def compile_dump(repository, filename):
+    # Find the repo paths
+    repoName = match_repo(repository)
+    repoPath = match_repo(repository, abs=True)
+    src = os.path.join(repoPath, "source")
+    # What do we need to do?
+    script = initScript.format(lmhRoot=install_dir)+"\n"+buildScript.format(repoName=repoName,repoPath=repoPath,fileName=filename)
+
+    # Lets run it.
+    return runMMTScript_dump(script, repoPath, filename)

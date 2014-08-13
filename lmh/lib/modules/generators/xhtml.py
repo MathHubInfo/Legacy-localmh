@@ -12,7 +12,7 @@ from subprocess import PIPE
 from lmh.lib.config import get_config
 from lmh.lib.io import std, err
 
-from lmh.lib.mmt import compile
+from lmh.lib.mmt import compile, compile_dump
 
 class generate(Generator):
     def __init__(self, quiet, **config):
@@ -34,6 +34,7 @@ class generate(Generator):
         std("# XHTML Generation")
         return True
     def dump_job(self, job):
-        return False
+        (repo, fpath) = job
+        return compile_dump(repo, fpath)
     def get_log_name(self, m):
         return m["xhtml"]
