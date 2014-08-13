@@ -37,7 +37,7 @@ extension info.kwarc.mmt.stex.STeXImporter
 
 buildScript = """
 archive add {repoPath}
-build {repoName} stex-omdoc http..mathhub.info/{repoName}/{fileName}
+build {repoName} stex-omdoc {fileName}
 build {repoName} planetary http..mathhub.info/{repoName}/{fileName}
 exit
 """;
