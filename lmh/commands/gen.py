@@ -61,7 +61,7 @@ def add_parser_args(parser, add_types=True):
         whattogen.add_argument('--sms', action="store_const", const=True, default=False, help="generate sms files")
         whattogen.add_argument('--omdoc', action="store_const", const=True, default=False, help="generate omdoc files, implies --sms, --alltex, --localpaths")
         whattogen.add_argument('--pdf', action="store_const", const=True, default=False, help="generate pdf files, implies --sms, --alltex, --localpaths")
-        whattogen.add_argument('--xhtml', action="store_const", const=True, default=False, help="generate xhtml files, implies --sms, --alltex, --localpaths")
+        whattogen.add_argument('--xhtml', action="store_const", const=True, default=False, help="generate xhtml files, implies --sms, --alltex, --localpaths, --omdoc")
         whattogen.add_argument('--alltex', action="store_const", const=True, default=False, help="Generate all.tex files")
         whattogen.add_argument('--localpaths', action="store_const", const=True, default=False, help="Generate localpaths.tex files")
         whattogen.add_argument('--list', action="store_const", const=True, default=False, help="Lists all modules which exist in the given paths. Blocks all other generation. ")
@@ -129,6 +129,9 @@ def do(args):
         return True
 
     # Implications to set
+    if args.xhtml and not args.skip_implies:
+        args.omdoc = True
+
     if (args.pdf or args.omdoc or args.xhtml) and not args.skip_implies:
         args.sms = True
         args.localpaths = True
@@ -185,6 +188,7 @@ def do(args):
             (res, d, f) = lmh.lib.modules.generators.run(modules, args.verbose, args.update, args.quiet, args.workers, lmh.lib.modules.generators.xhtml, args.grep_log)
             if not args.quiet:
                 std("XHTML: Generated", len(d), "file(s), failed", len(f), "file(s). ")
+                std("XHTML: Generation log may contain false positives, to be sure please check manually. ")
             if not res:
                 if not args.quiet:
                     err("XHTML: Generation failed, skipping further generation. ")
