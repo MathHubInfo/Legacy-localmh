@@ -21,6 +21,7 @@ import os.path
 from lmh.lib.env import which, install_dir
 from lmh.lib.io import std, read_raw, find_files
 from lmh.lib.about import version
+from lmh.lib.git import do
 
 # Force reload lmh.lib.config
 import lmh.lib.config
@@ -43,6 +44,12 @@ def post_update():
     # Find the files
     cache = [os.remove(f) for f in find_files(os.path.join(install_dir, "lmh"), "pyc")[0]]
     std("Cleared python cache, removed", len(cache), "files. ")
+    # Migrate to github if we haven't already
+    if not get_config("self::is_github"):
+        do(install_dir, "remote", "set-url", "origin", "https://github.com/KWARC/localmh")
+        set_config("self::is_github", True)
+        std("=== LMH has been moved to Github===")
+        std("Please run lmh selfupdate (again) to make sure that you are up-to-date. ")
     return True
 
 def q_program(pgr):

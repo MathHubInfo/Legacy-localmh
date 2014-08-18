@@ -17,6 +17,13 @@
 		"default": ""
 	},
 
+	"self::is_github": {
+		"type": "bool",
+		"help": "Did we already migrate to the github repo?",
+		"hidden": true,
+		"default": false
+	}, 
+
 	"env::svn": {
 		"type": "string",
 		"help": "Path to the svn executable. Auto-detected if empty. ",
@@ -180,7 +187,7 @@
 	"gl::issue_url": {
 		"type": "string",
 		"help": "URL to issues page. ",
-		"default": "http://gl.mathhub.info/MathHub/localmh/issues/"
+		"default": "https://github.com/KWARC/localmh/issues"
 	},
 
 

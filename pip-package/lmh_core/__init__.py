@@ -31,7 +31,7 @@ def which(program):
 
     return None
 
-def install_lmh(install, setupuri = "http://gl.mathhub.info/MathHub/localmh.git", branch=""):
+def install_lmh(install, setupuri = "https://github.com/KWARC/localmh.git", branch=""):
     if not os.path.exists(install):
         os.makedirs(install)
     islinux = os.name == "posix"

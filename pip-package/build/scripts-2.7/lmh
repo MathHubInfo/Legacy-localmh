@@ -1,7 +1,5 @@
-#!/usr/bin/python
-# PYTHON_ARGCOMPLETE_OK
+#!/bin/bash
 
-import lmh_core as lmh
-
-if __name__ == "__main__":
-	lmh.main()
+# Run it directly
+python -c "import lmh_core as lmh;lmh.main()" "$@"
+exit
