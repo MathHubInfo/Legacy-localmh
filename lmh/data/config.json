@@ -21,8 +21,8 @@
 		"type": "bool",
 		"help": "Did we already migrate to the github repo?",
 		"hidden": true,
-		"default": false
-	}, 
+		"default": true
+	},
 
 	"env::svn": {
 		"type": "string",
