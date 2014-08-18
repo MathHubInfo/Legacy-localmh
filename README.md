@@ -1,10 +1,3 @@
-# LocalMH has been moved go github.
-
-[Please click here to use the current version. ](https://github.com/KWARC/localmh)
-
-Please only use the current version.
-This page is mainted only for backward-compatibility and may be shut down at any time.
-
 # LocalMH
 
 LocalMH is an infrastructure for local (in a working tree) management of the content in http://MathHub.info.
