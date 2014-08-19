@@ -34,7 +34,7 @@ from lmh.lib.git import status as git_status
 from lmh.lib.git import commit as git_commit
 from lmh.lib.git import do as git_do
 from lmh.lib.git import do_data as git_do_data
-from lmh.lib.git import do_quiet
+from lmh.lib.git import do_quiet, get_remote_status
 from lmh.lib.git import is_tracked
 
 #
@@ -237,29 +237,47 @@ def restore(file = None):
 # Git actions
 #
 
-def push(*repos):
+def push(verbose, *repos):
     """Pushes all currently installed repositories. """
+
+    # Check if we need to update the local repository
+    def needs_updating(rep):
+        state = get_remote_status(rep)
+        return state == "push" or state == "failed" or state == "divergence"
 
     ret = True
 
     for rep in repos:
-        std("git push", rep)
-        ret = git_push(rep) and ret
+        std("git push", rep, "", newline = False)
+
+        if verbose or needs_updating(rep):
+            std()
+            ret = git_push(rep) and ret
+        else:
+            std("OK, nothing to push. ")
 
     return ret
 
-def pull(*repos):
+def pull(verbose, *repos):
     """Pulls all currently installed repositories and updates dependencies"""
+
+    # Check if we need to update the local repository
+    def needs_updating(rep):
+        state = get_remote_status(rep)
+        return state == "pull" or state == "failed" or state == "divergence"
 
     ret = True
 
     for rep in repos:
-        std("git pull", rep)
+        std("git pull", rep, "", newline=False)
 
-        ret = git_pull(rep) and ret
-
-        rep = match_repo(rep)
-        ret = install(rep) and ret
+        if verbose or needs_updating(rep):
+            std()
+            ret = git_pull(rep) and ret
+            rep = match_repo(rep)
+            ret = install(rep) and ret
+        else:
+            std("OK, nothing to pull. ")
 
     return ret
 

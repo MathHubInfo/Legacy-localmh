@@ -82,10 +82,7 @@ def do_data(dest, cmd, *arg):
     args.extend(arg)
     proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
     proc.wait()
-    if proc.returncode == 0:
-        return proc.communicate()
-    else:
-        return False
+    return proc.communicate()
 
 def status(dest, *arg):
     """Runs git status and returns the status message. """
@@ -128,6 +125,31 @@ def is_tracked(file):
     proc = subprocess.Popen(args, cwd=p, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     proc.wait()
     return (proc.returncode == 0)
+
+def get_remote_status(where):
+    # quietly make an update with the remote
+    if not do_quiet(where, "remote", "update"):
+        return "failed"
+
+    # Figure out my branch
+    my_branch = do_data(where, "rev-parse", "--abbrev-ref", "HEAD")[0].split("\n")[0]
+    # And the upstream url
+    my_upstream = do_data(where, "symbolic-ref", "-q", "HEAD")[0].split("\n")[0]
+    my_upstream = do_data(where, "for-each-ref", "--format=%(upstream:short)", my_upstream)[0].split("\n")[0]
+
+    # Turn it into hashes
+    local = do_data(where, "rev-parse", my_branch)
+    remote = do_data(where, "rev-parse", my_upstream)
+    base = do_data(where, "merge-base", my_branch, my_upstream)
+    
+    if local == remote:
+        return "ok"
+    elif local == base:
+        return "pull"
+    elif remote == base:
+        return "push"
+    else:
+        return "divergence"
 
 def origin(dir="."):
     """Finds the origin of a given git repository. """
