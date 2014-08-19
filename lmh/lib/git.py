@@ -66,6 +66,15 @@ def do(dest, cmd, *arg):
     proc.wait()
     return (proc.returncode == 0)
 
+def do_quiet(dest, cmd, *arg):
+    """Does an arbitrary git command quietly and returns if it suceeded. """
+
+    args = [git_executable, cmd]
+    args.extend(arg)
+    proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
+    proc.wait()
+    return (proc.returncode == 0)
+
 def do_data(dest, cmd, *arg):
     """Does an arbitrary git command and return stdout and sterr. """
 

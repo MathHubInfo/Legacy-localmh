@@ -34,6 +34,7 @@ from lmh.lib.git import status as git_status
 from lmh.lib.git import commit as git_commit
 from lmh.lib.git import do as git_do
 from lmh.lib.git import do_data as git_do_data
+from lmh.lib.git import do_quiet
 from lmh.lib.git import is_tracked
 
 #
@@ -288,15 +289,18 @@ def status(repos, show_unchanged, *args):
 
     return ret
 
-def commit(msg, *repos):
+def commit(msg, verbose, *repos):
     """Commits all installed repositories """
 
     ret = True
 
     for rep in repos:
-        std("git commit", rep)
-        ret = git_commit(rep, "-a", "-m", msg) and ret
-
+        std("git commit", rep, "", newline=False)
+        if verbose or git_do_data(rep, "status", "--porcelain")[0] != "":
+            std()
+            ret = git_commit(rep, "-a", "-m", msg) and ret
+        else:
+            std("Ok, nothing to commit. ")
     return ret
 
 def do(cmd, args, *repos):

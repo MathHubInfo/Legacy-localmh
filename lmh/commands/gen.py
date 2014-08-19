@@ -185,14 +185,14 @@ def do(args):
             return False
 
     if args.xhtml:
-            (res, d, f) = lmh.lib.modules.generators.run(modules, args.verbose, args.update, args.quiet, args.workers, lmh.lib.modules.generators.xhtml, args.grep_log)
+        (res, d, f) = lmh.lib.modules.generators.run(modules, args.verbose, args.update, args.quiet, args.workers, lmh.lib.modules.generators.xhtml, args.grep_log)
+        if not args.quiet:
+            std("XHTML: Generated", len(d), "file(s), failed", len(f), "file(s). ")
+            std("XHTML: Generation log may contain false positives, to be sure please check manually. ")
+        if not res:
             if not args.quiet:
-                std("XHTML: Generated", len(d), "file(s), failed", len(f), "file(s). ")
-                std("XHTML: Generation log may contain false positives, to be sure please check manually. ")
-            if not res:
-                if not args.quiet:
-                    err("XHTML: Generation failed, skipping further generation. ")
-                return False
+                err("XHTML: Generation failed, skipping further generation. ")
+            return False
 
 
     return True
