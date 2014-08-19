@@ -62,6 +62,7 @@ def create_parser(submods = {}):
             'multiling',
             'mvmod',
             'push',
+            'remote', 
             'rename',
             'selfupdate',
             'setup',
