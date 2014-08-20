@@ -27,8 +27,15 @@ from lmh.lib.config import get_config
 """A regular expression for repository names"""
 nameExpression = '[\w-]+/[\w-]+'
 
+def get_repo_dir(repo):
+    repo = repo.split("@")[0]
+    repo = os.path.join(*repo.split("/"))
+    return repo
+
 def is_installed(repo):
     """Checks if a repository is is installed"""
+
+    repo = get_repo_dir(repo)
 
     possible_dir = os.path.join(data_dir, repo)
 
@@ -36,6 +43,8 @@ def is_installed(repo):
 
 def find_dependencies(repo):
     """Finds the dependencies of a module. """
+
+    repo = get_repo_dir(repo)
 
     if not is_installed(repo):
         err("Repository", repo, "is not installed. Failed to parse dependencies. ")
@@ -62,6 +71,9 @@ def find_dependencies(repo):
 
 def is_valid_repo(d):
     """Validates if dir contains a valid local repository. """
+
+    # Fixing for Windows and custom source
+    d = get_repo_dir(d)
     d = os.path.abspath(d)
 
     if not os.path.isdir(d):

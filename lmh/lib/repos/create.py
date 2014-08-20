@@ -27,7 +27,7 @@ from lmh.lib.env import data_dir
 from lmh.lib.config import get_config
 from lmh.lib.repos.local import is_repo_dir
 from lmh.lib.repos.remote import find_source
-from lmh.lib.repos import is_installed
+from lmh.lib.repos import is_installed, get_repo_dir
 
 # Git stuffs
 from lmh.lib.git import do as git_do
@@ -157,6 +157,8 @@ def create_remote(group, name):
 def create(reponame, type="none", remote = True):
     """Creates a new repository in the given directory"""
 
+    reponame = get_repo_dir(reponame)
+    
     # Match the repo name
     absrepo = os.path.abspath(reponame)
 
