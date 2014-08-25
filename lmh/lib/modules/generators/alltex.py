@@ -32,8 +32,8 @@ class generate(Generator):
         pre = read_file(module["pre_file"])
         post = read_file(module["post_file"])
         aux = module["all_file"][:-len("tex")]+"aux"
-
-        return (module["all_file"], aux, pre, post, module["mods"])
+        
+        return (module["all_file"], aux, pre, post, [m for m in module["mods"] if not m.startswith("all.")])
 
     def run_job(self,job,worker_id):
         (dest, aux, pre, post, modules) = job
