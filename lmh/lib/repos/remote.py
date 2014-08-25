@@ -22,8 +22,8 @@ from string import Template
 
 from lmh.lib.io import std, err
 from lmh.lib.env import data_dir
-from lmh.lib.git import clone, exists, do
-from lmh.lib.repos import is_installed, find_dependencies, get_repo_dir
+from lmh.lib.git import clone, exists
+from lmh.lib.repos import is_installed, find_dependencies
 from lmh.lib.config import get_config
 
 try:
@@ -53,18 +53,6 @@ except:
 def find_source(name, quiet = False):
     """Finds the source of a repository. """
 
-    # Allow custom url, for 137
-    if len(name.split("@")) > 1:
-        remote = name.split("@")[1]
-
-        if exists(remote):
-            return remote
-        else:
-            if not quiet:
-                err("Can not find remote: ", remote)
-                return False
-
-
     root_urls = get_config("install::sources").rsplit(";")
     root_suffix = ["", ".git"]
     for i in range(len(root_urls)):
@@ -79,10 +67,6 @@ def find_source(name, quiet = False):
 
 def is_valid(name):
     """Checks if a remote repository is a valid repository. """
-
-    # We have a custom url
-    if name.split("@")[0] != name:
-        return True # lets assume its known
 
     raw = Template(get_config("gl::raw_url")).substitute(repo=name)+"META-INF/MANIFEST.MF"
 
@@ -108,8 +92,8 @@ def force_install(rep):
     if repoURL == False:
         return False
 
-    # Clone the repo in the right directory
-    return clone(data_dir, repoURL, get_repo_dir(rep))
+    # Clone the repo
+    return clone(data_dir, repoURL, rep)
 
 
 def install(*reps):
@@ -192,4 +176,6 @@ def ls_remote(*spec):
             else:
                 err("Warning: No modules matching", s, "found. ")
         matched_projects.update(matches)
+
+
     return filter(is_valid, sorted(matched_projects))

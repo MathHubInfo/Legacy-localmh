@@ -22,7 +22,7 @@ import glob
 
 from lmh.lib.env import install_dir, data_dir
 from lmh.lib.io import term_colors, find_files, std, std_paged, err, write_file, read_file, read_file_lines
-from lmh.lib.repos import find_dependencies, get_repo_dir
+from lmh.lib.repos import find_dependencies
 from lmh.lib.config import get_config
 from lmh.lib.repos.remote import install
 
@@ -43,13 +43,10 @@ from lmh.lib.git import is_tracked
 
 def is_repo_dir(path, existence = True):
     """Checks if a directory is a repo directory. """
-
-    path = get_repo_dir(path)
-
     if existence and (not os.path.isdir(path)):
         return False
     try:
-        if not (os.path.relpath(data_dir, os.path.abspath(path)) == ".."+os.pathsep+".."):
+        if not (os.path.relpath(data_dir, os.path.abspath(path)) == "../.."):
             return False
 
         # Check for the manuifest, unless it is disabled by some setting.
@@ -71,8 +68,7 @@ def is_in_repo(path):
     """Checks if a directory is contained inside of a repo. """
     try:
         if is_in_data(path):
-            relpath = os.path.relpath(data_dir, os.path.abspath(path))
-            return relpath.startswith(".."+os.pathsep+"..")
+            return os.path.relpath(data_dir, os.path.abspath(path)).startswith("../..")
         else:
             return False
     except:
@@ -114,8 +110,6 @@ def match_repo(repo, root=os.getcwd(), abs=False):
     # 2) If it is (inside) a repository, return that repository
     # 3) If not, try to repeat 1) and 2) with root = data_dir
     # 4) If that fails, return None
-
-    repo = get_repo_dir(repo) # Handle windows-ish and custom sources
 
     # make sure the root is absolute
     root = os.path.abspath(root)
