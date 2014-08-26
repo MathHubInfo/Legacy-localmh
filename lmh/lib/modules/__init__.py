@@ -34,10 +34,6 @@ from lmh.lib.git import root_dir
 
 from lmh.lib.repos.local import find_repo_subdirs
 
-
-# The special files
-special_files = {"all.tex":True, "localpaths.tex": True}
-
 def needsPreamble(file):
     # check if we need to add the premable
     return re.search(r"\\begin(\w)*{document}", read_file(file)) == None
@@ -50,7 +46,12 @@ def locate_module(path, git_root):
     if git_root == None:
         std("Skipping "+path+", not in a valid git repository. ")
 
-    if not path.endswith(".tex") or os.path.basename(path) in special_files or not effectively_readable(path):
+    org_selected = path
+
+    if not path.endswith(".tex"):
+        path = os.path.splitext(path)[0] + ".tex" # We go to the tex file
+
+    if not effectively_readable(path):
         return []
 
     # you can use any directory, but if it is in the localmh directory,
@@ -73,7 +74,9 @@ def locate_module(path, git_root):
 
     f = {
         "type": "file",
+        "original_selector": org_selected,
         "mod": os.path.basename(basepth),
+
         "local_uri": uri,
         "file": path,
 
@@ -197,7 +200,7 @@ def locate_preamables(mods):
 
     return res
 
-def locate_modules(path, depth=-1):
+def locate_modules(path, depth=-1, find_files = True):
     # locates the submodules
 
     # you can use any directory, but if it is in the localmh directory,
@@ -268,9 +271,12 @@ def locate_modules(path, depth=-1):
             "file_post": post
         }]
 
+        if find_files == False:
+            modules = [modules[0]]
+
     # go into subdirectories if needed
     if depth != 0:
-        modules.extend(reduce([locate_modules(folder, depth - 1) for folder in folders]))
+        modules.extend(reduce([locate_modules(folder, depth - 1, find_files = find_files) for folder in folders]))
 
     return modules
 
@@ -291,7 +297,7 @@ def makeIndex(dir = "."):
 
     return index
 
-def resolve_pathspec(args, allow_files = True, allow_local = True, recursion_depth=None):
+def resolve_pathspec(args, allow_files = True, allow_local = True, find_files = True, find_alltex = True, recursion_depth=None):
     # Resolves the path specification given by the arguments
 
     """
@@ -314,16 +320,32 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, recursion_dep
       2) If that gives no results, do a glob.glob($PATHSPEC) realtive to data_dir and repeat 1B)
     """
 
-    # args.all is given => generate everywhere
-    if args.all:
-        args.pathspec = [data_dir]
+    # We support both JSON and namespace notation
+    if hasattr(args, "all"):
+        args_all = args.all
+    else:
+        args_all = args["all"]
+
+    if hasattr(args, "pathspec"):
+        args_pathspec = args.pathspec
+    else:
+        args_pathspec = args["pathspec"]
+
+    if hasattr(args, "recursion_depth"):
+        args_recursion_depth = args.recursion_depth
+    else:
+        args_recursion_depth = args["recursion_depth"]
+
+    # args_all is given => generate everywhere
+    if args_all:
+        args_pathspec = [data_dir]
 
     if recursion_depth == None:
-        recursion_depth = args.recursion_depth
+        recursion_depth = args_recursion_depth
 
     # We do not have any arguments, use nothing at all.
-    if(len(args.pathspec) == 0):
-        args.pathspec = ["."]
+    if(len(args_pathspec) == 0):
+        args_pathspec = ["."]
 
     paths = []
     mods = []
@@ -335,7 +357,7 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, recursion_dep
     is_in_repo = lambda x:os.path.relpath(data_dir, x).startswith("../../")
     is_in_data = lambda x: not os.path.relpath(x, data_dir).startswith("..")
 
-    for f in args.pathspec:
+    for f in args_pathspec:
         # We did not do anything
 
         cont = True
@@ -348,8 +370,8 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, recursion_dep
                     if not is_in_data(gl_abs):
                         err("Warning: Path", gl_abs, "is not within the lmh data directory, ignoring. ")
                         cont = False
-                    if not gl_abs.endswith(".tex"):
-                        err("Warning: Path", gl_abs, "is not a tex file, ignoring. ")
+                    if not (gl_abs.endswith(".tex") or gl_abs.endswith(".omdoc") or gl_abs.endswith(".pdf")):
+                        err("Warning: Path", gl_abs, "is not a valid file, ignoring. ")
                         cont = False
                     mods.append(gl_abs)
                     cont = False
@@ -390,7 +412,11 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, recursion_dep
 
         os.chdir(oldpwd)
 
-    modules = reduce([locate_modules(path, depth=recursion_depth) for path in paths])
+    modules = reduce([locate_modules(path, depth=recursion_depth, find_files = find_files) for path in paths])
+
     modules = modules + reduce([locate_module(f, root_dir(f)) for f in mods])
 
-    return modules + locate_preamables(modules)
+    if find_alltex:
+        modules = modules + locate_preamables(modules)
+
+    return modules
