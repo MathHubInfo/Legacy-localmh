@@ -6,6 +6,7 @@
 *.errlog
 *.bbl
 *.blg
+*.tmp
 *.out
 *.synctex.gz
 *.run.xml
