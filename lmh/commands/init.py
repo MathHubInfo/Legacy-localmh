@@ -42,7 +42,8 @@ token can be configured via
 
     lmh config gl::private_token <token>
 
-The private token can be found under Profile -> Account -> Private Token.
+The private token can be found under Profile -> Account -> Private Token
+on http://gl.mathhub.info.
 
 If no private token is configured, lmh will automatically ask for your
 username and password.
