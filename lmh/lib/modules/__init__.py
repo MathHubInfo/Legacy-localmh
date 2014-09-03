@@ -129,11 +129,22 @@ def locate_preamables(mods):
             if m["type"] == "folder" and m["path"] == f:
                 return m
 
+        created = locate_modules(f)
         # we still need to create it.
-        for m in locate_modules(f):
+        for m in created:
             if m["type"] == "folder" and m["path"] == f:
                 return m
-        return None
+        # We do not have any modules here, so we can just add a lot of stuff from the subdirectories
+        special = {
+          "path": f,
+          "modules": []
+        }
+        # We seem to only have stuff + things in subdirectories
+        for m in created:
+            if m["type"] == "folder":
+                relpath = os.path.relpath(m["path"], f)
+                special["modules"] += [os.path.join(relpath, mod) for mod in m["modules"]]
+        return special
 
     repos = set([m["repo"] for m in mods])
     res = []
