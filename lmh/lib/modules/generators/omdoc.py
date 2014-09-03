@@ -30,6 +30,9 @@ class generate(Generator):
     def needs_file(self, module, gen_mode, text=None):
         if module["type"] != "file":
             return False
+        # No omdoc for localpaths.tex, all.tex and all.*.tex
+        if module["mod"] == "localpaths" or module["mod"] == "all" or module["mod"].startswith("all."):
+          return False
         if gen_mode == "force":
             return True
         elif gen_mode == "update_log":
