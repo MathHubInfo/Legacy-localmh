@@ -93,7 +93,7 @@ class generate(Generator):
                 write_file(tempfile, text)
 
                 if pdf_pipe_log:
-                    p = Popen([pdflatex_executable, tempfile, "-jobname", mod, "-interaction", "scrollmode"], cwd=cwd, stdin=PIPE, stdout=sys.stdout, stderr=sys.stderr, env = _env, timeout=1000)
+                    p = Popen([pdflatex_executable, tempfile, "-jobname", mod, "-interaction", "scrollmode"], cwd=cwd, stdin=PIPE, stdout=sys.stdout, stderr=sys.stderr, env = _env)
                 else:
                     p = Popen([pdflatex_executable, "-jobname", mod, tempfile, "-halt-on-error"], cwd=cwd, stdin=PIPE, stdout=PIPE, stderr=PIPE, env = _env)
             else:
