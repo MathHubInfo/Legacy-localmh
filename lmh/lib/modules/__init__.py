@@ -133,7 +133,6 @@ def locate_preamables(mods):
         for m in locate_modules(f):
             if m["type"] == "folder" and m["path"] == f:
                 return m
-
         return None
 
     repos = set([m["repo"] for m in mods])
@@ -145,12 +144,7 @@ def locate_preamables(mods):
             try:
                 the_mods = y["modules"]
             except:
-                err("A weird error has occured. ")
-                err(y)
-                err("lmh has recovered, but all.tex generation might fail. ")
-                err("for more information and help, please contact the lmh developers with the above message or create an issue on the issue tracker. ")
-                err("To open the issue tracker, use lmh issue. ")
-                the_mods = []
+                continue # We have nothing to generate here, because we did not find anything
             for pre_file in glob.glob(libdir+"/pre.*.tex"):
                 # The alltex file
                 alltex_file = re.sub(r"^(.*)pre\.(.*)\.tex$", r"all.\2.tex", pre_file)
