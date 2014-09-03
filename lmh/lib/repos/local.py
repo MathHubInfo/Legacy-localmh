@@ -182,7 +182,8 @@ def match_repos(repos, root=os.getcwd(), abs=False):
         elif os.path.abspath(d) == os.path.abspath(install_dir):
             rdirs.extend(find_repo_subdirs(install_dir))
         else:
-            err("Failed to parse", d, "as a repository, outside of data directory. ")
+            err("Warning: Unable to parse ", d, " as a repository, falling back to --all. ")
+            rdirs.extend(find_repo_subdirs(install_dir))
 
     # Remove doubles
     rdirs = sorted(set(rdirs))
