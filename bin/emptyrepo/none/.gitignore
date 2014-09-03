@@ -1,3 +1,5 @@
+*.vrb
+*.rel
 *.nav
 *.snm
 *.sms
