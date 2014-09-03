@@ -21,8 +21,10 @@
 *.toc
 *.aux
 localpaths.tex
+_region_.tex
 auto
 all.tex
+all.*.tex
 .!*.tex
 *.clog
 .DS_Store
