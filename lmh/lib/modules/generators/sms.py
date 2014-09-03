@@ -15,6 +15,9 @@ class generate(Generator):
     def needs_file(self, module, gen_mode, text=None):
         if module["type"] != "file":
             return False
+        # No sms for localpaths.tex, all.tex and all.*.tex
+        if module["mod"] == "localpaths" or module["mod"] == "all" or module["mod"].startswith("all."):
+          return False
         if gen_mode == "force" or gen_mode == "update_log" or gen_mode == "grep_log":
             return True
         elif module["file_time"] > module["sms_time"]:
