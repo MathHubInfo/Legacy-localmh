@@ -57,4 +57,4 @@ def which(program):
 stexstydir = os.path.join(ext_dir, "sTeX", "sty")
 
 """LatexML directory"""
-latexmlstydir = os.path.join(ext_dir, "sTeX", "LaTeXML", "lib", "LaTeXML", "texmf")
+latexmlstydir = os.path.join(ext_dir, "LaTeXML", "lib", "LaTeXML", "texmf")
