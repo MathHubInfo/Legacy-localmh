@@ -19,12 +19,16 @@ import os.path
 import sys
 
 from lmh.lib.io import std, err, read_file
-from lmh.lib.env import install_dir, which, stexstydir
+from lmh.lib.env import install_dir, which, stexstydir, latexmlstydir
 from lmh.lib.config import get_config
 
 from subprocess import Popen
 
 import shlex
+
+
+stydir = install_dir+"/sty"
+
 
 # Define all the external tools
 
@@ -191,6 +195,17 @@ def run_shell(shell = None, args=""):
 
     # Make a perl 5 environment
     _env = perl5env(os.environ)
+
+    # pdf inputs
+    def genTEXInputs():
+        res = ".:"+stydir+":";
+        for (root, files, dirs) in os.walk(stexstydir):
+            res += root+":"
+        for (root, files, dirs) in os.walk(latexmlstydir):
+            res += root+":"
+        return res+":"+latexmlstydir+":"+stexstydir
+
+    _env["TEXINPUTS"] = genTEXInputs()
 
     try:
         runner = Popen([shell]+shlex.split(args), env=_env, cwd=install_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
