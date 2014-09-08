@@ -22,6 +22,7 @@
 *.aux
 localpaths.tex
 _region_.tex
+comment.cut
 auto
 all.tex
 all.*.tex
