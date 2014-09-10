@@ -168,8 +168,8 @@
 
 	"gl::host": {
 		"type": "string",
-		"help": "Host for gitlab interaction. Shoudl have a final slash. ",
-		"default": "http://gl.mathub.info/"
+		"help": "Host for gitlab interaction. Should have a final slash. ",
+		"default": "http://gl.mathhub.info/"
 	},
 
 	"gl::projects_url": {
