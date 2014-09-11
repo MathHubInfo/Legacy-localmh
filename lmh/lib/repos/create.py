@@ -96,9 +96,9 @@ def create_remote(group, name):
             gl = gitlab.Gitlab(remote_host, token=token)
             username = gl.currentuser()["username"]
         else:
-            raise "NoToken"
-    except Exception as e:
-        print e
+            gl = gitlab.Gitlab(remote_host)
+            raise Exception
+    except:
         std("Unable to login with private token. ")
         std("To use it, please run")
         std("   lmh config gl::private_token <token>")
@@ -258,7 +258,7 @@ def create(reponame, type="none", remote = True):
         err("git is suddenly weird. ")
         return False
 
-    if not git_push(absrepo, "--all"):
+    if not git_push(absrepo, "-u", "origin", "master"):
         err("Repository created but could not push created repository. ")
         err("Check your network connection and try again using git push. ")
         return False
