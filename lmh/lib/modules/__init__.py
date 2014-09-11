@@ -123,35 +123,13 @@ def locate_module(path, git_root):
 def locate_preamables(mods):
     # locate preambles for a given repository
 
-    def find_folder(f):
-        f = os.path.join(f, "source")
-        for m in mods:
-            if m["type"] == "folder" and m["path"] == f:
-                return m
 
-        created = locate_modules(f)
-        # we still need to create it.
-        for m in created:
-            if m["type"] == "folder" and m["path"] == f:
-                return m
-        # We do not have any modules here, so we can just add a lot of stuff from the subdirectories
-        special = {
-          "path": f,
-          "modules": []
-        }
-        # We seem to only have stuff + things in subdirectories
-        for m in created:
-            if m["type"] == "folder":
-                relpath = os.path.relpath(m["path"], f)
-                special["modules"] += [os.path.join(relpath, mod) for mod in m["modules"]]
-        return special
-
-    repos = set([m["repo"] for m in mods])
     res = []
-    for r in repos:
-        libdir = os.path.join(r, "lib")
+    for y in mods:
+        if y["type"] != "folder":
+            continue
+        libdir = os.path.join(y["repo"], "lib")
         if os.path.isdir(libdir):
-            y = find_folder(r)
             try:
                 the_mods = y["modules"]
             except:
@@ -159,7 +137,7 @@ def locate_preamables(mods):
             for pre_file in glob.glob(libdir+"/pre.*.tex"):
                 # The alltex file
                 alltex_file = re.sub(r"^(.*)pre\.(.*)\.tex$", r"all.\2.tex", pre_file)
-                alltex_file = os.path.join(r, "source", alltex_file)
+                alltex_file = os.path.join(y["path"], alltex_file)
 
                 # The language and its mods
                 language = "."+re.search(r"^(.*)pre\.(.*)\.tex$", pre_file).group(2)
@@ -186,7 +164,7 @@ def locate_preamables(mods):
                 })
             # Now take care of the others, if there are any.
             if len(the_mods) > 0:
-                alltex_file = os.path.join(r, "source", "all.tex")
+                alltex_file = os.path.join(y["path"], "all.tex")
                 # Find the youngest one
                 youngest = [os.path.join(y["path"], k+".tex") for k in the_mods]
                 youngest = max([os.path.getmtime(fn) if os.path.isfile(fn) else 0 for fn in youngest])
