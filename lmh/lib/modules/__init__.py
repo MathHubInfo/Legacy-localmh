@@ -27,7 +27,7 @@ import datetime
 import functools
 import traceback
 
-from lmh.lib import reduce
+from lmh.lib import reduce, clean_list
 from lmh.lib.io import std, err, read_file, effectively_readable
 from lmh.lib.env import install_dir, data_dir
 from lmh.lib.git import root_dir
@@ -402,4 +402,9 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, find_files = 
     if find_alltex:
         modules = modules + locate_preamables(modules)
 
-    return modules
+    def thekey(item):
+        if item["type"] == "file" or item["type"] == "folder":
+            return item["path"]
+        else:
+            return item
+    return clean_list(modules, thekey)

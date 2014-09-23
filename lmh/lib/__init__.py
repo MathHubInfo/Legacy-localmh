@@ -70,3 +70,19 @@ def popen_wait_timeout(process, time):
             # we ran out of time, kill the child
             process.kill()
             return False
+
+def clean_list(lst, key=lambda x:x):
+    """Removes doubles from a list using a key"""
+
+    keys = []
+    res = []
+
+    for l in lst:
+        k = key(l)
+        if k in keys:
+            pass
+        else:
+            res.append(l)
+            keys.append(k)
+
+    return res
