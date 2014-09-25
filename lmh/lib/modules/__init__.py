@@ -407,4 +407,5 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, find_files = 
             return item["path"]
         else:
             return item
+    #return modules
     return clean_list(modules, thekey)
