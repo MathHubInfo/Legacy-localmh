@@ -61,6 +61,8 @@ def create_multi(modname, *langs):
     # Id of the module
     mod_id = mod_content[2]
     mod_meta = mod_content[1]+mod_content[3]
+    if mod_meta != "":
+        mod_meta = "["+mod_meta+"]"
 
     # Definition code
     mod_env_defs = re.findall(module_def_regex, mod_content[4])
@@ -68,7 +70,7 @@ def create_multi(modname, *langs):
 
     # Assemble the main module
     main_module = mod_prefix
-    main_module += "\\begin{modsig}{"+lang+"}"
+    main_module += "\\begin{modsig}"+mod_meta+"{"+lang+"}"
     main_module += "".join(mod_env_nodefs)
     main_module += "\\end{modsig}"
     main_module += mod_suffix
@@ -81,7 +83,7 @@ def create_multi(modname, *langs):
 
     # Assemble the main language binding
     main_language = mod_prefix
-    main_language += "\\begin{modnl}["+mod_meta+"]{"+mod_id+"}{"+lang+"}\n"
+    main_language += "\\begin{modnl}"+mod_meta+"{"+mod_id+"}{"+lang+"}\n"
     main_language += "\n".join(mod_env_defs)
     main_language += "\n\\end{modnl}"
     main_language += mod_suffix
