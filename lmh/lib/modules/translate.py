@@ -70,7 +70,7 @@ def create_multi(modname, *langs):
 
     # Assemble the main module
     main_module = mod_prefix
-    main_module += "\\begin{modsig}"+mod_meta+"{"+lang+"}"
+    main_module += "\\begin{modsig}"+mod_meta+"{"+mod_id+"}"
     main_module += "".join(mod_env_nodefs)
     main_module += "\\end{modsig}"
     main_module += mod_suffix
