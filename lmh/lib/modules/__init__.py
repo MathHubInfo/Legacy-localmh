@@ -27,7 +27,8 @@ import datetime
 import functools
 import traceback
 
-from lmh.lib import reduce
+
+from lmh.lib import reduce, clean_list, f7
 from lmh.lib.io import std, err, read_file, effectively_readable
 from lmh.lib.env import install_dir, data_dir
 from lmh.lib.git import root_dir
@@ -151,6 +152,10 @@ def locate_preamables(mods):
                     youngest = max([os.path.getmtime(fn) if os.path.isfile(fn) else 0 for fn in youngest])
                 # We dont want the others anymore.
                 [the_mods.remove(l) for l in langmods]
+
+                # Rmeovee doubles
+                langmods = f7(langmods)
+
                 # Now make the thing
                 res.append({
                     "type": "alltex",
@@ -164,6 +169,7 @@ def locate_preamables(mods):
                 })
             # Now take care of the others, if there are any.
             if len(the_mods) > 0:
+                the_mods = f7(the_mods)
                 alltex_file = os.path.join(y["path"], "all.tex")
                 # Find the youngest one
                 youngest = [os.path.join(y["path"], k+".tex") for k in the_mods]
@@ -395,7 +401,18 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, find_files = 
 
         os.chdir(oldpwd)
 
+    def thekey(item):
+        if item["type"] == "folder":
+            return item["path"]
+        elif item["type"] == "file":
+            return item["file"]
+        else:
+            return item
+
     modules = reduce([locate_modules(path, depth=recursion_depth, find_files = find_files) for path in paths])
+
+    # Remove doubles
+    modules = clean_list(modules, thekey)
 
     modules = modules + reduce([locate_module(f, root_dir(f)) for f in mods])
 
