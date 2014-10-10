@@ -16,7 +16,7 @@ lmh core --install
 Note that the pip baased installation might require python development tools to be installed
 (package python-dev on Ubuntu / Debian).
 
-This will clone lmh from http://gl.mathhub.info/MathHub/localmh. To manually install lmh, simply installed the dependencies and then clone lmh to a directory of your choice. Then add the subdirectory bin to your $PATH.
+This will clone lmh from https://github.com/KWARC/localmh. To manually install lmh, simply installed the dependencies and then clone lmh to a directory of your choice. Then add the subdirectory bin to your $PATH.
 
 Once lmh is installed, you will have to run
 
@@ -79,75 +79,9 @@ lmh core --install
 lmh setup --install
 ```
 
+## Help
 
-
-#### Windows
-
-On Windows, dependencies are more difficult to install.
-
-**
-    This has been tested to the minimum and may not work at all on your system.
-    Windows support is experimental. Whenever possible, try to use either Linux
-    or Mac OS for lmh.
-**
-
-Even if 64bit versions are available, try to install 32 bit versions as otherwise some compatibility issues can occur.
-
-1) Install [Python](https://www.python.org/download/) 2.7. Make sure to select "Add Python.exe to PATH".
-
-2) Install a version of Visual Studio, preferably [Visual Studio 2010 C++ Express](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-2010-express). (Note: This step may take a while depending on the speed of your network connection. )
-
-3) Install [Git](http://git-scm.com/download/win).
-
-4) Open the "Git bash" (with administrator rights) and install pip:
-
-```
-easy_install pip
-```
-
-5) Now  download the lmh installer:
-
-```
-pip install lmh
-```
-
-If this fails and complains about not being unable to find "vcvarsall.bat",
-you will have to make sure that the environment variable "VS90COMNTOOLS" is set
-correctly. If you check your environment variables there should already be a
-variable like VS100COMNTOOLS there, use the value of that one. The error occurs
-because Visual Studio is installed in the wrong version (or not at all). Please
-also refer to
-[this thread](http://stackoverflow.com/questions/17658092/unable-to-find-vcvarsall-bat-using-python-3-3-in-windows-8).
-
-6) Now you should be able to run:
-
-```
-lmh core --install
-```
-to install lmh. Now we are ready to install all the runtime dependencies.
-
-7) Install Subversion. If you also want a GUI client, you can use [TortoiseSVN](http://tortoisesvn.net/). Make sure the executables are added to the $PATH environment variable. ("Install Command Line Tools" option in the trotoise svn installer. )
-(You can check this by opening a prompt and typing svn which should ouput something like "Type 'svn help' for usage. " )
-
-8) Install [TexLive](https://www.tug.org/texlive/). This should install both "pdflatex" and "perl" executables. ** Depending on your network speed, this might take some time. **
-
-9) Install [Strawberry Perl](http://strawberryperl.com/). This will setup cpanminus as well.
-
-10) Download [GNU Make](http://gnuwin32.sourceforge.net/packages/make.htm) and put it in your $PATH. You should be able to run "make" from the command line without getting any errors.
-
-11) Download [GNU tar](http://gnuwin32.sourceforge.net/packages/gtar.htm) and put it in your $PATH. This will provide the tar executable.
-
-For Make and Tar, If you use the automated installer, make sure to add "C:\Program Files (x86)\GnuWin32\bin" to the PATH.
-
-12) Now you should be able to run
-
-```
-lmh setup --install
-```
-
-**NOTICE: ** Currently anything that needs cpanm needs to be installed manually on Windows as installation fails.
-
-13) You are ready to use lmh.
+Basic Instructions on how to use lmh can be found at [http://mathhub.info/help/offline-authoring](http://mathhub.info/help/offline-authoring).
 
 ## Directory Structure
 

@@ -38,8 +38,7 @@ def create_multi(modname, *langs):
 
     # Module content
     module_content_regex = r"^((?:.|\n)*)\\begin\{module\}\[(?:(.*),\s*)?id=([^,\]]*)(?:\s*(.*))\]((?:.|\n)*?)\\end\{module\}((?:.|\n)*)$"
-    module_not_def_regex = r"(?:^|\\end\{definition\})((?:.|\n)*?)(?:\\begin\{definition\}|$)"
-    module_def_regex = r"(\\begin\{definition\}(?:(?:.|\n)*?)\\end\{definition\})"
+    module_move_regex = r"(\\(?:gimport|symdef|symtest|symvariant|symi+)(?:(?:\[(?:[^\]])*\])|(?:\{(?:[^\}])*\}))*((\n|$|\s)?))"
 
     # Find the module
     mod_content = re.findall(module_content_regex, content)
@@ -61,15 +60,17 @@ def create_multi(modname, *langs):
     # Id of the module
     mod_id = mod_content[2]
     mod_meta = mod_content[1]+mod_content[3]
+    if mod_meta != "":
+        mod_meta = "["+mod_meta+"]"
 
-    # Definition code
-    mod_env_defs = re.findall(module_def_regex, mod_content[4])
-    mod_env_nodefs = list(re.findall(module_not_def_regex, mod_content[4]))
+    # We only want to move these
+    module_to_move = "".join([m[0] for m in re.findall(module_move_regex, mod_content[4])])
+    module_keep = re.sub(module_move_regex, lambda match:match.group(2), mod_content[4])
 
     # Assemble the main module
     main_module = mod_prefix
-    main_module += "\\begin{modsig}{"+lang+"}"
-    main_module += "".join(mod_env_nodefs)
+    main_module += "\\begin{modsig}"+mod_meta+"{"+mod_id+"}"
+    main_module += module_to_move
     main_module += "\\end{modsig}"
     main_module += mod_suffix
 
@@ -81,8 +82,8 @@ def create_multi(modname, *langs):
 
     # Assemble the main language binding
     main_language = mod_prefix
-    main_language += "\\begin{modnl}["+mod_meta+"]{"+mod_id+"}{"+lang+"}\n"
-    main_language += "\n".join(mod_env_defs)
+    main_language += "\\begin{modnl}"+mod_meta+"{"+mod_id+"}{"+lang+"}\n"
+    main_language += module_keep
     main_language += "\n\\end{modnl}"
     main_language += mod_suffix
 

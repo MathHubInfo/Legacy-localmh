@@ -59,7 +59,7 @@ def add_parser_args(parser, add_types=True):
 
     if add_types:
         whattogen.add_argument('--sms', action="store_const", const=True, default=False, help="generate sms files")
-        whattogen.add_argument('--omdoc', action="store_const", const=True, default=False, help="generate omdoc files, implies --sms, --alltex, --localpaths")
+        whattogen.add_argument('--omdoc', action="store_const", const=True, default=False, help="generate omdoc files")
         whattogen.add_argument('--pdf', action="store_const", const=True, default=False, help="generate pdf files, implies --sms, --alltex, --localpaths")
         whattogen.add_argument('--xhtml', action="store_const", const=True, default=False, help="generate xhtml files, implies --sms, --alltex, --localpaths, --omdoc")
         whattogen.add_argument('--alltex', action="store_const", const=True, default=False, help="Generate all.tex files")
@@ -132,7 +132,7 @@ def do(args):
     if args.xhtml and not args.skip_implies:
         args.omdoc = True
 
-    if (args.pdf or args.omdoc or args.xhtml) and not args.skip_implies:
+    if (args.pdf or args.xhtml) and not args.skip_implies:
         args.sms = True
         args.localpaths = True
         args.alltex = True

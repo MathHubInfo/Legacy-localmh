@@ -72,7 +72,9 @@ def first_run():
 
     # Query for the API key
     res = read_raw("Enter your gitlab private token. Leave blank to prompt for username / password when needed. >")
-    set_config("gl::private_token", res)
+    if res != "":
+        set_config("gl::private_token", res)
+
 
     res = ""
     while not res in ["y", "n"]:

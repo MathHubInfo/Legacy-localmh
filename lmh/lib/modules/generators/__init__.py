@@ -46,9 +46,10 @@ def run(modules, simulate, update_mode, quiet, num_workers, GeneratorClass, text
 
     if text != None:
         try:
-            std("Compiling regular expression: ")
-            std(text)
+            text_ = text
             text = re.compile(text)
+            std("Compiling regular expression: ", newline=False)
+            std(text_)
         except:
             err("Invalid regular expression. ")
             return (False, [], [])
