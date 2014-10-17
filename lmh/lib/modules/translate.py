@@ -16,6 +16,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
 import re
+import json
 import shutil
 
 from lmh.lib.modules.symbols import add_symbols
@@ -23,7 +24,7 @@ from lmh.lib.modules.symbols import add_symbols
 import lmh.lib.io
 from lmh.lib.io import read_file, write_file, std, err
 
-def create_multi(modname, *langs):
+def create_multi(modname, pre_terms, *langs):
     if len(langs) == 0:
         err("You need to create at least one language. ")
         return False
@@ -100,7 +101,7 @@ def create_multi(modname, *langs):
 
     # Translate to all the other languages
     for l in langs[1:]:
-        if not transmod(modname, lang, l):
+        if not transmod(modname, lang, l, pre_terms = pre_terms):
             lmh.lib.io.__supressStd__ = False
             return False
     lmh.lib.io.__supressStd__ = False
@@ -112,8 +113,34 @@ def create_multi(modname, *langs):
 
 
 
-def transmod(modname, org_lang, dest_lang):
+def transmod(modname, org_lang, dest_lang, pre_terms = None):
     """Translate a module from one language to another. """
+
+    if pre_terms == None:
+        pre_terms = {}
+
+    # Load a file or JSON if it exists
+    if type(pre_terms) == str:
+        try:
+            pre_terms = json.loads(read_file(pre_terms))
+        except:
+            try:
+                pre_terms = json.loads(pre_terms)
+            except:
+                err("Unable to load json: ", pre_terms)
+                err("Make sure you have given a valid JSON-encoded string or path to a valid .json file. ")
+                return False
+
+    # Load the language
+    if org_lang in pre_terms:
+        pre_terms = pre_terms[org_lang]
+        if dest_lang in pre_terms:
+            pre_terms = pre_terms[dest_lang]
+        else:
+            pre_terms = {}
+    else:
+        pre_terms = {}
+
 
     orfn = modname+"."+org_lang+".tex"
     newfn = modname+"."+dest_lang+".tex"
@@ -179,6 +206,16 @@ def transmod(modname, org_lang, dest_lang):
     # Run it over viewnl and modnl environments
     content = re.sub(r"(\\begin{modnl})((.|\n)*)(\\end{modnl})", replacer, content)
     content = re.sub(r"(\\begin{viewnl})((.|\n)*)(\\end{viewnl})", replacer, content)
+
+    # Replace all the technical terms
+    def replacer2(match):
+        term = match.groups(1)
+        if term in pre_terms:
+            term = pre_terms[term]
+        return "\\ttl{"+term+"}"
+
+    content = re.sub(r"\\ttl\{([^\}]*)\}", replacer2, content)
+
 
     try:
         write_file(newfn, content)
