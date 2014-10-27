@@ -21,14 +21,10 @@ import argparse
 from lmh.lib.modules import checkpaths
 from lmh.lib.repos.local import match_repo_args
 from lmh.lib.help import repo_wildcard_local
-
-def create_parser():
-    parser = argparse.ArgumentParser(description='Local MathHub Path Checking tool.')
-    add_parser_args(parser)
-    return parser
+from lmh.lib import helper
 
 def add_parser(subparsers, name="checkpaths"):
-    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='check paths for validity')
+    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='check paths for validity')
     add_parser_args(parser_status)
 
 

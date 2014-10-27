@@ -18,17 +18,12 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import argparse
 
 import os
+from lmh.lib import helper
 from lmh.lib.io import std
 from lmh.lib.modules import resolve_pathspec
 
-
-def create_parser():
-    parser = argparse.ArgumentParser(description='Local MathHub List Modules tool.')
-    add_parser_args(parser)
-    return parser
-
 def add_parser(subparsers, name="ls-modules"):
-    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='lists installed modules')
+    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='lists installed modules')
     add_parser_args(parser_status)
 
 

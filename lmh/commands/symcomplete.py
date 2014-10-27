@@ -18,15 +18,11 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import argparse
 
+from lmh.lib import helper
 from lmh.lib.modules.symbols import check_defs
 
-def create_parser():
-    parser = argparse.ArgumentParser(description='Checks language bindings for completeness. ')
-    add_parser_args(parser)
-    return parser
-
 def add_parser(subparsers, name="symcomplete"):
-    parser_status = subparsers.add_parser(name, help='Checks language bindings for completeness. ')
+    parser_status = subparsers.add_parser(name, help='Checks language bindings for completeness. ',formatter_class=helper.LMHFormatter)
     add_parser_args(parser_status)
 
 def add_parser_args(parser):

@@ -20,16 +20,12 @@ import re
 import argparse
 
 
+from lmh.lib import helper
 from lmh.lib.io import std, err
 from lmh.lib.repos.local import calc_deps
 
-def create_parser():
-    parser = argparse.ArgumentParser(description='Local MathHub Path Management tool.')
-    add_parser_args(parser)
-    return parser
-
 def add_parser(subparsers, name="depcrawl"):
-    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='crawls current repository for dependencies')
+    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='crawls current repository for dependencies')
     add_parser_args(parser_status)
 
 

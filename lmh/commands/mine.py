@@ -18,19 +18,12 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import os.path
 import argparse
 
-from lmh.lib import config
+from lmh.lib import config, helper
 from lmh.lib.io import std, err
 from lmh.lib.repos.local import export, restore
 
-# import the root
-
-def create_parser():
-    parser = argparse.ArgumentParser(description='Manages all locally installed repositories. ')
-    add_parser_args(parser)
-    return parser
-
 def add_parser(subparsers, name="mine"):
-    parser_status = subparsers.add_parser(name, help='Manages all locally installed repositories. ')
+    parser_status = subparsers.add_parser(name, help='Manages all locally installed repositories. ', formatter_class=helper.LMHFormatter)
     add_parser_args(parser_status)
 
 def add_parser_args(parser):

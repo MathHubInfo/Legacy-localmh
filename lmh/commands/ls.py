@@ -17,18 +17,13 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
+from lmh.lib import helper
 from lmh.lib.io import std
 from lmh.lib.repos.local import match_repo_args
 from lmh.lib.help import repo_wildcard_local
 
-
-def create_parser():
-    parser = argparse.ArgumentParser(description='Local MathHub List tool.')
-    add_parser_args(parser)
-    return parser
-
 def add_parser(subparsers, name="ls"):
-    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='lists installed repositories')
+    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='lists installed repositories')
     add_parser_args(parser_status)
 
 

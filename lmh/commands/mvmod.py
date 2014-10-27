@@ -18,15 +18,11 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
+from lmh.lib import helper
 from lmh.lib.modules.move import movemod
 
-def create_parser():
-    parser = argparse.ArgumentParser(description='Moves a multilingual module to a new repository')
-    add_parser_args(parser)
-    return parser
-
 def add_parser(subparsers, name="mvmod"):
-    parser_status = subparsers.add_parser(name, help='Moves a multilingual module to a new repository')
+    parser_status = subparsers.add_parser(name, help='Moves a multilingual module to a new repository', formatter_class=helper.LMHFormatter)
     add_parser_args(parser_status)
 
 def add_parser_args(parser):
@@ -38,12 +34,14 @@ def add_parser_args(parser):
 
 
     parser.epilog = """
-      Example: lmh mvmod smglom/smglom smglom/set set
+Example: lmh mvmod smglom/smglom smglom/set set
 
-      Which moves the multilingual set module from smglom/smglom into the new repository smglom/set.
+Which moves the multilingual set module from smglom/smglom into the new
+repository smglom/set.
 
-      It can be advisable to run an lmh clean before executing this command, as it speeds it up quite a lot.
-    """
+It can be advisable to run an lmh clean before executing this command, as it
+speeds it up quite a lot. """
+
 def do(args):
     args.source = args.source[0]
     args.dest = args.dest[0]

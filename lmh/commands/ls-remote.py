@@ -17,19 +17,14 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
+from lmh.lib import helper
 from lmh.lib.io import std, term_colors
 from lmh.lib.repos import is_installed
 from lmh.lib.repos.remote import ls_remote
 from lmh.lib.help import repo_wildcard_remote
 
-
-def create_parser():
-    parser = argparse.ArgumentParser(description='Local MathHub  Remote List tool.')
-    add_parser_args(parser)
-    return parser
-
 def add_parser(subparsers, name="ls-remote"):
-    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='list remote repositories')
+    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='list remote repositories')
     add_parser_args(parser_status)
 
 

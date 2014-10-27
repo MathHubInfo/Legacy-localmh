@@ -19,16 +19,12 @@ import os
 import re
 import argparse
 
+from lmh.lib import helper
 from lmh.lib.io import std, err
 from lmh.lib.modules.translate import create_multi
 
-def create_parser():
-    parser = argparse.ArgumentParser(description='Creates a new multilingual module from a monlingual one. ')
-    add_parser_args(parser)
-    return parser
-
 def add_parser(subparsers, name="multiling"):
-    parser_status = subparsers.add_parser(name, help='Creates a new multilingual module from a monlingual one. ')
+    parser_status = subparsers.add_parser(name, help='Creates a new multilingual module from a monlingual one. ',formatter_class=helper.LMHFormatter)
     add_parser_args(parser_status)
 
 def add_parser_args(parser):
@@ -37,24 +33,23 @@ def add_parser_args(parser):
     parser.add_argument('--terms', default=None, help="Terms to pre-translate. Either a Path to a json file or a JSON-encoded string. ")
 
     parser.epilog = """
-    Example: lmh multiling mono.tex en de
+Example: lmh multiling mono.tex en de
 
-    Which creates a new multilingual module mono.tex with languages
-    mono.en.tex and mono.de.tex
+Which creates a new multilingual module mono.tex with languages
+mono.en.tex and mono.de.tex
 
-    The terms argument should have the following structure:
+The terms argument should have the following structure:
 
-    {
-        "source_language": {
-            "target_language": {
-                "word": "translation"
-            }
+{
+    "source_language": {
+        "target_language": {
+            "word": "translation"
         }
     }
+}
 
 
-    Will require manual completion of the translations.
-    """
+Will require manual completion of the translations. """
 
 def do(args):
     ret = True

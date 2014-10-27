@@ -17,6 +17,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
+from lmh.lib import helper
 from lmh.lib.io import std
 from lmh.lib.git import get_remote_status
 from lmh.lib.packs import update
@@ -24,13 +25,8 @@ from lmh.lib.repos.local import match_repo_args, pull
 from lmh.lib.config import get_config
 from lmh.lib.help import repo_wildcard_local
 
-def create_parser():
-    parser = argparse.ArgumentParser(description='Local MathHub Remote tool.')
-    add_parser_args(parser)
-    return parser
-
 def add_parser(subparsers, name="remote"):
-    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='shows if repositories are in sync with the remote. ')
+    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='shows if repositories are in sync with the remote. ')
     add_parser_args(parser_status)
 
 def add_parser_args(parser):

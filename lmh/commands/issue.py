@@ -18,12 +18,9 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import argparse
 import webbrowser
 
+from lmh.lib import helper
 from lmh.lib.io import std
 from lmh.lib.config import get_config
-
-def create_parser():
-    parser = argparse.ArgumentParser(description='Opens a url to display issues in the browser.  ')
-    return parser
 
 def add_parser(subparsers, name="issue"):
     issue_parser = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='Opens a url to display issues in the browser.  ')

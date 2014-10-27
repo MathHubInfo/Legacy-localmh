@@ -17,17 +17,12 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
+from lmh.lib import helper
 from lmh.lib.repos.local import match_repo_args, push
 from lmh.lib.help import repo_wildcard_local
 
-
-def create_parser():
-    parser = argparse.ArgumentParser(description='Local MathHub Push tool.')
-    add_parser_args(parser)
-    return parser
-
 def add_parser(subparsers, name="push"):
-    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='send changes to mathhub')
+    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='send changes to mathhub')
     add_parser_args(parser_status)
 
 def add_parser_args(parser):

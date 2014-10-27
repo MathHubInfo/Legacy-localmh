@@ -17,15 +17,10 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
-from lmh.lib import io, about
-
-def create_parser():
-    parser = argparse.ArgumentParser(description='Shows license and version information about lmh. ')
-    add_parser_args(parser)
-    return parser
+from lmh.lib import io, about, helper
 
 def add_parser(subparsers, name="about"):
-    about_parser = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='shows version and general information. ')
+    about_parser = subparsers.add_parser(name, help='shows version and general information. ', formatter_class=helper.LMHFormatter)
     add_parser_args(about_parser)
 
 def add_parser_args(parser):

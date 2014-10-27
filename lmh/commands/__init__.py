@@ -18,6 +18,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
+from lmh.lib import helper
 from lmh.commands.gen import add_parser_args
 
 def create_parser(submods = {}):
@@ -25,7 +26,7 @@ def create_parser(submods = {}):
     #
     # The main parser
     #
-    parser = argparse.ArgumentParser(prog="lmh", description='Local MathHub Tool.')
+    parser = argparse.ArgumentParser(prog="lmh", description='Local MathHub Tool.', formatter_class=helper.LMHFormatter)
 
     parser.add_argument("-q", "--quiet", action="store_true", default=False, help="Disables any output to stdout and stderr. ")
     parser.add_argument("--non-interactive", "-ni",  action="store_true", default=False, help="Disables interactivity (prompts from stdin) and causes lmh to abort in those cases. ")
@@ -62,7 +63,7 @@ def create_parser(submods = {}):
             'multiling',
             'mvmod',
             'push',
-            'remote', 
+            'remote',
             'rename',
             'selfupdate',
             'setup',

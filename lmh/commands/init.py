@@ -17,15 +17,11 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
+from lmh.lib import helper
 from lmh.lib.repos.create import create, find_types
 
-def create_parser():
-    parser = argparse.ArgumentParser(description='Local MathHub Init tool.')
-    add_parser_args(parser)
-    return parser
-
 def add_parser(subparsers, name="init"):
-    parser_status = subparsers.add_parser(name, help='initialize repository with MathHub repository structure', formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser_status = subparsers.add_parser(name, help='initialize repository with MathHub repository structure', formatter_class=helper.LMHFormatter)
     add_parser_args(parser_status)
 
 def add_parser_args(parser):
