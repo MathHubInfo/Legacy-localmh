@@ -34,7 +34,7 @@ def add_parser(subparsers, name="multiling"):
 def add_parser_args(parser):
     parser.add_argument('source', nargs=1, help="Name of the existing module. ")
     parser.add_argument('dest', nargs="+", help="Name(s) of the new language(s). ")
-    parser.add_argument('terms', default=None, help="Terms to pre-translate. Either a Path to a json file or a JSON-encoded string. ")
+    parser.add_argument('--terms', default=None, help="Terms to pre-translate. Either a Path to a json file or a JSON-encoded string. ")
 
     parser.epilog = """
     Example: lmh multiling mono.tex en de
