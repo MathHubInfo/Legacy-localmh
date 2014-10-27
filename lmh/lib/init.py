@@ -25,7 +25,11 @@ from lmh.lib.git import do
 
 # Force reload lmh.lib.config
 import lmh.lib.config
-reload(lmh.lib.config)
+try:
+    reload(lmh.lib.config)
+except:
+    from imp import reload
+    reload(lmh.lib.config)
 from lmh.lib.config import get_config, set_config
 
 def init():

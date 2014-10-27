@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='lmh',
-      version='1.7.4',
+      version='1.7.5',
       description='Local MathHub Utility (setup package)',
       author='The KWARC Group',
       author_email = "postmaster@kwarc.info",
