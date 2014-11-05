@@ -209,13 +209,43 @@ def transmod(modname, org_lang, dest_lang, pre_terms = None):
 
     # Replace all the technical terms
     def replacer2(match):
-        term = match.groups(1)
-        if term in pre_terms:
-            term = pre_terms[term]
-        return "\\ttl{"+term+"}"
+
+        # Split the terms and look check if we can translate them
+        terms = []
+        for t in match.groups(1)[0].split(" "):
+            if t in pre_terms:
+                terms.append((pre_terms[t], True))
+            else:
+                terms.append((t, False))
+
+        # Put the results back together
+        result = ""
+        is_open_ttl = False
+
+        # For each of the terms
+        for (r, s) in terms:
+            if not is_open_ttl:
+                # We do not have an openn ttl
+                if s:
+                    result+=r+" "
+                else:
+                    result+="\\ttl{"+r+" "
+                    is_open_ttl = True
+            else:
+                # We do have an open ttl
+                if s:
+                    result += result[:-1]+"} "+r+" "
+                    is_open_ttl = False
+                else:
+                    result += r+" "
+        # Close the last bracket if needed
+        result = result[:-1]
+        if is_open_ttl:
+            result +="}"
+
+        return result
 
     content = re.sub(r"\\ttl\{([^\}]*)\}", replacer2, content)
-
 
     try:
         write_file(newfn, content)
