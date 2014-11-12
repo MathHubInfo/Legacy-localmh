@@ -209,6 +209,10 @@ def transmod(modname, org_lang, dest_lang, pre_terms = None):
 
     # Replace all the technical terms
     def replacer2(match):
+        # prefer full matches
+        if match.groups(1)[0] in pre_terms:
+            return match.groups(1)[0][pre_terms]
+
 
         # Split the terms and look check if we can translate them
         terms = []
