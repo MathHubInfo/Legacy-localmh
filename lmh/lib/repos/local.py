@@ -270,15 +270,22 @@ def pull(verbose, *repos):
     ret = True
 
     for rep in repos:
-        std("git pull", rep, "", newline=False)
+        std("git pull", rep, newline=False)
 
         if verbose or needs_updating(rep):
             std()
-            ret = git_pull(rep) and ret
+            rgp = git_pull(rep)
+            ret = rgp and ret
             rep = match_repo(rep)
-            ret = install(rep) and ret
+            if rgp:
+                std("Updated repository", term_colors("green")+rep+term_colors("normal"))
+                ret = install(rep) and ret
+            else:
+                std("Did not update", term_colors("red")+rep+term_colors("normal"), "(merge conflicts or network issues)")
         else:
-            std("OK, nothing to pull. ")
+            rep = match_repo(rep)
+            std("")
+            std("Nothing to pull for", term_colors("green")+rep+term_colors("normal"))
 
     return ret
 
