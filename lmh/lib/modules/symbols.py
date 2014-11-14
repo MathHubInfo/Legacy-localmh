@@ -18,7 +18,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import re
 import sys
 import shutil
-from lmh.lib import f7
+from lmh.lib import f7, clean_list
 from lmh.lib.io import std, err, write_file, read_file
 from lmh.lib.modules import locate_modules, needsPreamble
 
@@ -149,7 +149,12 @@ def add_symbols(fname):
         except:
             name = ""
 
-        return not (req in syms) and not (name in symdefs)
+        # We have an empty argument, what's this?
+        if name == "":
+            # it is empty
+            return False
+
+        return not ((req in syms) or (name in symdefs))
 
     # OK filter them out
     required = filter(need_sym, defs)
@@ -194,7 +199,7 @@ def check_defs(d):
 
     ret = True
 
-    for mod in mods:
+    for mod in clean_list(mods, lambda x:x["file"]):
         ret = ret and check_symcomplete(mod["file"])
 
     return ret
@@ -206,7 +211,7 @@ def check_symbols(d):
 
     ret = True
 
-    for mod in mods:
+    for mod in clean_list(mods, lambda x:x["file"]):
         ret = ret and add_symbols(mod["file"])
 
     return ret
