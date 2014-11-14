@@ -41,6 +41,8 @@ class generate(Generator):
     def needs_file(self, module, gen_mode, text=None):
         if module["type"] != "file":
             return False
+        if module["mod"] == "localpaths" or module["mod"].startswith("localpaths."):
+            return False
         if gen_mode == "force":
             return True
         elif gen_mode == "update_log":
