@@ -95,10 +95,10 @@ def get_item_source(source_string, def_source, def_branch, name=""):
 
 # Is cpanm selfcontained? Check the config setting
 if get_config("setup::cpanm::selfcontained"):
-    cpanm_installdeps_args = [cpanm_executable, "-L", perl5root[0], "--installdeps", "--prompt", "."]
+    cpanm_installdeps_args = [cpanm_executable, "-L", perl5root[0], "--notest", "--installdeps", "--prompt", "."]
     cpanm_installself_args = [cpanm_executable, "-L", perl5root[0], "--notest", "--prompt", "."]
 else:
-    cpanm_installdeps_args = [cpanm_executable, "--installdeps", "--prompt", "."]
+    cpanm_installdeps_args = [cpanm_executable, "--notest", "--installdeps", "--prompt", "."]
     cpanm_installself_args = [cpanm_executable, "--notest", "--prompt", "."]
 
 

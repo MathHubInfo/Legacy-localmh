@@ -3,8 +3,15 @@ from multiprocessing.pool import Pool
 import atexit
 import traceback
 import re
+import time
+import os.path
 
-from lmh.lib.io import std, err, term_colors
+try:
+    import signal
+except:
+    pass
+
+from lmh.lib.io import std, err, term_colors, write_file
 
 class Generator():
     def __init__(self, quiet, **config):
@@ -77,7 +84,13 @@ def run(modules, simulate, update_mode, quiet, num_workers, GeneratorClass, text
     if simulate:
         return run_simulate(the_generator, jobs, quiet)
     else:
-        return run_generate(the_generator, num_workers, jobs, quiet)
+        try:
+            (r, d, f) = run_generate(the_generator, num_workers, jobs, quiet)
+        except Exception as e:
+            write_log_files(the_generator, d, f)
+            raise e
+        write_log_files(the_generator, d, f)
+        return (r, d, f)
 
 class WorkRunnerJob(object):
     def __init__(self, quiet, the_generator):
@@ -133,6 +146,14 @@ def run_generate(the_generator, num_workers, jobs, quiet):
         the_worker_pool = Pool(num_workers, worker_initer, [the_generator])
 
         res = the_worker_pool.map(WorkRunnerJob(quiet, the_generator), jobs)
+
+        try:
+            def kill_handler():
+                err(the_generator.prefix+":", "Received SIGTERM, aborting. ")
+                the_worker_pool.terminate()
+            signal.signal(kill_handler, signal.SIGTERM)
+        except:
+            pass
 
         the_worker_pool.close()
         the_worker_pool.join()
@@ -209,6 +230,30 @@ def run_generate_single(the_generator, worker_id, job, quiet):
 
     # Run a job
     return the_generator.run_job(j, worker_id)
+
+def write_log_files(the_generator, ds, fs):
+
+    logs = {}
+
+    for d in ds:
+        if d["path"] in logs:
+            logs[d["path"]]["dones"].append(os.path.relpath(the_generator.get_log_name(d), d["path"]))
+        else:
+            logs[d["path"]] = {"dones": [os.path.relpath(the_generator.get_log_name(d), d["path"])], "fails": []}
+    for f in fs:
+        if f["path"] in logs:
+            logs[f["path"]]["fails"].append(os.path.relpath(the_generator.get_log_name(f), f["path"]))
+        else:
+            logs[f["path"]] = {"dones": [], "fails": [os.path.relpath(the_generator.get_log_name(f), f["path"])]}
+
+    # The file name to add
+    fname = "."+the_generator.prefix.lower()+".log"
+
+    for l in logs:
+        write_file(os.path.join(l, fname), "lmh "+the_generator.prefix.lower()+" log file, generated "+time.strftime("%Y-%m-%d-%H-%M-%S")+"\nGenerated: \n"+"\n".join(logs[l]["dones"])+"\nDid not generate: \n\n"+"\n".join(logs[l]["fails"]))
+
+
+
 
 
 # Import all the generators.
