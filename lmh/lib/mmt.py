@@ -62,7 +62,7 @@ def runMMTScript(src, path, filename):
             return False
         else:
             return True
-    except OSError, o:
+    except OSError as o:
         err(o)
         return False
 

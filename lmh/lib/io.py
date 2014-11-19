@@ -21,7 +21,11 @@ import os.path
 import shutil
 import getpass
 
-import lolcat
+try:
+    import lolcat
+except:
+    pass
+
 import argparse
 import random
 import datetime
@@ -57,26 +61,30 @@ loloptions = {
     "force": False,
     "os": random.randint(0, 256)
 }
-loloptions = argparse.Namespace(**loloptions)
 
-def lol_write(text):
-    from lmh.lib.config import get_config
-    if get_config("self::enable_colors") and get_config("::eastereggs"):
-        a = lolcat.LolCat(mode = lolcat.detect_mode())
-        a.cat([text], loloptions)
-        loloptions.os += len(text.split("\n"))
-        lolcat.reset()
-        return
-    sys.__stdout__.write(text)
+try:
+    loloptions = argparse.Namespace(**loloptions)
 
-now = datetime.datetime.now()
-if now.month == 4 and now.day == 1:
-    sys.stdout = {
-            "write": lambda x:lol_write(x),
-            "flush": lambda:True
-    }
+    def lol_write(text):
+        from lmh.lib.config import get_config
+        if get_config("self::enable_colors") and get_config("::eastereggs"):
+            a = lolcat.LolCat(mode = lolcat.detect_mode())
+            a.cat([text], loloptions)
+            loloptions.os += len(text.split("\n"))
+            lolcat.reset()
+            return
+        sys.__stdout__.write(text)
 
-    sys.stdout = argparse.Namespace(**sys.stdout)
+    now = datetime.datetime.now()
+    if now.month == 4 and now.day == 1:
+        sys.stdout = {
+                "write": lambda x:lol_write(x),
+                "flush": lambda:True
+        }
+
+        sys.stdout = argparse.Namespace(**sys.stdout)
+except:
+    pass
 
 
 #

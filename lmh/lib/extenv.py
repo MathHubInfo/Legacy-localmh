@@ -26,6 +26,11 @@ from subprocess import Popen
 
 import shlex
 
+try:
+    import signal
+except:
+    pass
+
 
 stydir = install_dir+"/sty"
 
@@ -212,6 +217,14 @@ def run_shell(shell = None, args=""):
     except Exception as e:
         # we could not find that
         return 127
+
+    try:
+        # If possible propagnate the sigterm (for #184)
+        def handle_term(s, f):
+            runner.send_signal(signal.SIGTERM)
+        signal.signal(signal.SIGTERM, handle_term)
+    except:
+        pass
 
     def do_the_run():
         try:

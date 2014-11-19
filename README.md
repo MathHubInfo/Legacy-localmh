@@ -79,6 +79,34 @@ lmh core --install
 lmh setup --install
 ```
 
+#### Mac
+On Mac OS X you may use [Homebrew](http://brew.sh/) to install some of the required dependencies:
+
+```bash
+brew install python cpanminus libxml2 libxslt subversion git
+```
+
+If lmh setup fails for LibXML, you might have to:
+
+```bash
+brew link libxslt
+brew link libxml
+```
+
+and re-run:
+
+```
+lmh setup --reinstall
+```
+
+
+and then
+
+Furthermore, you will have to install MacTex from ()
+
+
+
+
 ## Help
 
 Basic Instructions on how to use lmh can be found at [http://mathhub.info/help/offline-authoring](http://mathhub.info/help/offline-authoring).

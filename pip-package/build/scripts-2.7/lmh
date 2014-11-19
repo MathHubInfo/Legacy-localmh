@@ -1,5 +1,3 @@
-#!/bin/bash
-
-# Run it directly
-python -c "import lmh_core as lmh;lmh.main()" "$@"
-exit
+#!/usr/local/opt/python/bin/python2.7
+import lmh_core as lmh
+lmh.main()

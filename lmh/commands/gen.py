@@ -17,20 +17,15 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
-from lmh.lib import setnice
+from lmh.lib import setnice, helper
 from lmh.lib.io import std, err
 
 import lmh.lib.modules.generators
 from lmh.lib.modules import resolve_pathspec
 from lmh.lib.config import get_config
 
-def create_parser():
-    parser = argparse.ArgumentParser(description='Local MathHub Generation tool.')
-    add_parser_args(parser)
-    return parser
-
 def add_parser(subparsers, name="gen"):
-    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='updates generated content')
+    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='updates generated content')
     add_parser_args(parser_status)
 
 def add_parser_args(parser, add_types=True):

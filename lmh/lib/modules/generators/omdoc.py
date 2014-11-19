@@ -89,8 +89,11 @@ class generate(Generator):
                 sys.stderr.write(e)
 
         except KeyboardInterrupt as k:
-            p.terminate()
-            p.wait()
+            try:
+                p.terminate()
+                p.wait()
+            except:
+                pass
             raise k
 
         return res and p.returncode == 0

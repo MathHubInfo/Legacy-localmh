@@ -41,6 +41,8 @@ class generate(Generator):
     def needs_file(self, module, gen_mode, text=None):
         if module["type"] != "file":
             return False
+        if module["mod"] == "localpaths" or module["mod"].startswith("localpaths."):
+            return False
         if gen_mode == "force":
             return True
         elif gen_mode == "update_log":
@@ -76,16 +78,18 @@ class generate(Generator):
 
         tempfile = mod+".tmp"
 
-        try:
-            if pre != None:
 
+        try:
+            text = "\\nonstopmode"
+
+            if pre != None:
                 if add_bd:
-                    text = read_file(pre)
+                    text += read_file(pre)
                     text += "\\begin{document}"
                     text += read_file(mod+".tex")
                     text += read_file(post)
                 else:
-                    text = read_file(pre)
+                    text += read_file(pre)
                     text += read_file(mod+".tex")
                     text += read_file(post)
 
@@ -97,10 +101,16 @@ class generate(Generator):
                 else:
                     p = Popen([pdflatex_executable, "-jobname", mod, tempfile, "-halt-on-error"], cwd=cwd, stdin=PIPE, stdout=PIPE, stderr=PIPE, env = _env)
             else:
+
+                text += read_file(file)
+
+                # Write into .tmp
+                write_file(tempfile, text)
+
                 if pdf_pipe_log:
-                    p = Popen([pdflatex_executable, file, "-interaction", "scrollmode"], cwd=cwd, stdin=sys.stdin, stdout=sys.stdout, env=_env)
+                    p = Popen([pdflatex_executable, tempfile, "-interaction", "scrollmode"], cwd=cwd, stdin=sys.stdin, stdout=sys.stdout, env=_env)
                 else:
-                    p = Popen([pdflatex_executable, file, "-halt-on-error"], cwd=cwd, stdin=PIPE, stdout=PIPE, env=_env)
+                    p = Popen([pdflatex_executable, tempfile, "-halt-on-error"], cwd=cwd, stdin=PIPE, stdout=PIPE, env=_env)
 
             timeout = get_config("gen::pdf::timeout")
 

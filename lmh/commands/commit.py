@@ -19,14 +19,10 @@ import argparse
 
 from lmh.lib.repos.local import match_repo_args, commit
 from lmh.lib.help import repo_wildcard_local
-
-def create_parser():
-    parser = argparse.ArgumentParser(description='Local MathHub Commit tool.')
-    add_parser_args(parser)
-    return parser
+from lmh.lib import helper
 
 def add_parser(subparsers, name="commit"):
-    parser_status = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='commits all changed files')
+    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='commits all changed files')
     add_parser_args(parser_status)
 
 def add_parser_args(parser):

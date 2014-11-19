@@ -19,14 +19,10 @@ import argparse
 
 from lmh.lib.repos.local import match_repo_args, clean
 from lmh.lib.help import repo_wildcard_local
-
-def create_parser():
-    parser = argparse.ArgumentParser(description='Local MathHub Clean tool.')
-    add_parser_args(parser)
-    return parser
+from lmh.lib import helper
 
 def add_parser(subparsers, name="clean"):
-    parser_clean = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='clean repositories of generated files')
+    parser_clean = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='clean repositories of generated files')
     add_parser_args(parser_clean)
 
 def add_parser_args(parser):

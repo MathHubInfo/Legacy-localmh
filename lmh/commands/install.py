@@ -17,29 +17,25 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 
+from lmh.lib import helper
 from lmh.lib.io import std, err, read_raw
 from lmh.lib.config import get_config
 from lmh.lib.repos.remote import install, ls_remote
 
-def create_parser():
-    parser = argparse.ArgumentParser(description='Installs MathHub repositories. ')
-    add_parser_args(parser)
-    return parser
-
 def add_parser(subparsers, name="install"):
-    parser_status = subparsers.add_parser(name, help='fetches a MathHub repository and its dependencies')
+    parser_status = subparsers.add_parser(name, help='fetches a MathHub repository and its dependencies', formatter_class=helper.LMHFormatter)
     add_parser_args(parser_status)
 
 def add_parser_args(parser):
     parser.add_argument('spec', nargs='*', help="A list of repository specs to install. ")
     parser.add_argument('-y', '--no-confirm-install', action="store_true", default=False, help="Do not prompt before installing. ")
     parser.epilog = """
-    Use install::sources to configure the sources of repositories.
+Use install::sources to configure the sources of repositories.
 
-    Use install::nomanifest to configure what happens to repositories without a manifest.
+Use install::nomanifest to configure what happens to repositories without a
+manifest. 
 
-    Use install::noglobs to disable globbing for lmh install.
-    """
+Use install::noglobs to disable globbing for lmh install. """
 
 def do(args):
     if len(args.spec) == 0:

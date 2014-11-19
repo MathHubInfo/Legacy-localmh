@@ -18,15 +18,11 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import argparse
 
+from lmh.lib import helper
 from lmh.lib.modules.rename import rename
 
-def create_parser():
-    parser = argparse.ArgumentParser(description='Renames symbol names in glossary components. ')
-    add_parser_args(parser)
-    return parser
-
 def add_parser(subparsers, name="rename"):
-    parser_status = subparsers.add_parser(name, help='Renames symbol names in glossary components. ')
+    parser_status = subparsers.add_parser(name, help='Renames symbol names in glossary components. ', formatter_class=helper.LMHFormatter)
     add_parser_args(parser_status)
 
 def add_parser_args(parser):
@@ -36,11 +32,10 @@ def add_parser_args(parser):
 
 
     parser.epilog = """
-      Examples:
+Examples:
 
-      lmh rename foo bar
-      lmh rename foo bar foo2 bar2
-      lmh rename foo bar-baz
-    """
+lmh rename foo bar
+lmh rename foo bar foo2 bar2
+lmh rename foo bar-baz """
 def do(args):
     return rename(args.directory, args.renamings, simulate=args.simulate)

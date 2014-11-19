@@ -18,7 +18,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import re
 import sys
 import shutil
-from lmh.lib import f7
+from lmh.lib import f7, clean_list
 from lmh.lib.io import std, err, write_file, read_file
 from lmh.lib.modules import locate_modules, needsPreamble
 
@@ -82,14 +82,19 @@ def add_symis(text, symis):
     pattern = r"\\begin{modsig}((.|\n)*)\\end{modsig}"
     return re.sub(pattern, r"\\begin{modsig}\1"+"".join(addtext)+"\\end{modsig}", text)
 
-def warn_symbols(fname, syms, symdefs):
+def warn_symbols(fname, syms, symdefs, warns):
+
     # fwanr about double things
     for sym in ["-".join(s[2]) for s in syms]:
         if sym in symdefs:
-            err(fname+",", "Symbol", sym+": Found both symdef and symi. ")
+            # Only make a warning if wehaven't done so already
+            warn = (sym, fname)
+            if not (warn in warns):
+                warns.append(warn)
+                err(fname+",", "Symbol", sym+": Found both symdef and symi. ")
     return True
 
-def find_sds(fname):
+def find_sds(fname, warns=[]):
         # skip non-language bindings
     languageFilePattern = r"\.(\w+)\.tex$"
 
@@ -103,7 +108,7 @@ def find_sds(fname):
         symdefs = find_all_symdefs(content)
 
         # for non-language-bndings
-        return [warn_symbols(fname, syms, symdefs)]
+        return [warn_symbols(fname, syms, symdefs, warns)]
 
     # Try and read the other file
     try:
@@ -120,7 +125,7 @@ def find_sds(fname):
     symdefs = find_all_symdefs(modcontent)
 
     # Warn about symbols
-    warn_symbols(fmodname, syms, symdefs)
+    warn_symbols(fmodname, syms, symdefs, warns)
 
     if defs == None:
         defs = []
@@ -130,10 +135,10 @@ def find_sds(fname):
     return (fmodname, defs, syms, symdefs, modcontent)
 
 
-def add_symbols(fname):
+def add_symbols(fname, warns=[]):
     # Add missing symbols form language bindings to module
 
-    q = find_sds(fname)
+    q = find_sds(fname, warns)
     if len(q) == 1:
     # we have already done something
         return q[0]
@@ -149,7 +154,12 @@ def add_symbols(fname):
         except:
             name = ""
 
-        return not (req in syms) and not (name in symdefs)
+        # We have an empty argument, what's this?
+        if name == "":
+            # it is empty
+            return False
+
+        return not ((req in syms) or (name in symdefs))
 
     # OK filter them out
     required = filter(need_sym, defs)
@@ -162,10 +172,10 @@ def add_symbols(fname):
 
     return True
 
-def check_symcomplete(fname):
+def check_symcomplete(fname, warns=[]):
     # Add missing symbols form language bindings to module
 
-    q = find_sds(fname)
+    q = find_sds(fname, warns)
     if len(q) == 1:
         # we have already done something
         return q[0]
@@ -188,25 +198,32 @@ def check_symcomplete(fname):
     return True
 
 def check_defs(d):
+    # Cache for all the warnings
+    warns = []
+
     # Find all the modules that we have to worry about
     mods = filter(lambda x:x["type"] == "file", locate_modules(d))
     mods = filter(lambda x:needsPreamble(x["file"]), mods)
 
     ret = True
 
-    for mod in mods:
-        ret = ret and check_symcomplete(mod["file"])
+    for mod in clean_list(mods, lambda x:x["file"]):
+        ret = ret and check_symcomplete(mod["file"], warns)
 
     return ret
 
 def check_symbols(d):
+
+    # Cache for all the warnings
+    warns = []
+
     # Find all the modules that we have to worry about
     mods = filter(lambda x:x["type"] == "file", locate_modules(d))
     mods = filter(lambda x:needsPreamble(x["file"]), mods)
 
     ret = True
 
-    for mod in mods:
-        ret = ret and add_symbols(mod["file"])
+    for mod in clean_list(mods, lambda x:x["file"]):
+        ret = ret and add_symbols(mod["file"], warns)
 
     return ret

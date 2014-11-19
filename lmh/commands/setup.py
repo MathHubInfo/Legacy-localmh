@@ -16,19 +16,19 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import argparse
+
 from lmh.lib.io import std, err
 from lmh.lib.extenv import check_deps
 from lmh.lib.config import get_config
+
 import lmh.lib.packs
 import lmh.lib.init
 
-def create_parser():
-    parser = argparse.ArgumentParser(description='Local MathHub Setup tool.')
-    add_parser_args(parser)
-    return parser
+from lmh.lib import helper
+
 
 def add_parser(subparsers, name="setup"):
-    parser_status = subparsers.add_parser('setup', formatter_class=argparse.RawTextHelpFormatter, help='sets up local math hub and fetches external requirements')
+    parser_status = subparsers.add_parser('setup', formatter_class=helper.LMHFormatter, help='sets up local math hub and fetches external requirements')
     add_parser_args(parser_status)
 
 def add_parser_args(parser):
