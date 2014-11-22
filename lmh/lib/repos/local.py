@@ -30,7 +30,7 @@ from lmh.lib.repos.remote import install
 # Git imports
 from lmh.lib.git import push as git_push
 from lmh.lib.git import pull as git_pull
-from lmh.lib.git import status as git_status
+from lmh.lib.git import status_pipe as git_status
 from lmh.lib.git import commit as git_commit
 from lmh.lib.git import do as git_do
 from lmh.lib.git import do_data as git_do_data
@@ -293,7 +293,7 @@ def is_clean(repo):
     """Checks if a working directory is clean. """
     return git_do_data(repo, "status", "--porcelain")[0] == ""
 
-def status(repos, show_unchanged, *args):
+def status(repos, show_unchanged, remote, *args):
     """Does git status on all installed repositories """
 
     ret = True
@@ -306,12 +306,23 @@ def status(repos, show_unchanged, *args):
 
         std("git status", rep)
 
+        if remote:
+            r_status = get_remote_status(rep)
+            if r_status == "failed":
+                std("Remote status:", term_colors("red")+"Unknown (network issues)", term_colors("normal"))
+            elif r_status == "ok":
+                std("Remote status:", term_colors("green")+"Up-to-date", term_colors("normal"))
+            elif r_status == "pull":
+                std("Remote status:", term_colors("yellow")+"New commits on remote, please pull. ", term_colors("normal"))
+            elif r_status == "push":
+                std("Remote status:", term_colors("yellow")+"New local commits, please push. ", term_colors("normal"))
+            elif r_status == "divergence":
+                std("Remote status:", term_colors("red")+"Remote and local versions have diverged. ", term_colors("normal"))
+
         val = git_status(rep, *args)
         if not val:
             err("Unable to run git status on", rep)
             ret = False
-        else:
-            std(val)
 
     return ret
 
