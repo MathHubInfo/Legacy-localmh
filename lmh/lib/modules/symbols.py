@@ -35,11 +35,17 @@ def pat_to_match(pat , o = 0):
         o += 2
 
     if pat[1] == "i":
-        return [pat[0], 1, [pat[5+o]]]
+        res = [pat[0], 1, [pat[5+o]]]
     elif pat[1] == "ii":
-        return [pat[0], 2, [pat[5+o], pat[7+o]]]
+        res = [pat[0], 2, [pat[5+o], pat[7+o]]]
     elif pat[1] == "iii":
-        return [pat[0], 3, [pat[5+o], pat[7+o], pat[9+o]]]
+        res = [pat[0], 3, [pat[5+o], pat[7+o], pat[9+o]]]
+
+    # Normalise for issue #166
+    res[2] = "-".join(res[2]).split("-")
+    res[1] = len(res[2])
+
+    return res
 
 
 
@@ -154,6 +160,11 @@ def add_symbols(fname, warns=[]):
         except:
             name = ""
 
+        # Normalise for issue #166
+        req[2] = "-".join(req[2]).split("-")
+        req[1] = len(req[2])
+
+
         # We have an empty argument, what's this?
         if name == "":
             # it is empty
@@ -167,6 +178,7 @@ def add_symbols(fname, warns=[]):
     # Add them if we need to
     if len(required) > 0:
         std("Adding", len(required), "symbol definition(s) from", fname)
+        std(required)
         towrite = add_symis(modcontent, required)
         write_file(fmodname, towrite)
 
