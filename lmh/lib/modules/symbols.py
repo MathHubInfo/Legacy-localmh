@@ -80,7 +80,7 @@ def find_all_symdefs(text):
     names_1 = [m[3] if m[3] != "" else m[5] for m in matches]
 
     # and without seperate names
-    matches2 = re.findall(pattern3, text)
+    matches2 = re.findall(pattern3, re.sub(pattern2, "", text))
     names_2 = [m[2] for m in matches2]
 
     # and combine
