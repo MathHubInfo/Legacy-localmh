@@ -69,12 +69,22 @@ def find_all_symdefs(text):
     # FInd all symdefs
     pattern = r"\\begin{modsig}((.|\n)*)\\end{modsig}"
     pattern2 = r"\\symdef(\[([^\]]*,(\s)*)?name=([^],]+)?(,[^\]]*)?\])?\{([^{}]+)?\}"
+    pattern3 = r"\\symdef(\[([^\]]+)\])?\{([^{}]+)?\}"
     matches = re.findall(pattern, text)
     if len(matches) == 0:
         return []
     text = matches[0][0]
+
+    # Find symdefs with seperate names
     matches = re.findall(pattern2, text)
-    return [m[3] if m[3] != "" else m[5] for m in matches]
+    names_1 = [m[3] if m[3] != "" else m[5] for m in matches]
+
+    # and without seperate names
+    matches2 = re.findall(pattern3, text)
+    names_2 = [m[2] for m in matches2]
+
+    # and combine
+    return f7(names_1+names_2)
 
 
 
@@ -164,7 +174,6 @@ def add_symbols(fname, warns=[]):
         req[2] = "-".join(req[2]).split("-")
         req[1] = len(req[2])
 
-
         # We have an empty argument, what's this?
         if name == "":
             # it is empty
@@ -178,7 +187,6 @@ def add_symbols(fname, warns=[]):
     # Add them if we need to
     if len(required) > 0:
         std("Adding", len(required), "symbol definition(s) from", fname)
-        std(required)
         towrite = add_symis(modcontent, required)
         write_file(fmodname, towrite)
 
