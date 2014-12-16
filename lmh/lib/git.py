@@ -115,6 +115,17 @@ def exists(dest):
     proc.wait()
     return (proc.returncode == 0)
 
+def is_repo(dest):
+    """Checks if a git repository exists (locally) """
+
+    args = [git_executable, "rev-parse", dest]
+    proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    proc.wait()
+    if (proc.returncode == 0):
+        return os.path.abspath(root_dir(dest)) == os.path.abspath(dest)
+    else:
+        return False
+
 def root_dir(dir = "."):
     """Finds the git root dir of the given path. """
 

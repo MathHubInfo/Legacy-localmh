@@ -29,11 +29,12 @@ def add_parser(subparsers, name="install"):
 def add_parser_args(parser):
     parser.add_argument('spec', nargs='*', help="A list of repository specs to install. ")
     parser.add_argument('-y', '--no-confirm-install', action="store_true", default=False, help="Do not prompt before installing. ")
+    parser.add_argument('-m', '--no-manifest', action="store_true", default=False, help="Do not parse manifest while installing. Equivalent to setting install::nomanifest to True. ")
     parser.epilog = """
 Use install::sources to configure the sources of repositories.
 
 Use install::nomanifest to configure what happens to repositories without a
-manifest. 
+manifest.
 
 Use install::noglobs to disable globbing for lmh install. """
 
@@ -43,7 +44,7 @@ def do(args):
         return True
 
     if not get_config("install::noglobs"):
-        args.spec = ls_remote(*args.spec)
+        args.spec = ls_remote(args.no_manifest, *args.spec)
         if len(args.spec) == 0:
             err("Nothing to install...")
             return True
@@ -57,4 +58,4 @@ def do(args):
                 return False
 
 
-    return install(*args.spec)
+    return install(args.no_manifest, *args.spec)

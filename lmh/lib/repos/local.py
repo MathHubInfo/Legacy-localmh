@@ -35,7 +35,7 @@ from lmh.lib.git import commit as git_commit
 from lmh.lib.git import do as git_do
 from lmh.lib.git import do_data as git_do_data
 from lmh.lib.git import do_quiet, get_remote_status
-from lmh.lib.git import is_tracked
+from lmh.lib.git import is_tracked, is_repo
 
 #
 # Repo Matching
@@ -49,12 +49,9 @@ def is_repo_dir(path, existence = True):
         if not (os.path.relpath(data_dir, os.path.abspath(path)) == "../.."):
             return False
 
-        # Check for the manuifest, unless it is disabled by some setting.
-        if not get_config("install::nomanifest") and existence:
-            return os.path.isfile(os.path.join(path, "META-INF", "MANIFEST.MF"))
-
-        return True
-    except:
+        return is_repo(path)
+    except Exception as e:
+        err(e)
         return False
 
 def is_in_data(path):
