@@ -59,7 +59,8 @@ def add_parser_args(parser):
 
   Some packages are installed via git or svn. For those the optional argument
   SOURCE specefies which source repository should be used. These can be given in
-  the format URL[@BRANCH_OR_REVISION]
+  the format URL[@REFSPEC]. A REFSPEC is either a version number (commit SHA for
+  git), a tag name or a branch name.
   An example for this is:
 
   lmh setup --install LaTeXML:@dev

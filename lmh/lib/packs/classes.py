@@ -136,6 +136,8 @@ class GitPack(Pack):
             # do the checkout
             if branch != "":
                 return git_do(os.path.join(ext_dir, pack_dir), "checkout", branch)
+            else:
+                return True
         except:
             err("git clone failed to clone", source, ". Check your network connection. ")
             return False
@@ -145,7 +147,7 @@ class GitPack(Pack):
             return git_pull(pack_dir)
         except:
             err("git pull failed to update. Please make sure that you have a network connection. ")
-            err("If you were using a specific version (with the PACKAGE:SOURCE@REFSPEC syntax), try using --reinstall. ")
+            err("If you were using a specific version (with the PACKAGE:URL@REFSEPEC syntax), try using --reinstall. ")
             return False
     def post_change_hook(self, pack_dir):
         if self.cpanm:
