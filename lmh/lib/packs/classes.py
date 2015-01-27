@@ -26,6 +26,7 @@ from lmh.lib.extenv import perl5env, perl5root, cpanm_executable, perl_executabl
 from lmh.lib.config import get_config, set_config
 from lmh.lib.git import pull as git_pull
 from lmh.lib.git import clone as git_clone
+from lmh.lib.git import do as git_do
 from lmh.lib.svn import pull as svn_pull
 from lmh.lib.svn import clone as svn_clone
 
@@ -128,10 +129,13 @@ class GitPack(Pack):
         (source, branch) = get_item_source(sstring, self.dsource, self.dbranch, self.name)
 
         try:
-            if branch == "":
-                return git_clone(ext_dir, source, pack_dir)
-            else:
-                return git_clone(ext_dir, source, "-b", branch, pack_dir)
+            # git clone first
+            if not git_clone(ext_dir, source, pack_dir):
+                return False
+
+            # do the checkout
+            if branch != "":
+                return git_do(os.path.join(ext_dir, pack_dir), "checkout", branch)
         except:
             err("git clone failed to clone", source, ". Check your network connection. ")
             return False
@@ -140,7 +144,8 @@ class GitPack(Pack):
         try:
             return git_pull(pack_dir)
         except:
-            err("git pull failed to update. Check your network connection. ")
+            err("git pull failed to update. Please make sure that you have a network connection. ")
+            err("If you were using a specific version (with the PACKAGE:SOURCE@REFSPEC syntax), try using --reinstall. ")
             return False
     def post_change_hook(self, pack_dir):
         if self.cpanm:
