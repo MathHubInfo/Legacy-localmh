@@ -72,6 +72,7 @@ def create_parser(submods = {}):
             'symbols',
             'symcomplete',
             'translate',
+            'up', 
             'update',
             'update-build'
     ]
@@ -87,7 +88,6 @@ def create_parser(submods = {}):
 
     aliases = {
             "commit": "ci",
-            "update": "up",
             "status": "st"
     }
 

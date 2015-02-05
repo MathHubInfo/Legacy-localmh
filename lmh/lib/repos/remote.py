@@ -65,15 +65,19 @@ def find_source(name, quiet = False):
         err("Please check install::sources and check your network connection. ")
     return False
 
-def is_valid(name):
+def is_valid(name, no_manifest = False):
     """Checks if a remote repository is a valid repository. """
+
+    # If we have install::nomanifest, then
+    if no_manifest or get_config("install::nomanifest"):
+        return True
 
     raw = Template(get_config("gl::raw_url")).substitute(repo=name)+"META-INF/MANIFEST.MF"
 
     try:
         urlopen(raw)
         return True
-    except:
+    except Exception as e:
         return False
 
 
@@ -96,10 +100,13 @@ def force_install(rep):
     return clone(data_dir, repoURL, rep)
 
 
-def install(*reps):
+def install(no_manifest, *reps):
     """Install a repositories and its dependencies"""
 
     reps = [r for r in reps]
+
+    if no_manifest == False:
+        no_manifest = get_config("install::nomanifest")
 
     for rep in reps:
         if not is_installed(rep):
@@ -108,19 +115,23 @@ def install(*reps):
                 return False
 
         try:
-            std("Resolving dependencies for", rep)
-            for dep in find_dependencies(rep):
-                if not (dep in reps) and not is_installed(dep):
-                    std("Found unsatisfied dependency:", dep)
-                    reps.append(dep)
+            if not no_manifest:
+                std("Resolving dependencies for", rep)
+                for dep in find_dependencies(rep):
+                    if not (dep in reps) and not is_installed(dep):
+                        std("Found unsatisfied dependency:", dep)
+                        reps.append(dep)
         except:
-            if not get_config("install::nomanifest"):
+            if no_manifest:
                 err("Error parsing dependencies for", rep)
                 err("Set install::nomanifest to True to disable this. ")
                 return False
 
-def ls_remote(*spec):
+def ls_remote(no_manifest, *spec):
     """Lists remote repositories matching some specification. """
+
+    if no_manifest == False:
+        no_manifest = get_config("install::nomanifest")
 
     if BeautifulSoup == False:
         err("BeautifulSoup not found. ")
@@ -178,4 +189,4 @@ def ls_remote(*spec):
         matched_projects.update(matches)
 
 
-    return filter(is_valid, sorted(matched_projects))
+    return filter(lambda x: is_valid(x, no_manifest), sorted(matched_projects))

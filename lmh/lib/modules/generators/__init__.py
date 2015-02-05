@@ -236,10 +236,13 @@ def write_log_files(the_generator, ds, fs):
     logs = {}
 
     for d in ds:
-        if d["path"] in logs:
-            logs[d["path"]]["dones"].append(os.path.relpath(the_generator.get_log_name(d), d["path"]))
-        else:
-            logs[d["path"]] = {"dones": [os.path.relpath(the_generator.get_log_name(d), d["path"])], "fails": []}
+        try:
+            if d["path"] in logs:
+                logs[d["path"]]["dones"].append(os.path.relpath(the_generator.get_log_name(d), d["path"]))
+            else:
+                logs[d["path"]] = {"dones": [os.path.relpath(the_generator.get_log_name(d), d["path"])], "fails": []}
+        except:
+            pass
     for f in fs:
         if f["path"] in logs:
             logs[f["path"]]["fails"].append(os.path.relpath(the_generator.get_log_name(f), f["path"]))

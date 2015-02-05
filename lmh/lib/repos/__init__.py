@@ -19,8 +19,8 @@ import re
 import argparse
 import os.path
 
-from lmh.lib.io import err, read_file_lines
-from lmh.lib.git import root_dir
+from lmh.lib.io import std, err, read_file_lines
+from lmh.lib.git import root_dir, is_repo
 from lmh.lib.env import install_dir, data_dir
 from lmh.lib.config import get_config
 
@@ -64,21 +64,10 @@ def is_valid_repo(d):
     """Validates if dir contains a valid local repository. """
     d = os.path.abspath(d)
 
-    if not os.path.isdir(d):
-        return False
     try:
         if not (os.path.relpath(data_dir, os.path.abspath(d)) == "../.."):
             return False
-
-        # Check for the manuifest, unless it is disabled by some setting.
-        if not get_config("install::nomanifest"):
-            return os.path.isfile(os.path.join(d, "META-INF", "MANIFEST.MF"))
-
-        # Check if we are git-controlled and the root dir is equal to the current dir
-        d = os.path.realpath(d)
-        if root_dir(d) != d:
-            return False
-
-        return True
+        return is_repo(d)
     except Exception as e:
+        err(e)
         return False

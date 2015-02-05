@@ -216,6 +216,12 @@
 		"default": true
 	},
 
+	"gl::status_remote_enabled": {
+		"type": "bool",
+		"help": "If set to true, enables lmh status remote checking by default. ",
+		"default": false
+	},
+
 	"::eastereggs": {
 		"type": "bool",
 		"help": "Enable some eastereggs. ",

@@ -95,6 +95,17 @@ def status(dest, *arg):
         return proc.communicate()[0]
     else:
         return False
+def status_pipe(dest, *arg):
+    """Runs git status and pipes output. """
+
+    args = [git_executable, "status"];
+    args.extend(arg)
+    proc = subprocess.Popen(args, stdout=sys.stdout, stderr=sys.stderr, cwd=dest)
+    proc.wait()
+    if(proc.returncode == 0):
+        return True
+    else:
+        return False
 
 def exists(dest):
     """Checks if a git repository exists. """
@@ -103,6 +114,17 @@ def exists(dest):
     proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     proc.wait()
     return (proc.returncode == 0)
+
+def is_repo(dest):
+    """Checks if a git repository exists (locally) """
+
+    args = [git_executable, "rev-parse", dest]
+    proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    proc.wait()
+    if (proc.returncode == 0):
+        return os.path.abspath(root_dir(dest)) == os.path.abspath(dest)
+    else:
+        return False
 
 def root_dir(dir = "."):
     """Finds the git root dir of the given path. """
@@ -141,7 +163,7 @@ def get_remote_status(where):
     local = do_data(where, "rev-parse", my_branch)
     remote = do_data(where, "rev-parse", my_upstream)
     base = do_data(where, "merge-base", my_branch, my_upstream)
-    
+
     if local == remote:
         return "ok"
     elif local == base:

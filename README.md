@@ -6,17 +6,34 @@ The infrastructure consists of set of resources (Makefiles, LaTeX Packages, LaTe
 
 ## Installation
 
-There are several ways to install lmh. The easiest way is:
+There are several ways to install lmh. 
+
+### from pip
+
+The easiest way is:
 
 ```bash
-pip install lmh
+pip install lmh #may need sudo
+lmh core --install # will set things up. DO NOT USE SUDO FOR THIS. 
+```
+
+### manually
+
+In case installation from pip fails (for whatever reason), you can manually install: 
+```bash
+git clone https://github.com/KWARC/localmh # clone this repository
+cd localmh/pip-package # This is where the package is
+pip install . # May need sudo
+# Delete the clone
+cd ../../
+rm -rf localmh
+# will set things up. DO NOT USE SUDO FOR THIS. 
 lmh core --install
 ```
 
-Note that the pip baased installation might require python development tools to be installed
+### Continuing the installation
+Note that the pip based installation might require python development tools to be installed
 (package python-dev on Ubuntu / Debian).
-
-This will clone lmh from https://github.com/KWARC/localmh. To manually install lmh, simply installed the dependencies and then clone lmh to a directory of your choice. Then add the subdirectory bin to your $PATH.
 
 Once lmh is installed, you will have to run
 

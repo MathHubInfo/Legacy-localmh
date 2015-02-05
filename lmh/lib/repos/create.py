@@ -137,7 +137,7 @@ def create_remote(group, name):
 
     # Create the project on the given id
     try:
-        p = gl.createproject(name, gid, description="lmh auto-created project "+group+"/"+name, public=1)
+        p = gl.createproject(name, namespace_id=gid, description="lmh auto-created project "+group+"/"+name, public=True)
         if not p:
             raise Exception
 
@@ -148,7 +148,8 @@ def create_remote(group, name):
         else:
             # Fallback to ssh url
             return p["ssh_url_to_repo"]
-    except:
+    except Exception as e:
+        err(e)
         err("Project creation failed. ")
         return False
 
@@ -158,11 +159,12 @@ def create(reponame, type="none", remote = True):
     """Creates a new repository in the given directory"""
 
     # Match the repo name
-    absrepo = os.path.abspath(reponame)
+    absrepo = reponame
 
     if not is_repo_dir(absrepo, False):
         absrepo = os.path.join(data_dir, reponame)
-        if not is_repo_dir(absrepo, False):
+        std("abspath")
+        if not (os.path.relpath(data_dir, absrepo) == "../.."):
             err("Can not resolve repository to create. ")
             return False
 

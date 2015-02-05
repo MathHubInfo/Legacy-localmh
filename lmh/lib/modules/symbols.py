@@ -35,11 +35,17 @@ def pat_to_match(pat , o = 0):
         o += 2
 
     if pat[1] == "i":
-        return [pat[0], 1, [pat[5+o]]]
+        res = [pat[0], 1, [pat[5+o]]]
     elif pat[1] == "ii":
-        return [pat[0], 2, [pat[5+o], pat[7+o]]]
+        res = [pat[0], 2, [pat[5+o], pat[7+o]]]
     elif pat[1] == "iii":
-        return [pat[0], 3, [pat[5+o], pat[7+o], pat[9+o]]]
+        res = [pat[0], 3, [pat[5+o], pat[7+o], pat[9+o]]]
+
+    # Normalise for issue #166
+    res[2] = "-".join(res[2]).split("-")
+    res[1] = len(res[2])
+
+    return res
 
 
 
@@ -63,12 +69,22 @@ def find_all_symdefs(text):
     # FInd all symdefs
     pattern = r"\\begin{modsig}((.|\n)*)\\end{modsig}"
     pattern2 = r"\\symdef(\[([^\]]*,(\s)*)?name=([^],]+)?(,[^\]]*)?\])?\{([^{}]+)?\}"
+    pattern3 = r"\\symdef(\[([^\]]+)\])?\{([^{}]+)?\}"
     matches = re.findall(pattern, text)
     if len(matches) == 0:
         return []
     text = matches[0][0]
+
+    # Find symdefs with seperate names
     matches = re.findall(pattern2, text)
-    return [m[3] if m[3] != "" else m[5] for m in matches]
+    names_1 = [m[3] if m[3] != "" else m[5] for m in matches]
+
+    # and without seperate names
+    matches2 = re.findall(pattern3, re.sub(pattern2, "", text))
+    names_2 = [m[2] for m in matches2]
+
+    # and combine
+    return f7(names_1+names_2)
 
 
 
@@ -153,6 +169,10 @@ def add_symbols(fname, warns=[]):
             name = "-".join(d[2])
         except:
             name = ""
+
+        # Normalise for issue #166
+        req[2] = "-".join(req[2]).split("-")
+        req[1] = len(req[2])
 
         # We have an empty argument, what's this?
         if name == "":
