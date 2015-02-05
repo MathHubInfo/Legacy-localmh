@@ -23,7 +23,7 @@ In case installation from pip fails (for whatever reason), you can manually inst
 ```bash
 git clone https://github.com/KWARC/localmh # clone this repository
 cd localmh/pip-package # This is where the package is
-pip install . # May need sudo
+python setup.py install# May need sudo
 # Delete the clone
 cd ../../
 rm -rf localmh
