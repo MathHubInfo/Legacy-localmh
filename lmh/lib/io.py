@@ -48,7 +48,7 @@ def term_colors(c):
 
     from lmh.lib.config import get_config
 
-    if get_config("self::enable_colors"):
+    if get_config("self::colors"):
         return colors[c]
     else:
         return ""
@@ -67,7 +67,7 @@ try:
 
     def lol_write(text):
         from lmh.lib.config import get_config
-        if get_config("self::enable_colors") and get_config("::eastereggs"):
+        if get_config("self::colors") and get_config("::eastereggs"):
             a = lolcat.LolCat(mode = lolcat.detect_mode())
             a.cat([text], loloptions)
             loloptions.os += len(text.split("\n"))
