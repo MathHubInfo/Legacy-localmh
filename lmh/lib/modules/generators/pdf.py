@@ -62,6 +62,7 @@ class generate(Generator):
         # store parameters for all.tex job generation
         _env = os.environ.copy()
         _env["TEXINPUTS"] = TEXINPUTS
+        _env["PATH"] = stexstydir+":"+_env["PATH"]
 
         return (module["file_pre"], module["file_post"], module["mod"], _env, module["file"], module["path"], module["pdf_path"], module["pdf_log"], self.add_bd, self.pdf_pipe_log)
 
@@ -142,6 +143,7 @@ class generate(Generator):
     def dump_init(self):
         std("#PDF Generation")
         std("export TEXINPUTS="+TEXINPUTS)
+        std("export PATH="+stexstydir+":$PATH")
 
         return True
     def dump_job(self, job):
