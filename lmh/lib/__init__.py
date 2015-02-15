@@ -53,6 +53,7 @@ def mkdir_p(path):
         if exc.errno == errno.EEXIST and os.path.isdir(path):
             pass
         else:
+            std(exc)
             raise
 
 def popen_wait_timeout(process, time):
@@ -70,7 +71,7 @@ def popen_wait_timeout(process, time):
             # we ran out of time, kill the child
             process.kill()
             return False
-            
+
 def clean_list(lst, key=lambda x:x):
     """Removes doubles from a list using a key"""
 

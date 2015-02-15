@@ -25,7 +25,7 @@ from lmh.lib.env import install_dir
 from lmh.lib.io import read_file, write_file, find_files, find_all_files, std, err, read_raw
 from lmh.lib.env import data_dir
 from lmh.lib.config import get_config
-from lmh.lib.repos.local import is_repo_dir
+from lmh.lib.repos.local import match_repo
 from lmh.lib.repos.remote import find_source
 from lmh.lib.repos import is_installed
 
@@ -158,18 +158,20 @@ def create_remote(group, name):
 def create(reponame, type="none", remote = True):
     """Creates a new repository in the given directory"""
 
-    # Match the repo name
-    absrepo = reponame
+    # Resolve the repository to create
+    repo = match_repo(reponame, existence=False)
+    if repo == None:
+        err("Can not resolve repository to create. ")
+        return False
+        
+    # Remote creation currently disabled
+    if remote:
+        err("Remote cration currently disabled. ")
+        remote = False
 
-    if not is_repo_dir(absrepo, False):
-        absrepo = os.path.join(data_dir, reponame)
-        std("abspath")
-        if not (os.path.relpath(data_dir, absrepo) == "../.."):
-            err("Can not resolve repository to create. ")
-            return False
+    # and the full path
+    absrepo = match_repo(reponame, abs=True, existence=False)
 
-    # Figure out the local name
-    repo = os.path.relpath(absrepo, data_dir)
     repo_group = repo.split("/")[0]
     repo_name = repo.split("/")[1]
 

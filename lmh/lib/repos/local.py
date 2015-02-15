@@ -43,13 +43,17 @@ from lmh.lib.git import is_tracked, is_repo
 
 def is_repo_dir(path, existence = True):
     """Checks if a directory is a repo directory. """
+
     if existence and (not os.path.isdir(path)):
         return False
     try:
         if not (os.path.relpath(data_dir, os.path.abspath(path)) == "../.."):
             return False
 
-        return is_repo(path)
+        if existence:
+            return is_repo(path)
+        else:
+            return True
     except Exception as e:
         err(e)
         return False
@@ -90,17 +94,17 @@ def find_repo_subdirs(root):
 
     return res
 
-def find_repo_dir(root):
+def find_repo_dir(root, existence=True):
     """Finds the repository belonging to a file or directory. """
     root = os.path.abspath(root)
-    if is_repo_dir(root):
+    if is_repo_dir(root,existence):
         return root
     if not is_in_repo(root):
         return False
     else:
-        return find_repo_dir(os.path.join(root, ".."))
+        return find_repo_dir(os.path.join(root, ".."),existence=existence)
 
-def match_repo(repo, root=os.getcwd(), abs=False):
+def match_repo(repo, root=os.getcwd(), abs=False, existence=True):
     """Matches a single specefier to a repository. """
 
     # 1) Resolve to absolute path repo (via root)
@@ -118,9 +122,9 @@ def match_repo(repo, root=os.getcwd(), abs=False):
     # try the full repo_path
     repo_path = os.path.join(root, repo)
 
-    if is_repo_dir(repo_path) or is_in_repo(repo_path):
+    if is_repo_dir(repo_path, existence) or is_in_repo(repo_path):
         # figure out the path to the repository root
-        repo_path = find_repo_dir(repo_path)
+        repo_path = find_repo_dir(repo_path, existence)
         if not repo_path:
             return None
         if abs:
@@ -131,7 +135,7 @@ def match_repo(repo, root=os.getcwd(), abs=False):
             return os.path.relpath(repo_path, os.path.abspath(data_dir))
     elif not (root == os.path.abspath(data_dir)):
         #if the root is not already the data_dir, try that
-        return match_repo(repo, root=data_dir, abs=abs)
+        return match_repo(repo, root=data_dir, abs=abs,existence=existence)
     else:
         # nothing found
         return None

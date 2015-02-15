@@ -86,7 +86,7 @@ def first_run():
 
     if res == "y":
         std("Colors enabled. ")
-        set_config("self::enable_colors", "true")
+        set_config("self::colors", "true")
 
     res = ""
     while not res in ["y", "n"]:
