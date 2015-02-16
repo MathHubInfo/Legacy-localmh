@@ -207,7 +207,7 @@
 	"gen::pdf::timeout": {
 		"type": "int+",
 		"help": "Timeout when generating PDFs. In seconds. ",
-		"default": 60
+		"default": 120
 	},
 
 	"update::selfupdate": {
@@ -225,7 +225,7 @@
 	"::eastereggs": {
 		"type": "bool",
 		"help": "Enable some eastereggs. ",
-		"default": false,
+		"default": true,
 		"hidden": true
 	}
 }
