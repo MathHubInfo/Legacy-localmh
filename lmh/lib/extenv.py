@@ -211,6 +211,7 @@ def run_shell(shell = None, args=""):
         return res+":"+latexmlstydir+":"+stexstydir
 
     _env["TEXINPUTS"] = genTEXInputs()
+    _env["PATH"] = stexstydir+":"+_env["PATH"]
 
     try:
         runner = Popen([shell]+shlex.split(args), env=_env, cwd=install_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)

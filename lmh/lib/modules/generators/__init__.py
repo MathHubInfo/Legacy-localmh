@@ -1,10 +1,12 @@
-from multiprocessing import current_process
-from multiprocessing.pool import Pool
+
 import atexit
 import traceback
 import re
 import time
 import os.path
+
+from multiprocessing import current_process
+from multiprocessing.pool import Pool
 
 try:
     import signal
@@ -84,10 +86,11 @@ def run(modules, simulate, update_mode, quiet, num_workers, GeneratorClass, text
     if simulate:
         return run_simulate(the_generator, jobs, quiet)
     else:
+        d = []
+        f = []
         try:
             (r, d, f) = run_generate(the_generator, num_workers, jobs, quiet)
         except Exception as e:
-            write_log_files(the_generator, d, f)
             raise e
         write_log_files(the_generator, d, f)
         return (r, d, f)

@@ -74,36 +74,37 @@ def locate_module(path, git_root):
     xhtmlpath = os.path.join(git_root, "export", "planetary", "content", "http..mathhub.info", repo_rel, uri+"/")
 
     f = {
+        # what it is.
         "type": "file",
-        "original_selector": org_selected,
+        # "original_selector": org_selected,
         "mod": os.path.basename(basepth),
 
+        # Where it is
         "local_uri": uri,
         "file": path,
+        "path": os.path.dirname(path),
 
+        # The Repo
         "repo": git_root,
         "repo_name": repo_rel,
 
-        "path": os.path.dirname(path),
-        "file_time": os.path.getmtime(path),
-        "file_root": git_root,
-
-        "omdoc": omdocpath if os.path.isfile(omdocpath) else None,
-        "omdoc_path": omdocpath,
-        "omdoc_time": os.path.getmtime(omdocpath) if os.path.isfile(omdocpath) else 0,
-        "omdoc_log": omdoclog,
-        "omdoc_log_time": os.path.getmtime(omdoclog) if os.path.isfile(omdoclog) else 0,
-
-        "xhtml": xhtmlpath,
-        "pdf": pdfpath if os.path.isfile(pdfpath) else None,
-        "pdf_path": pdfpath,
-        "pdf_time": os.path.getmtime(pdfpath) if os.path.isfile(pdfpath) else 0,
-        "pdf_log": pdflog,
-        "pdf_log_time": os.path.getmtime(pdflog) if os.path.isfile(pdflog) else 0,
+        # sms
         "sms": smspath,
-        "sms_time": os.path.getmtime(smspath) if os.path.isfile(smspath) else 0,
+
+        # Omdoc
+        "omdoc": omdocpath,
+        "omdoc_log": omdoclog,
+
+        # xhtml
+        "xhtml": xhtmlpath,
+
+        # pdf
+        "pdf": pdfpath,
+        "pdf_log": pdflog
     }
 
+    # This is slow because we need to open the file.
+    # maybe we should cache this somehow?
     if needsPreamble(path):
 
         # Find the extension.
@@ -224,7 +225,7 @@ def locate_modules(path, depth=-1, find_files = True):
     modules = reduce([locate_module(file, git_root) for file in files])
 
     if len(modules) > 0:
-        youngest = max(map(lambda x : x["file_time"], modules))
+        youngest = max(map(lambda x : os.path.getmtime(x["path"]), modules))
 
         localpathstex = path + "/localpaths.tex"
         alltexpath = path + "/all.tex"

@@ -1,6 +1,7 @@
 from . import Generator
 
 import os
+import os.path
 import sys
 import signal
 import shutil
@@ -46,7 +47,7 @@ class generate(Generator):
         if gen_mode == "force":
             return True
         elif gen_mode == "update_log":
-            return module["file_time"] > module["pdf_log_time"]
+            return os.path.getmtime(module["path"]) > (os.path.getmtime(module["pdf_log"]) if os.path.isfile(module["pdf_log"]) else 0)
         elif gen_mode == "grep_log":
             logfile = module["pdf_log"]
             if not os.path.isfile(logfile):
@@ -54,7 +55,7 @@ class generate(Generator):
             r = text.match(read_file(logfile))
             return True if r else False
         elif gen_mode == "update":
-            return module["file_time"] > module["pdf_time"]
+            return os.path.getmtime(module["path"]) > (os.path.getmtime(module["pdf"]) if os.path.isfile(module["pdf"]) else 0)
         else:
             return False
         return False
@@ -62,12 +63,13 @@ class generate(Generator):
         # store parameters for all.tex job generation
         _env = os.environ.copy()
         _env["TEXINPUTS"] = TEXINPUTS
+        _env["PATH"] = stexstydir+":"+_env["PATH"]
 
-        return (module["file_pre"], module["file_post"], module["mod"], _env, module["file"], module["path"], module["pdf_path"], module["pdf_log"], self.add_bd, self.pdf_pipe_log)
+        return (module["file_pre"], module["file_post"], module["mod"], _env, module["file"], module["path"], module["pdf"], module["pdf_log"], self.add_bd, self.pdf_pipe_log)
 
     def run_job(self,job,worker_id):
         # pdf generation in master process
-        (pre, post, mod, _env, file, cwd, pdf_path, pdflog, add_bd, pdf_pipe_log) = job
+        (pre, post, mod, _env, file, cwd, pdf, pdflog, add_bd, pdf_pipe_log) = job
 
         if worker_id != None:
             prefix = "PDF["+str(worker_id)+"]:"
@@ -142,12 +144,13 @@ class generate(Generator):
     def dump_init(self):
         std("#PDF Generation")
         std("export TEXINPUTS="+TEXINPUTS)
+        std("export PATH="+stexstydir+":$PATH")
 
         return True
     def dump_job(self, job):
-        (pre, post, mod, _env, file, cwd, pdf_path, pdflog, add_bd, pdf_pipe_log) = job
+        (pre, post, mod, _env, file, cwd, pdf, pdflog, add_bd, pdf_pipe_log) = job
 
-        std("# generate", pdf_path )
+        std("# generate", pdf )
         std("cd "+cwd)
 
         if pre != None:
@@ -163,4 +166,4 @@ class generate(Generator):
 
         return True
     def get_log_name(self, m):
-        return m["pdf_path"]
+        return m["pdf"]

@@ -36,7 +36,7 @@ class generate(Generator):
         if gen_mode == "force":
             return True
         elif gen_mode == "update_log":
-            return module["file_time"] > module["omdoc_log_time"]
+            return os.path.getmtime(module["path"]) > (os.path.getmtime(module["omdoc_log"]) if os.path.isfile(module["omdoc_log"]) else 0)
         elif gen_mode == "grep_log":
             logfile = module["omdoc_log"]
             if not os.path.isfile(logfile):
@@ -44,7 +44,7 @@ class generate(Generator):
             r = text.match(read_file(logfile))
             return True if r else False
         elif gen_mode == "update":
-            return module["file_time"] > module["omdoc_time"]
+            return os.path.getmtime(module["path"]) > (os.path.getmtime(module["omdoc"] if os.path.isfile(module["omdoc"]) else 0))
         else:
             return False
         return False
@@ -52,16 +52,16 @@ class generate(Generator):
         # store parameters for all.tex job generation
 
         if module["file_pre"] != None:
-            args = [latexmlc, "--profile", "stex-module", "--path="+stydir, module["file"], "--destination="+module["omdoc_path"], "--log="+module["omdoc_log"]]
+            args = [latexmlc, "--profile", "stex-module", "--path="+stydir, module["file"], "--destination="+module["omdoc"], "--log="+module["omdoc_log"]]
             args.append("--preamble="+module["file_pre"])
             args.append("--postamble="+module["file_post"])
         else:
-            args = [latexmlc, "--profile", "stex", "--path="+stydir, module["file"], "--destination="+module["omdoc_path"], "--log="+module["omdoc_log"]]
+            args = [latexmlc, "--profile", "stex", "--path="+stydir, module["file"], "--destination="+module["omdoc"], "--log="+module["omdoc_log"]]
 
         _env = os.environ.copy()
         _env = perl5env(_env)
 
-        return (args, module["omdoc_path"], module["path"], _env)
+        return (args, module["omdoc"], module["path"], _env)
 
     def run_job(self,job,worker_id):
         (args, mod, path, _env) = job
@@ -115,4 +115,4 @@ class generate(Generator):
 
         return True
     def get_log_name(self, m):
-        return m["omdoc_path"]
+        return m["omdoc"]
