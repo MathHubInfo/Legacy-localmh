@@ -1,13 +1,11 @@
 from . import Generator
 
-import os.path
-
 import os
+import os.path
 from string import Template
 
 from lmh.lib import shellquote
-from lmh.lib.env import install_dir
-from lmh.lib.io import std, err, read_file, write_file
+from lmh.lib.io import std, read_file, write_file
 from lmh.lib.extenv import get_template
 
 all_modtpl = Template(get_template("alltex_mod.tpl"))

@@ -2,6 +2,8 @@ from . import Generator
 from lmh.lib import shellquote
 from lmh.lib.io import std, err, read_file_lines
 
+import os.path
+
 import re
 
 ignore = re.compile(r'\\verb')
@@ -20,7 +22,7 @@ class generate(Generator):
           return False
         if gen_mode == "force" or gen_mode == "update_log" or gen_mode == "grep_log":
             return True
-        elif module["file_time"] > module["sms_time"]:
+        elif os.path.getmtime(module["path"]) > (os.path.getmtime(module["sms"]) if os.path.isfile(module["sms"]) else 0):
             return True
         else:
             return False
