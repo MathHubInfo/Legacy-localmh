@@ -33,7 +33,7 @@ def add_parser_args(parser):
     parser.add_argument('-m', '--no-manifest', action="store_true", default=False, help="Do not parse manifest while installing. Equivalent to setting install::nomanifest to True. ")
     parser.epilog = repo_wildcard_remote
 
-def do(args):
+def do(args, unknown_args):
     res = ls_remote(args.no_manifest, *args.spec)
     if res == False:
         return False

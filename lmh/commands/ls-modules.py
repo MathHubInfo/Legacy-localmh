@@ -35,7 +35,7 @@ def add_parser_args(parser):
     wheretogen.add_argument('pathspec', metavar="PATH_OR_REPOSITORY", nargs='*', default=[], help="A list of paths or repositories to find modules in. ")
     wheretogen.add_argument('--all', "-a", default=False, const=True, action="store_const", help="Finds modules in all modules. Might take a long time. ")
 
-def do(args):
+def do(args, unknown_args):
     modules = set()
     for m in args.module:
         mods = resolve_pathspec(args)

@@ -51,7 +51,7 @@ The terms argument should have the following structure:
 
 Will require manual completion of the translation. """
 
-def do(args):
+def do(args, unknown_args):
     ret = True
 
     multiregex = r"(.*)\.(.*)\.tex"

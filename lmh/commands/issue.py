@@ -29,5 +29,5 @@ def add_parser(subparsers, name="issue"):
 def add_parser_args(parser):
     pass
 
-def do(args):
+def do(args, unknown_args):
     return webbrowser.open(get_config("gl::issue_url"))

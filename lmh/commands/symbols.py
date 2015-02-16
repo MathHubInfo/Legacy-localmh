@@ -42,7 +42,7 @@ Use
 to display warnings about double symdef and symi warnings.
 """
 
-def do(args):
+def do(args, unknown_args):
     if len(args.path) == 0:
         args.path = [os.getcwd()]
 

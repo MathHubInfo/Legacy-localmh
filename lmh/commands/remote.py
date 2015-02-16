@@ -42,7 +42,7 @@ def add_parser_args(parser):
 
     parser.epilog = repo_wildcard_local
 
-def do(args):
+def do(args, unknown_args):
 
     def needs_push(r):
         state = get_remote_status(r)

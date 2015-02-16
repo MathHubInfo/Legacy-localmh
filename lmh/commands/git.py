@@ -32,6 +32,6 @@ def add_parser_args(parser):
     parser.add_argument('repository', nargs='*', help="a list of repositories for which to run the git command.")
     parser.epilog = repo_wildcard_local
 
-def do(args):
+def do(args, unknown_args):
     repos = match_repo_args(args.repository, args.all)
     return local_do(args.cmd[0], args.args, *repos)

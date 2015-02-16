@@ -46,5 +46,5 @@ username and password.
 
 To disable any interaction with Gitlab, use the --remote-readonly parameter. """
 
-def do(args):
+def do(args, unknown_args):
     return create(args.name, type=args.type, remote=not args.remote_readonly)

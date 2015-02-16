@@ -35,7 +35,7 @@ def add_parser_args(parser):
     parser.add_argument('--interactive', metavar='interactive', const=True, default=False, action="store_const", help="Should check paths be interactive")
     parser.epilog = repo_wildcard_local
 
-def do(args):
+def do(args, unknown_args):
 
     checkpaths.init()
 

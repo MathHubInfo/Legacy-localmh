@@ -85,7 +85,7 @@ def add_parser_args(parser):
   "LaTeXML-all"    Installs LaTeXML and plugins.
     """
 
-def do(args):
+def do(args, unknown_args):
 
     if args.firstrun == None:
         # Call firstrun if required

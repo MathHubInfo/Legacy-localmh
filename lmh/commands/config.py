@@ -31,7 +31,7 @@ def add_parser_args(parser):
     parser.add_argument('--reset', help="Resets a setting. Ignores value. ", default=False, action="store_const", const=True)
     parser.add_argument('--reset-all', help="Resets all settings. ", default=False, action="store_const", const=True)
 
-def do(args):
+def do(args, unknown_args):
     if args.reset_all:
         try:
             os.remove(config.config_file)

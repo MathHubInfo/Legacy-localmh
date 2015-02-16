@@ -32,7 +32,7 @@ def add_parser_args(parser):
     opts.add_argument("--build", action="store_const", const="build", dest="mode", help="alias for lmh update-build")
     opts.add_argument("--external", action="store_const", const="external", dest="mode", help="alias for lmh setup --update")
 
-def do(args):
+def do(args, unknown_args):
     # TODO: Issue 186
     res = True
 

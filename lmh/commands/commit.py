@@ -32,6 +32,6 @@ def add_parser_args(parser):
     parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs commit on all repositories currently in lmh")
     parser.epilog = repo_wildcard_local
 
-def do(args):
+def do(args, unknown_args):
     repos = match_repo_args(args.repository, args.all)
     return commit(args.message[0], args.verbose, *repos)

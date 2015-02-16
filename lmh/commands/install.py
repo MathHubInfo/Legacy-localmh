@@ -38,7 +38,7 @@ manifest.
 
 Use install::noglobs to disable globbing for lmh install. """
 
-def do(args):
+def do(args, unknown_args):
     if len(args.spec) == 0:
         err("Nothing to do here ...")
         return True

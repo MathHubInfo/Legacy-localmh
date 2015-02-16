@@ -21,95 +21,26 @@ import argparse
 from lmh.lib import helper
 from lmh.commands.gen import add_parser_args
 
-def create_parser(submods = {}):
-
-    #
-    # The main parser
-    #
+def create_parser(submods = {}, commands = [], aliases = {}):
+    # Create the main parser
     parser = argparse.ArgumentParser(prog="lmh", description='Local MathHub Tool.', formatter_class=helper.LMHFormatter)
 
+    # Standard arguments.
     parser.add_argument("-q", "--quiet", action="store_true", default=False, help="Disables any output to stdout and stderr. ")
     parser.add_argument("--non-interactive", "-ni",  action="store_true", default=False, help="Disables interactivity (prompts from stdin) and causes lmh to abort in those cases. ")
 
-    #
-    # Subcommands
-    #
-
+    # Create the subparsers
     subparsers = parser.add_subparsers(help='valid actions are:', dest="action", metavar='action')
 
+    # Register all the normal commands.
+    for cmd in commands:
+        module = getattr(getattr(__import__("lmh.commands."+cmd), "commands"), cmd)
+        submods[cmd] = module
+        module.add_parser(subparsers)
 
-    #
-    # Group and load submodules
-    #
+    # for all the aliases.
+    for alias in aliases:
+        parser_status = subparsers.add_parser(alias, help='Alias for lmh '+aliases[alias], add_help=False)
 
-    submodules = [
-            'about',
-            'checkpaths',
-            'clean',
-            'commit',
-            'config',
-            'depcrawl',
-            'find',
-            'gen',
-            'git',
-            'init',
-            'install',
-            'issue',
-            'log',
-            'ls',
-            'ls-modules',
-            'ls-remote',
-            'mine',
-            'multiling',
-            'mvmod',
-            'push',
-            'remote',
-            'rename',
-            'selfupdate',
-            'setup',
-            'shell',
-            'status',
-            'symbols',
-            'symcomplete',
-            'translate',
-            'up',
-            'update',
-            'update-build'
-    ]
-
-    for mod in submodules:
-        _mod = getattr(getattr(__import__("lmh.commands."+mod), "commands"), mod)
-        submods[mod] = _mod
-        _mod.add_parser(subparsers)
-
-    #
-    # Command aliases
-    #
-
-    aliases = {
-            "commit": "ci",
-            "status": "st"
-    }
-
-    for cmd in aliases:
-        mod = aliases[cmd]
-        _mod = getattr(getattr(__import__("lmh.commands."+cmd), "commands"), cmd)
-        submods[mod] = _mod
-        _mod.add_parser(subparsers, mod)
-    
-    #
-    # Special commands, directly implemented.
-    #
-
-    subparsers.add_parser('root', help='prints the root directory of the Local Math Hub repository')
-
-    add_parser_args(subparsers.add_parser('sms', help='generates sms files, alias for lmh gen --sms'), add_types=False).epilog = "Generate sms files. "
-    add_parser_args(subparsers.add_parser('omdoc', help='generates omdoc files, alias for lmh gen --omdoc'), add_types=False).epilog = "Generate omdoc files. "
-    add_parser_args(subparsers.add_parser('xhtml', help='generates omdoc files, alias for lmh gen --xhtml'), add_types=False).epilog = "Generate xhtml files. "
-
-    p = add_parser_args(subparsers.add_parser('pdf', help='generates pdf files, alias for lmh gen --pdf'), add_types=False)
-    p.add_argument('--pdf-add-begin-document', action="store_const", const=True, default=False, help="add \\begin{document} to LaTeX sources when generating pdfs. Backward compatibility for issue #82")
-    p.add_argument('--pdf-pipe-log', action="store_const", const=True, default=False, help="Displays only the pdf log as output. Implies --quiet. ")
-    p.epilog = "Generate pdf files. "
-
+    # TODO: Reimplement lmh root.
     return parser

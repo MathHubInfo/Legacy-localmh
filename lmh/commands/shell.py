@@ -30,6 +30,6 @@ def add_parser_args(parser):
     parser.add_argument('shell', nargs="?", help="shell to use")
     parser.add_argument('--args', default="", help="Arguments to append to the shell. ")
 
-def do(args):
+def do(args, unknown_args):
     code = run_shell(args.shell, args.args)
     sys.exit(code)

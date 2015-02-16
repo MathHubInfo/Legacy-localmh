@@ -34,7 +34,7 @@ def add_parser_args(parser):
 
     parser.epilog = repo_wildcard_local
 
-def do(args):
+def do(args, unknown_args):
     repos = match_repo_args(args.repository, args.all)
     res = True
     for repo in repos:

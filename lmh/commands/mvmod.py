@@ -42,7 +42,7 @@ repository smglom/set.
 It can be advisable to run an lmh clean before executing this command, as it
 speeds it up quite a lot. """
 
-def do(args):
+def do(args, unknown_args):
     args.source = args.source[0]
     args.dest = args.dest[0]
 

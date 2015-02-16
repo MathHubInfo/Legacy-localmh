@@ -35,7 +35,7 @@ def add_parser_args(parser):
 
     parser.add_argument("file", nargs="?", help="File to use. If not given, assume STDIn or STDOUT respectivelsy. ")
 
-def do(args):
+def do(args, unknown_args):
     if args.dump_action == 0:
         # Export
         if not args.file:

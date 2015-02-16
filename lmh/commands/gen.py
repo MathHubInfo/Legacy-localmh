@@ -76,7 +76,7 @@ def add_parser_args(parser, add_types=True):
 
     return parser
 
-def do(args):
+def do(args, unknown_args):
     # If we
     if args.grep_log != None:
         args.update = "grep_log"

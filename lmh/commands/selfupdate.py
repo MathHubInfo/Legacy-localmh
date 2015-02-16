@@ -27,6 +27,6 @@ def add_parser(subparsers, name="selfupdate"):
 def add_parser_args(parser):
     pass
 
-def do(args):
+def do(args, unknown_args):
     # Update the 'self' package
     return update("self")

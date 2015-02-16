@@ -37,5 +37,5 @@ Examples:
 lmh rename foo bar
 lmh rename foo bar foo2 bar2
 lmh rename foo bar-baz """
-def do(args):
+def do(args, unknown_args):
     return rename(args.directory, args.renamings, simulate=args.simulate)

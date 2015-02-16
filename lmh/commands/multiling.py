@@ -51,7 +51,7 @@ The terms argument should have the following structure:
 
 Will require manual completion of the translations. """
 
-def do(args):
+def do(args, unknown_args):
     ret = True
 
     args.source = args.source[0]

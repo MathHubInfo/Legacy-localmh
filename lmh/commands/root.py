@@ -18,25 +18,16 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import argparse
 
 from lmh.lib import helper
-import lmh.commands.gen
-import lmh.commands.clean
+from lmh.lib.io import std
+from lmh.lib.env import install_dir
 
-from lmh.lib.help import repo_wildcard_local
-
-def add_parser(subparsers, name="update-build"):
-    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='Updates the build. ')
-    add_parser_args(parser_status)
+def add_parser(subparsers, name="root"):
+    about_parser = subparsers.add_parser(name, help='shows the root directory of the lmh installation. ', formatter_class=helper.LMHFormatter)
+    add_parser_args(about_parser)
 
 def add_parser_args(parser):
-    parser = lmh.commands.gen.add_parser_args(parser)
-    parser.add_argument('--git-clean', '-g', action="store_true", default=False, help="Also run git clean over all the repositories. ")
-    parser.epilog = repo_wildcard_local
-
-    return parser
-
+    pass
 
 def do(args, unknown_args):
-    args.repository = args.pathspec
-    res = lmh.commands.clean.do(args)
-    res = lmh.commands.gen.do(args) or res
-    return res
+    std(install_dir)
+    return True

@@ -26,7 +26,7 @@ def add_parser(subparsers, name="about"):
 def add_parser_args(parser):
     pass
 
-def do(args):
+def do(args, unknown_args):
     io.std("lmh, Version", about.version, "( git", about.git_version(), ")")
     io.std()
     io.std(about.license)
