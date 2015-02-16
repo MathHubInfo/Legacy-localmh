@@ -45,8 +45,6 @@ def add_parser_args(parser):
     frun.add_argument('--firstrun', action="store_const", const=True, default=None, help="Skip the firstrun routine. ")
     parser.add_argument('pack', nargs="*", metavar="PACK:SOURCE")
 
-    # Extra Things to install: autocomplete
-
     parser.epilog = """
   lmh setup --- Manages extra software required or useful for work with lmh.
 
@@ -74,7 +72,6 @@ def add_parser_args(parser):
   "LaTeXMLStomp"   LaTeXML Plugin latexmlstomp
   "sTeX"           sTeX
   "MMT"            MMT
-  "autocomplete"   Automcplete support for lmh. Currently unsupported.
   "self"           Meta Package which only supports the update option. Can be used
                    to update lmh.
 

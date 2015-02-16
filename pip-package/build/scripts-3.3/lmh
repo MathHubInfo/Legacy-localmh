@@ -1,7 +1,0 @@
-#!/usr/bin/python3
-# PYTHON_ARGCOMPLETE_OK
-
-import lmh_core as lmh
-
-if __name__ == "__main__":
-	lmh.main()
