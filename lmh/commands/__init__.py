@@ -72,7 +72,7 @@ def create_parser(submods = {}):
             'symbols',
             'symcomplete',
             'translate',
-            'up', 
+            'up',
             'update',
             'update-build'
     ]
@@ -96,7 +96,7 @@ def create_parser(submods = {}):
         _mod = getattr(getattr(__import__("lmh.commands."+cmd), "commands"), cmd)
         submods[mod] = _mod
         _mod.add_parser(subparsers, mod)
-
+    
     #
     # Special commands, directly implemented.
     #

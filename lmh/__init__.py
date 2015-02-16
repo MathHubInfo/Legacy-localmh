@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# PYTHON_ARGCOMPLETE_OK
 
 """
 This file is part of LMH.
@@ -58,10 +57,6 @@ def main(argv = sys.argv[1:]):
     """Calls the main program with given arguments. """
     parser = create_parser(submods)
 
-    try:
-        argcomplete.autocomplete(parser)
-    except:
-        pass
     if len(argv) == 0:
         parser.print_help();
         return
