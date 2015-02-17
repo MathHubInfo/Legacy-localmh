@@ -16,13 +16,11 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import re
-import argparse
 import os.path
 
-from lmh.lib.io import std, err, read_file_lines
+from lmh.lib.io import err, read_file_lines
 from lmh.lib.git import root_dir, is_repo
-from lmh.lib.env import install_dir, data_dir
-from lmh.lib.config import get_config
+from lmh.lib.env import data_dir
 
 """A regular expression for repository names"""
 nameExpression = '[\w-]+/[\w-]+'
@@ -55,7 +53,7 @@ def find_dependencies(repo):
                 # TODO: Maybe find a better alternative for this.
                 for dep in re.findall(nameExpression, line):
                     res.append(dep)
-    except Exception as e:
+    except Exception:
         return False
 
     return res

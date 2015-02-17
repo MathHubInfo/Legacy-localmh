@@ -23,7 +23,6 @@ import glob
 from lmh.lib.env import install_dir, data_dir
 from lmh.lib.io import term_colors, find_files, std, std_paged, err, write_file, read_file, read_file_lines
 from lmh.lib.repos import find_dependencies
-from lmh.lib.config import get_config
 from lmh.lib.repos.remote import install
 
 
@@ -34,7 +33,7 @@ from lmh.lib.git import status_pipe as git_status
 from lmh.lib.git import commit as git_commit
 from lmh.lib.git import do as git_do
 from lmh.lib.git import do_data as git_do_data
-from lmh.lib.git import do_quiet, get_remote_status
+from lmh.lib.git import get_remote_status
 from lmh.lib.git import is_tracked, is_repo
 
 #
@@ -221,10 +220,10 @@ def export(file = None):
             std(mod)
         return True
     try:
-        write_file(file, s.linesep.join(things))
+        write_file(file, os.linesep.join(installed))
         return True
     except:
-        err("Unable to write "+fn)
+        err("Unable to write "+file)
         return False
 
 def restore(file = None):
@@ -421,7 +420,7 @@ def clean(repo, git_clean = False):
     res = clean_logs(repo) and res
 
     if git_clean:
-        res = git_clean(repo, args) and res
+        res = git_clean(repo) and res
     return res
 
 def log(ordered, *repos):
