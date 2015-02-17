@@ -16,26 +16,24 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
-import argparse
 
-from lmh.lib import helper
 from lmh.lib.modules.rename import rename
 
-def add_parser(subparsers, name="rename"):
-    parser_status = subparsers.add_parser(name, help='Renames symbol names in glossary components. ', formatter_class=helper.LMHFormatter)
-    add_parser_args(parser_status)
+from . import CommandClass
 
-def add_parser_args(parser):
-    parser.add_argument('--directory', '-d', default=os.getcwd(), help="Directory to replace symbols in. Defaults to current directory. ")
-    parser.add_argument('--simulate', '-s', default=False, action="store_const", const=True, help="Simulate only. ")
-    parser.add_argument('renamings', nargs="+", help="Renamings to be provided in pairs. ", default=None)
+class Command(CommandClass):
+    def __init__(self):
+        self.help="Rename symbol names in glossary components"
+    def add_parser_args(self, parser):
+        parser.add_argument('--directory', '-d', default=os.getcwd(), help="Directory to replace symbols in. Defaults to current directory. ")
+        parser.add_argument('--simulate', '-s', default=False, action="store_const", const=True, help="Simulate only. ")
+        parser.add_argument('renamings', nargs="+", help="Renamings to be provided in pairs. ", default=None)
 
-
-    parser.epilog = """
+        parser.epilog = """
 Examples:
 
 lmh rename foo bar
 lmh rename foo bar foo2 bar2
 lmh rename foo bar-baz """
-def do(args, unknown_args):
-    return rename(args.directory, args.renamings, simulate=args.simulate)
+    def do(self, args, unknown_args):
+        return rename(args.directory, args.renamings, simulate=args.simulate)

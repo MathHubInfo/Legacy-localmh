@@ -16,23 +16,21 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
-import re
-import argparse
 
-from lmh.lib import helper
-from lmh.lib.io import std, err
+from lmh.lib.io import err
 from lmh.lib.modules.translate import create_multi
 
-def add_parser(subparsers, name="multiling"):
-    parser_status = subparsers.add_parser(name, help='Creates a new multilingual module from a monlingual one. ',formatter_class=helper.LMHFormatter)
-    add_parser_args(parser_status)
+from . import CommandClass
 
-def add_parser_args(parser):
-    parser.add_argument('source', nargs=1, help="Name of the existing module. ")
-    parser.add_argument('dest', nargs="+", help="Name(s) of the new language(s). ")
-    parser.add_argument('--terms', default=None, help="Terms to pre-translate. Either a Path to a json file or a JSON-encoded string. ")
+class Command(CommandClass):
+    def __init__(self):
+        self.help="Create a new multilingual module from a monlingual one"
+    def add_parser_args(self, parser):
+        parser.add_argument('source', nargs=1, help="Name of the existing module. ")
+        parser.add_argument('dest', nargs="+", help="Name(s) of the new language(s). ")
+        parser.add_argument('--terms', default=None, help="Terms to pre-translate. Either a Path to a json file or a JSON-encoded string. ")
 
-    parser.epilog = """
+        parser.epilog = """
 Example: lmh multiling mono.tex en de
 
 Which creates a new multilingual module mono.tex with languages
@@ -51,15 +49,13 @@ The terms argument should have the following structure:
 
 Will require manual completion of the translations. """
 
-def do(args, unknown_args):
-    ret = True
+    def do(self, args, unknown_args):
+        args.source = args.source[0]
 
-    args.source = args.source[0]
+        if not os.path.isfile(args.source) or not args.source.endswith(".tex"):
+            err("Module", args.source, "does not exist or is not a valid module. ")
 
-    if not os.path.isfile(args.source) or not args.source.endswith(".tex"):
-        err("Module", args.source, "does not exist or is not a valid module. ")
+        # Remove the .tex
+        args.source = args.source[:-len(".tex")]
 
-    # Remove the .tex
-    args.source = args.source[:-len(".tex")]
-
-    return create_multi(args.source, args.terms, *args.dest)
+        return create_multi(args.source, args.terms, *args.dest)

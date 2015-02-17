@@ -19,7 +19,38 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import argparse
 
 from lmh.lib import helper
-from lmh.commands.gen import add_parser_args
+from lmh.lib.io import err
+
+class CommandClass():
+    def __init__(self):
+        self.help = "<No help available for this command>"
+    def add_parser_args(self, parser):
+        pass
+    def do(self, arguments, unparsed):
+        pass
+
+def load_command(cmd, subparsers):
+
+    # Load the module
+    module = getattr(getattr(__import__("lmh.commands."+cmd), "commands"), cmd)
+
+    # if we have a class attribute, use the class
+    # else, use just the module
+    try:
+        command = module.Command()
+
+        # Create the sub parser
+        new_parser = subparsers.add_parser(cmd, help=command.help, description=command.help, formatter_class=helper.LMHFormatter)
+
+        # and add some arguments.
+        command.add_parser_args(new_parser)
+    except:
+        err("Command", cmd, "failed to load. ")
+        command = None
+
+    # return the new command instance.
+    return command
+
 
 def create_parser(submods = {}, commands = [], aliases = {}):
     # Create the main parser
@@ -32,15 +63,12 @@ def create_parser(submods = {}, commands = [], aliases = {}):
     # Create the subparsers
     subparsers = parser.add_subparsers(help='valid actions are:', dest="action", metavar='action')
 
-    # Register all the normal commands.
+    # Load all the commands.
     for cmd in commands:
-        module = getattr(getattr(__import__("lmh.commands."+cmd), "commands"), cmd)
-        submods[cmd] = module
-        module.add_parser(subparsers)
+        submods[cmd] = load_command(cmd, subparsers)
 
     # for all the aliases.
     for alias in aliases:
-        parser_status = subparsers.add_parser(alias, help='Alias for lmh '+aliases[alias], add_help=False)
+        subparsers.add_parser(alias, help='Alias for lmh '+aliases[alias], add_help=False)
 
-    # TODO: Reimplement lmh root.
     return parser

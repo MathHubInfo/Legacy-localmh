@@ -15,23 +15,19 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import argparse
-
-from lmh.lib import helper
 from lmh.lib.repos.local import match_repo_args, log
 from lmh.lib.help import repo_wildcard_local
 
-def add_parser(subparsers, name="log"):
-    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='shows recent commits in all repositories')
-    add_parser_args(parser_status)
+from . import CommandClass
 
-
-def add_parser_args(parser):
-    parser.add_argument('--ordered', "-o", default=False, const=True, action="store_const", help="Orders log output by time (instead of by repository). ")
-    parser.add_argument('repository', nargs='*', help="a list of repositories for which to show the log. ")
-    parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs log on all repositories currently in lmh")
-    parser.epilog = repo_wildcard_local
-
-def do(args, unknown_args):
-    repos = match_repo_args(args.repository, args.all)
-    return log(args.ordered, *repos)
+class Command(CommandClass):
+    def __init__(self):
+        self.help="Show recent commits in all repositories"
+    def add_parser_args(self, parser):
+        parser.add_argument('--ordered', "-o", default=False, const=True, action="store_const", help="Orders log output by time (instead of by repository). ")
+        parser.add_argument('repository', nargs='*', help="a list of repositories for which to show the log. ")
+        parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs log on all repositories currently in lmh")
+        parser.epilog = repo_wildcard_local
+    def do(self, args, unknown):
+        repos = match_repo_args(args.repository, args.all)
+        return log(args.ordered, *repos)

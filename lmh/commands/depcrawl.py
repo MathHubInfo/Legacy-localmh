@@ -15,27 +15,20 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
-import re
-import argparse
-
-
-from lmh.lib import helper
-from lmh.lib.io import std, err
+from lmh.lib.io import err
 from lmh.lib.repos.local import calc_deps
 
-def add_parser(subparsers, name="depcrawl"):
-    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='crawls current repository for dependencies')
-    add_parser_args(parser_status)
+from . import CommandClass
 
-
-def add_parser_args(parser):
-    parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Writes found dependencies to MANIFEST.MF")
-
-def do(args, unknown_args):
-    res = calc_deps(args.apply)
-    if res:
-        return True
-    else:
-        err("lmh depcrawl must be run from within a Repository. ")
-        return False
+class Command(CommandClass):
+    def __init__(self):
+        self.help="Crawl current repository for dependencies"
+    def add_parser_args(self, parser):
+        parser.add_argument('--apply', metavar='apply', const=True, default=False, action="store_const", help="Writes found dependencies to MANIFEST.MF")
+    def do(self, args, unknown):
+        res = calc_deps(args.apply)
+        if res:
+            return True
+        else:
+            err("lmh depcrawl must be run from within a Repository. ")
+            return False

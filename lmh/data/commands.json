@@ -21,8 +21,7 @@
   "push",
   "remote",
   "rename",
-  "root", 
-  "selfupdate",
+  "root",
   "setup",
   "shell",
   "status",
@@ -30,6 +29,5 @@
   "symcomplete",
   "translate",
   "up",
-  "update",
-  "update-build"
+  "update"
 ]

@@ -15,19 +15,13 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import argparse
 import webbrowser
-
-from lmh.lib import helper
-from lmh.lib.io import std
 from lmh.lib.config import get_config
 
-def add_parser(subparsers, name="issue"):
-    issue_parser = subparsers.add_parser(name, formatter_class=argparse.RawTextHelpFormatter, help='Opens a url to display issues in the browser.  ')
-    add_parser_args(issue_parser)
+from . import CommandClass
 
-def add_parser_args(parser):
-    pass
-
-def do(args, unknown_args):
-    return webbrowser.open(get_config("gl::issue_url"))
+class Command(CommandClass):
+    def __init__(self):
+        self.help="Open a url to display issues in the browser"
+    def do(self, args, unknown):
+        return webbrowser.open(get_config("gl::issue_url"))

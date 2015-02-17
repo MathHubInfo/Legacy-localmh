@@ -15,32 +15,28 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import argparse
-
-from lmh.lib import helper
 from lmh.lib.io import std, term_colors
 from lmh.lib.repos import is_installed
 from lmh.lib.repos.remote import ls_remote
 from lmh.lib.help import repo_wildcard_remote
 
-def add_parser(subparsers, name="ls-remote"):
-    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='list remote repositories')
-    add_parser_args(parser_status)
+from . import CommandClass
 
-
-def add_parser_args(parser):
-    parser.add_argument('spec', nargs='*', help="list of repository specefiers. ")
-    parser.add_argument('-m', '--no-manifest', action="store_true", default=False, help="Do not parse manifest while installing. Equivalent to setting install::nomanifest to True. ")
-    parser.epilog = repo_wildcard_remote
-
-def do(args, unknown_args):
-    res = ls_remote(args.no_manifest, *args.spec)
-    if res == False:
-        return False
-    else:
-        for r in res:
-            if is_installed(r):
-                std(term_colors("green")+r+term_colors("normal"))
-            else:
-                std(term_colors("red")+r+term_colors("normal"))
-        return True
+class Command(CommandClass):
+    def __init__(self):
+        self.help="List remote repositories"
+    def add_parser_args(self, parser):
+        parser.add_argument('spec', nargs='*', help="list of repository specefiers. ")
+        parser.add_argument('-m', '--no-manifest', action="store_true", default=False, help="Do not parse manifest while installing. Equivalent to setting install::nomanifest to True. ")
+        parser.epilog = repo_wildcard_remote
+    def do(self, args, unknown):
+        res = ls_remote(args.no_manifest, *args.spec)
+        if res == False:
+            return False
+        else:
+            for r in res:
+                if is_installed(r):
+                    std(term_colors("green")+r+term_colors("normal"))
+                else:
+                    std(term_colors("red")+r+term_colors("normal"))
+            return True
