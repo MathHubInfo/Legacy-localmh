@@ -52,7 +52,7 @@ base http://docs.omdoc.org/mmt
 mmt_root = os.path.join(install_dir, "ext", "MMT")
 
 def runMMTScript(src, path, filename):
-    cp = "{dir}/lib/*:{dir}/mmt/branches/informal/*:{dir}/lfcatalog/*:{dir}/mmt/*".format(dir=mmt_root)
+    cp = "{dir}/lib/*:{dir}/main/branches/informal/*:{dir}/lfcatalog/*:{dir}/main/*".format(dir=mmt_root)
     args = [java_executable, "-Xmx2048m", "-cp", cp, "info.kwarc.mmt.api.frontend.Run"];
     try:
         comm = subprocess.Popen(args, cwd=path, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input=src)
@@ -67,7 +67,7 @@ def runMMTScript(src, path, filename):
         return False
 
 def runMMTScript_dump(src, path, filename):
-    cp = "{dir}/lib/*:{dir}/mmt/branches/informal/*:{dir}/lfcatalog/*:{dir}/mmt/*".format(dir=mmt_root)
+    cp = "{dir}/lib/*:{dir}/main/branches/informal/*:{dir}/lfcatalog/*:{dir}/main/*".format(dir=mmt_root)
     args = [java_executable, "-Xmx2048m", "-cp", cp, "info.kwarc.mmt.api.frontend.Run"]
 
     std("cd", path)
