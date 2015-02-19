@@ -16,24 +16,22 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
-import argparse
 
-from lmh.lib import helper
 from lmh.lib.modules.symbols import check_defs
 
-def add_parser(subparsers, name="symcomplete"):
-    parser_status = subparsers.add_parser(name, help='Checks language bindings for completeness. ',formatter_class=helper.LMHFormatter)
-    add_parser_args(parser_status)
+from . import CommandClass
 
-def add_parser_args(parser):
-    parser.add_argument("path", nargs="*", default=[], help="Language Bindings to check for completeness. ")
+class Command(CommandClass):
+    def __init__(self):
+        self.help="Checks language bindings for completeness"
+    def add_parser_args(self, parser):
+        parser.add_argument("path", nargs="*", default=[], help="Language Bindings to check for completeness. ")
+    def do(self, args, unknown):
+        if len(args.path) == 0:
+            args.path = [os.getcwd()]
 
-def do(args):
-    if len(args.path) == 0:
-        args.path = [os.getcwd()]
+        res = True
+        for p in args.path:
+            res = check_defs(p) and res
 
-    res = True
-    for p in args.path:
-        res = check_defs(p) and res
-
-    return res
+        return res

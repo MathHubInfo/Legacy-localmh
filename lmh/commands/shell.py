@@ -16,20 +16,17 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import sys
-import argparse
 
-from lmh.lib import helper
 from lmh.lib.extenv import run_shell
 
+from . import CommandClass
 
-def add_parser(subparsers, name="shell"):
-    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='launch a shell with everything set to run build commands. ')
-    add_parser_args(parser_status)
-
-def add_parser_args(parser):
-    parser.add_argument('shell', nargs="?", help="shell to use")
-    parser.add_argument('--args', default="", help="Arguments to append to the shell. ")
-
-def do(args):
-    code = run_shell(args.shell, args.args)
-    sys.exit(code)
+class Command(CommandClass):
+    def __init__(self):
+        self.help="Launch a shell with everything set to run build commands"
+    def add_parser_args(self, parser):
+        parser.add_argument('shell', nargs="?", help="shell to use")
+        parser.add_argument('--args', default="", help="Arguments to append to the shell. ")
+    def do(self, args, unknown_args):
+        code = run_shell(args.shell, args.args)
+        sys.exit(code)

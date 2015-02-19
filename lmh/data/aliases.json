@@ -1,0 +1,11 @@
+{
+  "ci": "commit",
+  "st": "status",
+
+  "selfupdate": "setup --update self", 
+
+  "sms": "gen --sms",
+  "omdoc": "gen --omdoc",
+  "pdf": "gen --pdf",
+  "xhtml": "gen --xhtml"
+}

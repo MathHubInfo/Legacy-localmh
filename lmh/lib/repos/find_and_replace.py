@@ -46,6 +46,7 @@ def find_and_replace_file(file, match, replace, replace_match = None):
     if replace_match == None:
         def replace_match(match, replace):
             # we did something
+            # this does not mirgrate to the parent scope. 
             did = True
 
             # Make a template,

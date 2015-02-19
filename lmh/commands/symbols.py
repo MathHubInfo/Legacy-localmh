@@ -16,19 +16,16 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
-import argparse
-
-from lmh.lib import helper
 from lmh.lib.modules.symbols import check_symbols
 
+from . import CommandClass
 
-def add_parser(subparsers, name="symbols"):
-    parser_status = subparsers.add_parser(name, help='Generates smybols needed by language bindings. ',formatter_class=helper.LMHFormatter)
-    add_parser_args(parser_status)
-
-def add_parser_args(parser):
-    parser.add_argument("path", nargs="*", default=[], help="Path to modules where to generate symbols. ")
-    parser.epilog = """
+class Command(CommandClass):
+    def __init__(self):
+        self.help="Generate smybols needed by language bindings"
+    def add_parser_args(self, parser):
+        parser.add_argument("path", nargs="*", default=[], help="Path to modules where to generate symbols. ")
+        parser.epilog = """
 Example:
     lmh symbols .
 will generate symbols in all files in the current directory. Can be used on
@@ -41,13 +38,12 @@ Use
     lmh symbols foo.tex
 to display warnings about double symdef and symi warnings.
 """
+    def do(self, args, unknown_args):
+        if len(args.path) == 0:
+            args.path = [os.getcwd()]
 
-def do(args):
-    if len(args.path) == 0:
-        args.path = [os.getcwd()]
+        res = True
+        for p in args.path:
+            res = check_symbols(p) and res
 
-    res = True
-    for p in args.path:
-        res = check_symbols(p) and res
-
-    return res
+        return res

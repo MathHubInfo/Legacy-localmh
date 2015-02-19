@@ -14,24 +14,23 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
-import argparse
-
-from lmh.lib import helper
 from lmh.lib.repos.local import match_repo_args
 from lmh.lib.repos.local import do as local_do
 from lmh.lib.help import repo_wildcard_local
 
-def add_parser(subparsers, name="git"):
-    parser_status = subparsers.add_parser(name, formatter_class=helper.LMHFormatter, help='run git command on multiple repositories')
-    add_parser_args(parser_status)
+from . import CommandClass
 
-def add_parser_args(parser):
-    parser.add_argument('cmd', nargs=1, help="a git command to be run.")
-    parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs a git command on all repositories currently in lmh")
-    parser.add_argument('--args', nargs='+', help="Arguments to add to each of the git commands. ")
-    parser.add_argument('repository', nargs='*', help="a list of repositories for which to run the git command.")
-    parser.epilog = repo_wildcard_local
+class Command(CommandClass):
+    def __init__(self):
+        self.help="Run git command on multiple repositories"
+    def add_parser_args(self, parser):
+        parser.add_argument('cmd', nargs=1, help="a git command to be run.")
+        parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs a git command on all repositories currently in lmh")
+        parser.add_argument('--args', nargs='+', help="Arguments to add to each of the git commands. ")
+        parser.add_argument('repository', nargs='*', help="a list of repositories for which to run the git command.")
+        parser.epilog = repo_wildcard_local
 
-def do(args):
-    repos = match_repo_args(args.repository, args.all)
-    return local_do(args.cmd[0], args.args, *repos)
+    def do(self, args, unknown):
+        repos = match_repo_args(args.repository, args.all)
+        args.args += unknown
+        return local_do(args.cmd[0], args.args, *repos)

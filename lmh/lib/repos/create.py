@@ -22,8 +22,7 @@ from string import Template
 
 from lmh.lib import mkdir_p
 from lmh.lib.env import install_dir
-from lmh.lib.io import read_file, write_file, find_files, find_all_files, std, err, read_raw
-from lmh.lib.env import data_dir
+from lmh.lib.io import read_file, write_file, find_files, std, err, read_raw
 from lmh.lib.config import get_config
 from lmh.lib.repos.local import match_repo
 from lmh.lib.repos.remote import find_source
@@ -163,7 +162,7 @@ def create(reponame, type="none", remote = True):
     if repo == None:
         err("Can not resolve repository to create. ")
         return False
-        
+
     # Remote creation currently disabled
     if remote:
         err("Remote cration currently disabled. ")

@@ -19,13 +19,15 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import sys
+import json
 import time
 import subprocess
+import shlex
 import traceback
 
 from lmh.lib.env import install_dir
 import lmh.lib.io
-from lmh.lib.io import write_file, std, err
+from lmh.lib.io import read_file, write_file, std, err
 from lmh.lib.config import get_config
 from lmh.lib.init import init
 
@@ -55,66 +57,44 @@ def install_excepthook():
 
 def main(argv = sys.argv[1:]):
     """Calls the main program with given arguments. """
-    parser = create_parser(submods)
+
+    # Load commands + aliases
+    commands = json.loads(read_file(install_dir + "/lmh/data/commands.json"))
+    aliases = json.loads(read_file(install_dir + "/lmh/data/aliases.json"))
+
+    parser = create_parser(submods, commands, aliases)
 
     if len(argv) == 0:
-        parser.print_help();
+        parser.print_help()
         return
 
-    args = parser.parse_args(argv)
+    # parse arguments
+    (args, unknown) = parser.parse_known_args(argv)
 
+    # do the quiet stuff.
     if args.quiet:
         lmh.lib.io.__supressStd__ = True
         lmh.lib.io.__supressErr__ = True
     if args.non_interactive:
         lmh.lib.io.__supressIn__ = True
 
-    #
-    # Default action
-    #
-
+    # No action.
     if args.action == None:
-        init()
+        init() # What does this do?
         parser.print_help()
         return
 
-    #
-    # Quick Aliases
-    # TODO: Port them to actual commands
-    #
+    # an alias, so change the arguments.
+    if args.action in aliases:
 
-    if args.action == "root":
-        std(install_dir)
-        return True
+        # new argvs
+        argv = shlex.split(aliases[args.action]) + unknown
 
-    #
-    # Aliases for lmh gen --$action
-    #
-    if args.action == "sms":
-        argv[0] = "gen"
-        argv.append("--sms")
-        return submods["gen"].do(parser.parse_args(argv))
+        # and re-parse
+        (args, unknown) = parser.parse_known_args(argv)
 
-    if args.action == "omdoc":
-        argv[0] = "gen"
-        argv.append("--omdoc")
-        return submods["gen"].do(parser.parse_args(argv))
-
-    if args.action == "pdf":
-        argv[0] = "gen"
-        argv.append("--pdf")
-        return submods["gen"].do(parser.parse_args(argv))
-
-    if args.action == "xhtml":
-        argv[0] = "gen"
-        argv.append("--xhtml")
-        return submods["gen"].do(parser.parse_args(argv))
-
-    #
-    # Normal run code
-    #
-
-    return submods[args.action].do(args)
+    # run normally.
+    return submods[args.action].do(args, unknown)
 
 def run(argv = sys.argv[1:]):
     install_excepthook()

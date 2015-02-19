@@ -15,20 +15,18 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import argparse
+from lmh.lib import about
+from lmh.lib.io import std
 
-from lmh.lib import io, about, helper
+from . import CommandClass
 
-def add_parser(subparsers, name="about"):
-    about_parser = subparsers.add_parser(name, help='shows version and general information. ', formatter_class=helper.LMHFormatter)
-    add_parser_args(about_parser)
+class Command(CommandClass):
+    def __init__(self):
+        self.help="Show version and general information"
 
-def add_parser_args(parser):
-    pass
+    def do(self, arguments, unparsed):
+        std("lmh, Version", about.version, "( git", about.git_version(), ")")
+        std()
+        std(about.license)
 
-def do(args):
-    io.std("lmh, Version", about.version, "( git", about.git_version(), ")")
-    io.std()
-    io.std(about.license)
-
-    return True
+        return True

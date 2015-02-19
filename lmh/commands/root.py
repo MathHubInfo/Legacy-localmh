@@ -15,18 +15,14 @@ You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from lmh.lib.io import std
+from lmh.lib.env import install_dir
 
-import argparse
-from lmh.lib import helper
-from lmh.lib.io import err
-from lmh.lib.packs import update
+from . import CommandClass
 
-def add_parser(subparsers, name="selfupdate"):
-    subparsers.add_parser(name, help='Updates lmh itself. ',formatter_class=helper.LMHFormatter)
-
-def add_parser_args(parser):
-    pass
-
-def do(args):
-    # Update the 'self' package
-    return update("self")
+class Command(CommandClass):
+    def __init__(self):
+        self.help="Show the root directory of the lmh installation"
+    def do(self, args, unknown):
+        std(install_dir)
+        return True

@@ -14,8 +14,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-import sys
 import fnmatch
 
 from string import Template
@@ -77,7 +75,7 @@ def is_valid(name, no_manifest = False):
     try:
         urlopen(raw)
         return True
-    except Exception as e:
+    except Exception:
         return False
 
 

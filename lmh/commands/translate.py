@@ -17,23 +17,21 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import re
-import argparse
-
-from lmh.lib import helper
-from lmh.lib.io import std, err
+from lmh.lib.io import err
 from lmh.lib.modules.translate import transmod
 
-def add_parser(subparsers, name="translate"):
-    parser_status = subparsers.add_parser(name, help='Translates an existing multilingual module to a new language. ',formatter_class=helper.LMHFormatter)
-    add_parser_args(parser_status)
+from . import CommandClass
 
-def add_parser_args(parser):
-    parser.add_argument('--force', action="store_true", default=False, help="Overwrite existing modules. ")
-    parser.add_argument('source', nargs=1, help="Name of the existing language. ")
-    parser.add_argument('dest', nargs="+", help="Name(s) of the new language(s). ")
-    parser.add_argument('--terms', default=None, help="Terms to pre-translate. Either a Path to a json file or a JSON-encoded string. ")
+class Command(CommandClass):
+    def __init__(self):
+        self.help="Translate existing multilingual modules to a new language"
+    def add_parser_args(self, parser):
+        parser.add_argument('--force', action="store_true", default=False, help="Overwrite existing modules. ")
+        parser.add_argument('source', nargs=1, help="Name of the existing language. ")
+        parser.add_argument('dest', nargs="+", help="Name(s) of the new language(s). ")
+        parser.add_argument('--terms', default=None, help="Terms to pre-translate. Either a Path to a json file or a JSON-encoded string. ")
 
-    parser.epilog = """
+        parser.epilog = """
 Example: lmh translate functions.en.tex de
 
 Which translates the english version functions.en.tex to a new german version
@@ -50,35 +48,34 @@ The terms argument should have the following structure:
 }
 
 Will require manual completion of the translation. """
+    def do(self, args, unknown_args):
+        ret = True
 
-def do(args):
-    ret = True
+        multiregex = r"(.*)\.(.*)\.tex"
 
-    multiregex = r"(.*)\.(.*)\.tex"
+        args.source = args.source[0]
 
-    args.source = args.source[0]
+        try:
+            ofn = os.path.abspath(args.source)
+            ofn = re.findall(multiregex, ofn)[0]
+        except:
+            err("Module", args.source, "does not seem to be multi-lingual. ")
+            err("(Can not extract language from filename. )")
+            err("Please rename it to <module>.<language>.tex and try again. ")
+            return False
 
-    try:
-        ofn = os.path.abspath(args.source)
-        ofn = re.findall(multiregex, ofn)[0]
-    except:
-        err("Module", args.source, "does not seem to be multi-lingual. ")
-        err("(Can not extract language from filename. )")
-        err("Please rename it to <module>.<language>.tex and try again. ")
-        return False
+        if not os.path.isfile(os.path.abspath(args.source)):
+            err("File", args.source, " does not exist. ")
+            return False
 
-    if not os.path.isfile(os.path.abspath(args.source)):
-        err("File", args.source, " does not exist. ")
-        return False
+        for lang in args.dest:
+            langfn = ofn[0]+"."+lang+".tex"
+            if not args.force and os.path.isfile(langfn):
+                err("File", langfn, "exists, skipping. ")
+                err("Use --force to overwrite. ")
+                ret = False
+                continue
 
-    for lang in args.dest:
-        langfn = ofn[0]+"."+lang+".tex"
-        if not args.force and os.path.isfile(langfn):
-            err("File", langfn, "exists, skipping. ")
-            err("Use --force to overwrite. ")
-            ret = False
-            continue
+            ret = transmod(ofn[0], ofn[1], lang, pre_terms = args.terms) and ret
 
-        ret = transmod(ofn[0], ofn[1], lang, pre_terms = args.terms) and ret
-
-    return ret
+        return ret

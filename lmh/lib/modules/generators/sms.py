@@ -22,7 +22,7 @@ class generate(Generator):
           return False
         if gen_mode == "force" or gen_mode == "update_log" or gen_mode == "grep_log":
             return True
-        elif os.path.getmtime(module["path"]) > (os.path.getmtime(module["sms"]) if os.path.isfile(module["sms"]) else 0):
+        elif ((os.path.getmtime(module["path"]) > os.path.getmtime(module["sms"])) if os.path.isfile(module["sms"]) else 0):
             return True
         else:
             return False
