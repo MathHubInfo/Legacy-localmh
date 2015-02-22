@@ -323,21 +323,55 @@ def match_repos(repos, root=os.getcwd(), abs=False):
         # this will also work with globs
         names = os.path.abspath(os.path.join(root, r))
 
+        # it is not inside the data directory
+        # so try again next time
+        if not is_in_data(names):
+            return True
+
+        # find the relative path of it to the root.
+        names = os.path.relpath(
+            os.path.abspath(names),
+            data_dir
+        )
+
+        # make sure everything ends with a slash
+        # so that we can count properly
+        if names[-1] != "/":
+            names += "/"
+
+        # Now figure out which level we are at
+        # by counting slashes
+        num_slashes = 0
+        for c in names:
+            # count the slashes
+            # by increasing the level.
+            if c == "/":
+                num_slashes += 1
+
+
+        # if we have no slashes
+        # we are toplevel
+        # and can pretty much exit everything
+        if names == "./":
+            names = data_dir+"/*/*"
+
+        # if we have 1 slash
+        # we are one level deep
+        elif num_slashes == 1:
+            names = data_dir+"/"+names+"*"
+        else:
+            names = os.path.join(data_dir, names)
+
         # now expand with the help of globs
         names = glob.glob(names)
 
-        # we want to find some paths.
-        paths = set()
-
-        # for each of the names we will have to find all the repository subdirs
-        # and add them to the set.
-        for name in names:
-            paths.update(find_repo_subdirs(name))
+        # and check if they exist
+        names = filter(is_repo, names)
 
         # if we found something
         # we should through the item
-        if len(paths) > 0:
-            results.update(paths)
+        if len(names) > 0:
+            results.update(names)
             return False
         else:
             return True
