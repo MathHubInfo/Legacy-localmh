@@ -18,7 +18,7 @@ along with LMH.  If not, see <http://www.gnu.org/licenses/>.
 import re
 import sys
 import shutil
-from lmh.lib import f7, clean_list
+from lmh.lib import remove_doubles, clean_list
 from lmh.lib.io import std, err, write_file, read_file
 from lmh.lib.modules import locate_modules, needsPreamble
 
@@ -84,7 +84,7 @@ def find_all_symdefs(text):
     names_2 = [m[2] for m in matches2]
 
     # and combine
-    return f7(names_1+names_2)
+    return remove_doubles(names_1+names_2)
 
 
 
@@ -94,7 +94,7 @@ def add_symis(text, symis):
         if sym[1] == 0:
             continue
         addtext.append("\\sym"+("i"*sym[1]) +"{"+"}{".join(sym[2])+"}\n")
-    addtext = f7(addtext)
+    addtext = remove_doubles(addtext)
     pattern = r"\\begin{modsig}((.|\n)*)\\end{modsig}"
     return re.sub(pattern, r"\\begin{modsig}\1"+"".join(addtext)+"\\end{modsig}", text)
 

@@ -28,7 +28,7 @@ import functools
 import traceback
 
 
-from lmh.lib import reduce, clean_list, f7
+from lmh.lib import reduce, clean_list, remove_doubles
 from lmh.lib.io import std, err, read_file, effectively_readable
 from lmh.lib.env import install_dir, data_dir
 from lmh.lib.git import root_dir
@@ -155,7 +155,7 @@ def locate_preamables(mods):
                 [the_mods.remove(l) for l in langmods]
 
                 # Rmeovee doubles
-                langmods = f7(langmods)
+                langmods = remove_doubles(langmods)
 
                 # Now make the thing
                 res.append({
@@ -170,7 +170,7 @@ def locate_preamables(mods):
                 })
             # Now take care of the others, if there are any.
             if len(the_mods) > 0:
-                the_mods = f7(the_mods)
+                the_mods = remove_doubles(the_mods)
                 alltex_file = os.path.join(y["path"], "all.tex")
                 # Find the youngest one
                 youngest = [os.path.join(y["path"], k+".tex") for k in the_mods]
@@ -343,6 +343,7 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, find_files = 
     oldpwd = os.getcwd()
 
     # Are we a repository
+    #TODO: Use the pre-built functions for this.
     is_repo = lambda x:os.path.relpath(data_dir, x) == "../.."
     is_in_repo = lambda x:os.path.relpath(data_dir, x).startswith("../../")
     is_in_data = lambda x: not os.path.relpath(x, data_dir).startswith("..")

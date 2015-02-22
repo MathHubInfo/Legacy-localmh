@@ -40,7 +40,7 @@ def setnice(nice, pid = None):
 def reduce(lst):
     """Flattens a list. """
     return sum( ([x] if not isinstance(x, list) else reduce(x) for x in lst), [] )
-def f7(seq):
+def remove_doubles(seq):
     """Removes doubles from a list efficiently. """
     seen = set()
     seen_add = seen.add
