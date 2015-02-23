@@ -1,20 +1,3 @@
-"""
-This file is part of LMH.
-
-LMH is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-LMH is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with LMH.  If not, see <http://www.gnu.org/licenses/>.
-"""
-
 import os
 import os.path
 import sys
@@ -36,6 +19,13 @@ from lmh.lib.git import root_dir
 from lmh.lib.repos.local import find_repo_subdirs
 
 def needsPreamble(file):
+    """
+        Checks if a file needs a preamble.
+
+        @type file:     string
+        @param file:    File to check.
+        @rtype:         boolean
+    """
     # check if we need to add the premable
     return re.search(r"\\begin(\w)*{document}", read_file(file)) == None
 
@@ -121,6 +111,7 @@ def locate_module(path, git_root):
         f["file_pre"] = None
         f["file_post"] = None
     return [f]
+
 
 def locate_preamables(mods):
     # locate preambles for a given repository
@@ -269,10 +260,6 @@ def locate_modules(path, depth=-1, find_files = True):
         modules.extend(reduce([locate_modules(folder, depth - 1, find_files = find_files) for folder in folders]))
 
     return modules
-
-def locate_modfiles(dir = "."):
-    files = filter(lambda x:x["type"] == "file", locate_modules(dir))
-    return filter(lambda x:needsPreamble(x["file"]), files)
 
 def makeIndex(dir = "."):
     index = {}

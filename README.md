@@ -4,24 +4,16 @@ LocalMH is an infrastructure for local (in a working tree) management of the con
 
 ## Install
 
-The only supported way to install localmh is to use [localmh_docker](https://github.com/KWARC/localmh_docker). 
+The only supported way to install localmh is to use [localmh_docker](https://github.com/KWARC/localmh_docker).
 
 ## Upgrade
 
-To upgrade only lmh itself run:
-
 ```bash
-lmh selfupdate
-```
-
-To re-install and update depdencies, use:
-
-```
-lmh setup --reinstall .
+lmh selfupdate # to upgrade the lmh installation
+lmh setup --update all # to upgrade dependencies
 ```
 
 ## Help
-
 Basic Instructions on how to use lmh can be found at [http://mathhub.info/help/offline-authoring](http://mathhub.info/help/offline-authoring).
 
 ## Directory Structure

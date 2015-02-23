@@ -51,6 +51,7 @@ class generate(Generator):
     def make_job(self, module):
         # store parameters for all.tex job generation
 
+        # TODO: Locate preamble only if needed here
         if module["file_pre"] != None:
             args = [latexmlc, "--profile", "stex-module", "--path="+stydir, module["file"], "--destination="+module["omdoc"], "--log="+module["omdoc_log"]]
             args.append("--preamble="+module["file_pre"])
