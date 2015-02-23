@@ -1,20 +1,3 @@
-"""
-This file is part of LMH.
-
-LMH is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-LMH is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with LMH.  If not, see <http://www.gnu.org/licenses/>.
-"""
-
 import os
 import os.path
 import re
@@ -36,170 +19,14 @@ from lmh.lib.git import do_data as git_do_data
 from lmh.lib.git import get_remote_status
 from lmh.lib.git import is_tracked, is_repo
 
-#
-# Repo Matching
-#
-
-def is_repo_dir(path, existence = True):
-    """Checks if a directory is a repo directory. """
-
-    if existence and (not os.path.isdir(path)):
-        return False
-    try:
-        if not (os.path.relpath(data_dir, os.path.abspath(path)) == "../.."):
-            return False
-
-        if existence:
-            return is_repo(path)
-        else:
-            return True
-    except Exception as e:
-        err(e)
-        return False
-
-def is_in_data(path):
-    """Checks if a directory is contained within the data directory. """
-    try:
-        return os.path.abspath(path).startswith(os.path.abspath(data_dir))
-    except:
-        return False
-
-def is_in_repo(path):
-    """Checks if a directory is contained inside of a repo. """
-    try:
-        if is_in_data(path):
-            return os.path.relpath(data_dir, os.path.abspath(path)).startswith("../..")
-        else:
-            return False
-    except:
-        return False
-
-def find_repo_subdirs(root):
-    """Finds repository subdirectories of a directory. """
-
-    res = []
-
-    # if we are not a directory, do nothing.
-    if not os.path.isdir(root):
-        return res
-
-    #Subdirectories
-    for d in [name for name in os.listdir(root) if os.path.isdir(os.path.join(root, name))]:
-        d = os.path.join(root, d)
-        if is_repo_dir(d):
-            res = res + [d]
-        else:
-            res = res + find_repo_subdirs(d)
-
-    return res
-
-def find_repo_dir(root, existence=True):
-    """Finds the repository belonging to a file or directory. """
-    root = os.path.abspath(root)
-    if is_repo_dir(root,existence):
-        return root
-    if not is_in_repo(root):
-        return False
-    else:
-        return find_repo_dir(os.path.join(root, ".."),existence=existence)
-
-def match_repo(repo, root=os.getcwd(), abs=False, existence=True):
-    """Matches a single specefier to a repository. """
-
-    # 1) Resolve to absolute path repo (via root)
-    # 2) If it is (inside) a repository, return that repository
-    # 3) If not, try to repeat 1) and 2) with root = data_dir
-    # 4) If that fails, return None
-
-    # make sure the root is absolute
-    root = os.path.abspath(root)
-
-    # If repo is empty, make sure we use the current directory.
-    if repo == "":
-        repo = os.getcwd()
-
-    # try the full repo_path
-    repo_path = os.path.join(root, repo)
-
-    if is_repo_dir(repo_path, existence) or is_in_repo(repo_path):
-        # figure out the path to the repository root
-        repo_path = find_repo_dir(repo_path, existence)
-        if not repo_path:
-            return None
-        if abs:
-            # return the absolute path to the repo
-            return repo_path
-        else:
-            # return just the repo name, determined by the relative name
-            return os.path.relpath(repo_path, os.path.abspath(data_dir))
-    elif not (root == os.path.abspath(data_dir)):
-        #if the root is not already the data_dir, try that
-        return match_repo(repo, root=data_dir, abs=abs,existence=existence)
-    else:
-        # nothing found
-        return None
-
-
-def match_repos(repos, root=os.getcwd(), abs=False):
-    """Matches a list of specefiers to repositories. """
-
-    # For each element do the following:
-    # 1) Check if given directory exists relatively from current root.
-    #       1a) If it is a repository or repository subdir, return that
-    #        1b) If it is inside the data_dir, return all repo subdirectories
-    # 2) If it does not exist, resolve it as glob.glob from install_dir
-    # 3) For each of the found directories, run 1)
-
-    # If repos is a string, turn it into an array
-    if isinstance(repos, basestring):
-        repos = [repos]
-
-    repo_dirs = []
-    globs = []
-
-    # Try and find actual directories from root
-    for r in repos:
-        r_abs = os.path.abspath(os.path.join(root, r))
-        if os.path.isdir(r_abs):
-            # its a directory
-            repo_dirs.append(r_abs)
-        else:
-            # Its not => treat as glob
-            globs.append(r)
-            # Try and reolsve th globs
-    os.chdir(data_dir)
-    for g in globs:
-        repo_dirs.extend(glob.glob(g))
-
-    rdirs = []
-
-    for d in repo_dirs:
-        m = match_repo(d)
-        if m:
-            rdirs.append(m)
-        elif is_in_data(d):
-            rdirs.extend(find_repo_subdirs(d))
-        elif os.path.abspath(d) == os.path.abspath(install_dir):
-            rdirs.extend(find_repo_subdirs(install_dir))
-        else:
-            err("Warning: Unable to parse ", d, " as a repository, falling back to --all. ")
-            rdirs.extend(find_repo_subdirs(install_dir))
-
-    # Remove doubles
-    rdirs = sorted(set(rdirs))
-
-    if not abs:
-        # its not absolute, return the relative paths
-        rdirs = [os.path.relpath(d, data_dir) for d in rdirs]
-
-    return rdirs
+from lmh.lib.repos.local.dirs import is_in_data, is_repo_dir, is_in_repo, find_repo_subdirs, match_repo, match_repos, find_repo_dir
 
 
 def match_repo_args(spec, all=False, abs=True):
     """Matches repository arguments to an actual list of repositories"""
 
     if all:
-        return match_repos(install_dir, abs=abs)
+        return match_repos(data_dir, abs=abs)
     elif len(spec) == 0:
         return match_repos(".", abs=abs)
     else:
@@ -476,7 +303,6 @@ def log(ordered, *repos):
 
     return ret
 
-
 def write_deps(dirname, deps):
     """Writes dependencies into a given module. """
 
@@ -555,19 +381,3 @@ def calc_deps(apply = False, dirname="."):
             "not_needed": not_needed,
             "should_be": real_dependencies
     }
-
-    std("---")
-    if len(ret["fine"]) > 0:
-        std(term_colors("green"),  "Used dependencies:         ", term_colors("normal"), ", ".join(ret["fine"]))
-    if len(ret["not_needed"]) > 0:
-        std(term_colors("yellow"), "Superfluous dependencies:  ", term_colors("normal"), ", ".join(ret["not_needed"]))
-    if len(ret["missing"]) > 0:
-        std(term_colors("red"),    "Missing dependencies:      ", term_colors("normal"), ", ".join(ret["missing"]))
-    std("---")
-    if len(ret["missing"]) > 0 or len(ret["not_needed"]) > 0:
-        std("Dependencies should be: ", ", ".join(ret["should_be"]))
-
-    if apply:
-        write_deps(dirname, ret["should_be"])
-
-    return ret

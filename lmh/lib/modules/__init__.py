@@ -1,20 +1,3 @@
-"""
-This file is part of LMH.
-
-LMH is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-LMH is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with LMH.  If not, see <http://www.gnu.org/licenses/>.
-"""
-
 import os
 import os.path
 import sys
@@ -28,7 +11,7 @@ import functools
 import traceback
 
 
-from lmh.lib import reduce, clean_list, f7
+from lmh.lib import reduce, clean_list, remove_doubles
 from lmh.lib.io import std, err, read_file, effectively_readable
 from lmh.lib.env import install_dir, data_dir
 from lmh.lib.git import root_dir
@@ -36,6 +19,13 @@ from lmh.lib.git import root_dir
 from lmh.lib.repos.local import find_repo_subdirs
 
 def needsPreamble(file):
+    """
+        Checks if a file needs a preamble.
+
+        @type file:     string
+        @param file:    File to check.
+        @rtype:         boolean
+    """
     # check if we need to add the premable
     return re.search(r"\\begin(\w)*{document}", read_file(file)) == None
 
@@ -122,6 +112,7 @@ def locate_module(path, git_root):
         f["file_post"] = None
     return [f]
 
+
 def locate_preamables(mods):
     # locate preambles for a given repository
 
@@ -155,7 +146,7 @@ def locate_preamables(mods):
                 [the_mods.remove(l) for l in langmods]
 
                 # Rmeovee doubles
-                langmods = f7(langmods)
+                langmods = remove_doubles(langmods)
 
                 # Now make the thing
                 res.append({
@@ -170,7 +161,7 @@ def locate_preamables(mods):
                 })
             # Now take care of the others, if there are any.
             if len(the_mods) > 0:
-                the_mods = f7(the_mods)
+                the_mods = remove_doubles(the_mods)
                 alltex_file = os.path.join(y["path"], "all.tex")
                 # Find the youngest one
                 youngest = [os.path.join(y["path"], k+".tex") for k in the_mods]
@@ -270,10 +261,6 @@ def locate_modules(path, depth=-1, find_files = True):
 
     return modules
 
-def locate_modfiles(dir = "."):
-    files = filter(lambda x:x["type"] == "file", locate_modules(dir))
-    return filter(lambda x:needsPreamble(x["file"]), files)
-
 def makeIndex(dir = "."):
     index = {}
 
@@ -343,6 +330,7 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, find_files = 
     oldpwd = os.getcwd()
 
     # Are we a repository
+    #TODO: Use the pre-built functions for this.
     is_repo = lambda x:os.path.relpath(data_dir, x) == "../.."
     is_in_repo = lambda x:os.path.relpath(data_dir, x).startswith("../../")
     is_in_data = lambda x: not os.path.relpath(x, data_dir).startswith("..")

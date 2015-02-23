@@ -1,19 +1,3 @@
-"""
-This file is part of LMH.
-
-LMH is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-LMH is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with LMH.  If not, see <http://www.gnu.org/licenses/>.
-"""
 import fnmatch
 
 from string import Template
@@ -53,11 +37,10 @@ def find_source(name, quiet = False):
 
     root_urls = get_config("install::sources").rsplit(";")
     root_suffix = ["", ".git"]
-    for i in range(len(root_urls)):
-        url = root_urls[i]
-        url_suf = root_suffix[i]
-        if exists(url+name+url_suf):
-            return url+name+url_suf
+    for url in root_urls:
+        for url_suf in root_suffix:
+            if exists(url+name+url_suf):
+                return url+name+url_suf
     if not quiet:
         err("Can not find remote repository", name)
         err("Please check install::sources and check your network connection. ")
