@@ -37,11 +37,10 @@ def find_source(name, quiet = False):
 
     root_urls = get_config("install::sources").rsplit(";")
     root_suffix = ["", ".git"]
-    for i in range(len(root_urls)):
-        url = root_urls[i]
-        url_suf = root_suffix[i]
-        if exists(url+name+url_suf):
-            return url+name+url_suf
+    for url in root_urls:
+        for url_suf in root_suffix:
+            if exists(url+name+url_suf):
+                return url+name+url_suf
     if not quiet:
         err("Can not find remote repository", name)
         err("Please check install::sources and check your network connection. ")
