@@ -25,10 +25,9 @@ def is_in_data(path):
     """
         Checks if a directory is contained within the data directory.
 
-        @type path:     string
-        @param path:    Path to check
+        @param path {string} Path to check.
 
-        @rtype:         boolean
+        @returns {boolean}
     """
 
     return os.path.abspath(path).startswith(data_dir)
@@ -40,13 +39,11 @@ def is_repo_dir(path, existence = True):
         Optimised to exit as soon as possible when the directory is not
         a repository.
 
-        @param {string} path - Path to check.
-        @param {boolean} [existence = true] - Do we do a theoretical test only or do we check for existence as well?
+        @param path {string} Path to check.
+        @param existence {boolean} Do we do a theoretical test only or do we check for existence as well?
 
         @returns {boolean}
     """
-
-    #TODO: Check if we need existence.
 
     # find the relative path
     # by going relatively from the path to the data directory.

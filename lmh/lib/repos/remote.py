@@ -5,7 +5,8 @@ from string import Template
 from lmh.lib.io import std, err
 from lmh.lib.env import data_dir
 from lmh.lib.git import clone, exists
-from lmh.lib.repos import is_installed, find_dependencies
+from lmh.lib.repos.local.dirs import is_repo_dir
+from lmh.lib.repos import find_dependencies
 from lmh.lib.config import get_config
 
 try:
@@ -90,7 +91,7 @@ def install(no_manifest, *reps):
         no_manifest = get_config("install::nomanifest")
 
     for rep in reps:
-        if not is_installed(rep):
+        if not is_repo_dir(rep):
             if not force_install(rep):
                 err("Unable to install", rep)
                 return False

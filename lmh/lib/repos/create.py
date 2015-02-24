@@ -158,6 +158,7 @@ def create(reponame, type="none", remote = True):
     repo_name = repo.split("/")[1]
 
     # Check if it is already installed.
+    # TODO: Use the other is_installed
     if is_installed(repo):
         err("Repository", repo, "already installed. ")
         err("Do you maybe want to push this to the remote?")
@@ -234,7 +235,7 @@ def create(reponame, type="none", remote = True):
     # Source does not exist => we will have to create it.
     if not source:
         source = create_remote(repo_group, repo_name)
-        if not source:
+        if not source:k
             err("local repository created but remote creation failed. ")
             return False
 
