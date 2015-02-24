@@ -36,7 +36,7 @@ class generate(Generator):
         if gen_mode == "force":
             return True
         elif gen_mode == "update_log":
-            return ((os.path.getmtime(module["path"]) > os.path.getmtime(module["omdoc_log"])) if os.path.isfile(module["omdoc_log"]) else 0)
+            return (os.path.getmtime(module["path"]) > os.path.getmtime(module["omdoc_log"])) if os.path.isfile(module["omdoc_log"]) else True
         elif gen_mode == "grep_log":
             logfile = module["omdoc_log"]
             if not os.path.isfile(logfile):
@@ -44,7 +44,7 @@ class generate(Generator):
             r = text.match(read_file(logfile))
             return True if r else False
         elif gen_mode == "update":
-            return os.path.getmtime(module["path"]) > (os.path.getmtime(module["omdoc"] if os.path.isfile(module["omdoc"]) else 0))
+            return os.path.getmtime(module["path"]) > os.path.getmtime(module["omdoc"]) if os.path.isfile(module["omdoc"]) else True
         else:
             return False
         return False
