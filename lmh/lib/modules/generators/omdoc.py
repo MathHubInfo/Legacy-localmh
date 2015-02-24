@@ -44,7 +44,7 @@ class generate(Generator):
             r = text.match(read_file(logfile))
             return True if r else False
         elif gen_mode == "update":
-            return os.path.getmtime(module["path"]) > os.path.getmtime(module["omdoc"]) if os.path.isfile(module["omdoc"]) else True
+            return (os.path.getmtime(module["path"]) > os.path.getmtime(module["omdoc"])) if os.path.isfile(module["omdoc"]) else True
         else:
             return False
         return False
