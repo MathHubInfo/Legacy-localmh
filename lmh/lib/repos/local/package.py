@@ -1,7 +1,8 @@
 from lmh.lib.repos.local.dirs import is_repo_dir
-from lmh.lib.env import install_dir
+from lmh.lib.env import data_dir
 
 from lmh.lib.io import read_file_lines
+import os.path
 
 import re
 
@@ -17,7 +18,7 @@ def is_installed(package):
         @returns {boolean}
     """
 
-    return is_repo_dir(os.path.join(install_dir, package))
+    return is_repo_dir(os.path.join(data_dir, package))
 
 def get_package_dependencies(package):
     """
@@ -29,7 +30,7 @@ def get_package_dependencies(package):
     """
 
     # Find the package root directory.
-    package_dir = find_repo_dir(os.path.join(install_dir, package))
+    package_dir = find_repo_dir(os.path.join(data_dir, package))
 
     # Check that repository is installed.
     if not package_dir:

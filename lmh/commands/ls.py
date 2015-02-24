@@ -1,5 +1,6 @@
-from lmh.lib.io import std
+from lmh.lib.io import std, term_colors
 from lmh.lib.repos.local import match_repo_args
+from lmh.lib.repos.local.package import is_installed
 from lmh.lib.help import repo_wildcard_local
 
 from . import CommandClass
