@@ -9,7 +9,7 @@ from lmh.lib.io import read_file, write_file, find_files, std, err, read_raw
 from lmh.lib.config import get_config
 from lmh.lib.repos.local import match_repo
 from lmh.lib.repos.remote import find_source
-from lmh.lib.repos import is_installed
+from lmh.lib.repos.local.package import is_installed
 
 # Git stuffs
 from lmh.lib.git import do as git_do
@@ -235,7 +235,7 @@ def create(reponame, type="none", remote = True):
     # Source does not exist => we will have to create it.
     if not source:
         source = create_remote(repo_group, repo_name)
-        if not source:k
+        if not source:
             err("local repository created but remote creation failed. ")
             return False
 

@@ -54,37 +54,14 @@ def get_package_dependencies(package):
     # go through each of the lines
     for line in meta_inf_lines:
         if line.startswith(deps_prefix):
-            # cut off the beginning and replace spaces. 
+            # cut off the beginning and replace spaces.
             line = line[len(deps_prefix):]
             line = whiteSpaceExpression.sub(" ", line)
 
+            # and update the dependencies
+            dependencies.update(line.split(" "))
 
+    print(dependencies)
 
-
-
-
-
-
-
-    if not is_repo_dir(repo, from_base=True):
-        err("Repository", repo, "is not installed. Failed to parse dependencies. ")
-        return []
-
-    repo = data_dir +"/" + repo
-
-    res = []
-    try:
-        # Find the root directory
-        d = root_dir(repo)
-        metafile = read_file_lines(os.path.join(d, "META-INF", "MANIFEST.MF"))
-
-        # Find the right line for dependencies
-        for line in metafile:
-            if line.startswith("dependencies: "):
-                # TODO: Maybe find a better alternative for this.
-                for dep in re.findall(nameExpression, line):
-                    res.append(dep)
-    except Exception:
-        return False
-
-    return res
+    # return a list of them
+    return list(dependencies)
