@@ -5,7 +5,6 @@ import glob
 
 from lmh.lib.env import install_dir, data_dir
 from lmh.lib.io import term_colors, find_files, std, std_paged, err, write_file, read_file, read_file_lines
-from lmh.lib.repos import find_dependencies
 from lmh.lib.repos.remote import install
 
 
@@ -20,6 +19,8 @@ from lmh.lib.git import get_remote_status
 from lmh.lib.git import is_tracked, is_repo
 
 from lmh.lib.repos.local.dirs import is_in_data, is_repo_dir, is_in_repo, find_repo_subdirs, match_repo, match_repos, find_repo_dir
+
+from lmh.lib.repos.local.package import get_package_dependencies
 
 
 def match_repo_args(spec, all=False, abs=True):
@@ -323,7 +324,7 @@ def calc_deps(apply = False, dirname="."):
     std("Checking dependencies for:   ", repo)
 
     # Getting the real dependencies
-    given_dependencies = find_dependencies(match_repo(dirname))+[repo]
+    given_dependencies = get_package_dependencies(match_repo(dirname))+[repo]
     given_dependencies = list(set(given_dependencies))
 
     # All the required paths

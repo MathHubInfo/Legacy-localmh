@@ -16,6 +16,13 @@ lmh setup --update all # to upgrade dependencies
 ## Help
 Basic Instructions on how to use lmh can be found at [http://mathhub.info/help/offline-authoring](http://mathhub.info/help/offline-authoring).
 
+## API Documentation
+Can be generated using [EPyDoc](http://epydoc.sourceforge.net/):
+
+```
+epydoc lmh/ -o docs/html --docformat javadoc
+```
+
 ## Directory Structure
 
 Resources/directory structure:
