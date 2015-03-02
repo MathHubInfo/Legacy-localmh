@@ -6,7 +6,7 @@ from lmh.lib.io import std, err
 from lmh.lib.env import data_dir
 from lmh.lib.git import clone, exists
 from lmh.lib.repos.local.dirs import is_repo_dir
-from lmh.lib.repos.local.package import get_package_dependencies
+from lmh.lib.repos.local.package import get_package_dependencies, is_installed
 from lmh.lib.config import get_config
 
 try:
@@ -101,8 +101,10 @@ def install(no_manifest, *reps):
                 std("Resolving dependencies for", rep)
                 for dep in get_package_dependencies(rep):
                     if not (dep in reps) and not is_installed(dep):
-                        std("Found unsatisfied dependency:", dep)
+                        std("Found unsatisfied dependency:", "'"+dep+"'")
                         reps.append(dep)
+                    else:
+                        std("Found statisfied dependency:", "'"+dep+"'")
         except:
             if no_manifest:
                 err("Error parsing dependencies for", rep)

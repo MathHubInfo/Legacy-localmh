@@ -1,4 +1,4 @@
-from lmh.lib.repos.local.dirs import is_repo_dir
+from lmh.lib.repos.local.dirs import is_repo_dir, find_repo_dir
 from lmh.lib.env import data_dir
 
 from lmh.lib.io import read_file_lines
@@ -57,12 +57,10 @@ def get_package_dependencies(package):
         if line.startswith(deps_prefix):
             # cut off the beginning and replace spaces.
             line = line[len(deps_prefix):]
-            line = whiteSpaceExpression.sub(" ", line)
+            line = whiteSpaceExpression.sub("", line)
 
             # and update the dependencies
-            dependencies.update(line.split(" "))
-
-    print(dependencies)
+            dependencies.update(line.split(","))
 
     # return a list of them
     return list(dependencies)
