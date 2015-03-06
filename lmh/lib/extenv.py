@@ -38,7 +38,7 @@ if git_executable == "":
 pdflatex_executable = get_config("env::pdflatex")
 
 if pdflatex_executable == "":
-    pdflatex_executable =  which("pdflatex")
+    pdflatex_executable =  which("xelatex")
 
 """The path to the perl executable. """
 perl_executable = get_config("env::perl")
