@@ -10,6 +10,8 @@ import datetime
 import functools
 import traceback
 
+import time
+
 
 from lmh.lib import reduce, clean_list, remove_doubles
 from lmh.lib.io import std, err, read_file, effectively_readable
@@ -28,6 +30,27 @@ def needsPreamble(file):
     """
     # check if we need to add the premable
     return re.search(r"\\begin(\w)*{document}", read_file(file)) == None
+
+def needsRegen(file, update_file):
+    """
+        Checks if a file needs to be regenerated.
+
+        @param file Name of file to check.
+        @param update_file File toc heck if newer.
+    """
+    #Get the time of the input file.
+    filetime = os.stat(file).st_atime
+
+    #Get the time of the output file to be updated
+    # if it doesn't exist, we need to update anyways
+    if os.path.isfile(update_file):
+        updatetime = os.stat(update_file).st_atime
+    else:
+        return True
+
+    # If the filetime is newer (bigger)
+    # We need to update.
+    return filetime > updatetime
 
 def locate_module(path, git_root):
     # locates a single module if it exists
@@ -115,7 +138,7 @@ def locate_module(path, git_root):
 
 def locate_preamables(mods):
     # locate preambles for a given repository
-
+    # TODO: Make this more efficient
 
     res = []
     for y in mods:

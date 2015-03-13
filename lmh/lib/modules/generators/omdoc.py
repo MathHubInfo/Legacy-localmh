@@ -13,6 +13,7 @@ from lmh.lib.config import get_config, read_file
 from lmh.lib.io import std, err
 from lmh.lib.env import install_dir, stexstydir, which
 from lmh.lib.extenv import perl5bindir, perl5libdir, perl5env
+from lmh.lib.modules import needsRegen
 
 if get_config("setup::cpanm::selfcontained"):
     latexmlc = install_dir+"/ext/perl5lib/bin/latexmlc"
@@ -28,6 +29,9 @@ class generate(Generator):
         self.quiet = quiet
         self.prefix = "OMDOC"
     def needs_file(self, module, gen_mode, text=None):
+
+        std(gen_mode)
+
         if module["type"] != "file":
             return False
         # No omdoc for localpaths.tex, all.tex and all.*.tex
@@ -35,16 +39,16 @@ class generate(Generator):
           return False
         if gen_mode == "force":
             return True
+        elif gen_mode == "update":
+            return needsRegen(module["path"], module["omdoc"])
         elif gen_mode == "update_log":
-            return (os.path.getmtime(module["path"]) > os.path.getmtime(module["omdoc_log"])) if os.path.isfile(module["omdoc_log"]) else True
+            return needsRegen(module["path"], module["omdoc_log"])
         elif gen_mode == "grep_log":
             logfile = module["omdoc_log"]
             if not os.path.isfile(logfile):
                 return False
             r = text.match(read_file(logfile))
             return True if r else False
-        elif gen_mode == "update":
-            return (os.path.getmtime(module["path"]) > os.path.getmtime(module["omdoc"])) if os.path.isfile(module["omdoc"]) else True
         else:
             return False
         return False
