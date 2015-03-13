@@ -13,7 +13,7 @@ from lmh.lib.config import get_config, read_file
 from lmh.lib.io import std, err
 from lmh.lib.env import install_dir, stexstydir, which
 from lmh.lib.extenv import perl5bindir, perl5libdir, perl5env
-from lmh.lib.modules import needsRegen
+from lmh.lib.modules import needsRegen, needsPreamble
 
 if get_config("setup::cpanm::selfcontained"):
     latexmlc = install_dir+"/ext/perl5lib/bin/latexmlc"
@@ -29,9 +29,6 @@ class generate(Generator):
         self.quiet = quiet
         self.prefix = "OMDOC"
     def needs_file(self, module, gen_mode, text=None):
-
-        std(gen_mode)
-
         if module["type"] != "file":
             return False
         # No omdoc for localpaths.tex, all.tex and all.*.tex
@@ -55,8 +52,8 @@ class generate(Generator):
     def make_job(self, module):
         # store parameters for all.tex job generation
 
-        # TODO: Locate preamble only if needed here
-        if module["file_pre"] != None:
+        # Only check here if we need the preamble
+        if needsPreamble(module["file"]) != None:
             args = [latexmlc, "--profile", "stex-module", "--path="+stydir, module["file"], "--destination="+module["omdoc"], "--log="+module["omdoc_log"]]
             args.append("--preamble="+module["file_pre"])
             args.append("--postamble="+module["file_post"])

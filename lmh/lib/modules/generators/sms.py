@@ -1,6 +1,7 @@
 from . import Generator
 from lmh.lib import shellquote
 from lmh.lib.io import std, err, read_file_lines
+from lmh.lib.modules import needsRegen
 
 import os.path
 

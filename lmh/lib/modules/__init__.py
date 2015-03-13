@@ -24,10 +24,9 @@ def needsPreamble(file):
     """
         Checks if a file needs a preamble.
 
-        @type file:     string
-        @param file:    File to check.
-        @rtype:         boolean
+        @param file File to check.
     """
+
     # check if we need to add the premable
     return re.search(r"\\begin(\w)*{document}", read_file(file)) == None
 
@@ -38,19 +37,32 @@ def needsRegen(file, update_file):
         @param file Name of file to check.
         @param update_file File toc heck if newer.
     """
-    #Get the time of the input file.
-    filetime = os.stat(file).st_atime
 
-    #Get the time of the output file to be updated
-    # if it doesn't exist, we need to update anyways
-    if os.path.isfile(update_file):
-        updatetime = os.stat(update_file).st_atime
+    # Get the time of the input file.
+    # This is cached to be fast.
+    if file in needsRegen.cache:
+        filetime = needsRegen.cache[file]
     else:
-        return True
+        filetime = os.stat(file).st_atime
+        needsRegen.cache[file] = filetime
+
+    # Get the time of the output file to be updated
+    # if it doesn't exist, we need to update anyways
+    # This is cached to be fast.
+    if update_file in needsRegen.cache:
+        updatetime = needsRegen.cache[update_file]
+    else:
+        if os.path.isfile(update_file):
+            updatetime = os.stat(update_file).st_atime
+        else:
+            updatetime = 0
+        needsRegen.cache[updatetime] = updatetime
 
     # If the filetime is newer (bigger)
     # We need to update.
     return filetime > updatetime
+needsRegen.cache = {}
+
 
 def locate_module(path, git_root):
     # locates a single module if it exists
@@ -116,40 +128,43 @@ def locate_module(path, git_root):
         "pdf_log": pdflog
     }
 
-    # This is slow because we need to open the file.
-    # maybe we should cache this somehow?
-    if needsPreamble(path):
+    # We always add pre/postamble here.
+    # But we do not say if we need it.
 
-        # Find the extension.
-        ext = re.search(r"(\.(.*)\.tex|.tex)$", f["file"]).group(1)
+    # Find the extension.
+    ext = re.search(r"(\.(.*)\.tex|.tex)$", f["file"]).group(1)
 
-        # Load the correct preamble.
-        f["file_pre"] = os.path.join(git_root, "lib", "pre"+ext)
-        f["file_pre"] = f["file_pre"] if os.path.isfile(f["file_pre"]) else os.path.join(git_root, "lib", "pre.tex")
+    # Load the correct preamble.
+    f["file_pre"] = os.path.join(git_root, "lib", "pre"+ext)
 
-        # Load the correct postable - this will problaly have to fallback to the default
-        f["file_post"] = os.path.join(git_root, "lib", "post"+ext)
-        f["file_post"] = f["file_post"] if os.path.isfile(f["file_post"]) else os.path.join(git_root, "lib", "post.tex")
-    else:
-        f["file_pre"] = None
-        f["file_post"] = None
+    # Load the correct postable - this will problaly have to fallback to the default
+    f["file_post"] = os.path.join(git_root, "lib", "post"+ext)
+
     return [f]
 
 
 def locate_preamables(mods):
     # locate preambles for a given repository
-    # TODO: Make this more efficient
+
+    # TODO: We want to make this MUCH MUCH more efficient.
 
     res = []
     for y in mods:
+
+        # only use the folders.
         if y["type"] != "folder":
             continue
+
+        # find the library dir.
         libdir = os.path.join(y["repo"], "lib")
+
         if os.path.isdir(libdir):
             try:
                 the_mods = y["modules"]
             except:
                 continue # We have nothing to generate here, because we did not find anything
+
+            # locate all the preambles.
             for pre_file in glob.glob(libdir+"/pre.*.tex"):
                 # The alltex file
                 alltex_file = re.sub(r"^(.*)pre\.(.*)\.tex$", r"all.\2.tex", pre_file)
@@ -165,10 +180,11 @@ def locate_preamables(mods):
                     youngest = float("inf")
                 else:
                     youngest = max([os.path.getmtime(fn) if os.path.isfile(fn) else 0 for fn in youngest])
+
                 # We dont want the others anymore.
                 [the_mods.remove(l) for l in langmods]
 
-                # Rmeovee doubles
+                # Remove doubles
                 langmods = remove_doubles(langmods)
 
                 # Now make the thing
@@ -182,6 +198,7 @@ def locate_preamables(mods):
                     "youngest": youngest,
                     "mods": langmods
                 })
+
             # Now take care of the others, if there are any.
             if len(the_mods) > 0:
                 the_mods = remove_doubles(the_mods)
@@ -213,6 +230,7 @@ def locate_modules(path, depth=-1, find_files = True):
         return []
 
     # TODO: Implement per-directory config files here
+    #
     modules = []
 
     if os.path.relpath(data_dir, path) == "../..":
@@ -239,6 +257,9 @@ def locate_modules(path, depth=-1, find_files = True):
     modules = reduce([locate_module(file, git_root) for file in files])
 
     if len(modules) > 0:
+        #
+        # This line will be slow
+        #
         youngest = max(map(lambda x : os.path.getmtime(x["path"]), modules))
 
         localpathstex = path + "/localpaths.tex"
@@ -249,13 +270,8 @@ def locate_modules(path, depth=-1, find_files = True):
         # so we can generate it before we
         # generate all the other files
 
-        pre = None
-        post = None
-
-        for m in modules:
-            if m["file_pre"] != None:
-                pre = m["file_pre"]
-                post = m["file_post"]
+        # We always need the folder first.
+        # TODO: More stuff
 
         modules[:0] = [{
             "type": "folder",
@@ -271,8 +287,8 @@ def locate_modules(path, depth=-1, find_files = True):
             "localpaths_path": localpathstex,
             "localpaths_time": os.path.getmtime(localpathstex) if os.path.isfile(localpathstex) else 0,
 
-            "file_pre": pre,
-            "file_post": post
+            "file_pre": m["file_pre"],
+            "file_post": m["file_post"]
         }]
 
         if find_files == False:

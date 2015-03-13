@@ -18,6 +18,7 @@ from lmh.lib.io import std, err, read_file, write_file
 from lmh.lib.env import install_dir, latexmlstydir, stexstydir
 from lmh.lib.config import get_config
 from lmh.lib.extenv import pdflatex_executable
+from lmh.lib.modules import needsRegen
 
 stydir = install_dir+"/sty"
 
