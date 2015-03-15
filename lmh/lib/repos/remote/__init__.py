@@ -8,6 +8,8 @@ from lmh.lib.git import clone
 from lmh.lib.repos.local.package import get_package_dependencies, is_installed
 from lmh.lib.config import get_config
 
+from lmh.lib.repos.remote.indexer import find_source
+
 try:
     from urllib2 import urlopen
 except:
@@ -29,8 +31,6 @@ except:
 
 
         BeautifulSoup = False
-
-from lmh.lib.remote.indexer import find_source
 
 def is_valid(name, no_manifest = False):
     """Checks if a remote repository is a valid repository. """

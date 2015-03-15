@@ -76,13 +76,13 @@ def build_local_tree(*repos):
     # List of repos to be installed.
     repos = repos[:]
 
-    # The dependencies. 
+    # The dependencies.
     deps = set()
 
     # The missing items
     missing = set()
 
-    for len(repos) == 0:
+    while len(repos) != 0:
         # Pull an element from the list.
         r = repos.pop()
 

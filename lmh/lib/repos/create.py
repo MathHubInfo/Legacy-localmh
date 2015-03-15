@@ -8,7 +8,7 @@ from lmh.lib.env import install_dir
 from lmh.lib.io import read_file, write_file, find_files, std, err, read_raw
 from lmh.lib.config import get_config
 from lmh.lib.repos.local import match_repo
-from lmh.lib.repos.remote import find_source
+from lmh.lib.repos.remote.indexer import find_source
 from lmh.lib.repos.local.package import is_installed
 
 # Git stuffs
