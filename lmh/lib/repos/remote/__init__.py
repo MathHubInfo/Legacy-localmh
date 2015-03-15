@@ -88,14 +88,13 @@ def install(no_manifest, *reps):
             std("Already installed:", "'"+rep+"'")
 
         try:
-            if not no_manifest:
-                std("Resolving dependencies for", rep)
-                for dep in get_package_dependencies(rep):
-                    if not (dep in reps) and not is_installed(dep):
-                        std("Found unsatisfied dependency:", "'"+dep+"'")
-                        reps.append(dep)
-                    else:
-                        std("Found statisfied dependency:", "'"+dep+"'")
+            std("Resolving dependencies for", rep)
+            for dep in get_package_dependencies(rep):
+                if not (dep in reps) and not is_installed(dep):
+                    std("Found unsatisfied dependency:", "'"+dep+"'")
+                    reps.append(dep)
+                else:
+                    std("Found statisfied dependency:", "'"+dep+"'")
         except:
             if no_manifest:
                 err("Error parsing dependencies for", rep)
