@@ -13,6 +13,7 @@ from lmh.lib.config import get_config, read_file
 from lmh.lib.io import std, err
 from lmh.lib.env import install_dir, stexstydir, which
 from lmh.lib.extenv import perl5bindir, perl5libdir, perl5env
+from lmh.lib.modules import needsRegen, needsPreamble
 
 if get_config("setup::cpanm::selfcontained"):
     latexmlc = install_dir+"/ext/perl5lib/bin/latexmlc"
@@ -35,24 +36,24 @@ class generate(Generator):
           return False
         if gen_mode == "force":
             return True
+        elif gen_mode == "update":
+            return needsRegen(module["path"], module["omdoc"])
         elif gen_mode == "update_log":
-            return (os.path.getmtime(module["path"]) > os.path.getmtime(module["omdoc_log"])) if os.path.isfile(module["omdoc_log"]) else True
+            return needsRegen(module["path"], module["omdoc_log"])
         elif gen_mode == "grep_log":
             logfile = module["omdoc_log"]
             if not os.path.isfile(logfile):
                 return False
             r = text.match(read_file(logfile))
             return True if r else False
-        elif gen_mode == "update":
-            return (os.path.getmtime(module["path"]) > os.path.getmtime(module["omdoc"])) if os.path.isfile(module["omdoc"]) else True
         else:
             return False
         return False
     def make_job(self, module):
         # store parameters for all.tex job generation
 
-        # TODO: Locate preamble only if needed here
-        if module["file_pre"] != None:
+        # Only check here if we need the preamble
+        if needsPreamble(module["file"]) != None:
             args = [latexmlc, "--profile", "stex-module", "--path="+stydir, module["file"], "--destination="+module["omdoc"], "--log="+module["omdoc_log"]]
             args.append("--preamble="+module["file_pre"])
             args.append("--postamble="+module["file_post"])

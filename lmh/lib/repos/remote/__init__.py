@@ -4,10 +4,11 @@ from string import Template
 
 from lmh.lib.io import std, err
 from lmh.lib.env import data_dir
-from lmh.lib.git import clone, exists
-from lmh.lib.repos.local.dirs import is_repo_dir
+from lmh.lib.git import clone
 from lmh.lib.repos.local.package import get_package_dependencies, is_installed
 from lmh.lib.config import get_config
+
+from lmh.lib.repos.remote.indexer import find_source
 
 try:
     from urllib2 import urlopen
@@ -30,22 +31,6 @@ except:
 
 
         BeautifulSoup = False
-
-
-
-def find_source(name, quiet = False):
-    """Finds the source of a repository. """
-
-    root_urls = get_config("install::sources").rsplit(";")
-    root_suffix = ["", ".git"]
-    for url in root_urls:
-        for url_suf in root_suffix:
-            if exists(url+name+url_suf):
-                return url+name+url_suf
-    if not quiet:
-        err("Can not find remote repository", name)
-        err("Please check install::sources and check your network connection. ")
-    return False
 
 def is_valid(name, no_manifest = False):
     """Checks if a remote repository is a valid repository. """
@@ -90,11 +75,17 @@ def install(no_manifest, *reps):
     if no_manifest == False:
         no_manifest = get_config("install::nomanifest")
 
+    #
+    #
+    #
+
     for rep in reps:
-        if not is_repo_dir(rep):
+        if not is_installed(rep):
             if not force_install(rep):
                 err("Unable to install", rep)
                 return False
+        else:
+            std("Already installed:", "'"+rep+"'")
 
         try:
             if not no_manifest:

@@ -8,6 +8,7 @@ from lmh.lib import shellquote
 from lmh.lib.env import install_dir
 from lmh.lib.io import std, err, write_file
 from lmh.lib.extenv import get_template
+from lmh.lib.modules import needsRegen
 
 all_pathstpl = Template(get_template("localpaths.tpl"))
 

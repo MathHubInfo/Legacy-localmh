@@ -1,6 +1,7 @@
 from . import Generator
 from lmh.lib import shellquote
 from lmh.lib.io import std, err, read_file_lines
+from lmh.lib.modules import needsRegen
 
 import os.path
 
@@ -22,10 +23,9 @@ class generate(Generator):
           return False
         if gen_mode == "force" or gen_mode == "update_log" or gen_mode == "grep_log":
             return True
-        elif ((os.path.getmtime(module["path"]) > os.path.getmtime(module["sms"])) if os.path.isfile(module["sms"]) else 0):
-            return True
         else:
-            return False
+            return needsRegen(module["path"], module["sms"])
+
         return False
     def make_job(self, module):
         return module["file"], module["sms"]

@@ -18,6 +18,7 @@ from lmh.lib.io import std, err, read_file, write_file
 from lmh.lib.env import install_dir, latexmlstydir, stexstydir
 from lmh.lib.config import get_config
 from lmh.lib.extenv import pdflatex_executable
+from lmh.lib.modules import needsRegen
 
 stydir = install_dir+"/sty"
 
@@ -46,16 +47,16 @@ class generate(Generator):
             return False
         if gen_mode == "force":
             return True
+        elif gen_mode == "update":
+            return needsRegen(module["path"], module["pdf"])
         elif gen_mode == "update_log":
-            return ((os.path.getmtime(module["path"]) > os.path.getmtime(module["pdf_log"])) if os.path.isfile(module["pdf_log"]) else 0)
+            return needsRegen(module["path"], module["pdf_log"])
         elif gen_mode == "grep_log":
             logfile = module["pdf_log"]
             if not os.path.isfile(logfile):
                 return False
             r = text.match(read_file(logfile))
             return True if r else False
-        elif gen_mode == "update":
-            return os.path.getmtime(module["path"]) > (os.path.getmtime(module["pdf"]) if os.path.isfile(module["pdf"]) else 0)
         else:
             return False
         return False

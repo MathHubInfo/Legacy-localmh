@@ -27,7 +27,8 @@ def load_command(cmd, subparsers):
 
         # and add some arguments.
         command.add_parser_args(new_parser)
-    except:
+    except Exception as e:
+        err(e)
         err("Command", cmd, "failed to load. ")
         command = None
 

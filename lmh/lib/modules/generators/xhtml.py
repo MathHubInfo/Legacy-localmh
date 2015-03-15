@@ -5,7 +5,7 @@ import time
 
 from lmh.lib.config import get_config
 from lmh.lib.io import std, err
-
+from lmh.lib.modules import needsRegen
 from lmh.lib.mmt import compile, compile_dump
 
 class generate(Generator):
