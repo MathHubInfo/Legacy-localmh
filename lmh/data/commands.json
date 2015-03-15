@@ -21,6 +21,7 @@
   "push",
   "remote",
   "rename",
+  "repos", 
   "root",
   "setup",
   "shell",
