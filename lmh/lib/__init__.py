@@ -2,7 +2,7 @@ import os, errno
 from time import sleep
 
 # Set the version information
-from lmh.lib.about import version as __version__
+from lmh.lib.io import std
 
 
 # Misc util functions

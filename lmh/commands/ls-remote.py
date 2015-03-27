@@ -1,6 +1,6 @@
 from lmh.lib.io import std, term_colors
 from lmh.lib.repos.local.package import is_installed
-from lmh.lib.repos.remote import ls_remote
+from lmh.lib.repos.remote.indexer import ls_remote
 from lmh.lib.help import repo_wildcard_remote
 
 from . import CommandClass

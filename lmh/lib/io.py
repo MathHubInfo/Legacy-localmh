@@ -13,7 +13,7 @@ import argparse
 import random
 import datetime
 
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import Popen, PIPE
 
 def term_colors(c):
     """returns terminal colors. """
@@ -228,12 +228,12 @@ def effectively_readable(path):
     # This may be wrong depending on the semantics of your OS.
     # i.e. if the file is -------r--, does the owner have access or not?
     if st.st_uid == euid:
-        return st.st_mode & stat.S_IRUSR != 0
+        return st.st_mode & os.stat.S_IRUSR != 0
 
     # See comment for UID check above.
     groups = os.getgroups()
     if st.st_gid == egid or st.st_gid in groups:
-        return st.st_mode & stat.S_IRGRP != 0
+        return st.st_mode & os.stat.S_IRGRP != 0
 
 def find_files(directory, *ext):
     """Finds files in a given directory"""

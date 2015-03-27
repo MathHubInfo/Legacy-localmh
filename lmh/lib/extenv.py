@@ -127,6 +127,7 @@ def check_deps():
 
     try:
         import psutil
+        psutil # To prevent pyflakes error, this doesn't do anything
     except:
         err("Unable to locate python module 'psutil'. ")
         err("Please make sure it is installed. ")
@@ -198,7 +199,7 @@ def run_shell(shell = None, args=""):
 
     try:
         runner = Popen([shell]+shlex.split(args), env=_env, cwd=install_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-    except Exception as e:
+    except Exception:
         # we could not find that
         return 127
 

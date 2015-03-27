@@ -2,18 +2,16 @@ import os
 import sys
 import json
 import time
-import subprocess
 import shlex
 import traceback
 
 from lmh.lib.env import install_dir
 import lmh.lib.io
-from lmh.lib.io import read_file, write_file, std, err
+from lmh.lib.io import read_file, write_file, err
 from lmh.lib.config import get_config
 from lmh.lib.init import init
 
 from lmh.commands import create_parser
-from lmh.commands import gen
 
 # Contains all the subcommands
 submods = {}

@@ -1,14 +1,10 @@
-import socket
 import subprocess
-import glob
 import os
-import re
 
 from lmh.lib.extenv import java_executable
 from lmh.lib.io import std, err
 from lmh.lib.repos.local import match_repo
-from lmh.lib.git import root_dir
-from lmh.lib.env import install_dir, data_dir
+from lmh.lib.env import install_dir
 
 
 initScript = """
@@ -62,7 +58,6 @@ def compile(repository, filename):
     # Find the repo paths
     repoName = match_repo(repository)
     repoPath = match_repo(repository, abs=True)
-    src = os.path.join(repoPath, "source")
     # What do we need to do?
     script = initScript.format(lmhRoot=install_dir)+"\n"+buildScript.format(repoName=repoName,repoPath=repoPath,fileName=filename)
 
@@ -73,7 +68,6 @@ def compile_dump(repository, filename):
     # Find the repo paths
     repoName = match_repo(repository)
     repoPath = match_repo(repository, abs=True)
-    src = os.path.join(repoPath, "source")
     # What do we need to do?
     script = initScript.format(lmhRoot=install_dir)+"\n"+buildScript.format(repoName=repoName,repoPath=repoPath,fileName=filename)
 

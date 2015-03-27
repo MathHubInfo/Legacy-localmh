@@ -1,4 +1,3 @@
-from lmh.lib.io import err
 from lmh.lib.help import repo_wildcard_local
 
 from . import CommandClass

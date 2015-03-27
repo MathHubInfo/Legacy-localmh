@@ -1,6 +1,6 @@
 from lmh.lib.git import clone
 from lmh.lib.io import std
-from lmh.lib.repos.remote.indexer import find_source
+from lmh.lib.repos.remote.indexer import find_source, ls_remote
 from lmh.lib.env import data_dir
 
 def force_install(repo):
@@ -18,8 +18,17 @@ def force_install(repo):
     if repoURL == False:
         return False
 
-    # Clone the repo
+    # Clone the repo and thats it.
     return clone(data_dir, repoURL, repo)
 
-def install(repos, upgradable):
-    pass
+def install(repos, no_confirm = False):
+    # Clear up repositories.
+    repos = [s.strip() for s in repos]
+
+    # tell the user that we are resolving specififcations.
+    std("Resolving packages, this may take a while: \n"+" ".join(repos))
+
+    # and resolve them.
+    repos = ls_remote(repos)
+
+    # now build the dep r

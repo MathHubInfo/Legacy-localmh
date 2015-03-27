@@ -1,4 +1,3 @@
-from glob import glob
 import os.path
 
 from lmh.lib.env import which, install_dir
@@ -9,9 +8,9 @@ from lmh.lib.git import do
 # Force reload lmh.lib.config
 import lmh.lib.config
 try:
+    from imp import reload
     reload(lmh.lib.config)
 except:
-    from imp import reload
     reload(lmh.lib.config)
 from lmh.lib.config import get_config, set_config
 

@@ -2,7 +2,6 @@ import sys
 import os.path
 import subprocess
 
-from lmh.lib.io import std, err
 from lmh.lib.extenv import git_executable
 
 
@@ -161,5 +160,5 @@ def origin(dir="."):
 
     return subprocess.Popen([git_executable, "remote", "show", "origin", "-n"],
                                                     stdout=subprocess.PIPE,
-                                                    cwd=rootdir,
+                                                    cwd=dir,
                                                     ).communicate()[0]

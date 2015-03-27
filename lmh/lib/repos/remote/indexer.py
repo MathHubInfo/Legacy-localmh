@@ -1,9 +1,101 @@
+import fnmatch
+from string import Template
 
 from lmh.lib.io import err
 from lmh.lib.git import exists
 from lmh.lib.config import get_config
 
 from lmh.lib.repos.local.package import get_package_dependencies, is_installed, build_local_tree
+
+# Import urlopen
+# Compatibility Python2 + Python3
+try:
+    from urllib2 import urlopen
+except:
+    from urllib.request import urlopen
+
+# Import BeautifulSoup
+# may fail, but then we skip out on ls-remote.
+try:
+    from bs4 import BeautifulSoup
+except:
+    try:
+        from BeautifulSoup4 import BeautifulSoup
+    except:
+        err("Missing beautifulsoup4, please install it. ")
+        err("You may want to: ")
+        err("   pip install beautifulsoup4")
+        err("or")
+        err("   pip install lmh --upgrade")
+        err("Some things may not be available and fail miserably. ")
+        err("See http://www.crummy.com/software/BeautifulSoup/")
+
+
+        BeautifulSoup = False
+
+def ls_remote(no_manifest, *spec):
+    """Lists remote repositories matching some specification. """
+
+    if no_manifest == False:
+        no_manifest = get_config("install::nomanifest")
+
+    if BeautifulSoup == False:
+        err("BeautifulSoup not found. ")
+        return False
+
+    if len(spec) == 0:
+        spec = ["*"]
+
+    # The basic url
+    base_url = get_config("gl::projects_url")
+    projects = set()
+    def filter_page_name(p):
+        while(p.startswith("/")):
+            p = p[1:]
+        return p
+
+    for i in range(1, 100):
+        # the project pages url
+        url = base_url+'?page='+str(i)
+
+        # make the request
+        try:
+            response = urlopen(url)
+            soup = BeautifulSoup(response.read())
+        except:
+            err("Unable to make connection")
+            break
+
+        try:
+            # find the project pages
+            soup = soup.find("div", {"class": "public-projects"})
+            soup = soup.find("ul")
+
+            # Nothing here, break
+            if soup.find("div", {"class": "nothing-here-block"}):
+                break
+
+            for h4 in soup.findAll("h4"):
+                projects.add(filter_page_name(h4.find("a")["href"]))
+        except Exception as e:
+            err(e)
+            err("Parsing failure (make sure gl::projects_url is correct)")
+
+    matched_projects = set()
+
+    for s in spec:
+        matches = [p for p in projects if fnmatch.fnmatch(p, s)]
+        if len(matches) == 0:
+            matches = [p for p in projects if fnmatch.fnmatch(p, s+"/*")]
+        if len(matches) == 0:
+            if find_source(s, True):
+                matches = [s]
+            else:
+                err("Warning: No modules matching", s, "found. ")
+        matched_projects.update(matches)
+
+    # TODO: Check if we need to filter these somehow (check for access?)
+    return sorted(matched_projects)
 
 def find_source(name, quiet = False):
     """
@@ -42,14 +134,6 @@ def find_source(name, quiet = False):
 
 find_source.cache = {}
 
-def is_upgardable(repo):
-    """
-        Checks if a repo is upgradable.
-    """
-    # TODO: implement this.
-
-    return False
-
 def fetch_metainf(repo):
     """
         Fetches the remote META-INF file.
@@ -63,11 +147,11 @@ def fetch_metainf(repo):
         return fetch_metainf.cache[repo]
 
     # build the url
-    meta_inf_url = Template(get_config("gl::raw_url")).substitute(repo=name)+"META-INF/MANIFEST.MF"
+    meta_inf_url = Template(get_config("gl::raw_url")).substitute(repo=repo)+"META-INF/MANIFEST.MF"
 
     try:
         # Fetch the url
-        meta_inf_content = urlopen(raw)
+        meta_inf_content = urlopen(meta_inf_url)
 
         # Read the content
         fetch_metainf.cache[repo] = str(meta_inf_content.read())
@@ -99,13 +183,14 @@ def get_repo_deps(repo):
     meta_inf = meta_inf.split("\n")
 
     # Parse the dependencies.
-    deps = get_package_dependencies(repo, meta_inf)
+    return get_package_dependencies(repo, meta_inf)
 
-def build_deps_tree(*repo):
+def build_deps_tree(*repos):
     """
         Builds the dependency tree for the installation of a repository.
-
     """
+
+    # TODO: Implement upgradable here somehow.
 
     # Build the repos to be installed.
     repos = repos[:]
@@ -113,11 +198,14 @@ def build_deps_tree(*repo):
     # The repositories to be installed anew.
     install = set()
 
+    # The repositories we will have to install as a dependency.
+    install_deps = set()
+
+    # Depencies already installed.
+    installed_deps = set()
+
     # Repositories already installed.
     installed = set()
-
-    # Repositories to be upgraded.
-    upgradable = set()
 
     # Iterate through all the repositories.
     while len(repos) != 0:
@@ -126,7 +214,7 @@ def build_deps_tree(*repo):
         r = repos.pop()
 
         # If we have already treated them, go to the next iteration.
-        if r in install or r in installed:
+        if r in install or r in installed or r in installed_deps:
             continue
 
         # If it is already installed
@@ -139,14 +227,25 @@ def build_deps_tree(*repo):
             # Build the local tree
             (already_here, missing) = build_local_tree(r)
 
-            # Add the ones that are already
-            # and those that are missing
-            # to the repositories to be scanned.
-            repos.extend(already_here)
+            # We add the repositories that are already installed
+            installed_deps.extend(already_here)
+            
             repos.extend(missing)
         else:
-            # Add the new one to be installed. 
+            # Add the new one to be installed.
             install.add(r)
 
-    # TODO: Check for upgradable
-    # and their **new** dependencies.
+    # Now for the remaining ones (which we need as dependencies)
+    # build the complete remote tree and add them everywhere.
+    while len(repos) != 0:
+
+        # iterate through the ones we have to install from the remote.
+        r = repos.pop()
+
+        # If we already had them, continue.
+        if r in install or r in installed or r in installed_deps or r in install_deps:
+            continue
+        # The dependency we have to add.
+        install_deps.add/
+
+    # Now for the missing
