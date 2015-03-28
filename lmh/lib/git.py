@@ -91,7 +91,6 @@ def status_pipe(dest, *arg):
 
 def exists(dest):
     """Checks if a git repository exists. """
-
     args = [git_executable, "ls-remote", dest]
     proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     proc.wait()

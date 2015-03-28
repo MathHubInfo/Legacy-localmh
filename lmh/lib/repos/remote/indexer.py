@@ -1,11 +1,19 @@
 import fnmatch
 from string import Template
 
-from lmh.lib.io import err
+from lmh.lib.io import std, err
 from lmh.lib.git import exists
 from lmh.lib.config import get_config
+from lmh.lib.git import get_remote_status
 
-from lmh.lib.repos.local.package import get_package_dependencies, is_installed, build_local_tree
+from string import Template
+
+from lmh.lib.repos.local.package import get_package_dependencies, is_installed, is_upgradable, build_local_tree
+
+try:
+    from urllib2 import urlopen
+except:
+    from urllib.request import urlopen
 
 # Import urlopen
 # Compatibility Python2 + Python3
@@ -149,6 +157,9 @@ def fetch_metainf(repo):
     # build the url
     meta_inf_url = Template(get_config("gl::raw_url")).substitute(repo=repo)+"META-INF/MANIFEST.MF"
 
+    # Tell the user we are trying to read META-INF information.
+    std("Reading remote META-INF information for", repo)
+
     try:
         # Fetch the url
         meta_inf_content = urlopen(meta_inf_url)
@@ -158,7 +169,7 @@ def fetch_metainf(repo):
 
         # and return it.
         return fetch_metainf.cache[repo]
-    except:
+    except Exception as e:
         return False
 
 fetch_metainf.cache = {}
@@ -185,67 +196,70 @@ def get_repo_deps(repo):
     # Parse the dependencies.
     return get_package_dependencies(repo, meta_inf)
 
-def build_deps_tree(*repos):
+def build_remote_tree(repos, no_locals = False):
+    """
+        Builds a remote dependency tree.
+
+        @param repo {string} - Repository to check.
+    """
+    # We want to iterate through these repos.
+    repos = set(repos)
+
+    # Packages that can be installed.
+    installable = set([])
+
+    # Packages that are missing.
+    missing = set([])
+
+    while len(repos) != 0:
+        # Iterate through the repositories.
+        r = repos.pop()
+
+        # If we do not want locals and are already installed, skip
+        if no_locals and is_installed(r):
+            continue
+
+        # If we already did something, continue.
+        if r in installable or r in missing:
+            continue
+
+        # If we know the source, we can add the deps to scan.
+        if find_source(r):
+            try:
+                repos.update(get_repo_deps(r))
+                installable.add(r)
+            except:
+                missing.add(r)
+        else:
+            missing.add(r)
+
+    return (list(installable), list(missing))
+def build_deps_tree_noupgrade(*repo):
     """
         Builds the dependency tree for the installation of a repository.
+        Does not consider
+
+        @param* repo {string[]} - Repositories to install.
     """
 
-    # TODO: Implement upgradable here somehow.
+    # All of the repositories.
+    repos = list(repo)
 
-    # Build the repos to be installed.
-    repos = repos[:]
+    #
+    # TREE to be built.
+    #
 
-    # The repositories to be installed anew.
-    install = set()
+    # TODO: Have variables here.
 
-    # The repositories we will have to install as a dependency.
-    install_deps = set()
+    #
+    # Make the tree
+    #
+    (installed, missing) = build_local_tree(*repo)
 
-    # Depencies already installed.
-    installed_deps = set()
+    # Stuff to be installed
+    installed = set(installed)
 
-    # Repositories already installed.
-    installed = set()
+    # Find all the remote depencies and ignore local ones.
+    (remote_exists, missing) = build_remote_tree(missing, no_locals = True)
 
-    # Iterate through all the repositories.
-    while len(repos) != 0:
-
-        # Take the first repository
-        r = repos.pop()
-
-        # If we have already treated them, go to the next iteration.
-        if r in install or r in installed or r in installed_deps:
-            continue
-
-        # If it is already installed
-        # Build the local deps tree
-        if is_installed(r):
-
-            # It is already installed.
-            installed.add(r)
-
-            # Build the local tree
-            (already_here, missing) = build_local_tree(r)
-
-            # We add the repositories that are already installed
-            installed_deps.extend(already_here)
-            
-            repos.extend(missing)
-        else:
-            # Add the new one to be installed.
-            install.add(r)
-
-    # Now for the remaining ones (which we need as dependencies)
-    # build the complete remote tree and add them everywhere.
-    while len(repos) != 0:
-
-        # iterate through the ones we have to install from the remote.
-        r = repos.pop()
-
-        # If we already had them, continue.
-        if r in install or r in installed or r in installed_deps or r in install_deps:
-            continue
-        # The dependency we have to add.
-        install_deps.add/
-
-    # Now for the missing
+    print(installed, remote_exists, missing)
