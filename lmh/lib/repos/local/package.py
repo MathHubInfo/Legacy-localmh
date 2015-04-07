@@ -20,6 +20,8 @@ def is_installed(package):
         @returns {boolean}
     """
 
+    print(package)
+
     return is_repo_dir(os.path.join(data_dir, package))
 
 def is_upgradable(package):

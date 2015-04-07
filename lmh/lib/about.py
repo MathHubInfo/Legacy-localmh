@@ -1,6 +1,6 @@
 from lmh.lib.io import read_file
 from lmh.lib.env import install_dir
-from lmh.lib.git import do_data
+from lmh.lib.git import git_do_data
 
 
 """lmh lib version"""
@@ -9,7 +9,7 @@ version = read_file(install_dir + "/" + "/lmh/data/version")
 def git_version():
     """Checks the current gi version of the core"""
     try:
-        return do_data(install_dir, "rev-parse", "HEAD")[0].rstrip()
+        return git_do_data(install_dir, "rev-parse", "HEAD")[0].rstrip()
     except:
         return "<Not under source control>"
 

@@ -11,10 +11,10 @@ from lmh.lib.repos.remote import install
 # Git imports
 from lmh.lib.git import push as git_push
 from lmh.lib.git import pull as git_pull
-from lmh.lib.git import status_pipe as git_status
+from lmh.lib.git import status as git_status
 from lmh.lib.git import commit as git_commit
-from lmh.lib.git import do as git_do
-from lmh.lib.git import do_data as git_do_data
+from lmh.lib.git import git_do
+from lmh.lib.git import git_do_data
 from lmh.lib.git import get_remote_status
 from lmh.lib.git import is_tracked, is_repo
 
