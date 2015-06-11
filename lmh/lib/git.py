@@ -2,120 +2,83 @@ import sys
 import os.path
 import subprocess
 
+from lmh.lib.io import std, err
 from lmh.lib.extenv import git_executable
 
-# TODO: Do we want to make this a class?
-# It might make things nicer.
-
-# TODO: Prefix everything with git_
-
-#
-# BASIC METHODS
-#
-
-def git_do(dest, cmd, *arg):
-    """
-        Does an arbitrary git command and returns if it suceeded.
-
-        @param dest Destination directory.
-        @param cmd Commands to run.
-        @param arg Arguments to use.
-
-        @returns if the command ran sucessfully.
-    """
-
-    # assemble the command
-    args = [git_executable, cmd]
-    args.extend(arg)
-
-    # It's gonna be a legen ...
-    proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
-
-    # wait for it
-    proc.wait()
-
-    # ...dary return code.
-    return (proc.returncode == 0)
-
-def __do_quiet(dest, cmd, *arg):
-    """
-        Does an arbitrary git command quietly and returns the proc object.
-        FOR INTERNAL USE ONLY.
-
-        @param dest Destination directory.
-        @param cmd Commands to run.
-        @param arg Arguments to use.
-
-        @returns the used proc object
-    """
-
-    # assemble the command
-    args = [git_executable, cmd]
-    args.extend(arg)
-
-    # It's gonna be a legen ...
-    proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
-
-    # wait for it
-    proc.wait()
-
-    # ... dary process
-    return proc
-
-def git_do_data(dest, cmd, *arg):
-    """
-        Does an arbitrary git command quietly and returns the input and output text.
-
-        @param dest Destination directory.
-        @param cmd Commands to run.
-        @param arg Arguments to use.
-
-        @returns the data
-    """
-    # assemble the command.
-    args = [git_executable, cmd]
-    args.extend(arg)
-
-    # run it
-    proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
-
-    # wait for it
-    proc.wait()
-
-    # and return the data sent.
-    return proc.communicate()
-
-#
-# BASIC OPERATIONS
-#
 
 def clone(dest, *arg):
-    """
-        Does an arbitrary git command quietly and returns the proc object.
-        FOR INTERNAL USE ONLY.
-
-        @param dest Destination directory.
-        @param cmd Commands to run.
-        @param arg Arguments to use.
-
-        @returns the used proc object
-    """
     """Clones a git repository. """
-    return git_do(dest, "clone", *args)
-
-def push(dest, *arg):
-    """Pushes a git repository. """
-    return git_do(dest, "push", *args)
+    args = [git_executable, "clone"]
+    args.extend(arg)
+    proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
+    proc.wait()
+    return (proc.returncode == 0)
 
 def pull(dest, *arg):
     """Pulls a git repository. """
-    return git_do(dest, "pull", *args)
+
+    args = [git_executable, "pull"]
+    args.extend(arg)
+    proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
+    proc.wait()
+    return (proc.returncode == 0)
 
 def commit(dest, *arg):
     """Commits a git repository. """
-    return git_do(dest, "commit", *args)
+    args = [git_executable, "commit"]
+    args.extend(arg)
+    proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
+    proc.wait()
+    return (proc.returncode == 0)
+
+def push(dest, *arg):
+    """Pulls a git repository. """
+
+    args = [git_executable, "push"]
+    args.extend(arg);
+    proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
+    proc.wait()
+    return (proc.returncode == 0)
+
+def do(dest, cmd, *arg):
+    """Does an arbitrary git command and returns if it suceeded. """
+
+    args = [git_executable, cmd]
+    args.extend(arg)
+    proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
+    proc.wait()
+    return (proc.returncode == 0)
+
+def do_quiet(dest, cmd, *arg):
+    """Does an arbitrary git command quietly and returns if it suceeded. """
+
+    args = [git_executable, cmd]
+    args.extend(arg)
+    proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
+    proc.wait()
+    return (proc.returncode == 0)
+
+def do_data(dest, cmd, *arg):
+    """Does an arbitrary git command and return stdout and sterr. """
+
+    args = [git_executable, cmd]
+    args.extend(arg)
+    proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
+    proc.wait()
+    return proc.communicate()
 
 def status(dest, *arg):
+    """Runs git status and returns the status message. """
+
+    args = [git_executable, "status"];
+    args.extend(arg)
+    proc = subprocess.Popen(args, stderr=sys.stderr, stdout=subprocess.PIPE, cwd=dest)
+    proc.wait()
+    if(proc.returncode == 0):
+        return proc.communicate()[0]
+    else:
+        return False
+def status_pipe(dest, *arg):
     """Runs git status and pipes output. """
 
     args = [git_executable, "status"];
@@ -129,6 +92,7 @@ def status(dest, *arg):
 
 def exists(dest):
     """Checks if a git repository exists. """
+
     args = [git_executable, "ls-remote", dest]
     proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     proc.wait()
@@ -136,11 +100,10 @@ def exists(dest):
 
 def is_repo(dest):
     """Checks if a git repository exists (locally) """
-    # Checks if something
+
     args = [git_executable, "rev-parse", dest]
     proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     proc.wait()
-
     if (proc.returncode == 0):
         return os.path.abspath(root_dir(dest)) == os.path.abspath(dest)
     else:
@@ -170,19 +133,19 @@ def is_tracked(file):
 
 def get_remote_status(where):
     # quietly make an update with the remote
-    if __do_quiet(where, "remote", "update").returncode != 0:
+    if not do_quiet(where, "remote", "update"):
         return "failed"
 
     # Figure out my branch
-    my_branch = git_do_data(where, "rev-parse", "--abbrev-ref", "HEAD")[0].split("\n")[0]
+    my_branch = do_data(where, "rev-parse", "--abbrev-ref", "HEAD")[0].split("\n")[0]
     # And the upstream url
-    my_upstream = git_do_data(where, "symbolic-ref", "-q", "HEAD")[0].split("\n")[0]
-    my_upstream = git_do_data(where, "for-each-ref", "--format=%(upstream:short)", my_upstream)[0].split("\n")[0]
+    my_upstream = do_data(where, "symbolic-ref", "-q", "HEAD")[0].split("\n")[0]
+    my_upstream = do_data(where, "for-each-ref", "--format=%(upstream:short)", my_upstream)[0].split("\n")[0]
 
     # Turn it into hashes
-    local = git_do_data(where, "rev-parse", my_branch)
-    remote = git_do_data(where, "rev-parse", my_upstream)
-    base = git_do_data(where, "merge-base", my_branch, my_upstream)
+    local = do_data(where, "rev-parse", my_branch)
+    remote = do_data(where, "rev-parse", my_upstream)
+    base = do_data(where, "merge-base", my_branch, my_upstream)
 
     if local == remote:
         return "ok"
@@ -198,5 +161,5 @@ def origin(dir="."):
 
     return subprocess.Popen([git_executable, "remote", "show", "origin", "-n"],
                                                     stdout=subprocess.PIPE,
-                                                    cwd=dir,
+                                                    cwd=rootdir,
                                                     ).communicate()[0]

@@ -1,8 +1,6 @@
 from lmh.lib.repos.local.dirs import is_repo_dir, find_repo_dir
 from lmh.lib.env import data_dir
 
-from lmh.lib.git import get_remote_status
-
 from lmh.lib.io import read_file_lines
 import os.path
 
@@ -20,30 +18,7 @@ def is_installed(package):
         @returns {boolean}
     """
 
-    print(package)
-
     return is_repo_dir(os.path.join(data_dir, package))
-
-def is_upgradable(package):
-    """
-        Checks if a repository is upgradable.
-
-        @param package {string} Package to check.
-
-        @returns {boolean}
-    """
-
-    # If it is not installed, we can not upgrade it.
-    if not is_installed(package):
-        return False
-
-    # Get the status from the remote repo.
-    status = get_remote_status(package)
-
-    # It is upgradable if the remote is newer
-    # This is the case if we want to pull.
-    return status == "pull"
-
 
 def get_package_dependencies(package, meta_inf_lines = None):
     """
@@ -99,7 +74,7 @@ def build_local_tree(*repos):
     """
 
     # List of repos to be installed.
-    repos = list(repos)
+    repos = repos[:]
 
     # The dependencies.
     deps = set()
@@ -109,7 +84,7 @@ def build_local_tree(*repos):
 
     while len(repos) != 0:
         # Pull an element from the list.
-        r = repos.pop()[0]
+        r = repos.pop()
 
         # If we have it already as a depency
         # or it is missing, skip this iteration
@@ -119,7 +94,7 @@ def build_local_tree(*repos):
         # If it is not installed, it is missing locally
         # and we can not find the dependencies.
         if not is_installed(r):
-            missing.add(r)
+            missing.update(r)
             continue
 
         # Add this repository to the depdencies.

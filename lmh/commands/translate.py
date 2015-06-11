@@ -48,7 +48,7 @@ The terms argument should have the following structure:
 }
 
 Will require manual completion of the translation. """
-    def do(self, args, unknown_args):
+    def do(self, args, unknown):
         ret = True
 
         multiregex = r"(.*)\.(.*)\.tex"

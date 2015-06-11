@@ -2,7 +2,9 @@ import subprocess
 
 import sys
 
-from lmh.lib.io import err
+from lmh.lib.env import which
+from lmh.lib.io import std, err
+from lmh.lib.config import get_config
 from lmh.lib.extenv import svn_executable
 
 def clone(dest, *arg):

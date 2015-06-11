@@ -32,7 +32,7 @@ The terms argument should have the following structure:
 
 Will require manual completion of the translations. """
 
-    def do(self, args, unknown_args):
+    def do(self, args, unknown):
         args.source = args.source[0]
 
         if not os.path.isfile(args.source) or not args.source.endswith(".tex"):

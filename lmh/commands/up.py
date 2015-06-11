@@ -12,7 +12,7 @@ class Command(CommandClass):
         opts.add_argument("--build", action="store_const", const="build", dest="mode", help="alias for lmh update-build")
         opts.add_argument("--external", action="store_const", const="external", dest="mode", help="alias for lmh setup --update")
 
-    def do(self, args, unknown_args):
+    def do(self, args, unknown):
         # TODO: Issue 186
         res = True
 

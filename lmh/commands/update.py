@@ -20,7 +20,7 @@ class Command(CommandClass):
     Note: LMH will check for tool updates only if run at the root of the LMH
     folder. """+repo_wildcard_local
 
-    def do(self, args, unknown_args):
+    def do(self, args, unknown):
 
         if False and len(args.repository) == 0:
             if get_config("update::selfupdate"):

@@ -22,7 +22,7 @@ class Command(CommandClass):
         modes.add_argument("--synced", dest="mode", action="store_const", const="synced", help="Print list of repositories where the remote and local version are the same. ")
 
         parser.epilog = repo_wildcard_local
-    def do(self, args, unknown_args):
+    def do(self, args, unknown):
 
         def needs_push(r):
             state = get_remote_status(r)

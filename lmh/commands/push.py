@@ -11,6 +11,6 @@ class Command(CommandClass):
         parser.add_argument('--verbose', "-v", default=False, const=True, action="store_const", help="be verbose")
         parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs status on all repositories currently in lmh")
         parser.epilog = repo_wildcard_local
-    def do(self, args, unknown_args):
+    def do(self, args, unknown):
         repos = match_repo_args(args.repository, args.all)
         return push(args.verbose, *repos)

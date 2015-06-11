@@ -9,7 +9,7 @@ from lmh.lib.extenv import perl5env, perl5root, cpanm_executable, perl_executabl
 from lmh.lib.config import get_config, set_config
 from lmh.lib.git import pull as git_pull
 from lmh.lib.git import clone as git_clone
-from lmh.lib.git import git_do
+from lmh.lib.git import do as git_do
 from lmh.lib.svn import pull as svn_pull
 from lmh.lib.svn import clone as svn_clone
 

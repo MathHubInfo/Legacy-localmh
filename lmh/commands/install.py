@@ -1,6 +1,6 @@
 from lmh.lib.io import std, err, read_raw
 from lmh.lib.config import get_config
-from lmh.lib.repos.remote.indexer import build_deps_tree_noupgrade
+from lmh.lib.repos.remote import install, ls_remote
 
 from . import CommandClass
 
@@ -19,22 +19,11 @@ class Command(CommandClass):
 
     Use install::noglobs to disable globbing for lmh install. """
     def do(self, args, unknown):
-        build_deps_tree_noupgrade(args.spec)
-        return True
-
-        #
-
         if len(args.spec) == 0:
             err("Nothing to do here ...")
             return True
 
         if not get_config("install::noglobs"):
-
-            # Clean all the whitespaces
-            args.spec = [s.strip() for s in args.spec]
-            err(args, unknown)
-            std("Searching for packages to install: ", args.spec)
-
             args.spec = ls_remote(args.no_manifest, *args.spec)
             if len(args.spec) == 0:
                 err("Nothing to install...")
@@ -48,5 +37,5 @@ class Command(CommandClass):
                     err("Installation aborted. ")
                     return False
 
-        # Now do the installation.
+
         return install(args.no_manifest, *args.spec)

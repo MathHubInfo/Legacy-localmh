@@ -20,6 +20,11 @@ from lmh.lib.git import root_dir
 
 from lmh.lib.repos.local import find_repo_subdirs
 
+
+# Hardcoded folder exclude list.
+# really ugly workaround for #223
+folder_exclude_list = ["tikz"]
+
 def needsPreamble(file):
     """
         Checks if a file needs a preamble.
@@ -253,6 +258,9 @@ def locate_modules(path, depth=-1, find_files = True):
     objects = [os.path.abspath(path + "/" + f) for f in os.listdir(path)]
     files = filter(lambda f:os.path.isfile(f), objects)
     folders = filter(lambda f:os.path.isdir(f), objects)
+
+    # HACK out the tikz directories.
+    folders = filter(lambda f:not f.split("/")[-1] in folder_exclude_list, folders)
 
     modules = reduce([locate_module(file, git_root) for file in files])
 

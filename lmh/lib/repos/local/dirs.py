@@ -288,7 +288,7 @@ def match_repos(repos, root=os.getcwd(), abs=False):
     # and the repo directories we will use.
     results = set()
 
-    def find_repo_subdirs(r):
+    def match_repo_name(r):
         # make an absolute path
         # this will also work with globs
         names = os.path.abspath(os.path.join(root, r))
@@ -346,12 +346,13 @@ def match_repos(repos, root=os.getcwd(), abs=False):
         else:
             return True
 
-    # find repo subdirs with the given root.
-    repos = filter(find_repo_subdirs, repos)
+    # now filter the repos
+    repos = filter(match_repo_name, repos)
 
-    # now find repo subdirs from everywhere.
+    # repeat again with data_dir as root
     root = data_dir
-    repos = filter(find_repo_subdirs, repos)
+    repos = filter(match_repo_name, repos)
+
 
     # if we want the relative paths we need to set them properly.
     if not abs:

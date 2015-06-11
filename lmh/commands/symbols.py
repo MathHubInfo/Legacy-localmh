@@ -21,7 +21,7 @@ Use
     lmh symbols foo.tex
 to display warnings about double symdef and symi warnings.
 """
-    def do(self, args, unknown_args):
+    def do(self, args, unknown):
         if len(args.path) == 0:
             args.path = [os.getcwd()]
 

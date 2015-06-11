@@ -12,7 +12,7 @@ class Command(CommandClass):
         parser.add_argument('--abs', '-A', default=False, action="store_true", help="Print absolute repository paths. ")
         parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="list all repositories")
         parser.epilog = repo_wildcard_local
-    def do(self, args, unknown_args):
+    def do(self, args, unknown):
         repos = match_repo_args(args.repository, args.all, abs=args.abs)
         for r in repos:
             std(r)

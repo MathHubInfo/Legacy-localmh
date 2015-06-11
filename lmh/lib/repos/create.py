@@ -12,7 +12,7 @@ from lmh.lib.repos.remote.indexer import find_source
 from lmh.lib.repos.local.package import is_installed
 
 # Git stuffs
-from lmh.lib.git import git_do
+from lmh.lib.git import do as git_do
 from lmh.lib.git import root_dir as git_root
 from lmh.lib.git import push as git_push
 from lmh.lib.git import commit as git_commit
