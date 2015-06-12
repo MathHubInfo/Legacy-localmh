@@ -262,6 +262,7 @@ def write_log_files(the_generator, ds, fs):
 
 
 # Import all the generators.
+# pyLint will complain about this, but it does not really matter. 
 # This has to be at the end of the file
 from lmh.lib.modules.generators.sms import generate as sms
 from lmh.lib.modules.generators.localpaths import generate as localpaths

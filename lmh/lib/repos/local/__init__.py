@@ -1,24 +1,19 @@
 import os
 import os.path
 import re
-import glob
 
-from lmh.lib.env import install_dir, data_dir
+from lmh.lib.env import data_dir
 from lmh.lib.io import term_colors, find_files, std, std_paged, err, write_file, read_file, read_file_lines
-from lmh.lib.repos.remote import install
-
 
 # Git imports
-from lmh.lib.git import push as git_push
-from lmh.lib.git import pull as git_pull
 from lmh.lib.git import status_pipe as git_status
 from lmh.lib.git import commit as git_commit
 from lmh.lib.git import do as git_do
 from lmh.lib.git import do_data as git_do_data
 from lmh.lib.git import get_remote_status
-from lmh.lib.git import is_tracked, is_repo
+from lmh.lib.git import is_tracked
 
-from lmh.lib.repos.local.dirs import is_in_data, is_repo_dir, is_in_repo, find_repo_subdirs, match_repo, match_repos, find_repo_dir
+from lmh.lib.repos.local.dirs import match_repo, match_repos
 
 from lmh.lib.repos.local.package import get_package_dependencies
 
@@ -34,88 +29,8 @@ def match_repo_args(spec, all=False, abs=True):
         return match_repos(spec, abs=abs)
 
 #
-# Import / Export of all existing repos to a certain file
-#
-
-def export(file = None):
-    """Exports the list of currently installed repositories. """
-
-    # Get all locally installed directories
-    installed = match_repos(install_dir)
-
-    if(file == None):
-        for mod in installed:
-            std(mod)
-        return True
-    try:
-        write_file(file, os.linesep.join(installed))
-        return True
-    except:
-        err("Unable to write "+file)
-        return False
-
-def restore(file = None):
-    """Restores a list of currently installed repositories. """
-
-    # read all lines from the file
-    lines = read_file_lines(file)
-    lines = [l.strip() for l in lines]
-    return install(*lines)
-
-#
 # Git actions
 #
-
-def push(verbose, *repos):
-    """Pushes all currently installed repositories. """
-
-    # Check if we need to update the local repository
-    def needs_updating(rep):
-        state = get_remote_status(rep)
-        return state == "push" or state == "failed" or state == "divergence"
-
-    ret = True
-
-    for rep in repos:
-        std("git push", rep, "", newline = False)
-
-        if verbose or needs_updating(rep):
-            std()
-            ret = git_push(rep) and ret
-        else:
-            std("OK, nothing to push. ")
-
-    return ret
-
-def pull(verbose, *repos):
-    """Pulls all currently installed repositories and updates dependencies"""
-
-    # Check if we need to update the local repository
-    def needs_updating(rep):
-        state = get_remote_status(rep)
-        return state == "pull" or state == "failed" or state == "divergence"
-
-    ret = True
-
-    for rep in repos:
-        std("git pull", rep, newline=False)
-
-        if verbose or needs_updating(rep):
-            std()
-            rgp = git_pull(rep)
-            ret = rgp and ret
-            rep = match_repo(rep)
-            if rgp:
-                std("Updated repository", term_colors("green")+rep+term_colors("normal"))
-                ret = install(rep) and ret
-            else:
-                std("Did not update", term_colors("red")+rep+term_colors("normal"), "(merge conflicts or network issues)")
-        else:
-            rep = match_repo(rep)
-            std("")
-            std("Nothing to pull for", term_colors("green")+rep+term_colors("normal"))
-
-    return ret
 
 def is_clean(repo):
     """Checks if a working directory is clean. """
@@ -376,7 +291,7 @@ def calc_deps(apply = False, dirname="."):
     # the others are fine
     fine  = filter(lambda x:x in real_dependencies, given_dependencies)
 
-    ret = {
+    return {
             "fine": fine,
             "missing": missing,
             "not_needed": not_needed,

@@ -75,10 +75,6 @@ def install(no_manifest, *reps):
     if no_manifest == False:
         no_manifest = get_config("install::nomanifest")
 
-    #
-    #
-    #
-
     for rep in reps:
         if not is_installed(rep):
             if not force_install(rep):

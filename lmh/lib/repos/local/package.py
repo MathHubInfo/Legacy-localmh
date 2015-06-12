@@ -1,7 +1,7 @@
 from lmh.lib.repos.local.dirs import is_repo_dir, find_repo_dir
 from lmh.lib.env import data_dir
 
-from lmh.lib.io import read_file_lines
+from lmh.lib.io import err, read_file_lines
 import os.path
 
 import re

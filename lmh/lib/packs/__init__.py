@@ -1,7 +1,7 @@
 import json
 import os.path
 
-from lmh.lib.io import std, err, read_file
+from lmh.lib.io import err, read_file
 from lmh.lib.env import install_dir, ext_dir
 from lmh.lib.packs import classes
 
@@ -57,7 +57,7 @@ def get_pack_setup(pack):
         err("Unable to load pack setup for pack", pack)
         err("Please check that the pack exists. ")
         return False
-    except AttibuteError:
+    except AttributeError:
         err("Unable to load pack setup for pack", pack)
         err("Please check that the pack exists. ")
         return False

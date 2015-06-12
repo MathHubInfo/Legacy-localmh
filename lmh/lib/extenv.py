@@ -125,14 +125,14 @@ def check_deps():
         return False
 
 
-    try:
-        import psutil
-    except:
-        err("Unable to locate python module 'psutil'. ")
-        err("Please make sure it is installed. ")
-        err("You may be able to install it with: ")
-        err("    pip install psutil")
-        return False
+    #try:
+    #    import psutil
+    #except:
+    #    err("Unable to locate python module 'psutil'. ")
+    #    err("Please make sure it is installed. ")
+    #    err("You may be able to install it with: ")
+    #    err("    pip install psutil")
+    #    return False
 
     return True
 
@@ -198,7 +198,7 @@ def run_shell(shell = None, args=""):
 
     try:
         runner = Popen([shell]+shlex.split(args), env=_env, cwd=install_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-    except Exception as e:
+    except Exception:
         # we could not find that
         return 127
 

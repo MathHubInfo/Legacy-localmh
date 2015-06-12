@@ -1,8 +1,7 @@
 import sys
-import os.path
+import os, os.path
 import subprocess
 
-from lmh.lib.io import std, err
 from lmh.lib.extenv import git_executable
 
 
@@ -90,11 +89,16 @@ def status_pipe(dest, *arg):
     else:
         return False
 
-def exists(dest):
+def exists(dest, askpass=True):
     """Checks if a git repository exists. """
 
     args = [git_executable, "ls-remote", dest]
-    proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+
+    env = os.environ.copy()
+    if not askpass:
+        env["GIT_TERMINAL_PROMPT"] = "0"
+        env["GIT_ASKPASS"] = "/bin/echo"
+    proc = subprocess.Popen(args, env=env, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     proc.wait()
     return (proc.returncode == 0)
 
@@ -161,5 +165,5 @@ def origin(dir="."):
 
     return subprocess.Popen([git_executable, "remote", "show", "origin", "-n"],
                                                     stdout=subprocess.PIPE,
-                                                    cwd=rootdir,
+                                                    cwd=dir,
                                                     ).communicate()[0]

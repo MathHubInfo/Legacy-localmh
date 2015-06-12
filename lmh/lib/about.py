@@ -1,5 +1,3 @@
-import os.path
-
 from lmh.lib.io import read_file
 from lmh.lib.env import install_dir
 from lmh.lib.git import do_data

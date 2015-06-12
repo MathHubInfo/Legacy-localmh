@@ -1,6 +1,6 @@
 import os.path
 
-from lmh.lib.repos.local import export, restore
+from lmh.lib.repos.local.manager import export, restore
 
 def do(args, unknown):
     if args.dump_action == 0:

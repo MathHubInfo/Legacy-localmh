@@ -1,6 +1,7 @@
-from lmh.lib.io import std
+from lmh.lib.io import err
+from lmh.lib.repos.local import calc_deps
 
-def do(arguments, unparsed):
+def do(args, unknown):
     res = calc_deps(args.apply)
     if res:
         return True

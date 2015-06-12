@@ -1,11 +1,15 @@
 from lmh.lib.io import std, err, read_raw
 from lmh.lib.config import get_config
+from lmh.lib.env import data_dir
 from lmh.lib.repos.remote import install, ls_remote
+from lmh.lib.repos.local.dirs import match_repos
 
 def do(args, unknown):
+    # If there are no repositories, check everything for dependencies.
     if len(args.spec) == 0:
-        err("Nothing to do here ...")
-        return True
+        std("Nothing to install, re-installing all existing repositories.  ")
+        print(match_repos(data_dir))
+        return install(args.no_manifest, *match_repos(data_dir))
 
     if not get_config("install::noglobs"):
         args.spec = ls_remote(args.no_manifest, *args.spec)

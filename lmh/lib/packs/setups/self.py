@@ -1,4 +1,4 @@
-from lmh.lib.io import std, err
+from lmh.lib.io import std
 from lmh.lib.env import install_dir
 from lmh.lib.git import pull
 

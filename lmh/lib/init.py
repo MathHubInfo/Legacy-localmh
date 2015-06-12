@@ -1,4 +1,3 @@
-from glob import glob
 import os.path
 
 from lmh.lib.env import which, install_dir
