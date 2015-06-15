@@ -30,12 +30,17 @@ get_deploy_branch.cache = {}
 
 def installed(rep):
     # Check if the deploy folder exists.
-    dpath = os.path.join(match_repo(rep, abs=True), "deploy")
+    rpath = match_repo(rep, abs=True)
+    dpath = os.path.join(rpath, "deploy")
     return os.path.isdir(dpath)
 
 def install(rep, dbranch):
     rpath = match_repo(rep, abs=True)
     dpath = os.path.join(rpath, "deploy")
+
+    if not do(rpath, "rev-parse", "--verify", "--quiet", dbranch):
+        if not do(rpath, "branch", dbranch):
+            return False
 
     # Clone it shared
     if not do(rpath, "clone", rpath, dpath, "--shared", "-b", dbranch):
