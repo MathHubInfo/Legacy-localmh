@@ -197,7 +197,7 @@ def read_file_lines(filename = None):
     lines = text_file.readlines()
     text_file.close()
 
-    return lines
+    return [l.rstrip('\n') for l in lines]
 
 def copytree(src, dst, symlinks=False, ignore=None):
     """Replacement for shuitil.copytree"""

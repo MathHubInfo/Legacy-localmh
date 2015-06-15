@@ -8,7 +8,7 @@ from lmh.lib.io import std, err, read_file, effectively_readable
 from lmh.lib.env import install_dir, data_dir
 from lmh.lib.git import root_dir
 
-from lmh.lib.repos.local import find_repo_subdirs
+from lmh.lib.repos.local.dirs import find_repo_subdirs
 
 
 # Hardcoded folder exclude list.
@@ -104,6 +104,7 @@ def locate_module(path, git_root):
         # The Repo
         "repo": git_root,
         "repo_name": repo_rel,
+        "repo_deploy_branch": ,
 
         # sms
         "sms": smspath,

@@ -1,7 +1,7 @@
 from . import Generator
 
 from lmh.lib.io import std
-from lmh.lib.mmt import compile, compile_dump
+#from lmh.lib.mmt import compile, compile_dump
 
 class generate(Generator):
     def __init__(self, quiet, **config):
