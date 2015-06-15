@@ -3,7 +3,7 @@ import os.path
 
 from lmh.lib.env import data_dir
 from lmh.lib.io import std, err, write_file, read_file_lines
-from lmh.lib.repos.remote import install
+from lmh.lib.repos.git.install import install
 
 from lmh.lib.repos.local.dirs import match_repos
 
