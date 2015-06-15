@@ -84,11 +84,6 @@
 		"help": "Url prefixes to clone git repositories from. Seperated by ;s. ",
 		"default": "git@gl.mathhub.info:;http://gl.mathhub.info/"
 	},
-	"install::nomanifest": {
-		"type": "bool",
-		"help": "Allow repositories to install without manifests. ",
-		"default": false
-	},
 	"install::noglobs": {
 		"type": "bool",
 		"help": "Disable globs when installing repositories. ",

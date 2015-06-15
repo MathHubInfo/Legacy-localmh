@@ -3,7 +3,7 @@ from lmh.lib.repos.local.package import is_installed
 from lmh.lib.repos.remote import ls_remote
 
 def do(args, unknown):
-    res = ls_remote(args.no_manifest, *args.spec)
+    res = ls_remote(*args.spec)
     if res == False:
         return False
     else:

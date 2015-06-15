@@ -9,10 +9,10 @@ def do(args, unknown):
     if len(args.spec) == 0:
         std("Nothing to install, re-installing all existing repositories.  ")
         print(match_repos(data_dir))
-        return install(args.no_manifest, *match_repos(data_dir))
+        return install(*match_repos(data_dir))
 
     if not get_config("install::noglobs"):
-        args.spec = ls_remote(args.no_manifest, *args.spec)
+        args.spec = ls_remote(*args.spec)
         if len(args.spec) == 0:
             err("Nothing to install...")
             return True
@@ -26,4 +26,4 @@ def do(args, unknown):
                 return False
 
 
-    return install(args.no_manifest, *args.spec)
+    return install(*args.spec)

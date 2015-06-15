@@ -8,7 +8,7 @@ from lmh.lib.git import clone
 from lmh.lib.repos.local.package import get_package_dependencies, is_installed
 from lmh.lib.config import get_config
 
-from lmh.lib.repos.remote.indexer import find_source
+from lmh.lib.repos.indexer import find_source
 
 try:
     from urllib2 import urlopen
@@ -32,12 +32,8 @@ except:
 
         BeautifulSoup = False
 
-def is_valid(name, no_manifest = False):
+def is_valid(name):
     """Checks if a remote repository is a valid repository. """
-
-    # If we have install::nomanifest, then
-    if no_manifest or get_config("install::nomanifest"):
-        return True
 
     raw = Template(get_config("gl::raw_url")).substitute(repo=name)+"META-INF/MANIFEST.MF"
 
@@ -67,13 +63,10 @@ def force_install(rep):
     return clone(data_dir, repoURL, rep)
 
 
-def install(no_manifest, *reps):
+def install(*reps):
     """Install a repositories and its dependencies"""
 
     reps = [r for r in reps]
-
-    if no_manifest == False:
-        no_manifest = get_config("install::nomanifest")
 
     for rep in reps:
         if not is_installed(rep):
@@ -92,16 +85,11 @@ def install(no_manifest, *reps):
                 else:
                     std("Found statisfied dependency:", "'"+dep+"'")
         except:
-            if no_manifest:
-                err("Error parsing dependencies for", rep)
-                err("Set install::nomanifest to True to disable this. ")
-                return False
+            pass
+            return False
 
-def ls_remote(no_manifest, *spec):
+def ls_remote(*spec):
     """Lists remote repositories matching some specification. """
-
-    if no_manifest == False:
-        no_manifest = get_config("install::nomanifest")
 
     if BeautifulSoup == False:
         err("BeautifulSoup not found. ")
@@ -159,4 +147,4 @@ def ls_remote(no_manifest, *spec):
         matched_projects.update(matches)
 
 
-    return filter(lambda x: is_valid(x, no_manifest), sorted(matched_projects))
+    return filter(lambda x: is_valid(x), sorted(matched_projects))
