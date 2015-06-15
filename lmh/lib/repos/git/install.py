@@ -4,25 +4,13 @@ from lmh.lib.git import clone
 from lmh.lib.repos.local.package import get_package_dependencies, is_installed
 from lmh.lib.repos.indexer import find_source
 
-def installation_preinstall_hook(rep):
-    """
-        Hook that runs before installation of a repository.
-    """
-    return True
-
-def installation_postinstall_hook(rep):
-    """
-        Hook that runs after installation of a repository.
-    """
-
-    return True
+from lmh.lib.repos.git.hooks import hook_pre_install, hook_post_install
 
 def do_deps_install(rep):
     """
         Runs a dependency check.
     """
 
-    # Scan for dependencies.
     std("Looking for dependencies ...")
 
     deps = []
@@ -49,11 +37,11 @@ def do_install(rep):
     """
 
     # pre-installation hook.
-    std("Running pre-installation hook for '"+rep+"' ...", newline=False)
+    std("Running pre-installation hook for '"+rep+"' ... ", newline=False)
 
-    if not installation_preinstall_hook(rep):
+    if not hook_pre_install(rep):
         err("Failed. ")
-        return (r, d)
+        return (False, [])
     std("Done. ")
 
     # Find the remote.
@@ -76,11 +64,11 @@ def do_install(rep):
     std("   OK. ")
 
     # post-installation hook.
-    std("Running post-installation hook for '"+rep+"' ...", newline=False)
+    std("Running post-installation hook for '"+rep+"' ... ", newline=False)
 
-    if not installation_postinstall_hook(rep):
+    if not hook_post_install(rep):
         err("Failed. ")
-        return (r, d)
+        return (False, [])
     std("Done. ")
 
     # Check for dependencies.
@@ -98,11 +86,12 @@ def install(*reps):
 
             if not res:
                 err("Failed installation:           ", term_colors("red")+"'"+rep+"'"+term_colors("normal"))
+                ret = False
             else:
                 std("Finished installation:         ", term_colors("green")+"'"+rep+"'"+term_colors("normal"))
                 reps.extend([d for d in deps if not d in reps])
         else:
-            std(    "Re-scanning for dependencies: ", term_colors("blue")+"'"+rep+"'"+term_colors("normal"))
+            std("Re-scanning for dependencies: ", term_colors("blue")+"'"+rep+"'"+term_colors("normal"))
 
             (res, deps) = do_deps_install(rep)
 

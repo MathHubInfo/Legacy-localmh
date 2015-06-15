@@ -12,12 +12,6 @@ def do(args, unknown):
         state = get_remote_status(r)
         return state == "push" or state == "failed" or state == "divergence"
 
-    if False and len(args.repository) == 0:
-        if get_config("update::selfupdate"):
-            std("Selfupdate: ")
-            if not update("self"):
-                return False
-
     repos = match_repo_args(args.repository, args.all)
 
     if args.mode == "human":

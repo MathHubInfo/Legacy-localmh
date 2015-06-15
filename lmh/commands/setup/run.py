@@ -23,7 +23,7 @@ def do(args, unknown):
 
     if len(args.pack) == 0:
         args.pack = ["default"]
-        if args.saction == "update" and get_config("update::selfupdate"):
+        if args.saction == "update":
             # Update self as well when calling lmh setup --update
             args.pack += ["self"]
 

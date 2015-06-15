@@ -9,7 +9,6 @@ def do(args, unknown):
     # If there are no repositories, check everything for dependencies.
     if len(args.spec) == 0:
         std("Nothing to install, re-installing all existing repositories.  ")
-        print(match_repos(data_dir))
         return install(*match_repos(data_dir))
 
     if not get_config("install::noglobs"):

@@ -205,12 +205,6 @@
 		"default": 120
 	},
 
-	"update::selfupdate": {
-		"type": "bool",
-		"help": "When lmh update or lmh setup --update is called without arguments, also perform a selfupdate. ",
-		"default": true
-	},
-
 	"gl::status_remote_enabled": {
 		"type": "bool",
 		"help": "If set to true, enables lmh status remote checking by default. ",

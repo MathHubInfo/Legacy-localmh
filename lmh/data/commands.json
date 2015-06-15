@@ -18,6 +18,7 @@
   "mine",
   "multiling",
   "mvmod",
+  "pull", 
   "push",
   "remote",
   "rename",
@@ -28,6 +29,5 @@
   "symbols",
   "symcomplete",
   "translate",
-  "up",
-  "update"
+  "up"
 ]
