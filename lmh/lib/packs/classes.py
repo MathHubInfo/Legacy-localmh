@@ -92,7 +92,6 @@ def cpanm_make(pack_dir):
 
     _env = perl5env(os.environ)
     _env.pop("STEXSTYDIR", None)
-    std(_env)
     try:
         call(cpanm_selfupgrade_args)
         call(cpanm_installdeps_args, env=_env, cwd=pack_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
