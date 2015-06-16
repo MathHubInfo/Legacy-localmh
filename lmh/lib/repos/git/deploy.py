@@ -3,7 +3,7 @@ import os
 from lmh.lib.io import std, write_file
 from lmh.lib.repos.local.package import get_metainf_lines
 from lmh.lib.repos.local import match_repo
-from lmh.lib.git import do
+from lmh.lib.git import do, do_data
 
 def get_deploy_branch(rep):
     """
@@ -38,19 +38,26 @@ def install(rep, dbranch):
     rpath = match_repo(rep, abs=True)
     dpath = os.path.join(rpath, "deploy")
 
+    (o, e) = do_data(rpath, "config", "--local", "--get", "remote.origin.url")
+
     if not do(rpath, "rev-parse", "--verify", "--quiet", dbranch):
-        if not do(rpath, "branch", dbranch):
+        if not do(rpath, "branch", dbranch, "--track", "origin/"+dbranch):
             return False
 
     # Clone it shared
     if not do(rpath, "clone", rpath, dpath, "--shared", "-b", dbranch):
         return False
 
-    # and set up .git/objects/info/alternates relatively
-    return  write_file(os.path.join(dpath, ".git/objects/info/alternates"), "../../../.git/objects")
+    # set up .git/objects/info/alternates relatively
+    if not write_file(os.path.join(dpath, ".git/objects/info/alternates"), "../../../.git/objects"):
+        return False
+
+    # and set the origin correctly.
+    return do(dpath, "remote", "set-url", "origin", o.rstrip("\n"))
 
 
-def update(rep, dbranch):
+
+def pull(rep, dbranch):
     rpath = match_repo(rep, abs=True)
     dpath = os.path.join(rpath, "deploy")
 
@@ -65,3 +72,19 @@ def update(rep, dbranch):
     # Run some housekeeping in the parent repo.
     # Removes hard commits.
     return do(rpath, "gc", "--auto")
+
+def push(rep, dbranch):
+    rpath = match_repo(rep, abs=True)
+    dpath = os.path.join(rpath, "deploy")
+
+    # add all the changes.
+    if not do(dpath, "add", "-A", "."):
+        return False
+
+    # commit them.
+    if not do(dpath, "commit", "--amend", "--no-edit"):
+        return False
+
+    # and force push them.
+    if not do(dpath, "commit", "--amend", "--no-edit"):
+        return False

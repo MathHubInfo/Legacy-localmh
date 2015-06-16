@@ -176,6 +176,8 @@ def write_file(filename, text):
     text_file.write(text)
     text_file.close()
 
+    return True
+
 def read_file(filename):
     """Reads text from a file"""
 
