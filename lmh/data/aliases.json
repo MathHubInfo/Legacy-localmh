@@ -2,7 +2,9 @@
   "ci": "commit",
   "st": "status",
 
-  "update": "pull", 
+  "deploy": "dbranch", 
+
+  "update": "pull",
   "selfupdate": "setup --update self",
 
   "sms": "gen --sms",

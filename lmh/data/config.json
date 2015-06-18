@@ -167,6 +167,12 @@
 		"default": "http://gl.mathhub.info/"
 	},
 
+	"gl::deploy_branch_name": {
+		"type": "string",
+		"help": "Name for automatically created deploy branches. ",
+		"default": "deploy"
+	},
+
 	"gl::projects_url": {
 		"type": "string",
 		"help": "URL to (public) projects url. Used for ls-remote. ",

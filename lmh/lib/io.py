@@ -173,7 +173,11 @@ def write_file(filename, text):
 
     # Write the text to file
     text_file = open(filename, "w")
-    text_file.write(text)
+
+    if isinstance(text, basestring):
+        text_file.write(text)
+    else:
+        text_file.write("\n".join(text))
     text_file.close()
 
     return True

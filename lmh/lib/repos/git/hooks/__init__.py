@@ -1,4 +1,4 @@
-import lmh.lib.repos.git.deploy as deploy
+import lmh.lib.repos.deploy as deploy
 from lmh.lib.io import std
 
 def hook_pre_install(rep):
@@ -33,10 +33,10 @@ def hook_post_update(rep):
 
         if deploy.installed(rep):
             std("Updating deploy branch '"+dbranch+"' ...")
-            deploy.pull(rep, dbranch)
+            deploy.pull(rep)
         else:
             std("Installing deploy branch '"+dbranch+"' ...")
-            deploy.install(rep, dbranch)
+            deploy.install(rep)
     return True
 
 def hook_post_install(rep):
