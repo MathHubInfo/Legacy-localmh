@@ -90,10 +90,11 @@ class Generated:
         return None
     def get_paths(self, branch):
         rpath = match_repo(self.repo, abs=True)
-        dpath = os.path.join(rpath, self.get_branch_path(branch))
 
         if not self.get_branch_path(branch):
             return (rpath, False)
+
+        dpath = os.path.join(rpath, self.get_branch_path(branch))
 
         return (rpath, dpath)
 
@@ -119,11 +120,12 @@ class Generated:
         """
             Prints some status information about the branches.
         """
-        std(    "Repository Name: ", self.repo)
+        std(    "Repository Name:    ", self.repo)
 
-        for b in self.get_all_branches(tuple=False):
-            std("Deploy Branch:   ", "'"+b+"'")
-            std("Installed:       ", "Yes" if self.is_installed(b) else "No")
+        for (b, p) in self.get_all_branches():
+            std("Generated Branch:   ", "'"+b+"'")
+            std("Path:               ", "'"+p+"'")
+            std("Installed:          ", "Yes" if self.is_installed(b) else "No")
 
     def init_branch(self, branch):
         """
@@ -136,6 +138,8 @@ class Generated:
             (name, pth) = (bsplit[0], bsplit[0])
         else:
             (name, pth) = (bsplit[0], bsplit[1])
+
+        std("Creating branch '"+name+"' at '"+pth+"'. ")
 
         # Check if the branch already exists.
         if name in self.get_all_branches(tuple=False):
@@ -170,7 +174,7 @@ class Generated:
 
         # or make a new one.
         if written == False:
-            lines.extend(gbranchstring+" "+ branch)
+            lines.extend([gbranchstring+" "+ branch])
 
         # and write that file.
         write_file(meta_inf_path, lines)
@@ -237,7 +241,10 @@ class Generated:
             return False
 
         # and set the origin correctly.
-        return do(dpath, "remote", "set-url", "origin", o.rstrip("\n"))
+        if not do(dpath, "remote", "set-url", "origin", o.rstrip("\n")):
+            return False
+
+        return do(rpath, "branch", "-D", branch)
 
 
     def pull_branch(self, branch):
@@ -247,6 +254,11 @@ class Generated:
 
         # Resolve path to branch.
         (rpath, dpath) = self.get_paths(branch)
+
+        # make sure it exists
+        if not dpath:
+            err("Unable to find given generated content branch '"+branch+"'. ")
+            return False
 
         # make sure it exists
         if not dpath:

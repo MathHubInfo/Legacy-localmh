@@ -8,6 +8,12 @@ class Command(CommandClass):
             self.help = meta.about()
         else:
             self.help = "<No help available>"
+
+        if hasattr(meta, "allow_unknown_args"):
+            self.allow_unknown = meta.allow_unknown_args
+        else:
+            self.allow_unknown = False
+
     def add_parser_args(self, parser):
         if meta.add_parser_args:
             return meta.add_parser_args(parser, argparse)

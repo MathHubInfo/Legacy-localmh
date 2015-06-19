@@ -70,6 +70,13 @@ def main(argv=sys.argv[1:]):
         # and re-parse
         (args, unknown) = parser.parse_known_args(argv)
 
+    try:
+        if not submods[args.action].allow_unknown and len(unknown) > 0:
+            err("Too many arguments. ")
+            return False
+    except Exception as e:
+        err(e)
+
     # run normally.
     return submods[args.action].do(args, unknown)
 

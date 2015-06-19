@@ -3,6 +3,7 @@ from lmh.lib.help import repo_wildcard_local
 def about():
     return "Run git command on multiple repositories"
 
+allow_unknown_args = True
 def add_parser_args(parser, argparse):
     parser.add_argument('cmd', nargs=1, help="a git command to be run.")
     parser.add_argument('--all', "-a", default=False, const=True, action="store_const", help="runs a git command on all repositories currently in lmh")
