@@ -2,8 +2,6 @@
   "ci": "commit",
   "st": "status",
 
-  "deploy": "dbranch", 
-
   "update": "pull",
   "selfupdate": "setup --update self",
 
