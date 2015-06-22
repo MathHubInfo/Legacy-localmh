@@ -89,7 +89,7 @@ def is_repo(dest):
     """Checks if a git repository exists (locally) """
 
     args = [git_executable, "rev-parse", dest]
-    proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
     proc.wait()
     if (proc.returncode == 0):
         print("<<CSTART")
