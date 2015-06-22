@@ -92,14 +92,8 @@ def is_repo(dest):
     proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
     proc.wait()
     if (proc.returncode == 0):
-        print("<<CSTART")
-        print(os.path.abspath(root_dir(dest)))
-        print(os.path.abspath(dest))
-        print("CEND >>")
         return os.path.abspath(root_dir(dest)) == os.path.abspath(dest)
-
     else:
-        print("CFAIL")
         return False
 
 def root_dir(dir = "."):
