@@ -104,7 +104,6 @@ def locate_module(path, git_root):
         # The Repo
         "repo": git_root,
         "repo_name": repo_rel,
-        "repo_deploy_branch": ,
 
         # sms
         "sms": smspath,
