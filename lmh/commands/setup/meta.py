@@ -10,9 +10,6 @@ def add_parser_args(parser, argparse):
     action.add_argument('--remove', action="store_const", dest="saction", const="remove", help="Removes a package or group. ")
 
     parser.add_argument('--no-check', '--force', action="store_true", help="Do not check for external dependencies. ")
-    frun = parser.add_mutually_exclusive_group(required=False)
-    frun.add_argument('--no-firstrun', action="store_const", const=False, dest="firstrun", help="Skip the firstrun routine. ")
-    frun.add_argument('--firstrun', action="store_const", const=True, default=None, help="Skip the firstrun routine. ")
     parser.add_argument('pack', nargs="*", metavar="PACK:SOURCE")
 
     parser.epilog = """

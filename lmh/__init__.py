@@ -9,7 +9,6 @@ from lmh.lib.env import install_dir
 import lmh.lib.io
 from lmh.lib.io import read_file, write_file, err
 from lmh.lib.config import get_config
-from lmh.lib.init import init
 
 from lmh.commands import create_parser
 
@@ -57,7 +56,6 @@ def main(argv=sys.argv[1:]):
 
     # No action.
     if args.action == None:
-        init() # What does this do?
         parser.print_help()
         return
 

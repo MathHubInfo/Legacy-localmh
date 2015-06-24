@@ -3,17 +3,8 @@ from lmh.lib.extenv import check_deps
 from lmh.lib.config import get_config
 
 import lmh.lib.packs
-import lmh.lib.init
 
 def do(args, unknown):
-    if args.firstrun == None:
-        # Call firstrun if required
-        if not lmh.lib.init.init():
-            err("Firstrun routine failed. ")
-            return False
-    elif args.firstrun == True:
-        # Force call firstrun
-        return lmh.lib.init.first_run()
 
     if not args.no_check and not check_deps():
         err("Dependency check failed. ")

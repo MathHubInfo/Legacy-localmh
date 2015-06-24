@@ -62,7 +62,7 @@ ln -s $HOME/localmh/bin/lmh /usr/local/bin/lmh #May required sudo
 
 Next, we need to install a lot of required packages. Assuming all the dependencies are installed correctly, this can be done with the following command:
 ```bash
-lmh setup --no-firstrun --install all
+lmh setup --install all
 ```
 
 That's it. After this lmh should be installed and ready for use. See [Getting started with lmh](getting_started) for some basic commands.
