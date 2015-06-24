@@ -11,13 +11,6 @@
 		"default": ""
 	},
 
-	"self::is_github": {
-		"type": "bool",
-		"help": "Did we already migrate to the github repo?",
-		"hidden": true,
-		"default": true
-	},
-
 	"env::svn": {
 		"type": "string",
 		"help": "Path to the svn executable. Auto-detected if empty. ",
@@ -45,18 +38,6 @@
 	"env::cpanm": {
 		"type": "string",
 		"help": "Path to the cpanm executable. Auto-detected if empty. ",
-		"default": ""
-	},
-
-	"env::make": {
-		"type": "string",
-		"help": "Path to the make executable. Auto-detected if empty. ",
-		"default": ""
-	},
-
-	"env::tar": {
-		"type": "string",
-		"help": "Path to the make executable. Auto-detected if empty. ",
 		"default": ""
 	},
 

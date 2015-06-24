@@ -7,14 +7,14 @@
         
         
         
-        <link rel="shortcut icon" href="./img/favicon.ico">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
 
-	<title>Localmh</title>
+	<title>Manual installation - Localmh</title>
 
-        <link href="./css/bootstrap-custom.min.css" rel="stylesheet">
-        <link href="./css/font-awesome-4.0.3.css" rel="stylesheet">
-        <link href="./css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="./css/highlight.css">
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -25,7 +25,7 @@
         
     </head>
 
-    <body class="homepage">
+    <body>
 
         <div class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
@@ -43,7 +43,7 @@
             
 
             <!-- Main title -->
-            <a class="navbar-brand" href=".">Localmh</a>
+            <a class="navbar-brand" href="../..">Localmh</a>
         </div>
 
         <!-- Expanded navigation -->
@@ -53,31 +53,31 @@
                 <ul class="nav navbar-nav">
                 
                 
-                    <li class="active">
-                        <a href=".">Overview</a>
+                    <li >
+                        <a href="../..">Overview</a>
                     </li>
                 
                 
                 
-                    <li class="dropdown">
+                    <li class="dropdown active">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Miscellaneous <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                         
                             
-<li >
-    <a href="misc/install/">Manual installation</a>
+<li class="active">
+    <a href="./">Manual installation</a>
 </li>
 
                         
                             
 <li >
-    <a href="generated/config/">List of Configuration Settings</a>
+    <a href="../../generated/config/">List of Configuration Settings</a>
 </li>
 
                         
                             
 <li >
-    <a href="misc/license/">License</a>
+    <a href="../license/">License</a>
 </li>
 
                         
@@ -92,25 +92,25 @@
                         
                             
 <li >
-    <a href="commands/about/">lmh about</a>
+    <a href="../../commands/about/">lmh about</a>
 </li>
 
                         
                             
 <li >
-    <a href="commands/config/">lmh config</a>
+    <a href="../../commands/config/">lmh config</a>
 </li>
 
                         
                             
 <li >
-    <a href="commands/selfupdate/">lmh selfupdate</a>
+    <a href="../../commands/selfupdate/">lmh selfupdate</a>
 </li>
 
                         
                             
 <li >
-    <a href="commands/setup/">lmh setup</a>
+    <a href="../../commands/setup/">lmh setup</a>
 </li>
 
                         
@@ -128,13 +128,13 @@
                     </a>
                 </li>
                 
-                    <li class="disabled">
-                        <a rel="next" >
+                    <li >
+                        <a rel="next" href="../..">
                             <i class="fa fa-arrow-left"></i> Previous
                         </a>
                     </li>
                     <li >
-                        <a rel="prev" href="misc/install/">
+                        <a rel="prev" href="../../generated/config/">
                             Next <i class="fa fa-arrow-right"></i>
                         </a>
                     </li>
@@ -150,49 +150,84 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
-        <li class="main active"><a href="#localmh">Localmh</a></li>
+        <li class="main active"><a href="#manual-installation">Manual Installation</a></li>
         
-            <li><a href="#installation">Installation</a></li>
+            <li><a href="#installing-dependencies">Installing dependencies</a></li>
         
-            <li><a href="#commands">Commands</a></li>
+            <li><a href="#cloning-lmh">Cloning Lmh</a></li>
+        
+            <li><a href="#running-setup-scripts">Running setup scripts</a></li>
         
     
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<h1 id="localmh">Localmh</h1>
-<p>Welcome to the documentation of localmh.</p>
-<p>Lmh, short for <b>l</b>ocal <b>m</b>ath<b>h</b>ub, is an infrastructure for local (in a working tree) management of the content in <a href="http://MathHub.info">http://MathHub.info</a>.</p>
-<p>As such it is mainly responsible for 2 different tasks:</p>
+<h1 id="manual-installation">Manual Installation</h1>
+<div class="alert alert-success" role="alert">
+Usually lmh should be installed via <a href="https://github.com/KWARC/localmh_docker">localmh_docker</a> only. Check the appropriate documentation there.
+</div>
+
+<p>A manual installation works in 3 steps:</p>
+<ol>
+<li>Install dependencies</li>
+<li>Clone this repository and make the <code>lmh</code> script available in your $PATH</li>
+<li>Run automatic setup scripts.</li>
+</ol>
+<p>Manual installation is only supported on Linux and Mac based system.</p>
+<h2 id="installing-dependencies">Installing dependencies</h2>
+<p>In order for localmh to function properly several dependencies are needed. These should be installed first:</p>
 <ul>
-<li>Mathhub Repositories installation and management</li>
-<li>External dependency management</li>
+<li><a href="https://www.python.org/">Python 2.7</a>, python3 may or may not work</li>
+<li>
+<p><a href="https://pip.pypa.io/en/stable/">pip</a> a python packaage manager, so we can install some python packages</p>
+</li>
+<li>
+<p><a href="https://www.perl.org/">Perl</a> in order to run LaTeXML</p>
+</li>
+<li>
+<p><a href="http://search.cpan.org/~miyagawa/App-cpanminus-1.7037/lib/App/cpanminus.pm">cpanminus</a> to install perl packages needed for LaTeXML</p>
+</li>
+<li>
+<p><a href="https://www.tug.org/texlive/">TexLive 2014</a> or later, needed by LaTeXML and to make pdfs.</p>
+</li>
+<li>
+<p><a href="https://java.com/">Java</a> to be able to run MMT</p>
+</li>
+<li>
+<p><a href="https://git-scm.com/">git</a> to install localmh and MathHub repositories.</p>
+</li>
+<li>
+<p><a href="https://subversion.apache.org/">svn</a> needed to install MMT</p>
+</li>
+<li>
+<p>libxml2, libxslt and libssl development headers. Needed for LaTeXML to install properly.</p>
+</li>
 </ul>
-<p>It is still partially responsible for:</p>
-<ul>
-<li>Generation content creation (to be taken over MMT)</li>
-</ul>
-<p>Lmh is licensed under GPL v3, see <a href="./license">License</a> for details.</p>
-<h2 id="installation">Installation</h2>
-<p>Installation should be done via <a href="https://github.com/KWARC/localmh_docker">localmh_docker</a>.</p>
-<p>In case a manual installation is needed, instructions can be found <a href="./installation">here</a>.</p>
-<h2 id="commands">Commands</h2>
-<h3 id="repository-installation">Repository installation</h3>
-<ul>
-<li><a href="./commands/install">lmh install</a> - Installs Repositories</li>
-</ul>
-<h3 id="external-dependencies-and-software-updates">(External) dependencies and software updates</h3>
-<ul>
-<li><a href="./commands/setup">lmh setup</a> - Sets up lmh and fetches external requirements</li>
-<li><a href="./commands/selfupdate">lmh selfupdate</a> - Update lmh itself.</li>
-</ul>
-<h3 id="generation-process">Generation process</h3>
-<h3 id="miscellaneous-commands">Miscellaneous commands</h3>
-<ul>
-<li><a href="./commands/config">lmh config</a> - Configuration of localmh</li>
-<li><a href="./commands/about">lmh about</a> - Shows version and general information</li>
-</ul></div>
+<p>On a clean Debian or Ubuntu based system all the dependencies may be installed with the following command:</p>
+<pre><code class="bash">apt-get install python python-dev python-pip git subversion tar fontconfig cpanminus libxml2-dev libxslt-dev libssl-dev libgdbm-dev openjdk-7-jre-headless textlive-full perl
+</code></pre>
+
+<p>Next we need to install some of the required python modules:</p>
+<pre><code class="bash">pip install beautifulsoup4 psutil pyapi-gitlab
+</code></pre>
+
+<h2 id="cloning-lmh">Cloning Lmh</h2>
+<p>The next step is to clone lmh somewhere and symlink the <code>lmh</code> script into the $PATH variable.</p>
+<p>First choose a directory and clone localmh there:</p>
+<pre><code class="bash">git clone https://github.com/KWARC/localmh $HOME/localmh
+</code></pre>
+
+<p>Next, we need to symlink the lmh script into the $PATH. In this command we assume that /usr/local/bin exists and is included in $PATH:</p>
+<pre><code class="bash">ln -s $HOME/localmh/bin/lmh /usr/local/bin/lmh #May required sudo
+</code></pre>
+
+<h2 id="running-setup-scripts">Running setup scripts</h2>
+<p>Next, we need to install a lot of required packages. Assuming all the dependencies are installed correctly, this can be done with the following command:</p>
+<pre><code class="bash">lmh setup --install all
+</code></pre>
+
+<p>That's it. After this lmh should be installed and ready for use. See <a href="../getting_started">Getting started with lmh</a> for some basic commands.</p></div>
             
         </div>
 
@@ -202,12 +237,12 @@
             <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
 
-        <script src="./js/jquery-1.10.2.min.js"></script>
-        <script src="./js/bootstrap-3.0.3.min.js"></script>
-        <script src="./js/highlight.pack.js"></script>
-        <script>var base_url = '.';</script>
-        <script data-main="./mkdocs/js/search.js" src="./mkdocs/js/require.js"></script>
-        <script src="./js/base.js"></script>
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
             <div class="modal-dialog">
@@ -236,8 +271,3 @@
 
     </body>
 </html>
-
-<!--
-MkDocs version : 0.14.0
-Build Date UTC : 2015-06-24 14:06:56.844006
--->

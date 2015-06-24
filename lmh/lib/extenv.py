@@ -57,21 +57,9 @@ cpanm_executable = get_config("env::cpanm")
 
 if cpanm_executable == "":
     if os.name == "nt":
-        cpanm_executable =  which("cpanm.bat")
+        cpanm_executable = which("cpanm.bat")
     else:
-        cpanm_executable =  which("cpanm")
-
-"""The path to the make executable. """
-make_executable = get_config("env::make")
-
-if make_executable == "":
-    make_executable =  which("make")
-
-"""The path to the tar executable. """
-tar_executable = get_config("env::tar")
-
-if tar_executable == "":
-    tar_executable =  which("tar")
+        cpanm_executable = which("cpanm")
 
 def check_deps():
     """Check if dependencies exist. """
@@ -112,16 +100,6 @@ def check_deps():
         err("Please make sure it is in the $PATH environment variable. ")
         err("On Ubtuntu 13.10 or later you can install this with: ")
         err("    sudo apt-get install cpanminus")
-        return False
-
-    if make_executable == None:
-        err("Unable to locate make. ")
-        err("Please make sure it is in the $PATH environment variable. ")
-        return False
-
-    if tar_executable == None:
-        err("Unable to locate tar. ")
-        err("Please make sure it is in the $PATH environment variable. ")
         return False
 
 
