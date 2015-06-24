@@ -28,17 +28,6 @@ except:
 
         BeautifulSoup = False
 
-def is_valid(name):
-    """Checks if a remote repository is a valid repository. """
-
-    raw = Template(get_config("gl::raw_url")).substitute(repo=name)+"META-INF/MANIFEST.MF"
-
-    try:
-        urlopen(raw)
-        return True
-    except Exception:
-        return False
-
 def find_source(name, quiet = False):
     """
         Finds the source of a repository.
@@ -134,5 +123,4 @@ def ls_remote(*spec):
                 err("Warning: No modules matching", s, "found. ")
         matched_projects.update(matches)
 
-
-    return filter(lambda x: is_valid(x), sorted(matched_projects))
+    return sorted(matched_projects)
