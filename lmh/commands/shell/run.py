@@ -1,5 +1,4 @@
 import sys
-
 from lmh.lib.extenv import run_shell
 
 def do(args, unknown):

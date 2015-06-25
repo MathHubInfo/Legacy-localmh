@@ -145,6 +145,11 @@ def perl5env(_env = {}):
 def run_shell(shell = None, args=""):
     """Runs a shell that is ready for any perl5 things"""
 
+    # If args is a list, join it by " "s
+    if not isinstance(args, basestring):
+        args = " ".join(args)
+
+
     if shell == None:
         try:
             shell = os.environ["SHELL"] or which("bash")
