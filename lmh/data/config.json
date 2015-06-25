@@ -153,6 +153,13 @@
 		"default": "https://github.com/KWARC/localmh/issues"
 	},
 
+	"mh::issue_url": {
+		"type": "string",
+		"help": "URL to issues page for each repository. ",
+		"default": "https://gl.mathhub.info/$name/issues"
+	},
+
+
 
 	"init::allow_nonempty": {
 		"type": "bool",
