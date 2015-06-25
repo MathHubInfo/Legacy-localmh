@@ -2,26 +2,21 @@ import os
 import sys
 import json
 import time
-import subprocess
 import shlex
 import traceback
 
 from lmh.lib.env import install_dir
 import lmh.lib.io
-from lmh.lib.io import read_file, write_file, std, err
+from lmh.lib.io import read_file, write_file, err
 from lmh.lib.config import get_config
-from lmh.lib.init import init
 
 from lmh.commands import create_parser
-from lmh.commands import gen
 
 # Contains all the subcommands
 submods = {}
 
 def install_excepthook():
-    #
-    # Exception handler
-    #
+    """Hook to handle exceptions. """
     cwd = os.getcwd()
     def my_excepthook(exctype, value, tb):
         if exctype == KeyboardInterrupt:
@@ -36,7 +31,7 @@ def install_excepthook():
 
     sys.excepthook = my_excepthook
 
-def main(argv = sys.argv[1:]):
+def main(argv=sys.argv[1:]):
     """Calls the main program with given arguments. """
 
     # Load commands + aliases
@@ -61,7 +56,6 @@ def main(argv = sys.argv[1:]):
 
     # No action.
     if args.action == None:
-        init() # What does this do?
         parser.print_help()
         return
 
@@ -74,10 +68,17 @@ def main(argv = sys.argv[1:]):
         # and re-parse
         (args, unknown) = parser.parse_known_args(argv)
 
+    try:
+        if not submods[args.action].allow_unknown and len(unknown) > 0:
+            err("Too many arguments. ")
+            return False
+    except Exception as e:
+        err(e)
+
     # run normally.
     return submods[args.action].do(args, unknown)
 
-def run(argv = sys.argv[1:]):
+def run(argv=sys.argv[1:]):
     install_excepthook()
     if(get_config("::eastereggs") == True and argv == ["what", "is", "the", "answer", "to", "life", "the", "universe", "and", "everything?"]):
         sys.exit(42)

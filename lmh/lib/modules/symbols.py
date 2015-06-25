@@ -1,6 +1,4 @@
 import re
-import sys
-import shutil
 from lmh.lib import remove_doubles, clean_list
 from lmh.lib.io import std, err, write_file, read_file
 from lmh.lib.modules import locate_modules, needsPreamble

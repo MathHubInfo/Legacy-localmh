@@ -2,7 +2,8 @@
   "ci": "commit",
   "st": "status",
 
-  "selfupdate": "setup --update self", 
+  "update": "pull",
+  "selfupdate": "setup --update self",
 
   "sms": "gen --sms",
   "omdoc": "gen --omdoc",

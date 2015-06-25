@@ -1,44 +1,8 @@
 import sys
-import os.path
+import os, os.path
 import subprocess
 
-from lmh.lib.io import std, err
 from lmh.lib.extenv import git_executable
-
-
-def clone(dest, *arg):
-    """Clones a git repository. """
-    args = [git_executable, "clone"]
-    args.extend(arg)
-    proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
-    proc.wait()
-    return (proc.returncode == 0)
-
-def pull(dest, *arg):
-    """Pulls a git repository. """
-
-    args = [git_executable, "pull"]
-    args.extend(arg)
-    proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
-    proc.wait()
-    return (proc.returncode == 0)
-
-def commit(dest, *arg):
-    """Commits a git repository. """
-    args = [git_executable, "commit"]
-    args.extend(arg)
-    proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
-    proc.wait()
-    return (proc.returncode == 0)
-
-def push(dest, *arg):
-    """Pulls a git repository. """
-
-    args = [git_executable, "push"]
-    args.extend(arg);
-    proc = subprocess.Popen(args, stderr=sys.stderr, stdout=sys.stdout, cwd=dest)
-    proc.wait()
-    return (proc.returncode == 0)
 
 def do(dest, cmd, *arg):
     """Does an arbitrary git command and returns if it suceeded. """
@@ -67,6 +31,24 @@ def do_data(dest, cmd, *arg):
     proc.wait()
     return proc.communicate()
 
+### SIMPLE ALIASES
+def clone(dest, *arg):
+    """Clones a git repository. """
+    return do(dest, "clone", *arg)
+
+def pull(dest, *arg):
+    """Pulls a git repository. """
+    return do(dest, "pull", *arg)
+
+def commit(dest, *arg):
+    """Commits a git repository. """
+    return do(dest, "commit", *arg)
+
+def push(dest, *arg):
+    """Pulls a git repository. """
+    return do(dest, "push", *arg)
+
+
 def status(dest, *arg):
     """Runs git status and returns the status message. """
 
@@ -90,23 +72,31 @@ def status_pipe(dest, *arg):
     else:
         return False
 
-def exists(dest):
+def exists(dest, askpass=True):
     """Checks if a git repository exists. """
 
     args = [git_executable, "ls-remote", dest]
-    proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+
+    env = os.environ.copy()
+    if not askpass:
+        env["GIT_TERMINAL_PROMPT"] = "0"
+        env["GIT_ASKPASS"] = "/bin/echo"
+    proc = subprocess.Popen(args, env=env, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     proc.wait()
     return (proc.returncode == 0)
 
 def is_repo(dest):
     """Checks if a git repository exists (locally) """
 
-    args = [git_executable, "rev-parse", dest]
-    proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-    proc.wait()
-    if (proc.returncode == 0):
-        return os.path.abspath(root_dir(dest)) == os.path.abspath(dest)
-    else:
+    try:
+        args = [git_executable, "rev-parse", dest]
+        proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
+        proc.wait()
+        if (proc.returncode == 0):
+            return os.path.abspath(root_dir(dest)) == os.path.abspath(dest)
+        else:
+            return False
+    except:
         return False
 
 def root_dir(dir = "."):
@@ -155,11 +145,39 @@ def get_remote_status(where):
         return "push"
     else:
         return "divergence"
+def make_orphan_branch(dest, name):
+
+    # true | git mktree
+    args = [git_executable, "mktree"]
+    proc = subprocess.Popen(args, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
+    treeid = proc.communicate(input=b'')[0].rstrip("\n")
+    proc.wait()
+
+    if proc.returncode != 0:
+        return False
+
+    # ... | xargs git commit-tree
+    args = [git_executable, "commit-tree", treeid]
+    proc = subprocess.Popen(args, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
+    commid = proc.communicate(input=b'')[0].rstrip("\n")
+    proc.wait()
+
+    if proc.returncode != 0:
+        return False
+
+    # ... | xargs git branch $name
+    args = [git_executable, "branch", name, commid]
+    proc = subprocess.Popen(args, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
+    res = proc.communicate(input=b'')[0].rstrip("\n")
+    proc.wait()
+
+    return proc.returncode == 0
+
 
 def origin(dir="."):
     """Finds the origin of a given git repository. """
 
     return subprocess.Popen([git_executable, "remote", "show", "origin", "-n"],
                                                     stdout=subprocess.PIPE,
-                                                    cwd=rootdir,
+                                                    cwd=dir,
                                                     ).communicate()[0]

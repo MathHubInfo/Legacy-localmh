@@ -7,7 +7,6 @@ from string import Template
 from lmh.lib import shellquote
 from lmh.lib.io import std, read_file, write_file
 from lmh.lib.extenv import get_template
-from lmh.lib.modules import needsRegen
 
 all_modtpl = Template(get_template("alltex_mod.tpl"))
 all_textpl = Template(get_template("alltex_struct.tpl"))

@@ -6,6 +6,7 @@
   "config",
   "depcrawl",
   "find",
+  "gbranch",
   "gen",
   "git",
   "init",
@@ -18,6 +19,7 @@
   "mine",
   "multiling",
   "mvmod",
+  "pull",
   "push",
   "remote",
   "rename",
@@ -28,6 +30,5 @@
   "symbols",
   "symcomplete",
   "translate",
-  "up",
-  "update"
+  "up"
 ]

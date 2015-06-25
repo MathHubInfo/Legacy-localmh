@@ -1,24 +1,19 @@
 import os
 import os.path
-import sys
 import re
 import glob
-import time
-import signal
-import shutil
-import datetime
-import functools
-import traceback
-
-import time
-
 
 from lmh.lib import reduce, clean_list, remove_doubles
 from lmh.lib.io import std, err, read_file, effectively_readable
 from lmh.lib.env import install_dir, data_dir
 from lmh.lib.git import root_dir
 
-from lmh.lib.repos.local import find_repo_subdirs
+from lmh.lib.repos.local.dirs import find_repo_subdirs
+
+
+# Hardcoded folder exclude list.
+# really ugly workaround for #223
+folder_exclude_list = ["tikz"]
 
 
 # Hardcoded folder exclude list.
@@ -77,8 +72,6 @@ def locate_module(path, git_root):
     if git_root == None:
         std("Skipping "+path+", not in a valid git repository. ")
 
-    org_selected = path
-
     if not path.endswith(".tex"):
         path = os.path.splitext(path)[0] + ".tex" # We go to the tex file
 
@@ -106,7 +99,6 @@ def locate_module(path, git_root):
     f = {
         # what it is.
         "type": "file",
-        # "original_selector": org_selected,
         "mod": os.path.basename(basepth),
 
         # Where it is
@@ -271,7 +263,6 @@ def locate_modules(path, depth=-1, find_files = True):
         youngest = max(map(lambda x : os.path.getmtime(x["path"]), modules))
 
         localpathstex = path + "/localpaths.tex"
-        alltexpath = path + "/all.tex"
 
         # add localpaths.tex, all.tex
         # prepend this to the modules
@@ -279,7 +270,6 @@ def locate_modules(path, depth=-1, find_files = True):
         # generate all the other files
 
         # We always need the folder first.
-        # TODO: More stuff
 
         modules[:0] = [{
             "type": "folder",
@@ -424,9 +414,7 @@ def resolve_pathspec(args, allow_files = True, allow_local = True, find_files = 
             if os.path.isdir(gl_abs):
                 if is_repo(gl_abs) or is_in_repo(gl_abs):
                     paths.append(gl_abs)
-                    didthings = True
                 elif is_in_data(gl_abs):
-                    didthings = True
                     # Find all the subdirectories which match
                     paths = paths + find_repo_subdirs(gl_abs)
                 else:

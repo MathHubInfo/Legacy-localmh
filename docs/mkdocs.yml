@@ -1,0 +1,12 @@
+site_name: Localmh
+pages:
+- Overview: 'index.md'
+- Miscellaneous:
+  - Manual installation: 'misc/install.md'
+  - List of Configuration Settings: 'generated/config.md'
+  - License: 'misc/license.md'
+- Commands:
+    - lmh about: 'commands/about.md'
+    - lmh config: 'commands/config.md'
+    - lmh selfupdate: 'commands/selfupdate.md'
+    - lmh setup: 'commands/setup.md'
