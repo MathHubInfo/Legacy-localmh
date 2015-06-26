@@ -23,6 +23,7 @@ This is a list of all configuration settings to be used with [lmh config](../com
 | init::allow_nonempty | Allow to run lmh init in non-empty directories. | bool | False |
 | install::noglobs | Disable globs when installing repositories. | bool | False |
 | install::sources | Url prefixes to clone git repositories from. Seperated by ;s. | string | git@gl.mathhub.info:;http://gl.mathhub.info/ |
+| mh::issue_url | URL to issues page for each repository. | string | https://gl.mathhub.info/$name/issues |
 | self::colors | Use colors in the output. | bool | False |
 | setup::cpanm::selfcontained | Use self-contained local CPANM repositories. | bool | True |
 | setup::latexml::branch | Default branch for latexml. Automatically uses the remote HEAD if undefined. | string |  |
