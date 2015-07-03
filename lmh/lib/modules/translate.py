@@ -1,7 +1,5 @@
-import os
 import re
 import json
-import shutil
 
 from lmh.lib.modules.symbols import add_symbols
 

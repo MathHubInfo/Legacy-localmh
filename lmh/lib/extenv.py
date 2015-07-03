@@ -57,21 +57,9 @@ cpanm_executable = get_config("env::cpanm")
 
 if cpanm_executable == "":
     if os.name == "nt":
-        cpanm_executable =  which("cpanm.bat")
+        cpanm_executable = which("cpanm.bat")
     else:
-        cpanm_executable =  which("cpanm")
-
-"""The path to the make executable. """
-make_executable = get_config("env::make")
-
-if make_executable == "":
-    make_executable =  which("make")
-
-"""The path to the tar executable. """
-tar_executable = get_config("env::tar")
-
-if tar_executable == "":
-    tar_executable =  which("tar")
+        cpanm_executable = which("cpanm")
 
 def check_deps():
     """Check if dependencies exist. """
@@ -114,25 +102,15 @@ def check_deps():
         err("    sudo apt-get install cpanminus")
         return False
 
-    if make_executable == None:
-        err("Unable to locate make. ")
-        err("Please make sure it is in the $PATH environment variable. ")
-        return False
 
-    if tar_executable == None:
-        err("Unable to locate tar. ")
-        err("Please make sure it is in the $PATH environment variable. ")
-        return False
-
-
-    try:
-        import psutil
-    except:
-        err("Unable to locate python module 'psutil'. ")
-        err("Please make sure it is installed. ")
-        err("You may be able to install it with: ")
-        err("    pip install psutil")
-        return False
+    #try:
+    #    import psutil
+    #except:
+    #    err("Unable to locate python module 'psutil'. ")
+    #    err("Please make sure it is installed. ")
+    #    err("You may be able to install it with: ")
+    #    err("    pip install psutil")
+    #    return False
 
     return True
 
@@ -167,6 +145,11 @@ def perl5env(_env = {}):
 def run_shell(shell = None, args=""):
     """Runs a shell that is ready for any perl5 things"""
 
+    # If args is a list, join it by " "s
+    if not isinstance(args, basestring):
+        args = " ".join(args)
+
+
     if shell == None:
         try:
             shell = os.environ["SHELL"] or which("bash")
@@ -198,7 +181,7 @@ def run_shell(shell = None, args=""):
 
     try:
         runner = Popen([shell]+shlex.split(args), env=_env, cwd=install_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-    except Exception as e:
+    except Exception:
         # we could not find that
         return 127
 

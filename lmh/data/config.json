@@ -5,23 +5,10 @@
 		"default": false
 	},
 
-	"self::showfirstrun": {
-		"type": "bool",
-		"help": "Show first run dialogs when first running lmh. ",
-		"default": false
-	},
-
 	"env::git": {
 		"type": "string",
 		"help": "Path to the Git executable. Auto-detected if empty. ",
 		"default": ""
-	},
-
-	"self::is_github": {
-		"type": "bool",
-		"help": "Did we already migrate to the github repo?",
-		"hidden": true,
-		"default": true
 	},
 
 	"env::svn": {
@@ -54,40 +41,16 @@
 		"default": ""
 	},
 
-	"env::make": {
-		"type": "string",
-		"help": "Path to the make executable. Auto-detected if empty. ",
-		"default": ""
-	},
-
-	"env::tar": {
-		"type": "string",
-		"help": "Path to the make executable. Auto-detected if empty. ",
-		"default": ""
-	},
-
 	"env::pager": {
 		"type": "string",
 		"help": "A full path to a pager to use for long outputs. If empty, no pager is used. ",
 		"default": ""
 	},
 
-	"state::lastversion": {
-		"type": "string",
-		"help": "Contains the last used version of lmh. ",
-		"default": "",
-		"hidden": true
-	},
-
 	"install::sources": {
 		"type": "string",
 		"help": "Url prefixes to clone git repositories from. Seperated by ;s. ",
 		"default": "git@gl.mathhub.info:;http://gl.mathhub.info/"
-	},
-	"install::nomanifest": {
-		"type": "bool",
-		"help": "Allow repositories to install without manifests. ",
-		"default": false
 	},
 	"install::noglobs": {
 		"type": "bool",
@@ -172,16 +135,16 @@
 		"default": "http://gl.mathhub.info/"
 	},
 
+	"gl::deploy_branch_name": {
+		"type": "string",
+		"help": "Name for automatically created deploy branches. ",
+		"default": "deploy"
+	},
+
 	"gl::projects_url": {
 		"type": "string",
 		"help": "URL to (public) projects url. Used for ls-remote. ",
 		"default": "http://gl.mathhub.info/public/"
-	},
-
-	"gl::raw_url": {
-		"type": "string",
-		"help": "URL to raw projects url. Used for ls-remote. ",
-		"default": "http://gl.mathhub.info/$repo/raw/HEAD/"
 	},
 
 	"gl::issue_url": {
@@ -189,6 +152,13 @@
 		"help": "URL to issues page. ",
 		"default": "https://github.com/KWARC/localmh/issues"
 	},
+
+	"mh::issue_url": {
+		"type": "string",
+		"help": "URL to issues page for each repository. ",
+		"default": "https://gl.mathhub.info/$name/issues"
+	},
+
 
 
 	"init::allow_nonempty": {
@@ -208,12 +178,6 @@
 		"type": "int+",
 		"help": "Timeout when generating PDFs. In seconds. ",
 		"default": 120
-	},
-
-	"update::selfupdate": {
-		"type": "bool",
-		"help": "When lmh update or lmh setup --update is called without arguments, also perform a selfupdate. ",
-		"default": true
 	},
 
 	"gl::status_remote_enabled": {

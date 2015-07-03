@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+
+	<title>Manual installation - Localmh</title>
+
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">Localmh</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="../..">Overview</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown active">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Miscellaneous <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li class="active">
+    <a href="./">Manual installation</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../generated/config/">List of Configuration Settings</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../license/">License</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Commands <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../../commands/about/">lmh about</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../commands/config/">lmh config</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../commands/selfupdate/">lmh selfupdate</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../commands/setup/">lmh setup</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                </ul>
+            
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                
+                    <li >
+                        <a rel="next" href="../..">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="../../generated/config/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#manual-installation">Manual Installation</a></li>
+        
+            <li><a href="#installing-dependencies">Installing dependencies</a></li>
+        
+            <li><a href="#cloning-lmh">Cloning Lmh</a></li>
+        
+            <li><a href="#running-setup-scripts">Running setup scripts</a></li>
+        
+    
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="manual-installation">Manual Installation</h1>
+<div class="alert alert-success" role="alert">
+Usually lmh should be installed via <a href="https://github.com/KWARC/localmh_docker">localmh_docker</a> only. Check the appropriate documentation there.
+</div>
+
+<p>A manual installation works in 3 steps:</p>
+<ol>
+<li>Install dependencies</li>
+<li>Clone this repository and make the <code>lmh</code> script available in your $PATH</li>
+<li>Run automatic setup scripts.</li>
+</ol>
+<p>Manual installation is only supported on Linux and Mac based system.</p>
+<h2 id="installing-dependencies">Installing dependencies</h2>
+<p>In order for localmh to function properly several dependencies are needed. These should be installed first:</p>
+<ul>
+<li><a href="https://www.python.org/">Python 2.7</a>, python3 may or may not work</li>
+<li>
+<p><a href="https://pip.pypa.io/en/stable/">pip</a> a python packaage manager, so we can install some python packages</p>
+</li>
+<li>
+<p><a href="https://www.perl.org/">Perl</a> in order to run LaTeXML</p>
+</li>
+<li>
+<p><a href="http://search.cpan.org/~miyagawa/App-cpanminus-1.7037/lib/App/cpanminus.pm">cpanminus</a> to install perl packages needed for LaTeXML</p>
+</li>
+<li>
+<p><a href="https://www.tug.org/texlive/">TexLive 2014</a> or later, needed by LaTeXML and to make pdfs.</p>
+</li>
+<li>
+<p><a href="https://java.com/">Java</a> to be able to run MMT</p>
+</li>
+<li>
+<p><a href="https://git-scm.com/">git</a> to install localmh and MathHub repositories.</p>
+</li>
+<li>
+<p><a href="https://subversion.apache.org/">svn</a> needed to install MMT</p>
+</li>
+<li>
+<p>libxml2, libxslt and libssl development headers. Needed for LaTeXML to install properly.</p>
+</li>
+</ul>
+<p>On a clean Debian or Ubuntu based system all the dependencies may be installed with the following command:</p>
+<pre><code class="bash">apt-get install python python-dev python-pip git subversion tar fontconfig cpanminus libxml2-dev libxslt-dev libssl-dev libgdbm-dev openjdk-7-jre-headless textlive-full perl
+</code></pre>
+
+<p>Next we need to install some of the required python modules:</p>
+<pre><code class="bash">pip install beautifulsoup4 psutil pyapi-gitlab
+</code></pre>
+
+<h2 id="cloning-lmh">Cloning Lmh</h2>
+<p>The next step is to clone lmh somewhere and symlink the <code>lmh</code> script into the $PATH variable.</p>
+<p>First choose a directory and clone localmh there:</p>
+<pre><code class="bash">git clone https://github.com/KWARC/localmh $HOME/localmh
+</code></pre>
+
+<p>Next, we need to symlink the lmh script into the $PATH. In this command we assume that /usr/local/bin exists and is included in $PATH:</p>
+<pre><code class="bash">ln -s $HOME/localmh/bin/lmh /usr/local/bin/lmh #May required sudo
+</code></pre>
+
+<h2 id="running-setup-scripts">Running setup scripts</h2>
+<p>Next, we need to install a lot of required packages. Assuming all the dependencies are installed correctly, this can be done with the following command:</p>
+<pre><code class="bash">lmh setup --install all
+</code></pre>
+
+<p>That's it. After this lmh should be installed and ready for use. See <a href="../getting_started">Getting started with lmh</a> for some basic commands.</p></div>
+            
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

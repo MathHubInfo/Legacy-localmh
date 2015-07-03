@@ -4,13 +4,12 @@ import os
 import os.path
 import re
 import sys
-import time
 
 from subprocess import Popen
 from subprocess import PIPE
 
 from lmh.lib.config import get_config, read_file
-from lmh.lib.io import std, err
+from lmh.lib.io import std
 from lmh.lib.env import install_dir, stexstydir, which
 from lmh.lib.extenv import perl5bindir, perl5libdir, perl5env
 from lmh.lib.modules import needsRegen, needsPreamble

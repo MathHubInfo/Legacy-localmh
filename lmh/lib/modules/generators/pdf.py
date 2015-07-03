@@ -3,12 +3,7 @@ from . import Generator
 import os
 import os.path
 import sys
-import signal
 import shutil
-import time
-import traceback
-import functools
-import multiprocessing
 
 from subprocess import Popen
 from subprocess import PIPE

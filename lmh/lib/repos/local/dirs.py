@@ -243,15 +243,14 @@ def match_repo(repo, root=os.getcwd(), abs=False, existence=True):
     if is_repo_dir(repo_path, existence) or is_in_repo(repo_path):
         # figure out the path to the repository root
         repo_path = find_repo_dir(repo_path, existence)
-        if not repo_path:
-            return None
-        if abs:
-            # return the absolute path to the repo
-            return repo_path
-        else:
-            # return just the repo name, determined by the relative name
-            return os.path.relpath(repo_path, os.path.abspath(data_dir))
-    elif not (root == os.path.abspath(data_dir)):
+        if repo_path:
+            if abs:
+                # return the absolute path to the repo
+                return repo_path
+            else:
+                # return just the repo name, determined by the relative name
+                return os.path.relpath(repo_path, os.path.abspath(data_dir))
+    if not (root == os.path.abspath(data_dir)):
         #if the root is not already the data_dir, try that
         return match_repo(repo, root=data_dir, abs=abs,existence=existence)
     else:

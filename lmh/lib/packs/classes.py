@@ -3,10 +3,10 @@ import shutil
 import os.path
 from subprocess import call
 
-from lmh.lib.io import std, err, read_file
-from lmh.lib.env import install_dir, ext_dir
-from lmh.lib.extenv import perl5env, perl5root, cpanm_executable, perl_executable, make_executable
-from lmh.lib.config import get_config, set_config
+from lmh.lib.io import std, err
+from lmh.lib.env import ext_dir
+from lmh.lib.extenv import perl5env, perl5root, cpanm_executable
+from lmh.lib.config import get_config
 from lmh.lib.git import pull as git_pull
 from lmh.lib.git import clone as git_clone
 from lmh.lib.git import do as git_do

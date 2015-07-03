@@ -1,4 +1,3 @@
-import os.path
 import json
 
 from lmh.lib.env import install_dir
