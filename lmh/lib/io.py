@@ -177,7 +177,7 @@ def write_file(filename, text):
     if isinstance(text, basestring):
         text_file.write(text)
     else:
-        text_file.write("\n".join(text))
+        text_file.write("\n".join(text) + "\n")
     text_file.close()
 
     return True
