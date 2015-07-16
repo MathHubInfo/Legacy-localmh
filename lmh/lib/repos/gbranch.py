@@ -157,7 +157,7 @@ class Generated:
 
         # and either add to it or create it.
         if os.path.isfile(gitignore_path):
-            write_file(gitignore_path, read_file(gitignore_path)+"\n"+gitignore_entry)
+            write_file(gitignore_path, read_file(gitignore_path)+gitignore_entry)
         else:
             write_file(gitignore_path, gitignore_entry)
 
