@@ -22,9 +22,11 @@ stydir = install_dir+"/sty"
 
 
 latexmlc_executable = get_config("env::latexmlc")
+latexmlc_custom = True
 
 # Find it the old way if not available
 if latexmlc_executable == "":
+    latexmlc_custom = False
     if get_config("setup::cpanm::selfcontained"):
         latexmlc_executable = install_dir+"/ext/perl5lib/bin/latexmlc"
     else:
@@ -143,6 +145,10 @@ perl5libdir = os.pathsep.join([p5r+"lib/perl5" for p5r in perl5root])+os.pathsep
 
 def perl5env(_env = {}):
     """perl 5 environment generator"""
+    # if its custom return
+    if latexmlc_custom:
+        return _env
+
     _env["PATH"]=perl5bindir+os.pathsep+_env["PATH"]
     try:
         _env["PERL5LIB"] = perl5libdir+os.pathsep+ _env["PERL5LIB"]
