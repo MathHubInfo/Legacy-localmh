@@ -11,6 +11,12 @@
 		"default": ""
 	},
 
+	"env::latexmlc": {
+		"type": "string",
+		"help": "Path to the latexmlc executable. Auto-detected if empty. ",
+		"default": ""
+	},
+
 	"env::svn": {
 		"type": "string",
 		"help": "Path to the svn executable. Auto-detected if empty. ",

@@ -20,6 +20,16 @@ stydir = install_dir+"/sty"
 
 # Define all the external tools
 
+
+latexmlc_executable = get_config("env::latexmlc")
+
+# Find it the old way if not available
+if latexmlc_executable == "":
+    if get_config("setup::cpanm::selfcontained"):
+        latexmlc_executable = install_dir+"/ext/perl5lib/bin/latexmlc"
+    else:
+        latexmlc_executable = which("latexmlc")
+
 """The path to the svn executable """
 svn_executable = get_config("env::svn")
 

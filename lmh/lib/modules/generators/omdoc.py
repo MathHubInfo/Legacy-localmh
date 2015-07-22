@@ -11,13 +11,11 @@ from subprocess import PIPE
 from lmh.lib.config import get_config, read_file
 from lmh.lib.io import std
 from lmh.lib.env import install_dir, stexstydir, which
-from lmh.lib.extenv import perl5bindir, perl5libdir, perl5env
+from lmh.lib.extenv import perl5bindir, perl5libdir, perl5env, latexmlc_executable
 from lmh.lib.modules import needsRegen, needsPreamble
 
-if get_config("setup::cpanm::selfcontained"):
-    latexmlc = install_dir+"/ext/perl5lib/bin/latexmlc"
-else:
-    latexmlc = which("latexmlc")
+latexmlc = latexmlc_executable
+
 stydir = install_dir+"/sty"
 
 successRegex = r"Wrote (.*)(?:$|\n)"
