@@ -6,7 +6,7 @@ from subprocess import call
 from lmh.lib.io import std, err
 from lmh.lib.env import ext_dir
 from lmh.lib.extenv import perl5env, perl5root, cpanm_executable
-from lmh.lib.config import get_config
+from lmh.lib.config import get_config, set_config
 from lmh.lib.git import pull as git_pull
 from lmh.lib.git import clone as git_clone
 from lmh.lib.git import do as git_do
@@ -51,6 +51,36 @@ class Pack():
         return self.do_remove(pack_dir, params)
     def is_installed(self, pack_dir, params = ""):
         return os.path.isdir(pack_dir)
+    def is_managed(self):
+        managed_packs = get_config("setup::unmanaged").split(",")
+        return not (self.name in managed_packs)
+    def mark_managed(self):
+        # we are already managed.
+        if self.is_managed():
+            return True
+
+        # else we need to be removed
+        managed_packs = get_config("setup::unmanaged").split(",")
+        while self.name in managed_packs:
+            managed_packs.remove(self.name)
+
+        # and store it.
+        set_config("setup::unmanaged", ",".join(managed_packs))
+        return True
+    def mark_unmanaged(self):
+        # we are already unmanaged.
+        if not self.is_managed():
+            return True
+
+        # else we need to be added
+        managed_packs = get_config("setup::unmanaged").split(",")
+        managed_packs.append(self.name)
+
+        # and store it.
+        set_config("setup::unmanaged", ",".join(managed_packs))
+        return True
+
+
 
 def get_item_source(source_string, def_source, def_branch, name=""):
     """Gets the source branch and origin from a string and defaults. """

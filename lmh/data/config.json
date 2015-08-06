@@ -15,7 +15,7 @@
 		"type": "string",
 		"help": "Path to the latexmlc executable. Auto-detected if empty. ",
 		"default": ""
-	}, 
+	},
 
 	"env::pdflatex": {
 		"type": "string",
@@ -114,6 +114,11 @@
 		"help": "Default branch for MMT. Automatically uses gh-pages if empty. ",
 		"default": "gh-pages"
 	},
+	"setup::unmanaged": {
+		"type": "string",
+		"help": "Comma seperated list of unmanaged packages. ",
+		"default": ""
+	}, 
 
 	"setup::cpanm::selfcontained": {
 		"type": "bool",
@@ -157,8 +162,6 @@
 		"help": "URL to issues page for each repository. ",
 		"default": "https://gl.mathhub.info/$name/issues"
 	},
-
-
 
 	"init::allow_nonempty": {
 		"type": "bool",
