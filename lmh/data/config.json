@@ -15,13 +15,7 @@
 		"type": "string",
 		"help": "Path to the latexmlc executable. Auto-detected if empty. ",
 		"default": ""
-	},
-
-	"env::svn": {
-		"type": "string",
-		"help": "Path to the svn executable. Auto-detected if empty. ",
-		"default": ""
-	},
+	}, 
 
 	"env::pdflatex": {
 		"type": "string",
@@ -110,16 +104,15 @@
 		"default": ""
 	},
 
-
 	"setup::mmt::source": {
 		"type": "string",
 		"help": "Default Source for MMT. ",
-		"default": "https://svn.kwarc.info/repos/MMT/deploy/"
+		"default": "https://github.com/KWARC/MMT.git"
 	},
 	"setup::mmt::branch": {
 		"type": "string",
-		"help": "Default branch for MMT. Automatically uses TRUNK if empty. ",
-		"default": ""
+		"help": "Default branch for MMT. Automatically uses gh-pages if empty. ",
+		"default": "gh-pages"
 	},
 
 	"setup::cpanm::selfcontained": {

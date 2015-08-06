@@ -10,8 +10,6 @@ from lmh.lib.config import get_config
 from lmh.lib.git import pull as git_pull
 from lmh.lib.git import clone as git_clone
 from lmh.lib.git import do as git_do
-from lmh.lib.svn import pull as svn_pull
-from lmh.lib.svn import clone as svn_clone
 
 class UnsupportedAction(Exception):
     """Thrown if a setup action is not supported. """
@@ -133,39 +131,6 @@ class GitPack(Pack):
         except:
             err("git pull failed to update. Please make sure that you have a network connection. ")
             err("If you were using a specific version (with the PACKAGE:URL@REFSEPEC syntax), try using --reinstall. ")
-            return False
-    def post_change_hook(self, pack_dir):
-        if self.cpanm:
-            std("Running cpanm on", pack_dir)
-            return cpanm_make(pack_dir)
-        else:
-            return True
-
-class SVNPack(Pack):
-    """A Pack that is managed by svn"""
-    def __init__(self, name, def_source, def_branch, cpanm=False):
-        self.name = name
-        self.dsource = def_source
-        self.dbranch = def_branch
-        self.cpanm = cpanm
-    def do_install(self, pack_dir, sstring):
-        """Installs a svn controlled package. """
-        (source, branch) = get_item_source(sstring, self.dsource, self.dbranch, self.name)
-
-        try:
-            if branch == "":
-                return svn_clone(ext_dir, source, pack_dir)
-            else:
-                return svn_clone(ext_dir, source, "-b", branch, pack_dir)
-        except:
-            err("svn checkout failed to checkout", source, ". Check your network connection. ")
-            return False
-    def do_update(self, pack_dir, sstring):
-        """Updates a svn controlled package. """
-        try:
-            return svn_pull(pack_dir)
-        except:
-            err("svn update failed to update. Check your network connection. ")
             return False
     def post_change_hook(self, pack_dir):
         if self.cpanm:

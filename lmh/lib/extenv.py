@@ -32,13 +32,6 @@ if latexmlc_executable == "":
     else:
         latexmlc_executable = which("latexmlc")
 
-"""The path to the svn executable """
-svn_executable = get_config("env::svn")
-
-# Find it yourself if the config is empty
-if svn_executable == "":
-    svn_executable = which("svn")
-
 """The path to the git executable """
 git_executable = get_config("env::git")
 
@@ -75,13 +68,6 @@ if cpanm_executable == "":
 
 def check_deps():
     """Check if dependencies exist. """
-
-    if svn_executable == None:
-        err("Unable to locate the subversion executable 'svn'. ")
-        err("Please make sure it is in the $PATH environment variable. ")
-        err("On a typical Ubuntu system you may install this with:")
-        err("    sudo apt-get install subversion")
-        return False
 
     if git_executable == None:
         err("Unable to locate the git executable. ")
