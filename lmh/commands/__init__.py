@@ -23,7 +23,7 @@ def load_command(cmd, subparsers):
         command = module.Command()
 
         # Create the sub parser
-        new_parser = subparsers.add_parser(cmd, help=command.help, description=command.help, formatter_class=helper.LMHFormatter)
+        new_parser = subparsers.add_parser(cmd, help=command.help, description=command.help, formatter_class=helper.LMHFormatter,add_help=command.allow_help_arg)
 
         # and add some arguments.
         command.add_parser_args(new_parser)

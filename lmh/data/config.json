@@ -29,9 +29,9 @@
 		"default": ""
 	},
 
-	"env::java": {
+	"env::mmt": {
 		"type": "string",
-		"help": "Path to the java executable. Auto-detected if empty. ",
+		"help": "Path to the MMT script. Uses the package installed by lmh seup if empty. ",
 		"default": ""
 	},
 
@@ -118,7 +118,7 @@
 		"type": "string",
 		"help": "Comma seperated list of unmanaged packages. ",
 		"default": ""
-	}, 
+	},
 
 	"setup::cpanm::selfcontained": {
 		"type": "bool",

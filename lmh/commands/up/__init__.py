@@ -14,6 +14,11 @@ class Command(CommandClass):
         else:
             self.allow_unknown = False
 
+        if hasattr(meta, "allow_help_arg"):
+            self.allow_help_arg = meta.allow_help_arg
+        else:
+            self.allow_help_arg = True
+
     def add_parser_args(self, parser):
         if meta.add_parser_args:
             return meta.add_parser_args(parser, argparse)
