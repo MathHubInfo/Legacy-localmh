@@ -1,7 +1,7 @@
 import json
 import os.path
 
-from lmh.lib.io import err, read_file
+from lmh.lib.io import std, err, read_file
 from lmh.lib.env import install_dir, ext_dir
 from lmh.lib.packs import classes
 
@@ -120,6 +120,10 @@ def update_pack(pack):
         err("Pack", pack, "is not installed, can not update. ")
         return False
 
+    if not pack_setup.is_managed():
+        std("Pack", pack, "is marked as unmanaged, skipping update. ")
+        return True
+
     try:
         return pack_setup.update(pack_dir, pconfig)
     except classes.UnsupportedAction:
@@ -153,8 +157,12 @@ def remove_pack(pack):
         return False
 
     if not pack_setup.is_installed(pack_dir):
-        err("Pack", pack, "is not installed, can not remove. ")
-        return False
+        err("Pack", pack, "is not installed, nothing to remove. ")
+        return True
+
+    if not pack_setup.is_managed():
+        std("Pack", pack, "is marked as unmanaged, skipping removal. ")
+        return True
 
     try:
         return pack_setup.remove(pack_dir, pconfig)
@@ -188,6 +196,10 @@ def reset_pack(pack):
     if not pack_setup:
         return False
 
+    if not pack_setup.is_managed():
+        std("Pack", pack, "is marked as unmanaged, skipping reset. ")
+        return True
+
     if not pack_setup.is_installed(pack_dir):
         err("Pack", pack, "is not installed, skipping removal. ")
     else:
@@ -209,4 +221,80 @@ def reset(*packs):
 
     for pack in packs:
         ret = reset_pack(pack) or ret
+    return ret
+
+#
+# Manage packs
+#
+
+def manage_pack(pack):
+    """Marks a single pack as managed"""
+
+    (pack, sep, pconfig) = pack.partition(":")
+
+    std("Marked packaged '"+pack+"' as managed. ")
+
+    return get_pack_setup(pack).mark_managed()
+
+def manage(*packs):
+    """Marks packs as managed. """
+
+    ret = True
+    packs = resolve_package_spec(packs)
+
+    for pack in packs:
+        ret = manage_pack(pack) or ret
+    return ret
+
+#
+# Unmanage packs
+#
+
+def unmanage_pack(pack):
+    """Marks a single pack as managed"""
+
+    (pack, sep, pconfig) = pack.partition(":")
+
+    std("Marked packaged '"+pack+"' as unamanged. ")
+
+    return get_pack_setup(pack).mark_unmanaged()
+
+def unmanage(*packs):
+    """Marks packs as unmanaged. """
+
+    ret = True
+    packs = resolve_package_spec(packs)
+
+    for pack in packs:
+        ret = unmanage_pack(pack) or ret
+    return ret
+
+#
+# Status of packs
+#
+
+def status_pack(pack):
+    """Prints status of a pack"""
+
+    (pack, sep, pconfig) = pack.partition(":")
+
+    setup_pack = get_pack_setup(pack)
+    pack_dir = get_pack_dir(pack)
+
+    std("---")
+    std("Package", pack)
+    std("Installed:", setup_pack.is_installed(pack_dir))
+    std("Managed:", setup_pack.is_managed())
+    std("---")
+
+    return True
+
+def status(*packs):
+    """Prints status of a pack. """
+
+    ret = True
+    packs = resolve_package_spec(packs)
+
+    for pack in packs:
+        ret = status_pack(pack) or ret
     return ret

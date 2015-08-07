@@ -26,6 +26,12 @@ def do(args, unknown):
         return lmh.lib.packs.remove(*args.pack)
     elif args.saction == "reset":
         return lmh.lib.packs.reset(*args.pack)
+    elif args.saction == "manage":
+        return lmh.lib.packs.manage(*args.pack)
+    elif args.saction == "unmanage":
+        return lmh.lib.packs.unmanage(*args.pack)
+    elif args.saction == "status":
+        return lmh.lib.packs.status(*args.pack)
     else:
         std("No setup action specefied, assuming --install. ")
         std("Please specify some action in the future. ")

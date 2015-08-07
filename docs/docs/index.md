@@ -23,8 +23,10 @@ In case a manual installation is needed, instructions can be found [here](instal
 
 ## Commands
 
-### Repository installation
+### Repository management
 * [lmh install](commands/install) - Installs Repositories
+* [lmh ls-remote](commands/ls-remote) - Lists available repositories.
+* [lmh cissue](commands/cissue) - Opens a url to report issues for the current repository. 
 
 ### (External) dependencies and software updates
 

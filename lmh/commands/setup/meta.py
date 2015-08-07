@@ -5,6 +5,9 @@ def add_parser_args(parser, argparse):
     action = parser.add_argument_group('Setup actions').add_mutually_exclusive_group()
 
     action.add_argument('--install', action="store_const", dest="saction", const="install", default="", help="Installs a package or group. ")
+    action.add_argument('--status', action="store_const", dest="saction", const="status", help="Prints status of a package. ")
+    action.add_argument('--manage', action="store_const", dest="saction", const="manage", help="Marks a package as managed. ")
+    action.add_argument('--unmanage', action="store_const", dest="saction", const="unmanage", help="Marks a package as unmanaged. ")
     action.add_argument('--update', action="store_const", dest="saction", const="update", help="Updates a package or group. ")
     action.add_argument('--reset', '--reinstall', action="store_const", dest="saction", const="reset", help="Resets a package or group. ")
     action.add_argument('--remove', action="store_const", dest="saction", const="remove", help="Removes a package or group. ")
@@ -16,6 +19,13 @@ def add_parser_args(parser, argparse):
 
     parser.epilog = """
 lmh setup --- Manages extra software required or useful for work with lmh.
+
+By default all packages are managed by lmh. If a package is marked as unmanaged
+it can still be installed by lmh but it will be ignored by all other lmh setup
+related commands. A package can be marked as managed / unmanaged with the
+--manage and --unmanage options.
+
+To see status information of a package, use the --status argument. 
 
 Packages are specefied in the format:
 

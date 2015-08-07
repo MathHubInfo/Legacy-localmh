@@ -188,6 +188,12 @@
 <td></td>
 </tr>
 <tr>
+<td>env::latexmlc</td>
+<td>Path to the latexmlc executable. Auto-detected if empty.</td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
 <td>env::pager</td>
 <td>A full path to a pager to use for long outputs. If empty, no pager is used.</td>
 <td>string</td>
@@ -202,12 +208,6 @@
 <tr>
 <td>env::perl</td>
 <td>Path to the perl executable. Auto-detected if empty.</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>env::svn</td>
-<td>Path to the svn executable. Auto-detected if empty.</td>
 <td>string</td>
 <td></td>
 </tr>
@@ -278,6 +278,12 @@
 <td>git@gl.mathhub.info:;http://gl.mathhub.info/</td>
 </tr>
 <tr>
+<td>mh::issue_url</td>
+<td>URL to issues page for each repository.</td>
+<td>string</td>
+<td>https://gl.mathhub.info/$name/issues</td>
+</tr>
+<tr>
 <td>self::colors</td>
 <td>Use colors in the output.</td>
 <td>bool</td>
@@ -327,15 +333,15 @@
 </tr>
 <tr>
 <td>setup::mmt::branch</td>
-<td>Default branch for MMT. Automatically uses TRUNK if empty.</td>
+<td>Default branch for MMT. Automatically uses gh-pages if empty.</td>
 <td>string</td>
-<td></td>
+<td>gh-pages</td>
 </tr>
 <tr>
 <td>setup::mmt::source</td>
 <td>Default Source for MMT.</td>
 <td>string</td>
-<td>https://svn.kwarc.info/repos/MMT/deploy/</td>
+<td>https://github.com/KWARC/MMT.git</td>
 </tr>
 <tr>
 <td>setup::stex::branch</td>

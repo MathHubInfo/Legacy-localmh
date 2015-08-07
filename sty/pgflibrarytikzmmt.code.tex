@@ -84,13 +84,19 @@
 % parallel markup
 \tikzstyle{parallel}=[\@mmtarrowtip-\@mmtarrowtip,dashed]
 
-%%% 3. convenience macros
-%%% 3.1 the \mmtthy macro takes three arguments, name, decl, axioms and makes a 
+%%%% 3. Realms 
+\tikzstyle{prerealm}=[draw=blue!40,rectangle,rounded corners,inner sep=10pt,inner ysep=20pt]
+\tikzstyle{realm}=[prerealm,fill=gray!4]
+\tikzstyle{pillar}=[prerealm,fill=gray!10]
+
+%%% 4. convenience macros
+%%% 4.1 the \mmtthy macro takes three arguments, name, decl, axioms and makes a 
 % table-like structure
 \newcommand\mmtthy[3]{\def\@test{#3}%
 \begin{array}{l}\textsf{#1}\\\hline #2\ifx\@test\@empty\else\\\hline #3\fi\end{array}}
-%%% 3.2 the \mmtar takes two arguments, some tikz options, and an arrow style. \nmmtar
+%%% 4.2 the \mmtar takes two arguments, some tikz options, and an arrow style. \nmmtar
 % is a variant that also has a name on top.
 \newcommand\mmtar[2][]{\raisebox{.5ex}{\tikz[#1]{\draw[#2] (0,0) -- (.6,0);}}}
 \newcommand\nmmtar[3][]{\raisebox{.4ex}{\tikz[#1]{\draw[#2] (0,0) --
       node[above]{\ensuremath{\scriptstyle #3}} (.8,0);}}}
+
