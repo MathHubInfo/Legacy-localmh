@@ -1,7 +1,7 @@
 import re
-from lmh.lib import remove_doubles, clean_list
+from lmh.lib import remove_doubles
 from lmh.lib.io import std, err, write_file, read_file
-from lmh.lib.modules import locate_modules, needsPreamble
+from lmh.lib.modules import locate_files, needsPreamble
 
 def pat_to_match(pat , o = 0):
     # turn it into a match
@@ -203,12 +203,12 @@ def check_defs(d):
     warns = []
 
     # Find all the modules that we have to worry about
-    mods = filter(lambda x:x["type"] == "file", locate_modules(d))
-    mods = filter(lambda x:needsPreamble(x["file"]), mods)
+    mods = locate_files(d)
+    mods = filter(lambda x:needsPreamble(x), mods)
 
     ret = True
 
-    for mod in clean_list(mods, lambda x:x["file"]):
+    for mod in remove_doubles(mods):
         ret = ret and check_symcomplete(mod["file"], warns)
 
     return ret
@@ -219,12 +219,12 @@ def check_symbols(d):
     warns = []
 
     # Find all the modules that we have to worry about
-    mods = filter(lambda x:x["type"] == "file", locate_modules(d))
-    mods = filter(lambda x:needsPreamble(x["file"]), mods)
+    mods = locate_files(d)
+    mods = filter(lambda x:needsPreamble(x), mods)
 
     ret = True
 
-    for mod in clean_list(mods, lambda x:x["file"]):
+    for mod in remove_doubles(mods):
         ret = ret and add_symbols(mod["file"], warns)
 
     return ret
