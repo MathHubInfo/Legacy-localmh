@@ -14,6 +14,10 @@ def add_parser_args(parser, argparse):
     f2.add_argument('-n', '--nice', type=int, default=1, help="Assign the worker processes the given niceness. ")
     f2.add_argument('-H', '--high', const=0, dest="nice", action="store_const", help="Generate files using the same priority as the main process. ")
 
+    f2 = f.add_mutually_exclusive_group()
+    f2.add_argument('-si', '--silent', action="store_const", default=True, const=True, dest="silent", help="Hide output of worker processes. Default. ")
+    f2.add_argument('-p', '--pipe-worker-output', action="store_true", help="Pipe the output of the compilation process. Implies --single. ")
+
     whattogen = parser.add_argument_group("What to generate")
 
     whattogen.add_argument('--sms', action="store_const", const=True, default=False, help="generate sms files")
