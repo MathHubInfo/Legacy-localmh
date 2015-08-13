@@ -49,7 +49,7 @@ class OMDOCTarget(Target):
     def __init__(self):
         pass
     def getEnvironment(self, args):
-        env = perl5env(os.environ)
+        env = perl5env(os.environ.copy())
 
         return {
             "LATEXMLC": latexmlc_executable,
@@ -67,7 +67,7 @@ class PDFTarget(Target):
     def __init__(self):
         pass
     def getEnvironment(self, args):
-        env = perl5env(os.environ)
+        env = perl5env(os.environ.copy())
 
         return {
             "PDFLATEX": pdflatex_executable,
