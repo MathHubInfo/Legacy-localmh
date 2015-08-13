@@ -90,7 +90,7 @@ def ls_remote(*spec):
         # make the request
         try:
             response = urlopen(url)
-            soup = BeautifulSoup(response.read())
+            soup = BeautifulSoup(response.read(), "html5lib")
         except:
             err("Unable to make connection")
             break

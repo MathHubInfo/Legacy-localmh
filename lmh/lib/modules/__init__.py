@@ -6,7 +6,7 @@ import glob
 from lmh.lib import reduce, remove_doubles
 from lmh.lib.io import std, err, read_file
 from lmh.lib.env import install_dir, data_dir
-from lmh.lib.repos.local.dirs import find_repo_dir
+from lmh.lib.repos.local.dirs import find_repo_dir, find_repo_subdirs
 
 # Hardcoded folder exclude list.
 # really ugly workaround for #223
@@ -79,12 +79,14 @@ def locate_compile_target(path, try_root= True):
         # if we have not tried the root, we should try again.
         if try_root:
             return locate_compile_target(os.path.join(data_dir, spec), False)
-        return None
+        return []
 
     # If we are inside the root, go inside the folder.
-    if os.path.relpath(data_dir, path) == "../..":
+    relpath = os.path.relpath(data_dir, path)
+    if relpath == "../..":
         path = path + "/source"
-
+    elif not relpath.endswith("../.."):
+        return reduce([(locate_compile_target(p)) for p in find_repo_subdirs(path)])
     # Get the absolute path.
     path = os.path.abspath(path)
 
@@ -95,7 +97,7 @@ def locate_compile_target(path, try_root= True):
             return locate_compile_target(os.path.join(data_dir, spec), False)
 
         err("Could not find anything matching ", "'"+spec+"'")
-        return None
+        return []
 
     # find the repository dir.
     repo_dir = find_repo_dir(path, existence=True)
@@ -106,7 +108,7 @@ def locate_compile_target(path, try_root= True):
             return locate_compile_target(os.path.join(data_dir, spec), False)
 
         err("Matching item to ", "'"+spec+"'", "are outside of repository. ")
-        return None
+        return []
 
     # Find the source directory and get a relative path
     repos_src_dir = os.path.join(repo_dir, "source")
@@ -119,12 +121,16 @@ def locate_compile_target(path, try_root= True):
             return locate_compile_target(os.path.join(data_dir, spec), False)
 
         err("Matching item to", "'"+spec+"'", "are outside of the source directory. ")
-        return None
+        return []
 
     # return the name of the repository and the path inside the repository.
-    return (repo_name, path)
+    return [(repo_name, path)]
 
 def locate_compile_targets(paths):
+
+    if len(paths) == 0:
+        paths = ["."]
+
     modules = reduce([locate_compile_target(p) for p in paths])
     modules = filter(lambda x:x!=None, modules)
 
