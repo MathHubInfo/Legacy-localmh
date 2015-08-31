@@ -11,9 +11,9 @@
 		"default": ""
 	},
 
-	"env::svn": {
+	"env::latexmlc": {
 		"type": "string",
-		"help": "Path to the svn executable. Auto-detected if empty. ",
+		"help": "Path to the latexmlc executable. Auto-detected if empty. ",
 		"default": ""
 	},
 
@@ -29,9 +29,9 @@
 		"default": ""
 	},
 
-	"env::java": {
+	"env::mmt": {
 		"type": "string",
-		"help": "Path to the java executable. Auto-detected if empty. ",
+		"help": "Path to the MMT script. Uses the package installed by lmh seup if empty. ",
 		"default": ""
 	},
 
@@ -104,15 +104,19 @@
 		"default": ""
 	},
 
-
 	"setup::mmt::source": {
 		"type": "string",
 		"help": "Default Source for MMT. ",
-		"default": "https://svn.kwarc.info/repos/MMT/deploy/"
+		"default": "https://github.com/KWARC/MMT.git"
 	},
 	"setup::mmt::branch": {
 		"type": "string",
-		"help": "Default branch for MMT. Automatically uses TRUNK if empty. ",
+		"help": "Default branch for MMT. Automatically uses gh-pages if empty. ",
+		"default": "gh-pages"
+	},
+	"setup::unmanaged": {
+		"type": "string",
+		"help": "Comma seperated list of unmanaged packages. ",
 		"default": ""
 	},
 
@@ -158,8 +162,6 @@
 		"help": "URL to issues page for each repository. ",
 		"default": "https://gl.mathhub.info/$name/issues"
 	},
-
-
 
 	"init::allow_nonempty": {
 		"type": "bool",

@@ -20,12 +20,17 @@ stydir = install_dir+"/sty"
 
 # Define all the external tools
 
-"""The path to the svn executable """
-svn_executable = get_config("env::svn")
 
-# Find it yourself if the config is empty
-if svn_executable == "":
-    svn_executable = which("svn")
+latexmlc_executable = get_config("env::latexmlc")
+latexmlc_builtin = False
+
+# Find it the old way if not available
+if latexmlc_executable == "":
+    if get_config("setup::cpanm::selfcontained"):
+        latexmlc_builtin = True
+        latexmlc_executable = install_dir+"/ext/perl5lib/bin/latexmlc"
+    else:
+        latexmlc_executable = which("latexmlc")
 
 """The path to the git executable """
 git_executable = get_config("env::git")
@@ -46,11 +51,11 @@ perl_executable = get_config("env::perl")
 if perl_executable == "":
     perl_executable =  which("perl")
 
-"""The path to the java executable. """
-java_executable = get_config("env::java")
+"""The path to the MMT executable. """
+mmt_executable = get_config("env::mmt")
 
-if java_executable == "":
-    java_executable =  which("java")
+if mmt_executable == "":
+    mmt_executable = install_dir+"/ext/MMT/deploy/mmt.jar"
 
 """The path to the cpanm executable. """
 cpanm_executable = get_config("env::cpanm")
@@ -63,13 +68,6 @@ if cpanm_executable == "":
 
 def check_deps():
     """Check if dependencies exist. """
-
-    if svn_executable == None:
-        err("Unable to locate the subversion executable 'svn'. ")
-        err("Please make sure it is in the $PATH environment variable. ")
-        err("On a typical Ubuntu system you may install this with:")
-        err("    sudo apt-get install subversion")
-        return False
 
     if git_executable == None:
         err("Unable to locate the git executable. ")
@@ -133,12 +131,23 @@ perl5libdir = os.pathsep.join([p5r+"lib/perl5" for p5r in perl5root])+os.pathsep
 
 def perl5env(_env = {}):
     """perl 5 environment generator"""
+
+    # Set the STEXSTYDIR
+    _env["STEXSTYDIR"] = stexstydir
+
+    # if we have a custom latexmlc
+    # we should exit immeditatly
+    if not latexmlc_builtin:
+        return _env
+
+    # else we need to modify the $PATH
     _env["PATH"]=perl5bindir+os.pathsep+_env["PATH"]
+
+    # and the $PERL5LIB
     try:
         _env["PERL5LIB"] = perl5libdir+os.pathsep+ _env["PERL5LIB"]
     except:
         _env["PERL5LIB"] = perl5libdir
-    _env["STEXSTYDIR"] = stexstydir
     return _env
 
 

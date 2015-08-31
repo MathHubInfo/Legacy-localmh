@@ -22,7 +22,7 @@ def is_installed(package):
 
 def get_metainf_lines(package):
     """
-        Gets the lines of the meta-inf file. 
+        Gets the lines of the meta-inf file.
 
         @param package {string} Package to read meta-inf lines form.
 
@@ -68,7 +68,7 @@ def get_package_dependencies(package):
         if line.startswith(deps_prefix):
             # cut off the beginning and replace spaces.
             line = line[len(deps_prefix):]
-            line = whiteSpaceExpression.sub("", line)
+            line = whiteSpaceExpression.sub(" ", line)
 
             # and update the dependencies
             dependencies.update(line.split(","))

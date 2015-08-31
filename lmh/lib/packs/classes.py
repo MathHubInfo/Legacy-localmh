@@ -6,12 +6,10 @@ from subprocess import call
 from lmh.lib.io import std, err
 from lmh.lib.env import ext_dir
 from lmh.lib.extenv import perl5env, perl5root, cpanm_executable
-from lmh.lib.config import get_config
+from lmh.lib.config import get_config, set_config
 from lmh.lib.git import pull as git_pull
 from lmh.lib.git import clone as git_clone
 from lmh.lib.git import do as git_do
-from lmh.lib.svn import pull as svn_pull
-from lmh.lib.svn import clone as svn_clone
 
 class UnsupportedAction(Exception):
     """Thrown if a setup action is not supported. """
@@ -53,6 +51,36 @@ class Pack():
         return self.do_remove(pack_dir, params)
     def is_installed(self, pack_dir, params = ""):
         return os.path.isdir(pack_dir)
+    def is_managed(self):
+        managed_packs = get_config("setup::unmanaged").split(",")
+        return not (self.name in managed_packs)
+    def mark_managed(self):
+        # we are already managed.
+        if self.is_managed():
+            return True
+
+        # else we need to be removed
+        managed_packs = get_config("setup::unmanaged").split(",")
+        while self.name in managed_packs:
+            managed_packs.remove(self.name)
+
+        # and store it.
+        set_config("setup::unmanaged", ",".join(managed_packs))
+        return True
+    def mark_unmanaged(self):
+        # we are already unmanaged.
+        if not self.is_managed():
+            return True
+
+        # else we need to be added
+        managed_packs = get_config("setup::unmanaged").split(",")
+        managed_packs.append(self.name)
+
+        # and store it.
+        set_config("setup::unmanaged", ",".join(managed_packs))
+        return True
+
+
 
 def get_item_source(source_string, def_source, def_branch, name=""):
     """Gets the source branch and origin from a string and defaults. """
@@ -133,39 +161,6 @@ class GitPack(Pack):
         except:
             err("git pull failed to update. Please make sure that you have a network connection. ")
             err("If you were using a specific version (with the PACKAGE:URL@REFSEPEC syntax), try using --reinstall. ")
-            return False
-    def post_change_hook(self, pack_dir):
-        if self.cpanm:
-            std("Running cpanm on", pack_dir)
-            return cpanm_make(pack_dir)
-        else:
-            return True
-
-class SVNPack(Pack):
-    """A Pack that is managed by svn"""
-    def __init__(self, name, def_source, def_branch, cpanm=False):
-        self.name = name
-        self.dsource = def_source
-        self.dbranch = def_branch
-        self.cpanm = cpanm
-    def do_install(self, pack_dir, sstring):
-        """Installs a svn controlled package. """
-        (source, branch) = get_item_source(sstring, self.dsource, self.dbranch, self.name)
-
-        try:
-            if branch == "":
-                return svn_clone(ext_dir, source, pack_dir)
-            else:
-                return svn_clone(ext_dir, source, "-b", branch, pack_dir)
-        except:
-            err("svn checkout failed to checkout", source, ". Check your network connection. ")
-            return False
-    def do_update(self, pack_dir, sstring):
-        """Updates a svn controlled package. """
-        try:
-            return svn_pull(pack_dir)
-        except:
-            err("svn update failed to update. Check your network connection. ")
             return False
     def post_change_hook(self, pack_dir):
         if self.cpanm:
