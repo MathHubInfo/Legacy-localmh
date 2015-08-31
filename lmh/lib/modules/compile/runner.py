@@ -5,6 +5,7 @@ from lmh.lib.modules.compile.scripter import make_build_script
 from lmh.lib.repos.local.dirs import find_repo_dir
 from lmh.lib.mmt import run_script
 
+import os
 import traceback
 
 def get_unique_process_id():
