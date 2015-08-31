@@ -1,4 +1,5 @@
 import json
+import os
 import os.path
 
 from lmh.lib.io import std, err, read_file
@@ -79,6 +80,10 @@ def install_pack(pack):
 
     if not pack_setup:
         return False
+
+    # Create ext/ if it does not exist. 
+    if not os.path.isdir(ext_dir):
+        os.mkdir(ext_dir)
 
     if pack_setup.is_installed(pack_dir):
         err("Pack", pack, "is already installed, use --update to update. ")
