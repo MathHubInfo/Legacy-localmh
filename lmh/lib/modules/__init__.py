@@ -87,13 +87,13 @@ def locate_compile_target(path, try_root= True):
         return []
 
     # If we are inside the root, go inside the folder.
-    relpath = os.path.relpath(data_dir, path)
+    relpath = os.path.relpath(data_dir, os.path.realpath(path))
     if relpath == "../..":
         path = path + "/source"
     elif not relpath.endswith("../.."):
         return reduce([(locate_compile_target(p)) for p in find_repo_subdirs(path)])
     # Get the absolute path.
-    path = os.path.abspath(path)
+    path = os.path.realpath(path)
 
     # If it does not exist, return.
     if not os.path.isfile(path) and not os.path.isdir(path):
