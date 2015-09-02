@@ -1,4 +1,4 @@
-from lmh.lib.io import term_colors, std
+from lmh.lib.io import term_colors, std, err
 from lmh.lib.repos.git.install import install
 from lmh.lib.git import push as git_push
 from lmh.lib.git import pull as git_pull
