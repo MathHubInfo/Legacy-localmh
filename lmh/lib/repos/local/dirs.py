@@ -84,10 +84,6 @@ def is_in_repo(path):
         @returns {boolean}
     """
 
-    # find the relative path
-    # by going relatively from the path to the data directory.
-    (.*)\/(.*)
-
     # Check that the path does not leave the DATA directory.
     # This has to be the first component of the path
     # or the entire path.
