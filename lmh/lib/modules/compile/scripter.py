@@ -1,10 +1,14 @@
 from targets import SMSTarget, OMDOCTarget, PDFTarget
 from lmh.lib.modules import get_build_groups
 from lmh.lib.repos.local.dirs import find_repo_dir
+from lmh.lib.repos.local.package import get_package_id
 from multiprocessing import current_process
 
 def make_build_script(rgroup, targets, quiet, worker_id):
-    (repo, files) = rgroup
+    (rdir, files) = rgroup
+
+    # grab the package id
+    repo = get_package_id(rdir)
 
     # if we are quiet, do not log user and error.
     if quiet:
@@ -12,7 +16,7 @@ def make_build_script(rgroup, targets, quiet, worker_id):
     else:
         script = "log console"
 
-    script = script + " ; archive add "+find_repo_dir(repo)
+    script = script + " ; archive add "+find_repo_dir(rdir)
 
     # TODO: Create this
     # by having system-wide memory somewhere
