@@ -1,4 +1,5 @@
 import os
+import re
 import os.path
 import glob
 
@@ -33,6 +34,9 @@ def is_repo_dir(path, existence = True):
 
         @returns {boolean}
     """
+
+    if re.match('^[^\/]+\/[^\/]+$', path):
+        path = os.path.join(data_dir, path)
 
     # find the relative path
     # by going relatively from the path to the data directory.
@@ -82,10 +86,7 @@ def is_in_repo(path):
 
     # find the relative path
     # by going relatively from the path to the data directory.
-    name = os.path.relpath(
-        os.path.abspath(path),
-        data_dir
-    )
+    (.*)\/(.*)
 
     # Check that the path does not leave the DATA directory.
     # This has to be the first component of the path
@@ -114,7 +115,17 @@ def find_repo_dir(path, existence=True):
 
         @returns {string|boolean}
     """
-    #TODO: Do we need existence.
+
+    # we figure out the relative path
+    namecheck = os.path.relpath(
+        data_dir,
+        os.path.abspath(path),
+    )
+
+    # if we go into a directory, we
+
+    if namecheck.startswith('../../'):
+        path = os.path.join(data_dir, path)
 
     # find the relative path
     # by going relatively from the path to the data directory.
@@ -122,6 +133,8 @@ def find_repo_dir(path, existence=True):
         os.path.abspath(path),
         data_dir
     )
+
+
 
     # Check that the path does not leave the DATA directory.
     # This has to be the first component of the path
