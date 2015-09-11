@@ -87,12 +87,12 @@ def is_in_repo(path):
     # Check that the path does not leave the DATA directory.
     # This has to be the first component of the path
     # or the entire path.
-    if name.startswith("../") or name == "..":
+    if path.startswith("../") or path == "..":
         return False
 
     # check if we are inside a repository now
     # for this just match slashes
-    for c in name[:-1]:
+    for c in path[:-1]:
         if c == "/":
             # we have found a slash, so we are inside.
             return True
