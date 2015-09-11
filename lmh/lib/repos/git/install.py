@@ -81,7 +81,7 @@ If you are using localmh_docker make sure that you have internet access inside t
 def install(*reps):
     """Install a repositories and its dependencies"""
     
-    reps = list(filter(lambda r:r, reps))
+    reps = list(filter(lambda x:x, [r.strip() for r in reps]))
 
     for rep in reps:
         if not is_installed(rep):

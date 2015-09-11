@@ -14,6 +14,8 @@ def push(verbose, *repos):
         return state == "push" or state == "failed" or state == "divergence"
 
     ret = True
+    
+    repos = list(filter(lambda x:x, [r.strip() for r in repos]))
 
     for rep in repos:
         std("git push", rep, "", newline = False)

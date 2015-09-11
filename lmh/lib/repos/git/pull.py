@@ -59,7 +59,7 @@ def pull(verbose, *repos):
 
     ret = True
 
-    repos = [match_repo(r) for r in repos]
+    repos = list(filter(lambda x:x, [r.strip() for r in repos]))
 
     for rep in repos:
         std(    "Starting update:           ", term_colors("blue")+"'"+rep+"'"+term_colors("normal"))

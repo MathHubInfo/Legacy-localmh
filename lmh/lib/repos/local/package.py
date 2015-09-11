@@ -96,6 +96,6 @@ def get_package_dependencies(package):
 
             # and update the dependencies
             dependencies.update(line.split(","))
-
+    
     # return a list of them
-    return list(dependencies)
+    return list(filter(lambda x:x, [d.strip() for d in dependencies]))
