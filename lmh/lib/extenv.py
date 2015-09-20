@@ -1,6 +1,7 @@
 import os.path
 import sys
 
+from lmh.lib.io import is_string
 from lmh.lib.io import std, err, read_file
 from lmh.lib.env import install_dir, which, stexstydir, latexmlstydir
 from lmh.lib.config import get_config
@@ -155,7 +156,7 @@ def run_shell(shell = None, args=""):
     """Runs a shell that is ready for any perl5 things"""
 
     # If args is a list, join it by " "s
-    if not isinstance(args, basestring):
+    if not is_string(args):
         args = " ".join(args)
 
 

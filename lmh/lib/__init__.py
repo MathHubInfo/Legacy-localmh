@@ -5,7 +5,6 @@ from lmh.lib.io import std
 
 
 # Misc util functions
-
 def shellquote(s):
     """shellquotes arguments"""
     return "'" + s.replace("'", "'\\''") + "'"

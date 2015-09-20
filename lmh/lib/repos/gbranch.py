@@ -22,7 +22,6 @@ class Generated:
         # Check if we exist at all.
         if not self.repo:
             err("Unable to find repository '"+rep+"'")
-            return False
 
         # Initialise the cache.
         self.__branch_cache = None

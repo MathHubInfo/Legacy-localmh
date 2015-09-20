@@ -15,6 +15,12 @@ import datetime
 
 from subprocess import Popen, PIPE
 
+def is_string(s):
+    try:
+        return isinstance(s, basestring)
+    except NameError:
+        return isinstance(s, str)
+
 def term_colors(c):
     """returns terminal colors. """
     colors = {
@@ -174,7 +180,7 @@ def write_file(filename, text):
     # Write the text to file
     text_file = open(filename, "w")
 
-    if isinstance(text, basestring):
+    if is_string(text):
         text_file.write(text)
     else:
         text_file.write("\n".join(text) + "\n")

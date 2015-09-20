@@ -3,6 +3,7 @@ import re
 import os.path
 import glob
 
+from lmh.lib.io import is_string
 from lmh.lib.env import data_dir
 from lmh.lib import remove_doubles
 
@@ -286,7 +287,7 @@ def match_repos(repos, root=os.getcwd(), abs=False):
     # 3) For each of the found directories, run 1)
 
     # If the repositories are just a string, we want an array.
-    if isinstance(repos, basestring):
+    if is_string(repos):
         repos = [repos]
     # it is already an array, so remove doubles please.
     else:

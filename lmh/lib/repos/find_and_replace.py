@@ -2,6 +2,7 @@ import os
 import re
 from string import Template
 
+from lmh.lib.io import is_string
 from lmh.lib.io import find_files, std, err, read_file, write_file
 from lmh.lib.env import data_dir
 from lmh.lib.repos.local import find_repo_dir, match_repo
@@ -28,7 +29,7 @@ def find_and_replace_file(file, match, replace, replace_match = None):
     did = False
     if replace_match == None:
         def replace_match(match, replace):
-            # TODO: Migrate this to the parent scope. 
+            # TODO: Migrate this to the parent scope.
             # did = True
 
             # Make a template,
@@ -86,9 +87,9 @@ def find_cached(files, match, replace = None, replace_match = None):
     """Finds and replaces inside of files. """
 
     # Make sure match and replace are arrays
-    match = [match] if isinstance(match, basestring) else match
+    match = [match] if is_string(match) else match
     if replace != None:
-        replace = [replace] if isinstance(replace, basestring) else replace
+        replace = [replace] if is_string(replace) else replace
 
         if len(replace) != len(match):
             err("Find and Replace patterns are not of the same length. ")
