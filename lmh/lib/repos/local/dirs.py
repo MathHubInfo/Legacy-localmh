@@ -170,8 +170,6 @@ def find_repo_subdirs(path):
         @returns {string[]}
     """
 
-    print("find_repo_subdirs", path)
-
     # path needs to be a directory
     if not os.path.isdir(path):
         return []

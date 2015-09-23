@@ -139,7 +139,7 @@ def locate_compile_targets(paths):
     modules = reduce([locate_compile_target(p) for p in paths])
     modules = filter(lambda x:x!=None, modules)
 
-    return modules
+    return list(modules)
 
 def get_build_groups(spec):
 

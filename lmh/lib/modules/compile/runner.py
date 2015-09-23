@@ -86,7 +86,7 @@ def run_paralell(spec, num_workers, targets, quiet):
 
     # and run it and prepare to get the exception
 
-    runner = p.map_async(run_compilation_process, (map(lambda x:(x, args), groups)))
+    runner = p.map_async(run_compilation_process, map(lambda x:(x, args), groups))
     while True:
         try:
             return runner.get(60)
