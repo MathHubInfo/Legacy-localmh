@@ -92,8 +92,9 @@ def is_repo(dest):
         args = [git_executable, "rev-parse", dest]
         proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
         proc.wait()
+
         if (proc.returncode == 0):
-            return os.path.abspath(root_dir(dest)) == os.path.abspath(dest)
+            return os.path.realpath(root_dir(dest)) == os.path.realpath(dest)
         else:
             return False
     except:
@@ -110,7 +111,7 @@ def root_dir(dir = "."):
                                                             cwd=dir,
                                                             ).communicate()[0]
     rootdir = rootdir.strip()
-    return rootdir
+    return rootdir.decode("utf-8")
 
 def is_tracked(file):
     f = os.path.abspath(file)

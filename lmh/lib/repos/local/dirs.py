@@ -37,30 +37,22 @@ def is_repo_dir(path, existence = True):
     """
 
     if re.match('^[^\/]+\/[^\/]+$', path):
-        path = os.path.join(data_dir, path)
+        # it is already a name.
+        name = path
+    else:
+        # it is not a name, so we need to find the relative_path.
+        name = os.path.relpath(
+            os.path.abspath(path),
+            data_dir
+        )
 
-    # find the relative path
-    # by going relatively from the path to the data directory.
-    name = os.path.relpath(
-        os.path.abspath(path),
-        data_dir
-    )
+        # if the name ends with a /, remove it.
+        if name.endswith("/"):
+            name = name[:-1]
 
-    # check if it is indeed a repo name
-    # by just counting the number of slashes
-    # for this we can omit the last element
-    # because it HAS TO BE a letter
-    # or is a trailing slash
-    slash_num_correct = False
-    for c in name[:-1]:
-        if c == "/":
-            if slash_num_correct:
-                # the number is already correct, so it is one
-                # and we get to high, so we can abort.
-                return False
-            # else we found the one and only slash we need
-            # and the number is now correct.
-            slash_num_correct = True
+        # if the path does not match, we need to exit.
+        if not re.match('^[^\/]+\/[^\/]+$', name):
+            return False
 
     # if we need existence, check it is a git directory
     if existence:
