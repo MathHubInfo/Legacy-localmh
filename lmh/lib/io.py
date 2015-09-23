@@ -165,6 +165,7 @@ def read_raw(query = None, hidden = False):
         os._exit(1)
     if query != None:
         std(query, newline=False)
+    sys.stdout.flush()# Make sure all the output is here
     if hidden:
         return getpass.getpass("").strip()
     else:
