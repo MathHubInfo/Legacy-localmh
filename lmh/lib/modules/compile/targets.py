@@ -16,7 +16,7 @@ class Target():
         script = "extension "+self.getExtension()+ " ; log+ "+self.getTarget()+"-result"
 
         # Get the environment settings.
-        envstrings = " ; ".join(["envvar "+k+" \""+str(v)+"\"" for (k, v) in self.getEnvironment(args).iteritems()])
+        envstrings = " ; ".join(["envvar "+k+" \""+str(v)+"\"" for (k, v) in self.getEnvironment(args).items()])
 
 
         # If we have some environment variables, add them to the script.

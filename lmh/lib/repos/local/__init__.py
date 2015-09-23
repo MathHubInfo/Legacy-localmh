@@ -283,13 +283,13 @@ def calc_deps(apply = False, dirname="."):
 
 
     # we are missing the ones that are real but not given
-    missing = filter(lambda x:not x in given_dependencies, real_dependencies)
+    missing = list(filter(lambda x:not x in given_dependencies, real_dependencies))
 
     # we do not need those that are given but not real
-    not_needed = filter(lambda x:not x in real_dependencies, given_dependencies)
+    not_needed = list(filter(lambda x:not x in real_dependencies, given_dependencies))
 
     # the others are fine
-    fine  = filter(lambda x:x in real_dependencies, given_dependencies)
+    fine  = list(filter(lambda x:x in real_dependencies, given_dependencies))
 
     return {
             "fine": fine,

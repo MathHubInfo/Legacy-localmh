@@ -42,6 +42,7 @@ def run_compilation_process(workload):
     except KeyboardInterrupt as e:
         return False
     except Exception as e:
+        print(e)
         err(traceback.format_exc(e))
         return False
 
@@ -85,7 +86,7 @@ def run_paralell(spec, num_workers, targets, quiet):
 
     # and run it and prepare to get the exception
 
-    runner = p.map_async(run_compilation_process, map(lambda x:(x, args), groups))
+    runner = p.map_async(run_compilation_process, (map(lambda x:(x, args), groups)))
     while True:
         try:
             return runner.get(60)

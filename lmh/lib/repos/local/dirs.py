@@ -170,6 +170,8 @@ def find_repo_subdirs(path):
         @returns {string[]}
     """
 
+    print("find_repo_subdirs", path)
+
     # path needs to be a directory
     if not os.path.isdir(path):
         return []
@@ -221,7 +223,7 @@ def find_repo_subdirs(path):
 
     # now we can match the paths via glob.glob
     # and check that they exist
-    return filter(is_repo, glob.glob(name))
+    return list(filter(is_repo, glob.glob(name)))
 
 
 def match_repo(repo, root=os.getcwd(), abs=False, existence=True):
@@ -290,6 +292,7 @@ def match_repos(repos, root=os.getcwd(), abs=False):
     results = set()
 
     def match_repo_name(r):
+
         # make an absolute path
         # this will also work with globs
         names = os.path.abspath(os.path.join(root, r))
@@ -337,7 +340,7 @@ def match_repos(repos, root=os.getcwd(), abs=False):
         names = glob.glob(names)
 
         # and check if they exist
-        names = filter(is_repo, names)
+        names = list(filter(is_repo, names))
 
         # if we found something
         # we should through the item
@@ -348,11 +351,11 @@ def match_repos(repos, root=os.getcwd(), abs=False):
             return True
 
     # now filter the repos
-    repos = filter(match_repo_name, repos)
+    repos = list(filter(match_repo_name, repos))
 
     # repeat again with data_dir as root
     root = data_dir
-    repos = filter(match_repo_name, repos)
+    repos = list(filter(match_repo_name, repos))
 
 
     # if we want the relative paths we need to set them properly.

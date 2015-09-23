@@ -2,6 +2,7 @@ import subprocess
 import os
 import sys
 
+from lmh.lib.io import err
 from lmh.lib.extenv import mmt_executable
 
 def run(args, path=None, quiet=False):
@@ -17,6 +18,9 @@ def run(args, path=None, quiet=False):
     except KeyboardInterrupt:
         proc.terminate()
         raise KeyboardInterrupt
+    except FileNotFoundError:
+        err("mmt not found, is it installed?")
+        return False
 
 def run_script(script, path=None, quiet=False):
     return run([script], path, quiet)

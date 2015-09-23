@@ -163,7 +163,7 @@ def add_symbols(fname, warns=[]):
         return not ((req in syms) or (name in symdefs))
 
     # OK filter them out
-    required = filter(need_sym, defs)
+    required = list(filter(need_sym, defs))
 
     # Add them if we need to
     if len(required) > 0:
@@ -188,7 +188,7 @@ def check_symcomplete(fname, warns=[]):
     syms = ["-".join(s[2]) for s in syms]
 
     # For all the syms and symdefs, check if they are defined in the binding.
-    missing = filter(lambda s:not s in defs, syms+symdefs)
+    missing = list(filter(lambda s:not s in defs, syms+symdefs))
 
     if(len(missing) > 0):
         err(fname, "incomplete: ")
@@ -204,7 +204,7 @@ def check_defs(d):
 
     # Find all the modules that we have to worry about
     mods = locate_files(d)
-    mods = filter(lambda x:needsPreamble(x), mods)
+    mods = list(filter(lambda x:needsPreamble(x), mods))
 
     ret = True
 
@@ -220,7 +220,7 @@ def check_symbols(d):
 
     # Find all the modules that we have to worry about
     mods = locate_files(d)
-    mods = filter(lambda x:needsPreamble(x), mods)
+    mods = list(filter(lambda x:needsPreamble(x), mods))
 
     ret = True
 

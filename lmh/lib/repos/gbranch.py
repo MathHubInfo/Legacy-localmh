@@ -63,7 +63,7 @@ class Generated:
                 branchnames.extend(l.split(" "))
 
         # write the splits into the cache
-        self.__branch_cache = map(split_branch, branchnames)
+        self.__branch_cache = list(map(split_branch, branchnames))
 
         # and return that.
         if tuple:
