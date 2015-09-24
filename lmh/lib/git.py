@@ -29,7 +29,8 @@ def do_data(dest, cmd, *arg):
     args.extend(arg)
     proc = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
     proc.wait()
-    return proc.communicate()
+    data = proc.communicate()
+    return [data[0].decode("utf-8"), data[1].decode("utf-8")]
 
 ### SIMPLE ALIASES
 def clone(dest, *arg):
@@ -128,10 +129,10 @@ def get_remote_status(where):
         return "failed"
 
     # Figure out my branch
-    my_branch = do_data(where, "rev-parse", "--abbrev-ref", "HEAD")[0].split("\n")[0]
+    my_branch = do_data(where, "rev-parse", "--abbrev-ref", "HEAD")[0].decode("utf-8").split("\n")[0]
     # And the upstream url
-    my_upstream = do_data(where, "symbolic-ref", "-q", "HEAD")[0].split("\n")[0]
-    my_upstream = do_data(where, "for-each-ref", "--format=%(upstream:short)", my_upstream)[0].split("\n")[0]
+    my_upstream = do_data(where, "symbolic-ref", "-q", "HEAD")[0].decode("utf-8").split("\n")[0]
+    my_upstream = do_data(where, "for-each-ref", "--format=%(upstream:short)", my_upstream)[0].decode("utf-8").split("\n")[0]
 
     # Turn it into hashes
     local = do_data(where, "rev-parse", my_branch)
