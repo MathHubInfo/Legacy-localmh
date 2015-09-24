@@ -92,10 +92,10 @@ def get_package_dependencies(package):
         if line.startswith(deps_prefix):
             # cut off the beginning and replace spaces.
             line = line[len(deps_prefix):]
-            line = whiteSpaceExpression.sub(" ", line)
+            line = whiteSpaceExpression.sub(" ", line).strip()
 
             # and update the dependencies
-            dependencies.update(line.split(","))
-    
+            dependencies.update(line.replace(" ", ",").split(","))
+
     # return a list of them
     return list(filter(lambda x:x, [d.strip() for d in dependencies]))
