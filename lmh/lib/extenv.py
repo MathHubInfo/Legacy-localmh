@@ -190,7 +190,7 @@ def run_shell(shell = None, args=""):
     _env["PATH"] = stexstydir+":"+_env["PATH"]
 
     try:
-        runner = Popen([shell]+shlex.split(args), env=_env, cwd=install_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+        runner = Popen([shell]+shlex.split(args), env=_env, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
     except Exception:
         # we could not find that
         return 127
