@@ -1,4 +1,4 @@
-from lmh.lib.modules.compile.targets import SMSTarget, OMDOCTarget, PDFTarget
+from lmh.lib.modules.compile.targets import SMSTarget, OMDOCTarget, PDFTarget, AllTexTarget, AllPDFTarget
 from lmh.lib.modules import get_build_groups
 from lmh.lib.repos.local.dirs import find_repo_dir
 from lmh.lib.repos.local.package import get_package_id
@@ -31,4 +31,8 @@ def make_build_script(rgroup, targets, quiet, worker_id):
             script = script + " ; " + OMDOCTarget().build_command(repo, files, props)
         if t == "pdf":
             script = script + " ; " + PDFTarget().build_command(repo, files, props)
+        if t == "alltex":
+            script = script + " ; " + AllTexTarget().build_command(repo, files, props)
+        if t == "allpdf":
+            script = script + " ; " + AllPDFTarget().build_command(repo, files, props)
     return script

@@ -58,6 +58,10 @@ def build_targets(args):
         targets["pdf"] = {}
     if args.list:
         targets["list"] = True
+    if args.alltex:
+        targets["alltex"] = {}
+    if args.allpdf:
+        targets["allpdf"] = {}
 
     return targets
 

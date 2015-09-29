@@ -8,5 +8,7 @@
   "sms": "gen --sms",
   "omdoc": "gen --omdoc",
   "pdf": "gen --pdf",
-  "xhtml": "gen --xhtml"
+  "xhtml": "gen --xhtml",
+  "alltex": "gen --alltex",
+  "allpdf": "gen --allpdf"
 }

@@ -21,6 +21,8 @@ def add_parser_args(parser, argparse):
     whattogen = parser.add_argument_group("What to generate")
 
     whattogen.add_argument('--sms', action="store_true", help="generate sms files")
+    whattogen.add_argument('--alltex', action="store_true", help="generate all.tex files")
+    whattogen.add_argument('--allpdf', action="store_true", help="generate all.pdf files")
     whattogen.add_argument('--omdoc', action="store_true", help="generate omdoc files")
     whattogen.add_argument('--pdf', action="store_true", help="generate pdf files")
     whattogen.add_argument('--list', action="store_true", help="list all modules available. Ignores all other generation types. ")

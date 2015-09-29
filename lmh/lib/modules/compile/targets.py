@@ -79,3 +79,21 @@ class PDFTarget(Target):
         return "info.kwarc.mmt.stex.PdfLatex"
     def getTarget(self):
         return "pdflatex"
+class AllTexTarget(Target):
+    def __init__(self):
+        pass
+    def getEnvironment(self, args):
+        return {}
+    def getExtension(self):
+        return "info.kwarc.mmt.stex.AllTeX"
+    def getTarget(self):
+        return "alltex"
+class AllPDFTarget(Target):
+    def __init__(self):
+        pass
+    def getEnvironment(self, args):
+        return {}
+    def getExtension(self):
+        return "info.kwarc.mmt.stex.AllPdf"
+    def getTarget(self):
+        return "alltex_allpdf"
