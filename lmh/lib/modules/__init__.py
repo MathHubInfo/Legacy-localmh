@@ -3,7 +3,7 @@ import os.path
 import re
 import glob
 
-from lmh.lib import reduce, remove_doubles
+from lmh.lib import reduce
 from lmh.lib.io import std, err, read_file
 from lmh.lib.env import install_dir, data_dir
 from lmh.lib.repos.local.dirs import find_repo_dir, find_repo_subdirs
@@ -130,29 +130,3 @@ def locate_compile_target(path, try_root= True):
 
     # return the name of the repository and the path inside the repository.
     return [(repo_name, path)]
-
-def locate_compile_targets(paths):
-
-    if len(paths) == 0:
-        paths = ["."]
-
-    modules = reduce([locate_compile_target(p) for p in paths])
-    modules = filter(lambda x:x!=None, modules)
-
-    return list(modules)
-
-def get_build_groups(spec):
-
-    # find all the paths
-    paths = locate_compile_targets(spec)
-
-    # find all the repos
-    repos = remove_doubles([r for (r,f) in paths])
-
-    # group it all together
-    groups = []
-    for r in repos:
-        groups = groups + [(r, remove_doubles([f for (p,f) in paths if p==r]))]
-
-    # and return it.
-    return groups
