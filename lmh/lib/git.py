@@ -152,7 +152,7 @@ def make_orphan_branch(dest, name):
     # true | git mktree
     args = [git_executable, "mktree"]
     proc = subprocess.Popen(args, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
-    treeid = proc.communicate(input=b'')[0].rstrip("\n")
+    treeid = proc.communicate(input=b'')[0].decode("utf-8").rstrip("\n")
     proc.wait()
 
     if proc.returncode != 0:
@@ -161,7 +161,7 @@ def make_orphan_branch(dest, name):
     # ... | xargs git commit-tree
     args = [git_executable, "commit-tree", treeid]
     proc = subprocess.Popen(args, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
-    commid = proc.communicate(input=b'')[0].rstrip("\n")
+    commid = proc.communicate(input=b'')[0].decode("utf-8").rstrip("\n")
     proc.wait()
 
     if proc.returncode != 0:
@@ -170,7 +170,7 @@ def make_orphan_branch(dest, name):
     # ... | xargs git branch $name
     args = [git_executable, "branch", name, commid]
     proc = subprocess.Popen(args, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=dest)
-    res = proc.communicate(input=b'')[0].rstrip("\n")
+    res = proc.communicate(input=b'')[0].decode("utf-8").rstrip("\n")
     proc.wait()
 
     return proc.returncode == 0
