@@ -1,4 +1,5 @@
-from lmh.lib.repos.local.dirs import is_repo_dir, find_repo_dir
+from lmh.lib.repos.local.dirs import is_repo_dir, find_repo_dir, match_repo
+from lmh.lib.repos.indexer import find_source
 from lmh.lib.env import data_dir
 
 from lmh.lib.io import err, read_file_lines
@@ -80,6 +81,9 @@ def get_package_dependencies(package):
         @returns {string[]}
     """
 
+    pack_name = match_repo(package)
+    (grp, name) = pack_name.split("/")
+
     # Read the meta-inf lines.
     meta_inf_lines = get_metainf_lines(package)
 
@@ -96,6 +100,13 @@ def get_package_dependencies(package):
 
             # and update the dependencies
             dependencies.update(line.replace(" ", ",").split(","))
+
+    # add the $group/meta-inf repository.
+    if name != "meta-inf":
+        if find_source(grp+"/meta-inf"):
+            dependencies.update([grp+"/meta-inf"])
+
+
 
     # return a list of them
     return list(filter(lambda x:x, [d.strip() for d in dependencies]))
