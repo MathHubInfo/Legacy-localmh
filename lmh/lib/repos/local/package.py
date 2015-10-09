@@ -103,7 +103,7 @@ def get_package_dependencies(package):
 
     # add the $group/meta-inf repository.
     if name != "meta-inf":
-        if find_source(grp+"/meta-inf"):
+        if find_source(grp+"/meta-inf", quiet=True):
             dependencies.update([grp+"/meta-inf"])
 
 
