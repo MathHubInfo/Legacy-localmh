@@ -1,0 +1,13 @@
+sudo: required
+dist: trusty
+language: python
+ - "3.5"
+
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install -qq cpanminus texlive-xetex
+
+script:
+ - export LMH_ROOT_DIR=`pwd`
+ - export PATH=`pwd`/bin:$PATH
+ - lmh setup --install LaTeXML LaTeXMLs sTeX
