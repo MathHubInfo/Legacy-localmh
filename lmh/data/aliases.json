@@ -5,10 +5,10 @@
   "update": "pull",
   "selfupdate": "setup --update self",
 
-  "gen": "mmt rbuild",
-  "sms": "mmt rbuild sms",
-  "omdoc": "mmt rbuild latexml",
-  "pdf": "mmt rbuild pdflatex",
-  "alltex": "mmt rbuild alltex",
-  "allpdf": "mmt rbuild allpdf"
+  "gen": "mmt make",
+  "sms": "mmt make sms",
+  "omdoc": "mmt make latexml",
+  "pdf": "mmt make pdflatex",
+  "alltex": "mmt make alltex",
+  "allpdf": "mmt make allpdf"
 }
