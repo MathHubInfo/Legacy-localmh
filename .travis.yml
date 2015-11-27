@@ -5,9 +5,10 @@ language: python
 
 before_install:
  - sudo apt-get update -qq
- - sudo apt-get install -qq cpanminus texlive-xetex libxml-libxslt-perl libparse-recdescent-perl
+ - sudo apt-get install -qq cpanminus texlive-full libxml-libxslt-perl libparse-recdescent-perl python3-bs4 openjdk-7-jre
 
 script:
  - export LMH_ROOT_DIR=`pwd`
- - export PATH=`pwd`/bin:$PATH
- - lmh setup --install LaTeXML LaTeXMLs sTeX
+ - export PATH=`pwd`/bin:/usr/bin:$PATH
+ - lmh setup --install LaTeXML LaTeXMLs sTeX MMT
+ - testHello.sh
