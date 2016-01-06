@@ -4,7 +4,7 @@ from string import Template
 
 from lmh.lib.io import is_string
 from lmh.lib.io import find_files, std, err, read_file, write_file
-from lmh.lib.env import data_dir
+from lmh.lib.dirs import data_dir
 from lmh.lib.repos.local import find_repo_dir, match_repo
 
 def find_and_replace_file(file, match, replace, replace_match = None):

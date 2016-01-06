@@ -4,8 +4,8 @@ import os.path
 from subprocess import call
 
 from lmh.lib.io import std, err
-from lmh.lib.env import ext_dir
-from lmh.lib.extenv import perl5env, perl5root, cpanm_executable
+from lmh.lib.dirs import ext_dir
+from lmh.lib.env import perl5env, perl5root, cpanm_executable
 from lmh.lib.config import get_config, set_config
 from lmh.lib.git import pull as git_pull
 from lmh.lib.git import clone as git_clone

@@ -3,9 +3,9 @@ import os.path
 import re
 import glob
 
-from lmh.lib import reduce
+from lmh.lib.utils import reduce
 from lmh.lib.io import std, err, read_file
-from lmh.lib.env import install_dir, data_dir
+from lmh.lib.dirs import install_dir, data_dir
 from lmh.lib.repos.local.dirs import find_repo_dir, find_repo_subdirs
 
 # Hardcoded folder exclude list.

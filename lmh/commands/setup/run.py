@@ -1,5 +1,5 @@
 from lmh.lib.io import std, err
-from lmh.lib.extenv import check_deps
+from lmh.lib.env import check_deps
 from lmh.lib.config import get_config
 
 import lmh.lib.packs

@@ -5,7 +5,7 @@ import time
 import shlex
 import traceback
 
-from lmh.lib.env import install_dir
+from lmh.lib.dirs import lmh_locate
 import lmh.lib.io
 from lmh.lib.io import read_file, write_file, err
 from lmh.lib.config import get_config
@@ -27,7 +27,7 @@ def install_excepthook():
         err("a report will be generated in ")
         s = "cwd = {0}\n args = {1}\n".format(cwd, sys.argv)
         s = s + e
-        write_file(os.path.join(install_dir, "logs", time.strftime("%Y-%m-%d-%H-%M-%S.log")), s)
+        write_file(lmh_locate("logs", time.strftime("%Y-%m-%d-%H-%M-%S.log")), s)
 
     sys.excepthook = my_excepthook
 
@@ -35,8 +35,8 @@ def main(argv=sys.argv[1:]):
     """Calls the main program with given arguments. """
 
     # Load commands + aliases
-    commands = json.loads(read_file(install_dir + "/lmh/data/commands.json"))
-    aliases = json.loads(read_file(install_dir + "/lmh/data/aliases.json"))
+    commands = json.loads(read_file(lmh_locate("lib", "data", "commands.json")))
+    aliases = json.loads(read_file(lmh_locate("lib", "data", "aliases.json")))
 
     parser = create_parser(submods, commands, aliases)
 

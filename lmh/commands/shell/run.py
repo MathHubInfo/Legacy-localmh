@@ -1,5 +1,5 @@
 import sys
-from lmh.lib.extenv import run_shell
+from lmh.lib.env import run_shell
 
 def do(args, unknown):
     code = run_shell(args.shell, args.args+unknown)

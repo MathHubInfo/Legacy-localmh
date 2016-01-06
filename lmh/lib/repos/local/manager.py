@@ -1,7 +1,7 @@
 import os
 import os.path
 
-from lmh.lib.env import data_dir
+from lmh.lib.dirs import data_dir
 from lmh.lib.io import std, err, write_file, read_file_lines
 from lmh.lib.repos.git.install import install
 

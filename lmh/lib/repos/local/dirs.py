@@ -4,8 +4,8 @@ import os.path
 import glob
 
 from lmh.lib.io import is_string
-from lmh.lib.env import data_dir
-from lmh.lib import remove_doubles
+from lmh.lib.dirs import data_dir
+from lmh.lib.utils import remove_doubles
 
 # Git imports
 

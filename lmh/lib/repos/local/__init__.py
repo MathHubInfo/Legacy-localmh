@@ -2,7 +2,7 @@ import os
 import os.path
 import re
 
-from lmh.lib.env import data_dir
+from lmh.lib.dirs import data_dir
 from lmh.lib.io import term_colors, find_files, std, std_paged, err, write_file, read_file, read_file_lines
 
 # Git imports

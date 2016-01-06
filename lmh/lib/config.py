@@ -1,10 +1,19 @@
+"""
+Configuration functions for lmh
+"""
+
+# TODO: Prefer the file in the home directory. 
+# If it does not exist, create it. 
+# If it does exist, migrate automatically. 
+# This will make sure that each user has their own configuration. 
+
 import json
 
-from lmh.lib.env import install_dir
+from lmh.lib.dirs import lmh_locate, install_dir
 from lmh.lib.io import std, err, read_file, write_file, term_colors
 
 """Available configuration values. """
-config_meta = json.loads(read_file(install_dir + "/lmh/data/config.json"))
+config_meta = json.loads(read_file(lmh_locate("lib", "data", "config.json")))
 
 """The configuration file for lmh"""
 config_file = install_dir + "/bin/lmh.cfg"

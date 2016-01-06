@@ -1,21 +1,35 @@
+"""
+Information about the license and version of lmh
+"""
+
+from lmh.lib.utils import cached
 from lmh.lib.io import read_file
-from lmh.lib.env import install_dir
+from lmh.lib.dirs import install_dir
 from lmh.lib.git import do_data
 
+@cached
+def version():
+    """
+    Returns the current version of lmh
+    """
+    return read_file(install_dir + "/" + "/lmh/data/version")
 
-"""lmh lib version"""
-version = read_file(install_dir + "/" + "/lmh/data/version")
-
+@cached
 def git_version():
-    """Checks the current gi version of the core"""
+    """
+    Returns the current git version of lmh as a string or None
+    """
     try:
         return do_data(install_dir, "rev-parse", "HEAD")[0].rstrip()
     except:
-        return "<Not under source control>"
+        return None
 
-"""lmh license text"""
-license = \
-"""
+@cached
+def license_text():
+    """
+    Returns the current license text of lmh
+    """
+    return """
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or

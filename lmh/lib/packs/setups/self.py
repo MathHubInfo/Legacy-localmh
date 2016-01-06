@@ -1,5 +1,5 @@
 from lmh.lib.io import std
-from lmh.lib.env import install_dir
+from lmh.lib.dirs import install_dir
 from lmh.lib.git import pull
 
 from lmh.lib.packs.classes import Pack, UnsupportedAction

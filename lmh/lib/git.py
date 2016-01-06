@@ -2,7 +2,7 @@ import sys
 import os, os.path
 import subprocess
 
-from lmh.lib.extenv import git_executable
+from lmh.lib.env import git_executable
 
 def do(dest, cmd, *arg):
     """Does an arbitrary git command and returns if it suceeded. """

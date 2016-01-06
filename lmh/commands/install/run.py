@@ -1,6 +1,6 @@
 from lmh.lib.io import std, err, read_raw
 from lmh.lib.config import get_config
-from lmh.lib.env import data_dir
+from lmh.lib.dirs import data_dir
 from lmh.lib.repos.git.install import install
 from lmh.lib.repos.indexer import ls_remote
 from lmh.lib.repos.local.dirs import match_repos

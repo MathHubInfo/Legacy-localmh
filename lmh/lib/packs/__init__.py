@@ -3,7 +3,7 @@ import os
 import os.path
 
 from lmh.lib.io import std, err, read_file
-from lmh.lib.env import install_dir, ext_dir
+from lmh.lib.dirs import install_dir, ext_dir
 from lmh.lib.packs import classes
 
 

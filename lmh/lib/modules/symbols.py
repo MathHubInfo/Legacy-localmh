@@ -1,5 +1,5 @@
 import re
-from lmh.lib import remove_doubles
+from lmh.lib.utils import remove_doubles
 from lmh.lib.io import std, err, write_file, read_file
 from lmh.lib.modules import locate_files, needsPreamble
 

@@ -1,9 +1,12 @@
+"""
+    Functionality to interface with MMT. 
+"""
 import subprocess
 import os
 import sys
 
 from lmh.lib.io import err
-from lmh.lib.extenv import mmt_executable
+from lmh.lib.env import mmt_executable
 
 def run(args, path=None, quiet=False):
     # setup path

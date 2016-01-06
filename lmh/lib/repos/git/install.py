@@ -1,5 +1,5 @@
 from lmh.lib.io import std, err, term_colors
-from lmh.lib.env import data_dir
+from lmh.lib.dirs import data_dir
 from lmh.lib.git import clone
 from lmh.lib.repos.local.package import get_package_dependencies, is_installed
 from lmh.lib.repos.indexer import find_source

@@ -3,9 +3,9 @@ import glob
 import json
 import shutil
 
-from lmh.lib import reduce
+from lmh.lib.utils import reduce
 from lmh.lib.io import find_files, std, err
-from lmh.lib.env import data_dir
+from lmh.lib.dirs import data_dir
 
 from lmh.lib.repos.local import match_repo, match_repos, calc_deps
 from lmh.lib.repos.find_and_replace import find_cached

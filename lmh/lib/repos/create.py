@@ -3,8 +3,8 @@ import os.path
 import distutils.dir_util
 from string import Template
 
-from lmh.lib import mkdir_p
-from lmh.lib.env import install_dir
+from lmh.lib.utils import mkdir_p
+from lmh.lib.dirs import install_dir
 from lmh.lib.io import read_file, write_file, find_files, std, err, read_raw
 from lmh.lib.config import get_config
 from lmh.lib.repos.local import match_repo
@@ -168,7 +168,7 @@ def create(reponame, type="none", remote = True):
     try:
         mkdir_p(absrepo)
     except:
-        err("Can not create repository directory, unable to create it. ")
+        err("Can not create repository directory")
         return False
 
     if not get_config("init::allow_nonempty"):
