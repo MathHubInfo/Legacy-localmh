@@ -5,7 +5,9 @@ import subprocess
 from lmh.lib.env import git_executable
 
 def do(dest, cmd, *arg):
-    """Does an arbitrary git command and returns if it suceeded. """
+    """
+    Does an arbitrary git command and returns if it suceeded
+    """
 
     args = [git_executable, cmd]
     args.extend(arg)
@@ -14,7 +16,9 @@ def do(dest, cmd, *arg):
     return (proc.returncode == 0)
 
 def do_quiet(dest, cmd, *arg):
-    """Does an arbitrary git command quietly and returns if it suceeded. """
+    """
+    Does an arbitrary git command quietly and returns if it suceeded. 
+    """
 
     args = [git_executable, cmd]
     args.extend(arg)
@@ -23,7 +27,9 @@ def do_quiet(dest, cmd, *arg):
     return (proc.returncode == 0)
 
 def do_data(dest, cmd, *arg):
-    """Does an arbitrary git command and return stdout and sterr. """
+    """
+    Does an arbitrary git command and returns stdout and sterr. 
+    """
 
     args = [git_executable, cmd]
     args.extend(arg)
@@ -34,24 +40,34 @@ def do_data(dest, cmd, *arg):
 
 ### SIMPLE ALIASES
 def clone(dest, *arg):
-    """Clones a git repository. """
+    """
+    Clones a git repository. 
+    """
     return do(dest, "clone", *arg)
 
 def pull(dest, *arg):
-    """Pulls a git repository. """
+    """
+    Pulls a git repository. 
+    """
     return do(dest, "pull", *arg)
 
 def commit(dest, *arg):
-    """Commits a git repository. """
+    """
+    Commits a git repository. 
+    """
     return do(dest, "commit", *arg)
 
 def push(dest, *arg):
-    """Pulls a git repository. """
+    """
+    Pulls a git repository. 
+    """
     return do(dest, "push", *arg)
 
 
 def status(dest, *arg):
-    """Runs git status and returns the status message. """
+    """
+    Runs git status and returns the status message. 
+    """
 
     args = [git_executable, "status"];
     args.extend(arg)
@@ -62,7 +78,9 @@ def status(dest, *arg):
     else:
         return False
 def status_pipe(dest, *arg):
-    """Runs git status and pipes output. """
+    """
+    Runs git status and pipes output. 
+    """
 
     args = [git_executable, "status"];
     args.extend(arg)
@@ -74,7 +92,9 @@ def status_pipe(dest, *arg):
         return False
 
 def exists(dest, askpass=True):
-    """Checks if a git repository exists. """
+    """
+    Checks if a git repository exists. 
+    """
 
     args = [git_executable, "ls-remote", dest]
 
@@ -87,7 +107,9 @@ def exists(dest, askpass=True):
     return (proc.returncode == 0)
 
 def is_repo(dest):
-    """Checks if a git repository exists (locally) """
+    """
+    Checks if a git repository exists (locally). 
+    """
 
     try:
         args = [git_executable, "rev-parse", dest]
@@ -102,7 +124,9 @@ def is_repo(dest):
         return False
 
 def root_dir(dir = "."):
-    """Finds the git root dir of the given path. """
+    """
+    Finds the git root dir of the given path. 
+    """
 
     if os.path.isfile(dir):
         dir = os.path.dirname(dir)
@@ -115,6 +139,9 @@ def root_dir(dir = "."):
     return rootdir.decode("utf-8")
 
 def is_tracked(file):
+    """
+    Checks if a file is tracked by git. 
+    """
     f = os.path.abspath(file)
     p = os.path.dirname(f)
 
@@ -124,6 +151,10 @@ def is_tracked(file):
     return (proc.returncode == 0)
 
 def get_remote_status(where):
+    """
+    Checks if a remote can be updated or not
+    """
+    
     # quietly make an update with the remote
     if not do_quiet(where, "remote", "update"):
         return "failed"
@@ -148,6 +179,9 @@ def get_remote_status(where):
     else:
         return "divergence"
 def make_orphan_branch(dest, name):
+    """
+    Creates an orphaned branch
+    """
 
     # true | git mktree
     args = [git_executable, "mktree"]
@@ -177,7 +211,9 @@ def make_orphan_branch(dest, name):
 
 
 def origin(dir="."):
-    """Finds the origin of a given git repository. """
+    """
+    Finds the origin of a given git repository. 
+    """
 
     return subprocess.Popen([git_executable, "remote", "show", "origin", "-n"],
                                                     stdout=subprocess.PIPE,

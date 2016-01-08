@@ -1,9 +1,7 @@
-#!/usr/bin/env python
-
-
-#
-# From: https://github.com/tehmaze/lolcat
-#
+"""
+lolcat code for eastereggs
+Adapted from https://github.com/tehmaze/lolcat
+"""
 
 import math
 import os

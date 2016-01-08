@@ -9,24 +9,29 @@ Configuration functions for lmh
 
 import json
 
-from lmh.lib.dirs import lmh_locate, install_dir
+from lmh.lib.dirs import lmh_locate
 from lmh.lib.io import std, err, read_file, write_file, term_colors
 
 """Available configuration values. """
 config_meta = json.loads(read_file(lmh_locate("lib", "data", "config.json")))
 
 """The configuration file for lmh"""
-config_file = install_dir + "/bin/lmh.cfg"
+config_file = lmh_locate("bin", "lmh.cfg") # TODO: Store this in the home direcory instead
+                                            # will allow multiple users to read it. 
 
 def get_config(key):
-    """Gets a given configuration setting. """
+    """
+    Gets a given configuration setting. If it does not exist in the 
+    configuration file, the default will be returned
+    """
 
-    # check if the given key exists
+    # check if the given key exists in the configuration
     if not key in config_meta:
         err("Option", key, "does not exist. ")
         raise KeyError
 
-    # Try to find the setting in the config file
+    # Read the setting from the config file
+    # TODO: Think about verifying the type
     try:
         data = json.loads(read_file(config_file))
 
@@ -38,7 +43,9 @@ def get_config(key):
     return config_meta[key]["default"]
 
 def format_type(t):
-    """Formats a type. """
+    """
+    Formats a type for output to the command line
+    """
     if t == "string":
         return term_colors("yellow")+"<string>"+term_colors("normal")
     elif t == "bool":
@@ -49,17 +56,22 @@ def format_type(t):
         return term_colors("cyan")+"<int+>"+term_colors("normal")
 
 def set_config(key, value):
-    """Sets a given configuration setting. """
-
-    value = str(value) # Set it to a string
+    """
+    Sets a configuration setting to a certain value. 
+    """
+    
+    # first ensure the value is a string
+    value = str(value)
 
     # check if the given key exists
     if not key in config_meta:
         err("Option", key, "does not exist. ")
         return False
 
-    # Turn the datatype into whatever we need
+    # Get the datatype of the config setting
     datatype = config_meta[key]["type"]
+    
+    # and typecast to the given type
     if datatype == "string":
         value = str(value)
     elif datatype == "bool":
@@ -86,16 +98,17 @@ def set_config(key, value):
             err("Option", key, " is of type positive integer, please use a valid positive integer. ")
             return False
 
-    # Load existsing data
+    # Re-load the existing data
     data = {}
     try:
         data = json.loads(read_file(config_file))
     except:
         pass
-
+    
+    # write the config setting
     data[key] = value
 
-    # dump all the content into the file
+    # and rew-rite the json file. 
     try:
         write_file(config_file, json.dumps(data, indent=4))
     except:
@@ -105,25 +118,33 @@ def set_config(key, value):
     return True
 
 def reset_config(key):
-    """ Resets a given config setting.  """
+    """
+    Resets a given config setting to the default by deleting it from the config
+    file. 
+    """
 
     # check if the given key exists
     if not key in config_meta:
         err("Option", key, " does not exist, unable to reset. ")
         return False
-
+    
+    # load the default and set it to that. 
     set_config(key, str(config_meta[key]["default"]))
 
 def get_config_help(key):
-    """Prints some help about a given config setting. """
-
+    """
+    Prints help to stdout about the given configuration settting. 
+    """
+    
+    # check if the key exists
     if not key in config_meta:
         err("Option", key, " does not exist. ")
         return False
 
-
+    # get its meta-information
     meta = config_meta[key]
-
+    
+    # and print that
     std(format_type(meta["type"]), key)
     std(meta["help"])
     std("Current Value: " + json.dumps(get_config(key)))
@@ -132,7 +153,9 @@ def get_config_help(key):
     return True
 
 def list_config():
-    """     Lists available config settings. """
+    """
+    Prints information about all available configuration settings to stdout. 
+    """
 
     for key in sorted(config_meta.keys()):
         try:

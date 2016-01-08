@@ -53,10 +53,7 @@ def which(program):
     return None
 
 
-
-# Define all the external tools
-
-
+"""Path to the latexmlc executable"""
 latexmlc_executable = get_config("env::latexmlc")
 latexmlc_builtin = False
 
@@ -68,32 +65,32 @@ if latexmlc_executable == "":
     else:
         latexmlc_executable = which("latexmlc")
 
-"""The path to the git executable """
+"""Path to the git executable """
 git_executable = get_config("env::git")
 
 # Find it yourself if the config is empty
 if git_executable == "":
     git_executable = which("git")
 
-"""The path to the pdflatex executable. """
+"""Path to the pdflatex executable. """
 pdflatex_executable = get_config("env::pdflatex")
 
 if pdflatex_executable == "":
     pdflatex_executable =  which("xelatex")
 
-"""The path to the perl executable. """
+"""Path to the perl executable. """
 perl_executable = get_config("env::perl")
 
 if perl_executable == "":
     perl_executable =  which("perl")
 
-"""The path to the MMT executable. """
+"""Path to the MMT executable. """
 mmt_executable = get_config("env::mmt")
 
 if mmt_executable == "":
     mmt_executable = install_dir+"/ext/MMT/deploy/mmt.jar"
 
-"""The path to the cpanm executable. """
+"""Path to the cpanm executable. """
 cpanm_executable = get_config("env::cpanm")
 
 if cpanm_executable == "":
@@ -103,7 +100,10 @@ if cpanm_executable == "":
         cpanm_executable = which("cpanm")
 
 def check_deps():
-    """Check if dependencies exist. """
+    """
+    Checks if all required lmh dependencies are installed. Prints warning(s) to 
+    stderr if a dependency is not found. 
+    """
 
     if git_executable == None:
         err("Unable to locate the git executable. ")
@@ -135,8 +135,7 @@ def check_deps():
         err("On Ubtuntu 13.10 or later you can install this with: ")
         err("    sudo apt-get install cpanminus")
         return False
-
-
+    
     #try:
     #    import psutil
     #except:
@@ -166,7 +165,9 @@ perl5bindir = os.pathsep.join([p5r+"bin" for p5r in perl5root])+os.pathsep+insta
 perl5libdir = os.pathsep.join([p5r+"lib/perl5" for p5r in perl5root])+os.pathsep+install_dir+"/ext/LaTeXML/blib/lib"+os.pathsep+install_dir+"/ext/LaTeXMLs/blib/lib"
 
 def perl5env(_env = {}):
-    """perl 5 environment generator"""
+    """
+    Returns an environment in which perl5 can run with all the installed modules
+    """
 
     # Set the STEXSTYDIR
     _env["STEXSTYDIR"] = stexstydir
@@ -188,7 +189,9 @@ def perl5env(_env = {}):
 
 
 def run_shell(shell = None, args=""):
-    """Runs a shell that is ready for any perl5 things"""
+    """
+    Runs a shell in which all external programs can run
+    """
 
     # If args is a list, join it by " "s
     if not is_string(args):
@@ -252,7 +255,8 @@ def run_shell(shell = None, args=""):
 
 def get_template(name):
     """
-    Gets a template file with the given name. 
+    Gets a template file with the given name
     """
+    
     # TODO: Find out why this is unused and if we still need it. 
     return read_file(install_dir + "/bin/templates/" + name)

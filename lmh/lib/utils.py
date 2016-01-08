@@ -32,6 +32,6 @@ def mkdir_p(path):
 
 def cached(f):
     """
-    Decoration to cache arbritrary functions. 
+    Decoration to cache functions. 
     """
     return functools.lru_cache()(f)

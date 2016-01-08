@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import argparse
 
-from lmh.lib import helper
 from lmh.lib.io import err
 
 class CommandClass():
@@ -12,18 +11,19 @@ class CommandClass():
     def do(self, arguments, unparsed):
         pass
 
+class LMHFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
+    pass
+
 def load_command(cmd, subparsers):
 
     # Load the module
     module = getattr(getattr(__import__("lmh.commands."+cmd), "commands"), cmd)
 
-    # if we have a class attribute, use the class
-    # else, use just the module
     try:
         command = module.Command()
 
         # Create the sub parser
-        new_parser = subparsers.add_parser(cmd, help=command.help, description=command.help, formatter_class=helper.LMHFormatter,add_help=command.allow_help_arg)
+        new_parser = subparsers.add_parser(cmd, help=command.help, description=command.help, formatter_class=LMHFormatter,add_help=command.allow_help_arg)
 
         # and add some arguments.
         command.add_parser_args(new_parser)
@@ -38,7 +38,7 @@ def load_command(cmd, subparsers):
 
 def create_parser(submods = {}, commands = [], aliases = {}):
     # Create the main parser
-    parser = argparse.ArgumentParser(prog="lmh", description='Local MathHub Tool.', formatter_class=helper.LMHFormatter)
+    parser = argparse.ArgumentParser(prog="lmh", description='Local MathHub Tool.', formatter_class=LMHFormatter)
 
     # Standard arguments.
     parser.add_argument("-q", "--quiet", action="store_true", default=False, help="Disables any output to stdout and stderr. ")

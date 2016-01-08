@@ -9,6 +9,9 @@ from lmh.lib.io import err
 from lmh.lib.env import mmt_executable
 
 def run(args, path=None, quiet=False):
+    """
+    Runs MMT with the given arguments in a given path
+    """
     # setup path
     if path == None:
         path = os.getcwd()
@@ -24,6 +27,3 @@ def run(args, path=None, quiet=False):
     except FileNotFoundError:
         err("mmt not found, is it installed?")
         return False
-
-def run_script(script, path=None, quiet=False):
-    return run([script], path, quiet)

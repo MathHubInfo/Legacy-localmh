@@ -1,4 +1,8 @@
+"""
+Helper strings for lmh
+"""
 
+"""Information for local wildcards"""
 repo_wildcard_local = """
 Repository names allow using globs to match repositories and relative paths.
 
@@ -11,6 +15,7 @@ Note that common linux shells (such as bash) automatically resolve globs in the
 local directory. To avoid this, you can use single quotation marks.
 """
 
+"""Information for remote wildcards"""
 repo_wildcard_remote = """
 Repository names allow using globs to match repositories.
 

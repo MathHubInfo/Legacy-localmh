@@ -1,28 +1,29 @@
+"""
+generic input / output functions used by lmh
+"""
+
 import sys
 import os
 import os.path
 import shutil
 import getpass
 
-try:
-    import lolcat
-except:
-    pass
-
-import argparse
-import random
-import datetime
-
 from subprocess import Popen, PIPE
 
 def is_string(s):
+    """
+    Checks if an object is a string
+    """
     try:
         return isinstance(s, basestring)
     except NameError:
         return isinstance(s, str)
 
 def term_colors(c):
-    """returns terminal colors. """
+    """
+    Returns terminal encoding for a color given by a string
+    """
+    
     colors = {
             "grey": "\033[01;30m",
             "red": "\033[01;31m",
@@ -42,39 +43,6 @@ def term_colors(c):
     else:
         return ""
 
-loloptions = {
-    "spread": 3.0,
-    "freq": 0.1,
-    "seed": 0,
-    "animate": False,
-    "force": False,
-    "os": random.randint(0, 256)
-}
-
-try:
-    loloptions = argparse.Namespace(**loloptions)
-
-    def lol_write(text):
-        from lmh.lib.config import get_config
-        if get_config("self::colors") and get_config("::eastereggs"):
-            a = lolcat.LolCat(mode = lolcat.detect_mode())
-            a.cat([text], loloptions)
-            loloptions.os += len(text.split("\n"))
-            lolcat.reset()
-            return
-        sys.__stdout__.write(text)
-
-    now = datetime.datetime.now()
-    if now.month == 4 and now.day == 1:
-        sys.stdout = {
-                "write": lambda x:lol_write(x),
-                "flush": lambda:True
-        }
-
-        sys.stdout = argparse.Namespace(**sys.stdout)
-except:
-    pass
-
 
 #
 # Error & Normal Output
@@ -86,7 +54,10 @@ __supressErr__ = False
 __supressIn__ = False
 
 def std(*args, **kwargs):
-    """Prints some values to stdout"""
+    """
+    Prints text to stderr. Supports keyword argument newline (to add or not add 
+    a newline at the end. )
+    """
 
     newline = True
 
@@ -103,7 +74,10 @@ def std(*args, **kwargs):
         sys.stdout.write(text)
 
 def err(*args, **kwargs):
-    """Prints some text to stderr"""
+    """
+    Prints text to stderr (in red). Supports keyword arguments newline (add a 
+    newline at the end) and colors (supress the color). 
+    """
 
     newline = True
     colors = True
@@ -130,7 +104,9 @@ def err(*args, **kwargs):
             sys.stderr.write(text)
 
 def std_paged(*args, **kwargs):
-    """Pages output if a pager is available. """
+    """
+    Pages output if a pager is available. 
+    """
 
     from lmh.lib.config import get_config
 
@@ -159,7 +135,10 @@ def std_paged(*args, **kwargs):
 
 
 def read_raw(query = None, hidden = False):
-    """Reads a line of text form stdin. """
+    """
+    Reads a line of text form stdin
+    """
+    
     if __supressIn__:
         err("Interactivity disabled, aborting. ")
         os._exit(1)
@@ -176,7 +155,9 @@ def read_raw(query = None, hidden = False):
 #
 
 def write_file(filename, text):
-    """Writes text to file"""
+    """
+    Writes text to a file
+    """
 
     # Write the text to file
     text_file = open(filename, "w")
@@ -190,7 +171,9 @@ def write_file(filename, text):
     return True
 
 def read_file(filename):
-    """Reads text from a file"""
+    """
+    Reads text from a file
+    """
 
     # Read some text and then close the file
     text_file = open(filename, "r")
@@ -200,7 +183,9 @@ def read_file(filename):
     return text
 
 def read_file_lines(filename = None):
-    """Reads all text lines from a file"""
+    """
+    Reads all lines from a file. If not file is given stdin will be used. 
+    """
 
     if filename == None:
         return sys.stdin.readlines()
@@ -213,7 +198,9 @@ def read_file_lines(filename = None):
     return [l.rstrip('\n') for l in lines]
 
 def copytree(src, dst, symlinks=False, ignore=None):
-    """Replacement for shuitil.copytree"""
+    """
+    Replacement for shutil.copytree
+    """
 
     for item in os.listdir(src):
         s = os.path.join(src, item)
@@ -223,33 +210,10 @@ def copytree(src, dst, symlinks=False, ignore=None):
         else:
             shutil.copy2(s, d)
 
-def effectively_readable(path):
-    """Checks if a path ios effectively readable"""
-
-    uid = os.getuid()
-    euid = os.geteuid()
-    gid = os.getgid()
-    egid = os.getegid()
-
-    # This is probably true most of the time, so just let os.access()
-    # handle it.  Avoids potential bugs in the rest of this function.
-    if uid == euid and gid == egid:
-        return os.access(path, os.R_OK)
-
-    st = os.stat(path)
-
-    # This may be wrong depending on the semantics of your OS.
-    # i.e. if the file is -------r--, does the owner have access or not?
-    if st.st_uid == euid:
-        return st.st_mode & st.S_IRUSR != 0
-
-    # See comment for UID check above.
-    groups = os.getgroups()
-    if st.st_gid == egid or st.st_gid in groups:
-        return st.st_mode & st.S_IRGRP != 0
-
 def find_files(directory, *ext):
-    """Finds files in a given directory"""
+    """
+    Finds all files with given extensions i a given direcory recursively
+    """
     res = []
 
     ext = ["."+e for e in ext]
@@ -262,11 +226,47 @@ def find_files(directory, *ext):
                     res[i].append(os.path.join(root, file))
     return tuple(res)
 
-def find_all_files(directory):
-    """Finds all files in a given directory. """
-    files = set()
-    for d, s, f in os.walk(directory):
-        for fn in f:
-            rd = os.path.relpath(d, directory)
-            files.add(os.path.join(rd, fn))
-    return list(files)
+
+#
+# EASTERGG
+# wrapped in try catch so as not to cause any trouble
+# entirely undocumented
+#
+try:
+    import lolcat
+    import argparse
+    import random
+    import datetime
+
+
+    loloptions = {
+        "spread": 3.0,
+        "freq": 0.1,
+        "seed": 0,
+        "animate": False,
+        "force": False,
+        "os": random.randint(0, 256)
+    }
+    
+    loloptions = argparse.Namespace(**loloptions)
+
+    def lol_write(text):
+        from lmh.lib.config import get_config
+        if get_config("self::colors") and get_config("::eastereggs"):
+            a = lolcat.LolCat(mode = lolcat.detect_mode())
+            a.cat([text], loloptions)
+            loloptions.os += len(text.split("\n"))
+            lolcat.reset()
+            return
+        sys.__stdout__.write(text)
+
+    now = datetime.datetime.now()
+    if now.month == 4 and now.day == 1:
+        sys.stdout = {
+                "write": lambda x:lol_write(x),
+                "flush": lambda:True
+        }
+
+        sys.stdout = argparse.Namespace(**sys.stdout)
+except:
+    pass

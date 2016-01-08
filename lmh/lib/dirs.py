@@ -1,5 +1,5 @@
 """
-Location if directories for built in lmh directories. 
+Location of directories for built in lmh directories. 
 """
 import os
 import os.path
