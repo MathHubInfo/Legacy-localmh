@@ -27,7 +27,7 @@ def find_source(name, quiet = False):
 
     # Iterate over the root urls
     # and the suffixes.
-    root_urls = get_config("install::sources").rsplit(";")
+    root_urls = ["git@gl.mathhub.info", "http://gl.mathhub.info/"]
     root_suffix = ["", ".git"]
 
 

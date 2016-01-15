@@ -1,16 +1,9 @@
 from lmh.lib.io import std, err
-from lmh.lib.env import check_deps
 from lmh.lib.config import get_config
 
 import lmh.lib.packs
 
 def do(args, unknown):
-
-    if not args.no_check and not check_deps():
-        err("Dependency check failed. ")
-        err("Cannot perform specefied action. ")
-        err("Use --no-check to skip checking dependencies. ")
-        return False
 
     if len(args.pack) == 0:
         args.pack = ["default"]

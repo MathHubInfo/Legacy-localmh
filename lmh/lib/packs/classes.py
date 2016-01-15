@@ -5,7 +5,7 @@ from subprocess import call
 
 from lmh.lib.io import std, err
 from lmh.lib.dirs import ext_dir
-from lmh.lib.env import perl5env, perl5root, cpanm_executable
+from lmh.lib.env import cpanm_executable
 from lmh.lib.config import get_config, set_config
 from lmh.lib.git import pull as git_pull
 from lmh.lib.git import clone as git_clone
@@ -104,26 +104,15 @@ def get_item_source(source_string, def_source, def_branch, name=""):
 #
 # CPANM
 #
-
-# Is cpanm selfcontained? Check the config setting
-if get_config("setup::cpanm::selfcontained"):
-    cpanm_installdeps_args = [cpanm_executable, "-L", perl5root[0], "--notest", "--installdeps", "--prompt", "."]
-    cpanm_installself_args = [cpanm_executable, "-L", perl5root[0], "--notest", "--prompt", "."]
-else:
-    cpanm_installdeps_args = [cpanm_executable, "--notest", "--installdeps", "--prompt", "."]
-    cpanm_installself_args = [cpanm_executable, "--notest", "--prompt", "."]
-cpanm_selfupgrade_args = [cpanm_executable, "--self-upgrade"]
+cpanm_installdeps_args = [cpanm_executable, "--sudo", "--notest", "--installdeps", "--prompt", "."]
+cpanm_installself_args = [cpanm_executable, "--sudo", "--notest", "--prompt", "."]
 
 
 def cpanm_make(pack_dir):
     """Run CPANM make commands for a package. """
-
-    _env = perl5env(os.environ)
-    _env.pop("STEXSTYDIR", None)
     try:
-        call(cpanm_selfupgrade_args)
-        call(cpanm_installdeps_args, env=_env, cwd=pack_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-        call(cpanm_installself_args, env=_env, cwd=pack_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+        call(cpanm_installdeps_args, cwd=pack_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+        call(cpanm_installself_args, cwd=pack_dir, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
         return True
     except Exception as e:
         err(e)
