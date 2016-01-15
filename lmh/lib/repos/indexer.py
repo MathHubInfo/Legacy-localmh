@@ -5,28 +5,12 @@ from lmh.lib.config import get_config
 import fnmatch
 from string import Template
 
+from urllib.request import urlopen
 
 try:
-    from urllib2 import urlopen
-except:
-    from urllib.request import urlopen
-
-try:
-    from bs4 import BeautifulSoup
-except:
-    try:
-        from BeautifulSoup4 import BeautifulSoup
-    except:
-        err("Missing beautifulsoup4, please install it. ")
-        err("You may want to: ")
-        err("   pip install beautifulsoup4")
-        err("or")
-        err("   pip install lmh --upgrade")
-        err("Some things may not be available and fail miserably. ")
-        err("See http://www.crummy.com/software/BeautifulSoup/")
-
-
-        BeautifulSoup = False
+    import lxml.html
+except ImportError:
+    lxml = False
 
 def find_source(name, quiet = False):
     """
@@ -68,20 +52,23 @@ find_source.cache = {}
 def ls_remote(*spec):
     """Lists remote repositories matching some specification. """
 
-    if BeautifulSoup == False:
-        err("BeautifulSoup not found. ")
+    if lxml == False:
+        err("Missing lxml module")
+        err("If you are using localmh_docker you might want to:")
+        err("  lmh docker pull")
+        err("and re-create the image or manually run:")
+        err("   lmh docker sshell; pip3 install lxml ; exit")
+        err("to install it")
+        
         return False
 
     if len(spec) == 0:
         spec = ["*"]
 
     # The basic url
-    base_url = get_config("gl::projects_url")
+    base_url = "http://gl.mathhub.info/public/"
+    projects_per_page = 20
     projects = set()
-    def filter_page_name(p):
-        while(p.startswith("/")):
-            p = p[1:]
-        return p
 
     for i in range(1, 100):
         # the project pages url
@@ -90,22 +77,28 @@ def ls_remote(*spec):
         # make the request
         try:
             response = urlopen(url)
-            soup = BeautifulSoup(response.read(), "html5lib")
+            response = response.read()
+            
         except:
             err("Unable to make connection")
             break
 
         try:
-            # find the project pages
-            soup = soup.find("div", {"class": "public-projects"})
-            soup = soup.find("ul")
-
-            # Nothing here, break
-            if soup.find("div", {"class": "nothing-here-block"}):
+            # parse the html
+            project_list_page = lxml.html.fromstring(response)
+            
+            # find all <a class='project'> .hrefs
+            new_projects = project_list_page.xpath("//a[@class='project']/@href")
+            
+            # and remove the starting /s
+            new_projects = list(map(lambda s:s[1:] if s.startswith("/") else s, new_projects))
+            
+            # if we have fewer projects then the max, we can exit now
+            if len(new_projects) < projects_per_page:
                 break
-
-            for h4 in soup.findAll("h4"):
-                projects.add(filter_page_name(h4.find("a")["href"]))
+            
+            projects.update(new_projects)
+            
         except Exception as e:
             err(e)
             err("Parsing failure (make sure gl::projects_url is correct)")

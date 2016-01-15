@@ -145,12 +145,6 @@
 		"default": "deploy"
 	},
 
-	"gl::projects_url": {
-		"type": "string",
-		"help": "URL to (public) projects url. Used for ls-remote. ",
-		"default": "http://gl.mathhub.info/public/"
-	},
-
 	"gl::issue_url": {
 		"type": "string",
 		"help": "URL to issues page. ",

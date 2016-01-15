@@ -18,7 +18,6 @@ This is a list of all configuration settings to be used with [lmh config](../com
 | gl::host | Host for gitlab interaction. Should have a final slash. | string | http://gl.mathhub.info/ |
 | gl::issue_url | URL to issues page. | string | https://github.com/KWARC/localmh/issues |
 | gl::private_token | Gitlab Private token for gitlab interaction. Leave blank to prompt for username / password. | string |  |
-| gl::projects_url | URL to (public) projects url. Used for ls-remote. | string | http://gl.mathhub.info/public/ |
 | gl::status_remote_enabled | If set to true, enables lmh status remote checking by default. | bool | False |
 | init::allow_nonempty | Allow to run lmh init in non-empty directories. | bool | False |
 | install::noglobs | Disable globs when installing repositories. | bool | False |

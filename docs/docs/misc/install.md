@@ -40,7 +40,7 @@ apt-get install python python-dev python-pip git subversion tar fontconfig cpanm
 Next we need to install some of the required python modules:
 
 ```bash
-pip install beautifulsoup4 psutil pyapi-gitlab
+pip install lxml psutil pyapi-gitlab
 ```
 
 ## Cloning Lmh
