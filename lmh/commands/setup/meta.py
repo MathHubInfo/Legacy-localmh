@@ -11,6 +11,7 @@ def add_parser_args(parser, argparse):
     action.add_argument('--update', action="store_const", dest="saction", const="update", help="Updates a package or group. ")
     action.add_argument('--reset', '--reinstall', action="store_const", dest="saction", const="reset", help="Resets a package or group. ")
     action.add_argument('--remove', action="store_const", dest="saction", const="remove", help="Removes a package or group. ")
+    parser.add_argument('--no-check', '--force', action="store_true", help="Do not check for external dependencies. ")
     parser.add_argument('pack', nargs="*", metavar="PACK:SOURCE")
 
     # Argument no longer used, but added for backwards compatibility # with build scripts

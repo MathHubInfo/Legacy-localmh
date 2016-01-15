@@ -1,13 +1,14 @@
 {
   "groups": {
-      "LaTeXML-all": ["LaTeXML", "LaTeXMLs"],
+      "LaTeXML-all": ["LaTeXML", "LaTeXMLs", "LaTeXMLStomp"],
       "default": ["LaTeXML", "LaTeXMLs", "sTeX", "MMT"]
   },
   "packs": {
       "LaTeXML": 0,
-      "LaTeXMLs": 0,
+      "LaTeXMLs": 1,
+      "LaTeXMLStomp": 1,
       "sTeX": 0,
-      "MMT": 0, 
+      "MMT": 0,
       "self": 0
   }
 }
