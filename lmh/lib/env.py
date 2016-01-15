@@ -84,6 +84,12 @@ perl_executable = get_config("env::perl")
 if perl_executable == "":
     perl_executable =  which("perl")
 
+"""Path to the wget executable. """
+wget_executable = get_config("env::wget")
+
+if wget_executable == "":
+    wget_executable =  which("wget")
+
 """Path to the MMT executable. """
 mmt_executable = get_config("env::mmt")
 

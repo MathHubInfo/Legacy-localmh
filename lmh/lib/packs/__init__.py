@@ -52,16 +52,7 @@ def import_pack(pack):
     return pimport
 
 def get_pack_setup(pack):
-    try:
-        return import_pack(pack).setup
-    except ImportError:
-        err("Unable to load pack setup for pack", pack)
-        err("Please check that the pack exists. ")
-        return False
-    except AttributeError:
-        err("Unable to load pack setup for pack", pack)
-        err("Please check that the pack exists. ")
-        return False
+    return import_pack(pack).setup
 
 def get_pack_dir(pack):
     return os.path.join(ext_dir, pack)
