@@ -87,6 +87,30 @@
 		"default": ""
 	},
 
+	"setup::latexmlstex::source": {
+		"type": "string",
+		"help": "Default Source for LaTeXML-Plugin-sTeX. ",
+		"default": "https://github.com/KWARC/LaTeXML-Plugin-sTeX.git"
+	},
+
+	"setup::latexmlstex::branch": {
+		"type": "string",
+		"help": "Default branch for LaTeXML-Plugin-sTeX. Automatically uses the remote HEAD if undefined. ",
+		"default": ""
+	},
+
+	"setup::latexmlkwarc::source": {
+		"type": "string",
+		"help": "Default Source for LaTeXML-Plugin-sTeX. ",
+		"default": "https://github.com/KWARC/LaTeXML-Plugin-KWARC.git"
+	},
+
+	"setup::latexmlkwarc::branch": {
+		"type": "string",
+		"help": "Default branch for LaTeXML-Plugin-sTeX. Automatically uses the remote HEAD if undefined. ",
+		"default": ""
+	},
+
 	"setup::stex::source": {
 		"type": "string",
 		"help": "Default Source for sTeX. ",

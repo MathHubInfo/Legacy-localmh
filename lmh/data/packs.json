@@ -1,11 +1,13 @@
 {
   "groups": {
-      "LaTeXML-all": ["LaTeXML", "LaTeXMLs"],
+      "LaTeXML-all": ["LaTeXML", "LaTeXMLs", "LaTeXMLsTeX", "LaTexMLKWARC"],
       "default": ["LaTeXML", "LaTeXMLs", "sTeX", "MMT"]
   },
   "packs": {
       "LaTeXML": 0,
       "LaTeXMLs": 1,
+      "LaTeXMLsTeX": 1,
+      "LaTexMLKWARC": 1,
       "sTeX": 0,
       "MMT": 0,
       "self": 0
