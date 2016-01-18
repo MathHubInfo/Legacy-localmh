@@ -7,6 +7,8 @@ from lmh.lib.config import get_config
 
 import subprocess
 import os.path
+import os
+import stat
 import sys
 
 mmt_jar_dir = lmh_locate("ext", "MMT", "deploy")
@@ -30,6 +32,10 @@ class MMTPack(classes.Pack):
         # and wget it, overwriting the existing jar
         proc = subprocess.Popen([wget_executable, self.mmt_jar_source, "-O", mmt_jar_path], stderr=sys.stderr, stdout=sys.stdout)
         proc.wait()
+        
+        # chmod +x mmt_jar_path
+        st = os.stat(mmt_jar_path)
+        os.chmod(mmt_jar_path, st.st_mode | stat.S_IEXEC)
         
         return proc.returncode == 0
 

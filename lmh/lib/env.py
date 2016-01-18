@@ -94,7 +94,7 @@ if wget_executable == "":
 mmt_executable = get_config("env::mmt")
 
 if mmt_executable == "":
-    mmt_executable = install_dir+"/ext/MMT/deploy/mmt.jar"
+    mmt_executable = lmh_locate("ext", "MMT", "deploy", "MMT.jar")
 
 """Path to the cpanm executable. """
 cpanm_executable = get_config("env::cpanm")
