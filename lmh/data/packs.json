@@ -1,7 +1,7 @@
 {
   "groups": {
       "LaTeXML-all": ["LaTeXML", "LaTeXMLs", "LaTeXMLsTeX", "LaTexMLKWARC"],
-      "default": ["LaTeXML", "LaTeXMLs", "sTeX", "MMT"]
+      "default": ["LaTeXML", "LaTeXMLs", "LaTeXMLsTeX", "LaTexMLKWARC", "sTeX", "MMT"]
   },
   "packs": {
       "LaTeXML": 0,
