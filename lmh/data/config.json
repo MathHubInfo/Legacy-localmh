@@ -28,7 +28,7 @@
 		"help": "Path to the perl executable. Auto-detected if empty. ",
 		"default": ""
 	},
-	
+
 	"env::wget": {
 		"type": "string",
 		"help": "Path to the wget executable. Auto-detected if empty. ",
@@ -86,18 +86,6 @@
 		"help": "Default branch for latexmls. Automatically uses the remote HEAD if undefined. ",
 		"default": ""
 	},
-
-	"setup::latexmlstomp::source": {
-		"type": "string",
-		"help": "Default Source for latexmlstomp. ",
-		"default": "https://github.com/KWARC/LaTeXML-Plugin-latexmlstomp.git"
-	},
-	"setup::latexmlstomp::branch": {
-		"type": "string",
-		"help": "Default branch for latexmlstomp. Automatically uses the remote HEAD if undefined. ",
-		"default": ""
-	},
-
 
 	"setup::stex::source": {
 		"type": "string",

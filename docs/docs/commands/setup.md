@@ -4,7 +4,6 @@ Lmh setup is responsible for installing and managing external dependencies. The 
 
 * [LaTeXML](http://dlmf.nist.gov/LaTeXML/)
 * [LaTeXMLs](https://github.com/dginev/LaTeXML-Plugin-latexmls)
-* [LaTeXMLStomp](https://github.com/KWARC/LaTeXML-Plugin-latexmlstomp)
 * [sTeX](https://github.com/KWARC/sTeX)
 * [MMT](https://svn.kwarc.info/repos/MMT/doc/html/index.html)
 
