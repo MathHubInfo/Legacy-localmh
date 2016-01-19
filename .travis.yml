@@ -11,6 +11,6 @@ install:
 
 script:
  - export LMH_ROOT_DIR=`pwd`
- - export PATH=`pwd`/bin:/usr/bin:$PATH
+ - export PATH=`pwd`/bin:$PATH
  - lmh setup --install
  - testHello.sh

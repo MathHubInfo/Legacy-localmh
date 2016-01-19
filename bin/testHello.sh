@@ -9,4 +9,4 @@ do
 done
 cd ..
 lmh pdf --depsFirst HelloWorld
-lmh omdoc --depsFirst HelloWorld
+lmh omdoc --depsFirst --test HelloWorld
