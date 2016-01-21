@@ -1,12 +1,9 @@
 #!/bin/bash -e
 mkdir MathHub
-cd MathHub
-mkdir HelloWorld
-cd HelloWorld
 for i in coursematerials hwexam meta-inf smglom
 do
-    git clone http://gl.mathhub.info/HelloWorld/$i.git
+    lmh install -y HelloWorld/$i && true
 done
-cd ..
+cd MathHub
 lmh pdf --depsFirst HelloWorld
 lmh omdoc --depsFirst --test HelloWorld
