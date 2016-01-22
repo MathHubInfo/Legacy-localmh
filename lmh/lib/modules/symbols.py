@@ -3,7 +3,7 @@ from lmh.lib.utils import remove_doubles
 from lmh.lib.io import std, err, write_file, read_file
 from lmh.lib.modules import locate_files, needsPreamble
 
-def pat_to_match(pat , o = 0):
+def def_pat_to_match(pat , o = 0):
     # turn it into a match
 
     if pat[3+o] != "":
@@ -25,16 +25,25 @@ def pat_to_match(pat , o = 0):
     # Normalise for issue #166
     res[2] = "-".join(res[2]).split("-")
     res[1] = len(res[2])
-
+    
     return res
 
+def ass_pat_tp_match(pat):
+    terms = "-".join(res[2]).split("-")
+    return ['def', len(terms), terms]
 
 
 def find_all_defis(text):
-    # find all a?defs and turn them into nice matches
-    pattern = r"\\(def|adef)(i{1,3})(\[(.*?)\])?({([^{}]+)?})({([^{}]+)?})?({([^{}]+)?})?({([^{}]+)?})?"
-    vals = [pat_to_match(x) for x in re.findall(pattern, text)]
-    return vals
+
+    # pattern for the a?defi*s
+    def_pattern = r"\\(def|adef)(i{1,3})(\[(.*?)\])?({([^{}]+)?})({([^{}]+)?})?({([^{}]+)?})?({([^{}]+)?})?"
+    def_vals = [def_pat_to_match(x) for x in re.findall(def_pattern, text)]
+
+    # pattern for assdef
+    ass_pattern = r"\\assdef({([^{}]+)?})({([^{}]+)?})"
+    ass_vals = [ass_pat_tp_match(x) for x in re.findall(ass_pattern, text)]
+
+    return def_vals + ass_vals
 
 def find_all_symis(text):
     # find all the symis
@@ -44,7 +53,7 @@ def find_all_symis(text):
     if len(matches) == 0:
         return []
     text = matches[0][0]
-    return [pat_to_match(x, o=1) for x in re.findall(pattern2, text)]
+    return [def_pat_to_match(x, o=1) for x in re.findall(pattern2, text)]
 
 def find_all_symdefs(text):
     # FInd all symdefs
