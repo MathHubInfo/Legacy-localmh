@@ -23,7 +23,7 @@ def term_colors(c):
     """
     Returns terminal encoding for a color given by a string
     """
-    
+
     colors = {
             "grey": "\033[01;30m",
             "red": "\033[01;31m",
@@ -55,7 +55,7 @@ __supressIn__ = False
 
 def std(*args, **kwargs):
     """
-    Prints text to stderr. Supports keyword argument newline (to add or not add 
+    Prints text to stderr. Supports keyword argument newline (to add or not add
     a newline at the end. )
     """
 
@@ -75,8 +75,8 @@ def std(*args, **kwargs):
 
 def err(*args, **kwargs):
     """
-    Prints text to stderr (in red). Supports keyword arguments newline (add a 
-    newline at the end) and colors (supress the color). 
+    Prints text to stderr (in red). Supports keyword arguments newline (add a
+    newline at the end) and colors (supress the color).
     """
 
     newline = True
@@ -105,7 +105,7 @@ def err(*args, **kwargs):
 
 def std_paged(*args, **kwargs):
     """
-    Pages output if a pager is available. 
+    Pages output if a pager is available.
     """
 
     from lmh.lib.config import get_config
@@ -138,7 +138,7 @@ def read_raw(query = None, hidden = False):
     """
     Reads a line of text form stdin
     """
-    
+
     if __supressIn__:
         err("Interactivity disabled, aborting. ")
         os._exit(1)
@@ -160,7 +160,7 @@ def write_file(filename, text):
     """
 
     # Write the text to file
-    text_file = open(filename, "w")
+    text_file = open(filename, "w", encoding="utf8")
 
     if is_string(text):
         text_file.write(text)
@@ -176,7 +176,7 @@ def read_file(filename):
     """
 
     # Read some text and then close the file
-    text_file = open(filename, "r")
+    text_file = open(filename, "r",encoding="utf8")
     text = text_file.read()
     text_file.close()
 
@@ -184,14 +184,14 @@ def read_file(filename):
 
 def read_file_lines(filename = None):
     """
-    Reads all lines from a file. If not file is given stdin will be used. 
+    Reads all lines from a file. If not file is given stdin will be used.
     """
 
     if filename == None:
         return sys.stdin.readlines()
 
     # Read lines and then close the file
-    text_file = open(filename, "r")
+    text_file = open(filename, "r", encoding="utf8")
     lines = text_file.readlines()
     text_file.close()
 
@@ -247,7 +247,7 @@ try:
         "force": False,
         "os": random.randint(0, 256)
     }
-    
+
     loloptions = argparse.Namespace(**loloptions)
 
     def lol_write(text):
