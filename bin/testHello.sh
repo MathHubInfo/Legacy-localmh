@@ -2,7 +2,7 @@
 mkdir MathHub
 for i in coursematerials hwexam meta-inf smglom
 do
-    lmh install -y HelloWorld/$i && true
+    lmh install -y HelloWorld/$i
 done
 cd MathHub
 lmh pdf --depsFirst HelloWorld
