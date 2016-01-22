@@ -225,6 +225,6 @@ def check_symbols(d):
     ret = True
 
     for mod in remove_doubles(mods):
-        ret = ret and add_symbols(mod["file"], warns)
+        ret = ret and add_symbols(mod, warns)
 
     return ret
