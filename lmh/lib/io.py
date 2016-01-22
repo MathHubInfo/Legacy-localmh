@@ -176,9 +176,15 @@ def read_file(filename):
     """
 
     # Read some text and then close the file
-    text_file = open(filename, "r",encoding="utf8")
-    text = text_file.read()
-    text_file.close()
+    text_file = open(filename, "r", encoding="utf8")
+
+    try:
+        text = text_file.read()
+        text_file.close()
+    except UnicodeDecodeError:
+        text_file = open(filename, "r", encoding="latin-1")
+        text = text_file.read()
+        text_file.close()
 
     return text
 
@@ -191,9 +197,17 @@ def read_file_lines(filename = None):
         return sys.stdin.readlines()
 
     # Read lines and then close the file
+
+    # Read some text and then close the file
     text_file = open(filename, "r", encoding="utf8")
-    lines = text_file.readlines()
-    text_file.close()
+
+    try:
+        lines = text_file.readlines()
+        text_file.close()
+    except UnicodeDecodeError:
+        text_file = open(filename, "r", encoding="latin-1")
+        lines = text_file.readlines()
+        text_file.close()
 
     return [l.rstrip('\n') for l in lines]
 
