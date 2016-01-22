@@ -13,7 +13,7 @@ from lmh.lib.git import do_data as git_do_data
 from lmh.lib.git import get_remote_status
 from lmh.lib.git import is_tracked
 
-from lmh.lib.repos.local.dirs import match_repo, match_repos
+from lmh.lib.repos.local.dirs import match_repo, match_repos, find_repo_dir
 
 from lmh.lib.repos.local.package import get_package_dependencies
 
@@ -228,18 +228,25 @@ def write_deps(dirname, deps):
     std("Wrote new dependencies to", f)
 
 
-def calc_deps(apply = False, dirname="."):
+def calc_deps(repos, apply = False):
     """Crawls for dependencies in a given directory. """
 
-    repo = match_repo(dirname)
+    # Match the repositories
+    mrepos = [match_repo(r) for r in repos]
 
-    if not repo:
-        return False
+    # return each calculated dependency tree
+    return [calc_deps_single(mr, apply = apply) for mr in mrepos]
 
+def calc_deps_single(repo, apply = False):
+
+    # Log message
     std("Checking dependencies for:   ", repo)
 
+    # find the absolute path
+    dirname = find_repo_dir(repo)
+
     # Getting the real dependencies
-    given_dependencies = get_package_dependencies(match_repo(dirname))+[repo]
+    given_dependencies = get_package_dependencies(repo)+[repo]
     given_dependencies = list(set(given_dependencies))
 
     # All the required paths
@@ -291,9 +298,23 @@ def calc_deps(apply = False, dirname="."):
     # the others are fine
     fine  = list(filter(lambda x:x in real_dependencies, given_dependencies))
 
-    return {
+    ret = {
             "fine": fine,
             "missing": missing,
             "not_needed": not_needed,
             "should_be": real_dependencies
     }
+
+    std("---")
+    if len(ret["fine"]) > 0:
+        std(term_colors("green"),  "Used dependencies:         ", term_colors("normal"), ", ".join(ret["fine"]))
+    if len(ret["not_needed"]) > 0:
+        std(term_colors("yellow"), "Superfluous dependencies:  ", term_colors("normal"), ", ".join(ret["not_needed"]))
+    if len(ret["missing"]) > 0:
+        std(term_colors("red"),    "Missing dependencies:      ", term_colors("normal"), ", ".join(ret["missing"]))
+    std("---")
+    if len(ret["missing"]) > 0 or len(ret["not_needed"]) > 0:
+        std("Dependencies should be: ", ", ".join(ret["should_be"]))
+
+    if apply:
+        write_deps(dirname, ret["should_be"])
