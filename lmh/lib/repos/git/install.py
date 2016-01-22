@@ -60,8 +60,8 @@ def do_install(rep):
     if not clone(data_dir, repoURL, rep):
         err("git clone did not exit cleanly, cloning failed. ")
         err("""
-Most likely your network connection is bad. 
-If you are using localmh_docker make sure that you have internet access inside the virtual machine. 
+Most likely your network connection is bad.
+If you are using localmh_docker make sure that you have internet access inside the virtual machine.
 """)
         return (False, [])
 
@@ -80,7 +80,9 @@ If you are using localmh_docker make sure that you have internet access inside t
 
 def install(*reps):
     """Install a repositories and its dependencies"""
-    
+
+    ret = True
+
     reps = list(filter(lambda x:x, [r.strip() for r in reps]))
 
     for rep in reps:
@@ -104,3 +106,4 @@ def install(*reps):
             else:
                 std("Finished scan:                ", term_colors("green")+"'"+rep+"'"+term_colors("normal"))
                 reps.extend([d for d in deps if not d in reps])
+    return ret
