@@ -9,8 +9,8 @@ from lmh.lib.utils import cached
 """Installation directory of lmh"""
 install_dir = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../")
 
-"""Library directory of lmh"""
-lib_dir = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../")
+"""Name of the library directory of lmh"""
+lib_dir_name = "lmh"
 
 """Name of the data directory"""
 data_dir_name = "MathHub"
@@ -27,23 +27,22 @@ def lmh_locate(*paths):
     Additionally this function considers the following special cases for the
     first argument of this function:
 
-    1. "content" the path will be resolved relative to the data_dir
-    2. "ext" the path will be resolved relative to the ext_dir
-    3. "lib" the path will be resolved relative to the main lmh module directory
+    1. "content" the path will be resolved relative to the directory which
+        contains content repositories
+    2. "ext" the path will be resolved relative to the directory that contains
+        external dependencies
+    3. "lib" the path will be resolved relative to the lmh directory that contains
+        all python source code
     """
 
-    if len(paths) > 0:
-        if paths[0] == "content":
-            return os.path.join(install_dir, data_dir_name, *paths[1:])
-        if paths[0] == "ext":
-            return os.path.join(install_dir, ext_dir_name, *paths[1:])
-        if paths[0] == "lib":
-            return os.path.join(lib_dir, *paths[1:])
+    p = list(paths)
 
-    return os.path.join(install_dir, *paths)
+    # Rewrite special directories
+    if p[0] == "content":
+        p[0] = data_dir_name
+    elif p[0] == "ext":
+        p[0] = ext_dir_name
+    elif p[0] == "lib":
+        p[0] = lib_dir_name
 
-"""Data directory of lmh"""
-data_dir = lmh_locate("content")
-
-"""External dependencies directory of lmh"""
-ext_dir = lmh_locate("ext")
+    return os.path.join(install_dir, *p)
