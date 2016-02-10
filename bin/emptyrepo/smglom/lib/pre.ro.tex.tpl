@@ -1,4 +1,4 @@
-\documentclass{smglom}
+\documentclass[mh]{smglom}
 \input{localpaths}
 \usepackage[utf8]{inputenc}
 \usepackage[romanian]{babel}
