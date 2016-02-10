@@ -5,7 +5,7 @@ import glob
 
 from lmh.lib.utils import reduce
 from lmh.lib.io import std, err, read_file
-from lmh.lib.dirs import install_dir, data_dir
+from lmh.lib.dirs import lmh_locate
 from lmh.lib.repos.local.dirs import find_repo_dir, find_repo_subdirs
 
 # Hardcoded folder exclude list.
@@ -35,14 +35,14 @@ def locate_files(path):
     """
 
     # if we are outside data_dir, we return.
-    if path.startswith(os.path.abspath(install_dir)) and not path.startswith(os.path.abspath(data_dir)):
+    if path.startswith(os.path.abspath(lmh_locate())) and not path.startswith(os.path.abspath(lmh_locate("content"))):
         return []
 
     # fill these modules.
     modules = []
 
     # Make sure we are inside the source directory.
-    if os.path.relpath(data_dir, path) == "../..":
+    if os.path.relpath(lmh_locate("content"), path) == "../..":
         path = path + "/source"
 
     # Make it an absolute path.
@@ -80,14 +80,14 @@ def locate_compile_target(path, try_root= True):
     spec = path
 
     # if we are not inside the data directory, return.
-    if path.startswith(os.path.abspath(install_dir)) and not path.startswith(os.path.abspath(data_dir)):
+    if path.startswith(os.path.abspath(lmh_locate())) and not path.startswith(os.path.abspath(lmh_locate("content"))):
         # if we have not tried the root, we should try again.
         if try_root:
-            return locate_compile_target(os.path.join(data_dir, spec), False)
+            return locate_compile_target(lmh_locate("content", spec), False)
         return []
 
     # If we are inside the root, go inside the folder.
-    relpath = os.path.relpath(data_dir, os.path.realpath(path))
+    relpath = os.path.relpath(lmh_locate("content"), os.path.realpath(path))
     if relpath == "../..":
         path = path + "/source"
     elif not relpath.endswith("../.."):
@@ -99,18 +99,18 @@ def locate_compile_target(path, try_root= True):
     if not os.path.isfile(path) and not os.path.isdir(path):
         # if we have not tried the root, we should try again.
         if try_root:
-            return locate_compile_target(os.path.join(data_dir, spec), False)
+            return locate_compile_target(lmh_locate("content", spec), False)
 
         err("Could not find anything matching ", "'"+spec+"'")
         return []
 
     # find the repository dir.
     repo_dir = find_repo_dir(path, existence=True)
-    repo_name = os.path.relpath(repo_dir, data_dir)
+    repo_name = os.path.relpath(repo_dir, lmh_locate("content"))
     if repo_dir == False:
         # if we have not tried the root, we should try again.
         if try_root:
-            return locate_compile_target(os.path.join(data_dir, spec), False)
+            return locate_compile_target(lmh_locate("content", spec), False)
 
         err("Matching item to ", "'"+spec+"'", "are outside of repository. ")
         return []
@@ -123,7 +123,7 @@ def locate_compile_target(path, try_root= True):
     if path.startswith("../"):
         # if we have not tried the root, we should try again.
         if try_root:
-            return locate_compile_target(os.path.join(data_dir, spec), False)
+            return locate_compile_target(lmh_locate("content", spec), False)
 
         err("Matching item to", "'"+spec+"'", "are outside of the source directory. ")
         return []

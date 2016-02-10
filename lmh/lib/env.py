@@ -1,12 +1,12 @@
 """
-Location and Helper functions for dependencies of lmh. 
+Location and Helper functions for dependencies of lmh.
 """
 import os.path
 import sys
 
 from lmh.lib.io import is_string
 from lmh.lib.io import std, err, read_file
-from lmh.lib.dirs import lmh_locate, install_dir
+from lmh.lib.dirs import lmh_locate
 from lmh.lib.config import get_config
 
 from subprocess import Popen
@@ -29,10 +29,10 @@ latexmlstydir = lmh_locate("ext", "LaTeXML", "lib", "LaTeXML", "texmf")
 
 def which(program):
     """
-    Returns the full path to a program that can be found in the users $PATH 
-    variable. Similar to the *nix command which (or the windows command where). 
+    Returns the full path to a program that can be found in the users $PATH
+    variable. Similar to the *nix command which (or the windows command where).
     """
-    
+
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
@@ -61,7 +61,7 @@ latexmlc_builtin = False
 if latexmlc_executable == "":
     if get_config("setup::cpanm::selfcontained"):
         latexmlc_builtin = True
-        latexmlc_executable = install_dir+"/ext/perl5lib/bin/latexmlc"
+        latexmlc_executable = lmh_locate("ext", "perl5lib", "bin", "latexmlc")
     else:
         latexmlc_executable = which("latexmlc")
 
@@ -107,8 +107,8 @@ if cpanm_executable == "":
 
 def check_deps():
     """
-    Checks if all required lmh dependencies are installed. Prints warning(s) to 
-    stderr if a dependency is not found. 
+    Checks if all required lmh dependencies are installed. Prints warning(s) to
+    stderr if a dependency is not found.
     """
 
     if git_executable == None:
@@ -141,7 +141,7 @@ def check_deps():
         err("On Ubtuntu 13.10 or later you can install this with: ")
         err("    sudo apt-get install cpanminus")
         return False
-    
+
     #try:
     #    import psutil
     #except:
@@ -159,16 +159,22 @@ def check_deps():
 
 if get_config("setup::cpanm::selfcontained"):
     """The perl5 root directories (if selfcontained)"""
-    perl5root = [install_dir+"/ext/perl5lib/", os.path.expanduser("~/")]
+    perl5root = [lmh_locate("ext", "perl5lib"),os.path.expanduser("~/")]
 else:
     # Perl5 root directory is just global
     perl5root = []
 
 """Perl5 binary directories"""
-perl5bindir = os.pathsep.join([p5r+"bin" for p5r in perl5root])+os.pathsep+install_dir+"/ext/LaTeXML/bin"+os.pathsep+install_dir+"/ext/LaTeXMLs/bin"
+perl5bindir = os.pathsep.join([p5r+"bin" for p5r in perl5root] + [
+    lmh_locate("ext", "LaTeXML", "bin"),
+    lmh_locate("ext", "LaTeXMLs", "bin")
+])
 
 """Perl5 lib directories"""
-perl5libdir = os.pathsep.join([p5r+"lib/perl5" for p5r in perl5root])+os.pathsep+install_dir+"/ext/LaTeXML/blib/lib"+os.pathsep+install_dir+"/ext/LaTeXMLs/blib/lib"
+perl5libdir = os.pathsep.join([p5r+"lib/perl5" for p5r in perl5root] + [
+    lmh_locate("ext", "LaTeXML", "blib", "lib"),
+    lmh_locate("ext", "LaTeXMLs", "blib", "lib")
+])
 
 def perl5env(_env = {}):
     """
@@ -263,6 +269,6 @@ def get_template(name):
     """
     Gets a template file with the given name
     """
-    
-    # TODO: Find out why this is unused and if we still need it. 
-    return read_file(install_dir + "/bin/templates/" + name)
+
+    # TODO: Find out why this is unused and if we still need it.
+    return read_file(lmh_locate("bin", "templates", name))

@@ -1,6 +1,6 @@
 from lmh.lib.io import std
-from lmh.lib.dirs import install_dir
+from lmh.lib.dirs import lmh_locate
 
 def do(args, unknown):
-    std(install_dir)
+    std(lmh_locate())
     return True

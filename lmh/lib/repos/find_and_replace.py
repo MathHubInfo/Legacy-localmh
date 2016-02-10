@@ -4,7 +4,7 @@ from string import Template
 
 from lmh.lib.io import is_string
 from lmh.lib.io import find_files, std, err, read_file, write_file
-from lmh.lib.dirs import data_dir
+from lmh.lib.dirs import lmh_locate
 from lmh.lib.repos.local import find_repo_dir, match_repo
 
 def find_and_replace_file(file, match, replace, replace_match = None):
@@ -23,7 +23,7 @@ def find_and_replace_file(file, match, replace, replace_match = None):
         return False
 
     # get the repository
-    repo = os.path.relpath(find_repo_dir(file), data_dir)
+    repo = os.path.relpath(find_repo_dir(file), lmh_locate("content"))
 
     # We did nothing yet
     did = False
@@ -98,7 +98,7 @@ def find_cached(files, match, replace = None, replace_match = None):
 
     rep = False
     for file in files:
-        repo = os.path.relpath(find_repo_dir(file), data_dir)
+        repo = os.path.relpath(find_repo_dir(file), lmh_locate("content"))
         matcher = [Template(m).substitute(repo=repo) for m in match]
         if replace != None:
             rep = find_and_replace_file(file, matcher, replace, replace_match = replace_match) or rep

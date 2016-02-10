@@ -3,7 +3,7 @@ import os
 import os.path
 
 from lmh.lib.io import std, err, read_file
-from lmh.lib.dirs import install_dir, ext_dir
+from lmh.lib.dirs import lmh_locate
 from lmh.lib.packs import classes
 
 
@@ -12,7 +12,7 @@ from lmh.lib.packs import classes
 #
 
 """All available packs"""
-av_packs = json.loads(read_file(install_dir + "/lmh/data/packs.json"))
+av_packs = json.loads(read_file(lmh_locate("lib", "data", "packs.json")))
 
 # Generate the all group, which is everything except for self.
 av_packs["groups"]["all"] = list(av_packs["packs"].keys())
@@ -55,7 +55,7 @@ def get_pack_setup(pack):
     return import_pack(pack).setup
 
 def get_pack_dir(pack):
-    return os.path.join(ext_dir, pack)
+    return lmh_locate("ext", pack)
 
 #
 # Installing packs
@@ -72,9 +72,9 @@ def install_pack(pack):
     if not pack_setup:
         return False
 
-    # Create ext/ if it does not exist. 
-    if not os.path.isdir(ext_dir):
-        os.mkdir(ext_dir)
+    # Create ext/ if it does not exist.
+    if not os.path.isdir(lmh_locate("ext")):
+        os.mkdir(lmh_locate("ext"))
 
     if pack_setup.is_installed(pack_dir):
         err("Pack", pack, "is already installed, use --update to update. ")

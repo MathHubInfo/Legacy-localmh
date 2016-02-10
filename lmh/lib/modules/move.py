@@ -5,7 +5,7 @@ import shutil
 
 from lmh.lib.utils import reduce
 from lmh.lib.io import find_files, std, err
-from lmh.lib.dirs import data_dir
+from lmh.lib.dirs import lmh_locate
 
 from lmh.lib.repos.local import match_repo, match_repos, calc_deps
 from lmh.lib.repos.find_and_replace import find_cached
@@ -15,16 +15,16 @@ def movemod(source, dest, modules, no_depcrawl, simulate = False):
 
     # change directory to MathHub root, makes paths easier
     if simulate:
-        std("cd "+data_dir)
+        std("cd "+lmh_locate("content"))
     else:
-        os.chdir(data_dir)
+        os.chdir(lmh_locate("content"))
 
     finds = []
     replaces = []
 
     # Match the repos
-    source = match_repo(source, root=data_dir)
-    dest = match_repo(dest, root=data_dir)
+    source = match_repo(source, root=lmh_locate("content"))
+    dest = match_repo(dest, root=lmh_locate("content"))
 
     if source == None:
         err("Source repository does not exist, make sure it is installed. ")
@@ -120,7 +120,7 @@ def movemod(source, dest, modules, no_depcrawl, simulate = False):
     osource = match_repo(osource, abs=True)
     odest = match_repo(odest, abs=True)
 
-    files = reduce([find_files(r, "tex")[0] for r in match_repos(data_dir, abs=True)])
+    files = reduce([find_files(r, "tex")[0] for r in match_repos(lmh_locate("content"), abs=True)])
 
     if simulate:
         for (f, r) in zip(finds, replaces):

@@ -1,7 +1,7 @@
 import os
 import os.path
 
-from lmh.lib.dirs import data_dir
+from lmh.lib.dirs import lmh_locate
 from lmh.lib.io import std, err, write_file, read_file_lines
 from lmh.lib.repos.git.install import install
 
@@ -11,7 +11,7 @@ def export(file = None):
     """Exports the list of currently installed repositories. """
 
     # Get all locally installed directories
-    installed = match_repos(data_dir)
+    installed = match_repos(lmh_locate("content"))
 
     if(file == None):
         for mod in installed:
