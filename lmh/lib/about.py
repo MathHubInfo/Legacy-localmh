@@ -4,7 +4,7 @@ Information about the license and version of lmh
 
 from lmh.lib.utils import cached
 from lmh.lib.io import read_file
-from lmh.lib.dirs import install_dir
+from lmh.lib.dirs import lmh_locate
 from lmh.lib.git import do_data
 
 @cached
@@ -12,7 +12,7 @@ def version():
     """
     Returns the current version of lmh
     """
-    return read_file(install_dir + "/" + "/lmh/data/version")
+    return read_file(lmh_locate("lib", "data", "version"))
 
 @cached
 def git_version():
@@ -20,7 +20,7 @@ def git_version():
     Returns the current git version of lmh as a string or None
     """
     try:
-        return do_data(install_dir, "rev-parse", "HEAD")[0].rstrip()
+        return do_data(lmh_locate(), "rev-parse", "HEAD")[0].rstrip()
     except:
         return None
 

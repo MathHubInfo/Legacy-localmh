@@ -2,7 +2,7 @@ import os
 import os.path
 import re
 
-from lmh.lib.dirs import data_dir
+from lmh.lib.dirs import lmh_locate
 from lmh.lib.io import term_colors, find_files, std, std_paged, err, write_file, read_file, read_file_lines
 
 # Git imports
@@ -22,7 +22,7 @@ def match_repo_args(spec, all=False, abs=True):
     """Matches repository arguments to an actual list of repositories"""
 
     if all:
-        return match_repos(data_dir, abs=abs)
+        return match_repos(lmh_locate("content"), abs=abs)
     elif len(spec) == 0:
         return match_repos(".", abs=abs)
     else:
@@ -222,7 +222,7 @@ def log(ordered, *repos):
 def write_deps(dirname, deps):
     """Writes dependencies into a given module. """
 
-    f = os.path.join(data_dir, match_repo(dirname), "META-INF", "MANIFEST.MF")
+    f = lmh_locate("content", match_repo(dirname), "META-INF", "MANIFEST.MF")
     n = re.sub(r"dependencies: (.*)", "dependencies: "+",".join(deps), read_file(f))
     write_file(f, n)
     std("Wrote new dependencies to", f)

@@ -4,7 +4,7 @@ import os.path
 import glob
 
 from lmh.lib.io import is_string
-from lmh.lib.dirs import data_dir
+from lmh.lib.dirs import lmh_locate
 from lmh.lib.utils import remove_doubles
 
 # Git imports
@@ -21,7 +21,7 @@ def is_in_data(path):
         @returns {boolean}
     """
 
-    return os.path.abspath(path).startswith(data_dir)
+    return os.path.abspath(path).startswith(lmh_locate("content"))
 
 def is_repo_dir(path, existence = True):
     """
@@ -43,7 +43,7 @@ def is_repo_dir(path, existence = True):
         # it is not a name, so we need to find the relative_path.
         name = os.path.relpath(
             os.path.abspath(path),
-            data_dir
+            lmh_locate("content")
         )
 
         # if the name ends with a /, remove it.
@@ -107,20 +107,20 @@ def find_repo_dir(path, existence=True):
 
     # we figure out the relative path
     namecheck = os.path.relpath(
-        data_dir,
+        lmh_locate("content"),
         os.path.abspath(path),
     )
 
     # if we go into a directory, we
 
     if namecheck.startswith('../../'):
-        path = os.path.join(data_dir, path)
+        path = lmh_locate("content", path)
 
     # find the relative path
     # by going relatively from the path to the data directory.
     name = os.path.relpath(
         os.path.abspath(path),
-        data_dir
+        lmh_locate("content")
     )
 
 
@@ -134,7 +134,7 @@ def find_repo_dir(path, existence=True):
     # the repository name should be everything until the second slash
     # so go through the path and find it
     num_slash_correct = False
-    abs_name = data_dir+"/"
+    abs_name = lmh_locate("content")+"/"
     for (i, c) in enumerate(name):
         if c == "/":
             if num_slash_correct:
@@ -188,7 +188,7 @@ def find_repo_subdirs(path):
     # Find the relative path from the root to the current directory
     name = os.path.relpath(
         os.path.abspath(path),
-        data_dir
+        lmh_locate("content")
     )
 
     # make sure everything ends with a slash
@@ -209,11 +209,11 @@ def find_repo_subdirs(path):
     # if we have no slashes
     # we are toplevel
     if name == "./":
-        name = data_dir+"/*/*"
+        name = lmh_locate("content")+"/*/*"
     # if we have 1 slash
     # we are one level deep
     elif num_slashes == 1:
-        name = data_dir+"/"+name+"/*"
+        name = lmh_locate("content")+"/"+name+"/*"
     # else something is wrong
     # and we are nowhere
     else:
@@ -251,10 +251,10 @@ def match_repo(repo, root=os.getcwd(), abs=False, existence=True):
                 return repo_path
             else:
                 # return just the repo name, determined by the relative name
-                return os.path.relpath(repo_path, os.path.abspath(data_dir))
-    if not (root == os.path.abspath(data_dir)):
+                return os.path.relpath(repo_path, os.path.abspath(lmh_locate("content")))
+    if not (root == os.path.abspath(lmh_locate("content"))):
         #if the root is not already the data_dir, try that
-        return match_repo(repo, root=data_dir, abs=abs,existence=existence)
+        return match_repo(repo, root=lmh_locate("content"), abs=abs,existence=existence)
     else:
         # nothing found
         return None
@@ -303,7 +303,7 @@ def match_repos(repos, root=os.getcwd(), abs=False):
         # find the relative path of it to the root.
         names = os.path.relpath(
             os.path.abspath(names),
-            data_dir
+            lmh_locate("content")
         )
 
         # make sure everything ends with a slash
@@ -325,14 +325,14 @@ def match_repos(repos, root=os.getcwd(), abs=False):
         # we are toplevel
         # and can pretty much exit everything
         if names == "./":
-            names = data_dir+"/*/*"
+            names = lmh_locate("content")+"/*/*"
 
         # if we have 1 slash
         # we are one level deep
         elif num_slashes == 1:
-            names = data_dir+"/"+names+"*"
+            names = lmh_locate("content")+"/"+names+"*"
         else:
-            names = os.path.join(data_dir, names)
+            names = lmh_locate("content", names)
 
         # now expand with the help of globs
         names = glob.glob(names)
@@ -352,12 +352,12 @@ def match_repos(repos, root=os.getcwd(), abs=False):
     repos = list(filter(match_repo_name, repos))
 
     # repeat again with data_dir as root
-    root = data_dir
+    root = lmh_locate("content")
     repos = list(filter(match_repo_name, repos))
 
 
     # if we want the relative paths we need to set them properly.
     if not abs:
-        return [os.path.relpath(d, data_dir) for d in results]
+        return [os.path.relpath(d, lmh_locate("content")) for d in results]
 
     return list(results)

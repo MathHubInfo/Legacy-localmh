@@ -4,7 +4,7 @@ import os.path
 from subprocess import call
 
 from lmh.lib.io import std, err
-from lmh.lib.dirs import ext_dir
+from lmh.lib.dirs import lmh_locate
 from lmh.lib.env import perl5env, perl5root, cpanm_executable
 from lmh.lib.config import get_config, set_config
 from lmh.lib.git import pull as git_pull
@@ -141,12 +141,12 @@ class GitPack(Pack):
 
         try:
             # git clone first
-            if not git_clone(ext_dir, source, pack_dir):
+            if not git_clone(lmh_locate("ext"), source, pack_dir):
                 return False
 
             # do the checkout
             if branch != "":
-                return git_do(os.path.join(ext_dir, pack_dir), "checkout", branch)
+                return git_do(lmh_locate("ext", pack_dir), "checkout", branch)
             else:
                 return True
         except:

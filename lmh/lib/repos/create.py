@@ -4,7 +4,7 @@ import distutils.dir_util
 from string import Template
 
 from lmh.lib.utils import mkdir_p
-from lmh.lib.dirs import install_dir
+from lmh.lib.dirs import lmh_locate
 from lmh.lib.io import read_file, write_file, find_files, std, err, read_raw
 from lmh.lib.config import get_config
 from lmh.lib.repos.local import match_repo
@@ -30,7 +30,7 @@ except:
     gitlab = False
 
 # Create the local repository
-emptyrepo_dir = os.path.join(install_dir, "bin", "emptyrepo")
+emptyrepo_dir = lmh_locate("bin", "emptyrepo")
 
 def find_types():
     return [name for name in os.listdir(emptyrepo_dir) if os.path.isdir(os.path.join(emptyrepo_dir, name)) and name != "none"]
@@ -183,7 +183,7 @@ def create(reponame, type="none", remote = True):
             "repo": repo,
             "repo_group": repo_group,
             "repo_name": repo_name,
-            "install_dir": install_dir
+            "install_dir": lmh_locate()
     }
 
     # Copy the base template

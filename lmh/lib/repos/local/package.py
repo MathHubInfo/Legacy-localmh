@@ -1,5 +1,5 @@
 from lmh.lib.repos.local.dirs import is_repo_dir, find_repo_dir
-from lmh.lib.dirs import data_dir
+from lmh.lib.dirs import lmh_locate
 
 from lmh.lib.io import err, read_file_lines
 import os.path
@@ -18,7 +18,7 @@ def is_installed(package):
         @returns {boolean}
     """
 
-    return is_repo_dir(os.path.join(data_dir, package))
+    return is_repo_dir(lmh_locate("content", package))
 
 def get_metainf_lines(package):
     """
@@ -30,7 +30,7 @@ def get_metainf_lines(package):
     """
 
     # Find the package root directory.
-    package_dir = find_repo_dir(os.path.join(data_dir, package))
+    package_dir = find_repo_dir(lmh_locate("content", package))
 
     # Check that repository is installed.
     if not package_dir:
