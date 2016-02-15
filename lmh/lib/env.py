@@ -199,8 +199,20 @@ def perl5env(_env = {}):
         _env["PERL5LIB"] = perl5libdir
     return _env
 
+def run_pshell():
 
-def run_shell(shell = None, args=""):
+    import code
+    import readline
+    import rlcompleter
+    
+    readline.set_completer(rlcompleter.Completer(globals()).complete)
+    readline.parse_and_bind("tab: complete")
+    shell = code.InteractiveConsole(globals())
+
+    sys.excepthook = sys.__excepthook__
+    return shell.interact()
+
+def run_shell(shell = None, quiet = False, args=""):
     """
     Runs a shell in which all external programs can run
     """
@@ -260,7 +272,9 @@ def run_shell(shell = None, args=""):
             runner.send_signal(signal.SIGINT)
             do_the_run()
 
-    std("Opening a shell ready to compile for you. ")
+    if not quiet:
+        std("Opening a shell ready to compile for you. ")
+
     do_the_run()
 
     return runner.returncode

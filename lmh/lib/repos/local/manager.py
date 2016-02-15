@@ -7,21 +7,21 @@ from lmh.lib.repos.git.install import install
 
 from lmh.lib.repos.local.dirs import match_repos
 
-def export(file = None):
+def export(f = None):
     """Exports the list of currently installed repositories. """
 
     # Get all locally installed directories
     installed = match_repos(lmh_locate("content"))
 
-    if(file == None):
+    if(f == None):
         for mod in installed:
             std(mod)
         return True
     try:
-        write_file(file, os.linesep.join(installed))
+        write_file(f, os.linesep.join(installed))
         return True
     except:
-        err("Unable to write "+file)
+        err("Unable to write %s" % f)
         return False
 
 def restore(file = None):

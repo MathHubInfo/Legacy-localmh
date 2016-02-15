@@ -134,7 +134,7 @@ def find_repo_dir(path, existence=True):
     # the repository name should be everything until the second slash
     # so go through the path and find it
     num_slash_correct = False
-    abs_name = lmh_locate("content")+"/"
+    abs_name = lmh_locate("content", "")
     for (i, c) in enumerate(name):
         if c == "/":
             if num_slash_correct:
@@ -209,11 +209,11 @@ def find_repo_subdirs(path):
     # if we have no slashes
     # we are toplevel
     if name == "./":
-        name = lmh_locate("content")+"/*/*"
+        name = lmh_locate("content", "*", "*")
     # if we have 1 slash
     # we are one level deep
     elif num_slashes == 1:
-        name = lmh_locate("content")+"/"+name+"/*"
+        name = lmh_locate("content", name, "*")
     # else something is wrong
     # and we are nowhere
     else:
@@ -325,12 +325,12 @@ def match_repos(repos, root=os.getcwd(), abs=False):
         # we are toplevel
         # and can pretty much exit everything
         if names == "./":
-            names = lmh_locate("content")+"/*/*"
+            names = lmh_locate("content", "*", "*")
 
         # if we have 1 slash
         # we are one level deep
         elif num_slashes == 1:
-            names = lmh_locate("content")+"/"+names+"*"
+            names = lmh_locate("content", names, "*")
         else:
             names = lmh_locate("content", names)
 
