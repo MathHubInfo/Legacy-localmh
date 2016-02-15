@@ -114,3 +114,6 @@
 \newcommand\@sepushoutsymb{\draw +(-.2,0) -- +(0,0)  -- +(0,.2);\fill +(-.1,.1) circle (.03);}
 \newcommand\sepushoutsymb{\tikz{\@sepushoutsymb}}
 \newcommand\sepushout[3][]{\@pushout[#1]{#2}{#3}{se}}
+\newcommand\@npushoutsymb{\draw +(-.1,-.1) -- +(0,0)  -- +(.1,-.1);\fill +(0,-.1) circle (.03);}
+\newcommand\npushoutsymb{\tikz{\@sepushoutsymb}}
+\newcommand\npushout[3][]{\@pushout[#1]{#2}{#3}{n}}
