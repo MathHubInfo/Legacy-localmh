@@ -3,6 +3,8 @@ from lmh.lib.utils import remove_doubles
 from lmh.lib.io import std, err, write_file, read_file
 from lmh.lib.modules import locate_files, needsPreamble
 
+# TODO: Have a better data structure for symbols we find and add
+
 def def_pat_to_match(pat , o = 0):
     # turn it into a match
 
@@ -25,7 +27,7 @@ def def_pat_to_match(pat , o = 0):
     # Normalise for issue #166
     res[2] = "-".join(res[2]).split("-")
     res[1] = len(res[2])
-    
+
     return res
 
 def ass_pat_tp_match(pat):
@@ -80,12 +82,20 @@ def find_all_symdefs(text):
 
 def add_symis(text, symis):
     addtext = []
+
     for sym in symis:
         if sym[1] == 0:
             continue
-        addtext.append("\\sym"+("i"*sym[1]) +"{"+"}{".join(sym[2])+"}\n")
+        addtext.append("\\sym%s{%s}\n" % ("i"*sym[1], "}{".join(sym[2])))
+
+    # HACK: Print out the symbols we add
+    std(", ".join(addtext).replace("\n", ""))
+
     addtext = remove_doubles(addtext)
     pattern = r"\\begin{modsig}((.|\n)*)\\end{modsig}"
+
+
+
     return re.sub(pattern, r"\\begin{modsig}\1"+"".join(addtext)+"\\end{modsig}", text)
 
 def warn_symbols(fname, syms, symdefs, warns):
@@ -176,8 +186,9 @@ def add_symbols(fname, warns=[]):
 
     # Add them if we need to
     if len(required) > 0:
-        std("Adding", len(required), "symbol definition(s) from", fname)
+        std("Adding %s symbol definition(s) from %s: " % (len(required), fname), newline = False)
         towrite = add_symis(modcontent, required)
+        std()
         write_file(fmodname, towrite)
 
     return True
