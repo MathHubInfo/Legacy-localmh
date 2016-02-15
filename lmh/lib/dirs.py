@@ -38,11 +38,12 @@ def lmh_locate(*paths):
     p = list(paths)
 
     # Rewrite special directories
-    if p[0] == "content":
-        p[0] = data_dir_name
-    elif p[0] == "ext":
-        p[0] = ext_dir_name
-    elif p[0] == "lib":
-        p[0] = lib_dir_name
+    if len(p) > 0:
+        if p[0] == "content":
+            p[0] = data_dir_name
+        elif p[0] == "ext":
+            p[0] = ext_dir_name
+        elif p[0] == "lib":
+            p[0] = lib_dir_name
 
     return os.path.join(install_dir, *p)
