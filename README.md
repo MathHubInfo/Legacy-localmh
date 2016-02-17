@@ -10,7 +10,7 @@ The only supported way to install localmh is to use [localmh_docker](https://git
 
 Basic Instructions on how to use lmh can be found at [http://mathhub.info/help/offline-authoring](http://mathhub.info/help/offline-authoring).
 
-New documentation (still in development) can be found under docs/. It can be generated with [MkDocs](http://www.mkdocs.org/). 
+New documentation (still in development) can be found under docs/. It can be generated with [MkDocs](http://www.mkdocs.org/).
 
 ## Directory Structure
 
