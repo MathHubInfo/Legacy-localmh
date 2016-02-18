@@ -110,13 +110,62 @@
 \usetikzlibrary{calc}
 \newcommand\@pushout[4][]{\def\@test{#1}%
 \ifx\@test\@empty\def\@@num{.5}\else\def\@@num{#1}\fi%
-\begin{scope}[shift=($(#2)!\@@num!(#3)$)]\@nameuse{@#4pushoutsymb}\end{scope}}
-\newcommand\@nepushoutsymb{\draw +(-.2,0) -- +(0,0)  -- +(0,-.2);\fill +(-.1,.1) circle (.03);}
+\begin{scope}[shift=($(#2)!\@@num!(#3)$)]\@nameuse{@#4pushoutsymb}\end{scope}} 
+\newcommand\@nepushoutsymb{\draw +(-.2,0) -- +(0,0)  -- +(0,-.2);\fill +(-.1,-.1) circle (.03);}
 \newcommand\nepushoutsymb{\tikz{\@nepushoutsymb}}
 \newcommand\nepushout[3][]{\@pushout[#1]{#2}{#3}{ne}}
+
 \newcommand\@sepushoutsymb{\draw +(-.2,0) -- +(0,0)  -- +(0,.2);\fill +(-.1,.1) circle (.03);}
 \newcommand\sepushoutsymb{\tikz{\@sepushoutsymb}}
 \newcommand\sepushout[3][]{\@pushout[#1]{#2}{#3}{se}}
+
+\newcommand\@nwpushoutsymb{\draw +(.2,0) -- +(0,0)  -- +(0,-.2);\fill +(.1,-.1) circle (.03);}
+\newcommand\nwpushoutsymb{\tikz{\@nwpushoutsymb}}
+\newcommand\nwpushout[3][]{\@pushout[#1]{#2}{#3}{nw}}
+
+\newcommand\@swpushoutsymb{\draw +(.2,0) -- +(0,0)  -- +(0,.2);\fill +(.1,.1) circle (.03);}
+\newcommand\swpushoutsymb{\tikz{\@swpushoutsymb}}
+\newcommand\swpushout[3][]{\@pushout[#1]{#2}{#3}{sw}}
+
 \newcommand\@npushoutsymb{\draw +(-.1,-.1) -- +(0,0)  -- +(.1,-.1);\fill +(0,-.1) circle (.03);}
-\newcommand\npushoutsymb{\tikz{\@sepushoutsymb}}
+\newcommand\npushoutsymb{\tikz{\@npushoutsymb}}
 \newcommand\npushout[3][]{\@pushout[#1]{#2}{#3}{n}}
+
+\newcommand\@spushoutsymb{\draw +(-.1,.1) -- +(0,0)  -- +(.1,.1);\fill +(0,.1) circle (.03);}
+\newcommand\spushoutsymb{\tikz{\@spushoutsymb}}
+\newcommand\spushout[3][]{\@pushout[#1]{#2}{#3}{s}}
+
+\newcommand\@wpushoutsymb{\draw +(-.1,-.1) -- +(0,0)  -- +(-.1,.1);\fill +(-.1,0) circle (.03);}
+\newcommand\wpushoutsymb{\tikz{\@wpushoutsymb}}
+\newcommand\wpushout[3][]{\@pushout[#1]{#2}{#3}{w}}
+
+\newcommand\@epushoutsymb{\draw +(.1,.1) -- +(0,0)  -- +(.1,-.1);\fill +(.1,0) circle (.03);}
+\newcommand\epushoutsymb{\tikz{\@epushoutsymb}}
+\newcommand\epushout[3][]{\@pushout[#1]{#2}{#3}{e}}
+
+%%%%%% testing them: 
+% \begin{tikzpicture}[scale=1.5]
+%   \node (a) at (0,0) {a};
+%   \node (b) at (1,0) {b};
+%   \node (c) at (1,1) {c};
+%   \node (d) at (0,1) {d};
+%   \nepushout[.8]{a}c;
+%   \nwpushout[.8]{b}d;
+%   \sepushout[.8]{d}b;
+%   \swpushout[.8]{c}a;
+%   \draw (a) -- (b) -- (c) -- (d) -- (a);
+%   \node (aa) at (4,0) {a};
+%   \node (bb) at (3.5,.5) {b};
+%   \node (cc) at (4,1) {c};
+%   \node (dd) at (4.5,.5) {d};
+%   \draw (aa) -- (bb) -- (cc) -- (dd) -- (aa);
+%   \npushout[.8]{aa}{cc};
+%   \spushout[.8]{cc}{aa};
+%   \wpushout[.8]{bb}{dd};
+%   \epushout[.8]{dd}{bb};
+% \end{tikzpicture}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "test"
+%%% End:
