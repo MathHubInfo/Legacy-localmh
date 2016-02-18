@@ -92,13 +92,16 @@
 %%% 4. convenience macros
 %%% 4.1 the \mmtthy macro takes three arguments, name, decl, axioms and makes a 
 % table-like structure
-\newcommand\mmtthy[3]{\def\@test{#3}%
-\begin{array}{l}\textsf{#1}\\\hline #2\ifx\@test\@empty\else\\\hline #3\fi\end{array}}
+\newcommand\mmtthy[3]{\def\@second{#2}\def\@third{#3}%
+\begin{array}{l}\textsf{#1}%
+\ifx\@second\@empty\else\\\hline #2\fi%
+\ifx\@third\@empty\else\\\hline #3\fi%
+\end{array}}
 %%% 4.2 the \mmtar takes two arguments, some tikz options, and an arrow style. \nmmtar
 % is a variant that also has a name on top.
 \newcommand\mmtar[2][]{\raisebox{.5ex}{\tikz[#1]{\draw[#2] (0,0) -- (.6,0);}}}
 \newcommand\nmmtar[3][]{\raisebox{.4ex}{\tikz[#1]{\draw[#2] (0,0) --
-      node[above]{\ensuremath{\scriptstyle #3}} (.8,0);}}}
+      node[above]{\ensuremath{\scriptstyle #3}} (.8,0);}}}e
 %%%% 3.3 Pushout symbols
 %%  (after http://tex.stackexchange.com/questions/1144/pushouts-and-pullbacks)
 %% \nepushout[<pos>]{<basenode>}{<targetnode>} positions a pushout symbol 
