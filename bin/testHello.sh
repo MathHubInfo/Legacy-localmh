@@ -6,4 +6,4 @@ do
 done
 cd MathHub
 lmh pdf --depsFirst HelloWorld
-lmh omdoc --depsFirst --test --expire=-1 HelloWorld
+lmh omdoc --depsFirst --test HelloWorld
