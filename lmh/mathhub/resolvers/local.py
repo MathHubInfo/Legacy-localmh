@@ -24,6 +24,21 @@ class LocalMathHubResolver(resolver.MathHubResolver):
 
         self.__git = git_program
         self.__folder = os.path.realpath(folder)
+    
+    def can_answer_for(self, name):
+        """
+        If this function returns True that means this resolver can answer queries
+        for the given instance name. For all other cases the behaviour is 
+        unspecefied. 
+        
+        Arguments:
+            name
+                Name to check against
+        Returns:
+            A boolean indicating if this instance matches or not
+        """
+        
+        return not self.from_path(name).startswith("..")
 
     def to_path(self, *paths):
         """
@@ -39,6 +54,22 @@ class LocalMathHubResolver(resolver.MathHubResolver):
         """
 
         return os.path.join(self.__folder, *paths)
+    
+    def get_repo_path(self, group, name):
+        """
+        Gets the (full) path to a repository on disk. Never throws any 
+        excpetions.
+
+        Arguments:
+            group
+                The name of the group to find the repository.
+            name
+                Name of the repository to find.
+        Returns:
+                A String representing the path to the repository.
+        """
+        
+        return self.to_path(group, name)
 
     def from_path(self, path, *prefixes):
         """
@@ -125,8 +156,7 @@ class LocalMathHubResolver(resolver.MathHubResolver):
         """
 
         repositories = set()
-
-        # TODO: Scan the folder two levels deep
+        
         groups = [name for name in os.listdir(self.__folder) if os.path.isdir(self.to_path(name))]
 
         for g in groups:
@@ -136,10 +166,3 @@ class LocalMathHubResolver(resolver.MathHubResolver):
                     repositories.add((g, name))
 
         return list(sorted(repositories))
-
-
-    def match_repos(self, folder, spec):
-        pass
-
-    def match_repo(self, folder, spec):
-        pass

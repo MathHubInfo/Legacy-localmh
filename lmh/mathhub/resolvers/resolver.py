@@ -5,6 +5,22 @@ class MathHubResolver(object):
     Represents a (local or remote) Resolver that can resolve specifications of
     repositories.
     """
+    
+    def can_answer_for(self, name):
+        """
+        If this function returns True that means this resolver can answer queries
+        for the given instance name. For all other cases the behaviour is 
+        unspecefied. By default returns False, so it should be overriden in a 
+        subclass. 
+        
+        Arguments:
+            name
+                Name to check against
+        Returns:
+            A boolean indicating if this instance matches or not
+        """
+        
+        return False
 
     def _match_name(self, spec, group, name):
         """
@@ -39,7 +55,6 @@ class MathHubResolver(object):
         Returns:
             A boolean indicating if the spec matches.
         """
-
         return fnmatch('%s/%s' % (group, name), spec)
 
     def _resolve_group(self, group):
@@ -52,7 +67,23 @@ class MathHubResolver(object):
             A string representing the resolved group name.
         """
         return group
+    
+    def get_repo_path(self, group, name):
+        """
+        Gets the full path to a repository or throws NotImplementedError. May 
+        also throw RepositoryNotFound. Should be overriden by the subclass.
+        
+        Arguments:
+            group
+                Group of repository to resolve
+            name
+                Name of repository to resolve
 
+        Returns:
+            A string representing the path
+        """
+        
+        raise NotImplementedError
 
     def get_all_repos(self):
         """
@@ -121,13 +152,22 @@ class MathHubResolver(object):
         Arguments:
             *spec
                 A list of strings or patterns contains *s that will be matched
-                against the full names of repositories of the form 'group/name'
+                against the full names of repositories of the form 'group/name'.
+                If empty and base_group is None, the full list of repositories 
+                will be returned. If empty and base_group has some value only
+                repositories from that group will be returned. 
             base_group
                 Optional. If given, before trying to match repositories globally
                 will try to match 'name' inside the group base_group.
         Returns:
             A list of pairs of strings (group, name) representing repositories.
         """
+        
+        if len(spec) == 0:
+            if base_group == None:
+                return self.get_all_repos()
+            else:
+                return self.get_repos_in(base_group)
 
         spec_copy = list(spec)[:]
         repositories = set()
@@ -149,6 +189,7 @@ class MathHubResolver(object):
                 elif self._match_full('%s/*' % (s), g, n):
                     repositories.add((g, n))
                     break
+        
         return list(sorted(repositories))
 
     def get_repo_matching(self, spec, base_group = None):

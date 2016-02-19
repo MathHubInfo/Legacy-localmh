@@ -6,6 +6,11 @@ from urllib.request import urlopen
 import lxml.html
 
 class RemoteMathHubResolver(resolver.MathHubResolver):
+    """
+    Represents a MathHubResolver() that can resolve (git) repositories from a
+    remote github or gitlab server.
+    """
+    
     def __init__(self, git_program):
         """
         Creates a new RemoteMathHubResolver() instance.
@@ -19,11 +24,8 @@ class RemoteMathHubResolver(resolver.MathHubResolver):
 
         self.git = git_program
 
-    """
-    Represents a MathHubResolver() that can resolve (git) repositories from a
-    remote github or gitlab server.
-    """
-    def get_remote(self, group, name):
+    
+    def get_repo_path(self, group, name):
         """
         Gets the remote for a single remote repository or throws RepositoryNotFound().
         Should be overriden by the subclass.
@@ -38,6 +40,7 @@ class RemoteMathHubResolver(resolver.MathHubResolver):
         """
 
         raise NotImplementedError
+    
 
 class GitLabResolver(RemoteMathHubResolver):
     """
@@ -57,8 +60,23 @@ class GitLabResolver(RemoteMathHubResolver):
         super(GitLabResolver, self).__init__(git_program)
 
         self.__hostname = hostname
+    
+    def can_answer_for(self, name):
+        """
+        If this function returns True that means this resolver can answer queries
+        for the given instance name. For all other cases the behaviour is 
+        unspecefied. 
+        
+        Arguments:
+            name
+                Name to check against
+        Returns:
+            A boolean indicating if this instance matches or not
+        """
+        
+        return name == self.hostname
 
-    def get_remote(self, group, name):
+    def get_repo_path(self, group, name):
         """
         Gets the remote for a single remote repository or throws RepositoryNotFound().
         Should be overriden by the subclass.

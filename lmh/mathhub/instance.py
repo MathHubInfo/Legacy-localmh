@@ -2,15 +2,17 @@ from lmh.mathhub.resolvers import local, remote
 
 class MathHubInstance(object):
     """
-    Represents a single MathHub instance that has a local folder where
-    repositories can be installed.
+    Represents a single MathHub instance that has a localResolver and a matching
+    remote resolver. 
     """
 
-    def __init__(self, local_resolver, remote_resolver):
+    def __init__(self, name, local_resolver, remote_resolver):
         """
         Creates a new MathHubInstance().
 
         Arguments:
+            name
+                A string representing the unique name of this MathHubInstance
             local_resolver
                 A LocalMathHubResolver() instance used to resolve local MathHub
                 respositories.
@@ -20,10 +22,101 @@ class MathHubInstance(object):
         """
 
         if not isinstance(local_resolver, local.LocalMathHubResolver):
-            raise TypeError('local_resolver needs to be an instance of local.LocalMathHubResolver')
+            raise TypeError('local_resolver needs to be an instance of local.LocalMathHubResolver()')
 
         if not isinstance(remote_resolver, remote.RemoteMathHubResolver):
-            raise TypeError('remote_resolver needs to be an instance of remote.RemoteMathHubResolver')
-
+            raise TypeError('remote_resolver needs to be an instance of remote.RemoteMathHubResolver()')
+        
+        self.name = name
+        
         self.__local_resolver = local_resolver
         self.__remote_resolver = remote_resolver
+    
+    def can_answer_for(self, name):
+        """
+        Checks if this instance can answer queries for the given name. 
+        
+        Arguments:
+            name
+                Name to check against
+        Returns:
+            A boolean indicating if this instance matches or not
+        """
+        
+        return (
+            self.name == name
+        ) or (
+            self.__local_resolver.can_answer_for(name)
+        ) or (
+            self.__remote_resolver.can_answer_for(name)
+        )
+    
+    def resolve_local(self, *spec, base_group = None):
+        """
+        Resolves the specification to a local repository by calling
+        local_resolver.get_repos_matching(). 
+        
+        Arguments:
+            *spec
+                A list of strings or patterns contains *s that will be matched
+                against the full names of repositories of the form 'group/name'.
+                If empty and base_group is None, the full list of repositories 
+                will be returned. If empty and base_group has some value only
+                repositories from that group will be returned. 
+            base_group
+                Optional. If given, before trying to match repositories globally
+                will try to match 'name' inside the group base_group.
+        Returns:
+            A list of pairs of strings (group, name) representing repositories.
+        """
+        
+        return self.__local_resolver.get_repos_matching(*spec, base_group = base_group)
+    
+    def get_local_path(self, group, name):
+        """
+        Returns the full path to a local repository. Never throws any exceptions. 
+        
+        Arguments:
+            group
+                The name of the group to find the repository.
+            name
+                Name of the repository to find.
+        Returns:
+                A String representing the path to the repository. 
+        """
+        return self.__local_resolver.get_repo_path(group, name)
+    
+    def resolve_remote(self, spec, base_group = None):
+        """
+        Resolves the specification to a remote repository by calling
+        remote_resolver.get_repos_matching(). 
+        
+        Arguments:
+            *spec
+                A list of strings or patterns contains *s that will be matched
+                against the full names of repositories of the form 'group/name'.
+                If empty and base_group is None, the full list of repositories 
+                will be returned. If empty and base_group has some value only
+                repositories from that group will be returned. 
+            base_group
+                Optional. If given, before trying to match repositories globally
+                will try to match 'name' inside the group base_group.
+        Returns:
+            A list of pairs of strings (group, name) representing repositories.
+        """
+        
+        return self.__remote_resolver.get_repos_matching(*spec, base_group = base_group)
+    
+    def get_remote_path(self, group, name):
+        """
+        Returns the git origin to a remote repository. 
+        
+        Arguments:
+            group
+                The name of the group to find the repository.
+            name
+                Name of the repository to find.
+        Returns:
+                A String representing the path to the repository. 
+        """
+        return self.__remote_resolver.get_repo_path(group, name)
