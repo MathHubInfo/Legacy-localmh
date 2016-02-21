@@ -1,3 +1,5 @@
+from lmh.utils import exceptions
+
 class MathHubManager(object):
     """
     Represents a Manager that can contain multiple MathHub Instances. 
@@ -162,7 +164,7 @@ class MathHubManager(object):
         
         return self.getMathHubInstance(instance).get_repo_path(group, name)
         
-class InstanceAlreadyRegistered(Exception):
+class InstanceAlreadyRegistered(exceptions.MathHubException):
     """
     Exception that is thrown when a given instance is already registered in this
     MathHubManager().
@@ -170,7 +172,7 @@ class InstanceAlreadyRegistered(Exception):
     def __init__(self):
         super(InstanceAlreadyRegistered, self).__init__('Instance already exists in this MathHubManager() instance. ')
 
-class InstanceNotFound(Exception):
+class InstanceNotFound(exceptions.MathHubException):
     """
     Exception that is thrown when the given instance does not exist in this 
     MathHubManager(). 

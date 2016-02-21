@@ -4,6 +4,9 @@ import sys
 import os, os.path
 import subprocess
 
+from lmh.utils.clsutils.caseclass import caseclass
+
+@caseclass
 class Git(program.Program):
     """
     Represents an interface to git.

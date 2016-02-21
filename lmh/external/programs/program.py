@@ -1,8 +1,11 @@
 import os.path
 
+from lmh.utils.clsutils.caseclass import caseclass
+
+@caseclass
 class Program(object):
     """
-    BaseClass for  interfaces to external programs used by lmh.
+    BaseClass for interfaces to external programs used by lmh.
     """
 
     @staticmethod

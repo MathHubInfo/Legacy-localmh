@@ -1,10 +1,16 @@
 from lmh.mathhub.resolvers import resolver
-from functools import lru_cache
+from lmh.utils import exceptions
+
 from lmh.external.programs import git
+from functools import lru_cache
+
 
 from urllib.request import urlopen
 import lxml.html
 
+from lmh.utils.clsutils.caseclass import caseclass
+
+@caseclass
 class RemoteMathHubResolver(resolver.MathHubResolver):
     """
     Represents a MathHubResolver() that can resolve (git) repositories from a
@@ -135,7 +141,7 @@ class GitLabResolver(RemoteMathHubResolver):
 
         return list(sorted(repositories))
 
-class NetworkingError(Exception):
+class NetworkingError(exceptions.MathHubException):
     """
     Exception that is thrown when a networking error occurs.
     """

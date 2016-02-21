@@ -1,5 +1,10 @@
+from lmh.utils import exceptions
+
 from fnmatch import fnmatch
 
+from lmh.utils.clsutils.caseclass import caseclass
+
+@caseclass
 class MathHubResolver(object):
     """
     Represents a (local or remote) Resolver that can resolve specifications of
@@ -215,8 +220,7 @@ class MathHubResolver(object):
         else:
             return repositories[0]
 
-
-class RepositoryNotFound(Exception):
+class RepositoryNotFound(exceptions.MathHubException):
     """
     Exception that is thrown when a repository is not found on a
     MathHubResolver() instance.
@@ -224,7 +228,7 @@ class RepositoryNotFound(Exception):
     def __init__(self):
         super(RepositoryNotFound, self).__init__('Repository not found on this MathHubResolver() instance. ')
 
-class GroupNotFound(Exception):
+class GroupNotFound(exceptions.MathHubException):
     """
     Exception that is thrown when a group is not found on a MathHubResolver()
     instance.

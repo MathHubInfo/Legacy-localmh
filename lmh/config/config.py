@@ -163,7 +163,7 @@ class LMHConfig(object):
         
         self.__update_dict(force = True)
         
-        self.__dict[name] = value
+        self.__dict[name] = self.__spec[name].serialise(value)
         
         return self._write_dict(self.__dict)
     
@@ -203,6 +203,9 @@ class LMHConfig(object):
 import os.path
 import json
 from lmh.utils import fileio
+from lmh.utils.clsutils.caseclass import caseclass
+
+@caseclass
 class LMHJSONFileConfig(LMHConfig):
     """
     Represents an LMHConfig instance that can read from a file
@@ -263,6 +266,9 @@ class LMHJSONFileConfig(LMHConfig):
         
         return fileio.write_file(self.__filename, d_str)
 
+from lmh.utils.clsutils.caseclass import caseclass
+
+@caseclass
 class LMHReadOnlyConfig(LMHConfig):
     """
     Represents a read-only LMH Config instance

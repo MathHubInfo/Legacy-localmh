@@ -1,5 +1,6 @@
 from lmh.utils.clsutils.caseclass import caseclass
 
+@caseclass
 class LMHConfigSpec(object):
     """
     Represents the specififcation for a list of LMH Config Values
@@ -15,7 +16,14 @@ class LMHConfigSpec(object):
         """
         
         self.settings = settings
-    
+        
+        # check that we have each key only once
+        keys = self.keys()
+        if len(keys) != len(list(set(keys))):
+            raise ValueError('Duplocate key inside settings parameters')
+        
+        
+            
     def keys(self):
         """
         Returns a list containing the names of all settings inside this 
@@ -123,7 +131,7 @@ class LMHConfigSettingSpec(object):
         
         self.name = name
         self.tp = tp
-        self.default = self.parse(default)
+        self.default = self.serialise(lf.parse(default))
         self.help_text = help_text
     
     def parse(self, value):
@@ -159,8 +167,22 @@ class LMHConfigSettingSpec(object):
                 raise ValueError('Parameter for type %r must be >= 0' % 'int+')
             else:
                 return int(value)
+    
     def __call__(self, value):
         """
         Same as self.parse(value)
         """
         return self.parse(value)
+    
+    def serialise(self, value):
+        """
+        Serialises a value into a pure-python dictonary object
+        
+        Arguments:
+            value
+                Value to parse. 
+        Returns:
+            The parsed value for this setting. 
+        """
+        
+        return value

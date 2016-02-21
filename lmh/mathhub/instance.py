@@ -1,5 +1,7 @@
 from lmh.mathhub.resolvers import local, remote
+from lmh.utils.clsutils.caseclass import caseclass
 
+@caseclass
 class MathHubInstance(object):
     """
     Represents a single MathHub instance that has a localResolver and a matching
@@ -31,6 +33,16 @@ class MathHubInstance(object):
         
         self.__local_resolver = local_resolver
         self.__remote_resolver = remote_resolver
+    
+    def __repr__(self):
+        """
+        Returns a string representation of this MathHubInstance. 
+        
+        Returns: 
+            string
+        """
+        
+        return 'MathHubInstance(%r)' % (self.name, )
     
     def can_answer_for(self, name):
         """

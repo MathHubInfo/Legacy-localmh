@@ -13,12 +13,12 @@ rr = remote.GitLabResolver(g, "gl.mathhub.info")
 from lmh.mathhub import instance
 mhl = instance.MathHubInstance("mathhub.info", lr, rr)
 
+# create a manager
 from lmh.mathhub import manager
 mh_manager = manager.MathHubManager(None)
 mh_manager.addMathHubInstance(mhl)
 
-# config test
-
-from lmh.config import config, spec
-cspec = spec.LMHFileConfigSpec(os.path.join(os.getcwd(), "lmh", "data", "config.json"))
-mhc = config.LMHJSONFileConfig(cspec, os.path.join(os.getcwd(), "bin", "lmh2.cfg"))
+from lmh.archives import archive
+mea = archive.LMHArchive(mhl, "MMT", "examples")
+meal = mea.to_local_archive()
+meat = meal.manifest

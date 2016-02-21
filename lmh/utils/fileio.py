@@ -38,7 +38,7 @@ def read_file_lines(filename):
             with open(filename, "r", encoding=enc) as text_file:
                 content = text_file.readlines()
             
-            return content
+            return [c[:-1] if c.endswith("\n") else c for c in content]
         except UnicodeDecodeError:
             pass
         except:
@@ -67,3 +67,18 @@ def write_file(filename, text):
         return False
     
     return True
+
+def write_file_lines(filename, lines):
+    """
+    Same as write_file() except that it takes a list of lines instead. 
+    
+    Arguments:
+        filename
+            Name of file to write
+        lines
+            List of strings representing text to be written to disk
+    Returns:
+        A boolean indicating if the write operation was successfull
+    """
+    
+    return write_file(filename, '\n'.join(lines))

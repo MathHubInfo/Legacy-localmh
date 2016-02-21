@@ -5,6 +5,9 @@ from fnmatch import fnmatch
 
 import os, os.path
 
+from lmh.utils.clsutils.caseclass import caseclass
+
+@caseclass
 class LocalMathHubResolver(resolver.MathHubResolver):
     """
     Represents a MathHubResolver() that can resolve local git repositories from
