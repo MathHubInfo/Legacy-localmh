@@ -18,7 +18,12 @@ from lmh.mathhub import manager
 mh_manager = manager.MathHubManager(None)
 mh_manager.addMathHubInstance(mhl)
 
+# make an archive
 from lmh.archives import archive
 mea = archive.LMHArchive(mhl, "MMT", "examples")
 meal = mea.to_local_archive()
 meat = meal.manifest
+
+# make a logger
+from lmh.logger import logger
+SL = logger.StandardLogger()
