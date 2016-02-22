@@ -91,7 +91,7 @@ class LMHLocalArchive(archive.LMHArchive):
         
         dependencies = set()
         
-        for d in (self.manifest['dependencies']).split(' '):
+        for d in (self.manifest['dependencies']).split(','):
             if '/' in d:
                 dependencies.add((d[:d.index("/")].strip(), d[d.index("/")+1:].strip()))
             elif d.strip() != '':
@@ -109,7 +109,7 @@ class LMHLocalArchive(archive.LMHArchive):
                 to the MANIFEST.MF file
         """
         
-        self.manifest['dependencies'] = ' '.join(list(map(str, dependencies)))
+        self.manifest['dependencies'] = ','.join(list(map(str, dependencies)))
         
     #
     # LOCAL ARCHIVE RESOLUTION
@@ -127,6 +127,7 @@ class LMHLocalArchive(archive.LMHArchive):
         """
         
         return self
+    
 
 class NoLocalArchive(exceptions.LMHException):
     """

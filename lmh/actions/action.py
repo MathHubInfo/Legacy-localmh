@@ -68,3 +68,7 @@ class Action(object):
         Same as self.run(*args, **kwargs)
         """
         return self.run(*args, **kwargs)
+
+class AliasAction(Action):
+    def __init__(self, name, alias_args, alias_kwargs,):
+        super(AliasAction, self).__init__(name)

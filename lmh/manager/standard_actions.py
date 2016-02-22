@@ -13,3 +13,7 @@ class StandardActions(object):
         from lmh.actions.management import listing
         manager.add_action(listing.LocalListAction())
         manager.add_action(listing.RemoteListAction())
+        
+        from lmh.actions.management import dtree
+        manager.add_action(dtree.DependencyTreeAction())
+        manager.add_action(dtree.DependencyTreePrintAction())

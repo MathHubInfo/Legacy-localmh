@@ -1,7 +1,8 @@
 from lmh.actions import archive
+from lmh.actions.management import management
 from lmh.logger import escape
 
-class LocalListAction(archive.LocalArchiveAction):
+class LocalListAction(archive.LocalArchiveAction, management.ManagementAction):
     """
     An action that prints out all (matching) local archives into the log. 
     """
@@ -23,7 +24,7 @@ class LocalListAction(archive.LocalArchiveAction):
         
         self.manager.logger.log(str(archive))
         
-class RemoteListAction(archive.RemoteArchiveAction):
+class RemoteListAction(archive.RemoteArchiveAction, management.ManagementAction):
     """
     An action that prints out all (matching) remote archives into the log. 
     """
