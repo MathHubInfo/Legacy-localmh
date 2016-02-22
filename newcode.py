@@ -1,29 +1,30 @@
 import os, os.path
 
-# setup external programs
-from lmh.external.programs import git
-g = git.Git()
+# Step 1: Create a MathHub Instance
+from lmh.mathhub import manager as mmanger
+mh_manager = mmanger.MathHubManager(None)
 
-# make resolvers
-from lmh.mathhub.resolvers import local, remote
-lr = local.LocalMathHubResolver(g, os.path.join(os.getcwd(), "MathHub"))
-rr = remote.GitLabResolver(g, "gl.mathhub.info")
+# Step 2: Create a configuration instance
+from lmh.config import config, spec
+lmh_cfg_spec = spec.LMHFileConfigSpec(os.path.join(os.getcwd(), "lmh", "data", "config.json"))
+lmh_cfg = config.LMHJSONFileConfig(lmh_cfg_spec, os.path.join(os.getcwd(), "bin", "lmh.2.cfg"))
 
-# and create a local MathHub instance
-from lmh.mathhub import instance
-mhl = instance.MathHubInstance("mathhub.info", lr, rr)
-
-# create a manager
-from lmh.mathhub import manager
-mh_manager = manager.MathHubManager(None)
-mh_manager.addMathHubInstance(mhl)
-
-# make an archive
-from lmh.archives import archive
-mea = archive.LMHArchive(mhl, "MMT", "examples")
-meal = mea.to_local_archive()
-meat = meal.manifest
-
-# make a logger
+# Step 3: Create a logger
 from lmh.logger import logger
 SL = logger.StandardLogger()
+
+# Step 4: Create a manager
+from lmh.manager import manager
+lmh_manager = manager.LMHManager(SL, lmh_cfg, mh_manager)
+
+# Step 5: Add actions
+from lmh.actions.program import git
+lmh_manager.add_action(git.GitAction())
+
+# Step 6: Configure MathHub instances
+from lmh.mathhub.resolvers import local, remote
+from lmh.mathhub import instance
+lr = local.LocalMathHubResolver(lmh_manager('git'), os.path.join(os.getcwd(), "MathHub"))
+rr = remote.GitLabResolver(lmh_manager('git'), "gl.mathhub.info")
+mhl = instance.MathHubInstance("mathhub.info", lr, rr)
+mh_manager.addMathHubInstance(mhl)

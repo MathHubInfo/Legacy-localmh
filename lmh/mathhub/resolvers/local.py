@@ -27,6 +27,7 @@ class LocalMathHubResolver(resolver.MathHubResolver):
 
         self.__git = git_program
         self.__folder = os.path.realpath(folder)
+        self.__repos = None
     
     def can_answer_for(self, name):
         """
@@ -157,6 +158,9 @@ class LocalMathHubResolver(resolver.MathHubResolver):
         Returns:
             A list of pairs of strings (group, name) representing repositories.
         """
+        
+        if self.__repos != None:
+            return self.__repos
 
         repositories = set()
         
@@ -168,4 +172,29 @@ class LocalMathHubResolver(resolver.MathHubResolver):
                 if os.path.isdir(fullpath) and self.__git.exists_local(fullpath):
                     repositories.add((g, name))
 
-        return list(sorted(repositories))
+        self.__repos = list(sorted(repositories))
+        return self.__repos
+    
+    def repo_exists(self, group, name):
+        """
+        Checks if this Resolver can find the path to a repository. Should be 
+        overriden by subclass for speed advantages. By default checks the output
+        of get_all_repos(). 
+        
+        Arguments: 
+            group
+                Name of the group to check for repo. 
+            name
+                Name of the repository to check. 
+        Returns:
+            A boolean indicating if the repository exists or not. 
+        """
+        
+        try:
+            
+            all_repos = self.get_all_repos()
+            
+            if (group, name) in all_repos:
+                return True
+        except exceptions.MathHubException:
+            return False

@@ -13,7 +13,7 @@ class LMHConfig(object):
                 settings
         """
         
-        self.__spec = spec
+        self.spec = spec
         self.__dict = None
     
     def _read_dict(self):
@@ -72,7 +72,7 @@ class LMHConfig(object):
         
         self.__update_dict()
         
-        return self.__spec[name](self.__dict[name] if self.is_set(name) else None)
+        return self.spec[name](self.__dict[name] if self.is_set(name) else None)
     
     def __getitem__(self, name):
         """
@@ -92,7 +92,7 @@ class LMHConfig(object):
             a boolean indicating if the setting is supported
         """
         
-        return name in self.__spec
+        return name in self.spec
     
     def __contains__(self, name):
         """
@@ -109,7 +109,7 @@ class LMHConfig(object):
             A list of strings
         """
         
-        return self.__spec.keys()
+        return self.spec.keys()
     
     def get_spec(self, name):
         """
@@ -123,7 +123,7 @@ class LMHConfig(object):
             An LMHConfigSettingSpec() instance
         """
         
-        return self.__spec[name]
+        return self.spec[name]
     
     def is_set(self, name):
         """
@@ -163,7 +163,7 @@ class LMHConfig(object):
         
         self.__update_dict(force = True)
         
-        self.__dict[name] = self.__spec[name].serialise(value)
+        self.__dict[name] = self.spec[name].serialise(value)
         
         return self._write_dict(self.__dict)
     

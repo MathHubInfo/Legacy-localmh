@@ -66,6 +66,7 @@ class GitLabResolver(RemoteMathHubResolver):
         super(GitLabResolver, self).__init__(git_program)
 
         self.__hostname = hostname
+        self.__repos = None
     
     def can_answer_for(self, name):
         """
@@ -97,8 +98,7 @@ class GitLabResolver(RemoteMathHubResolver):
             return https_url
         else:
             raise resolver.RepositoryNotFound()
-
-    @lru_cache()
+    
     def get_all_repos(self):
         """
         Gets a (cached) list of repositories or throws NotImplementedError
@@ -107,6 +107,9 @@ class GitLabResolver(RemoteMathHubResolver):
         Returns:
             A list of pairs of strings (group, name) representing repositories.
         """
+        
+        if self.__repos != None:
+            return self.__repos
 
         base_url = "http://%s/public/" % self.__hostname
         projects_per_page = 20
@@ -138,8 +141,38 @@ class GitLabResolver(RemoteMathHubResolver):
 
             except Exception as e:
                 raise NetworkingError()
-
-        return list(sorted(repositories))
+        
+        self.__repos = list(sorted(repositories))
+        return self.__repos
+    
+    def repo_exists(self, group, name):
+        """
+        Checks if this Resolver can find the path to a repository. By default checks the output
+        of get_all_repos() and then falls back to get_repo_path().  
+        
+        Arguments: 
+            group
+                Name of the group to check for repo. 
+            name
+                Name of the repository to check. 
+        Returns:
+            A boolean indicating if the repository exists or not. 
+        """
+        
+        try:
+            if self.__repos != None:
+                all_repos = self.get_all_repos()
+            
+                if (group, name) in all_repos:
+                    return True
+        except exceptions.MathHubException:
+            pass
+        
+        try:
+            self.get_repo_path(group, name)
+            return True
+        except exceptions.MathHubException:
+            return False
 
 class NetworkingError(exceptions.MathHubException):
     """

@@ -55,6 +55,12 @@ class MathHubManager(object):
         
         raise InstanceNotFound()
     
+    def __getitem__(self, name):
+        """
+        Same as self.getMathHubInstance(name)
+        """
+        return self.getMathHubInstance(name)
+    
     def resolve_local(self, *spec, base_group = None, instance = None):
         """
         Resolves the specification to a local repository within one or all 

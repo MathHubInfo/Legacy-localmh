@@ -98,7 +98,22 @@ class MathHubInstance(object):
         """
         return self.__local_resolver.get_repo_path(group, name)
     
-    def resolve_remote(self, spec, base_group = None):
+    def local_exists(self, group, name):
+        """
+        Checks if this Resolver can find the path to a local repository. 
+        
+        Arguments: 
+            group
+                Name of the group to check for repo. 
+            name
+                Name of the repository to check. 
+        Returns:
+            A boolean indicating if the repository exists or not. 
+        """
+        
+        return self.__local_resolver.repo_exists(group, name)
+    
+    def resolve_remote(self, *spec, base_group = None):
         """
         Resolves the specification to a remote repository by calling
         remote_resolver.get_repos_matching(). 
@@ -132,3 +147,18 @@ class MathHubInstance(object):
                 A String representing the path to the repository. 
         """
         return self.__remote_resolver.get_repo_path(group, name)
+    
+    def remote_exists(self, group, name):
+        """
+        Checks if this Resolver can find the path to a remote repository. 
+        
+        Arguments: 
+            group
+                Name of the group to check for repo. 
+            name
+                Name of the repository to check. 
+        Returns:
+            A boolean indicating if the repository exists or not. 
+        """
+        
+        return self.__remote_resolver.repo_exists(group, name)

@@ -5,12 +5,6 @@
 		"default": false
 	},
 
-	"env::git": {
-		"type": "string",
-		"help": "Path to the Git executable. Auto-detected if empty. ",
-		"default": ""
-	},
-
 	"env::latexmlc": {
 		"type": "string",
 		"help": "Path to the latexmlc executable. Auto-detected if empty. ",

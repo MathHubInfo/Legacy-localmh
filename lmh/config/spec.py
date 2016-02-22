@@ -1,4 +1,5 @@
 from lmh.utils.clsutils.caseclass import caseclass
+from lmh.utils.exceptions import LMHException
 
 @caseclass
 class LMHConfigSpec(object):
@@ -15,15 +16,31 @@ class LMHConfigSpec(object):
                 List of settings to use
         """
         
-        self.settings = settings
+        self.settings = list(settings)
         
         # check that we have each key only once
         keys = self.keys()
         if len(keys) != len(list(set(keys))):
             raise ValueError('Duplocate key inside settings parameters')
+    
+    def add_config_setting(self, setting):
+        """
+        Adds an LMHConfigSettingSpec() instance to this LMHConfigSpec() or throws
         
         
-            
+        Arguments: 
+            setting
+                Setting to add to this LMHConfigSettingSpec() spec
+        """
+        
+        if not isinstance(setting, LMHConfigSettingSpec):
+            raise TypeError('setting has to be an instance of LMHConfigSettingSpec()')
+        
+        if setting.name in self:
+            raise ValueError('A setting named %r is already inside this LMHConfigSpec()')
+        
+        self.settings.append(setting)
+    
     def keys(self):
         """
         Returns a list containing the names of all settings inside this 
@@ -131,7 +148,7 @@ class LMHConfigSettingSpec(object):
         
         self.name = name
         self.tp = tp
-        self.default = self.serialise(lf.parse(default))
+        self.default = self.serialise(self.parse(default))
         self.help_text = help_text
     
     def parse(self, value):

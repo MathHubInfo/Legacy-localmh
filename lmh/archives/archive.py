@@ -65,15 +65,14 @@ class LMHArchive(object):
             A boolean indicating if this archive is installed locally. 
         """
         
-        try:
-            self.resolve_local()
-            return True
-        except resolver.RepositoryNotFound:
-            return False
+        return self.instance.local_exists(self.group, self.name)
     
     def to_local_archive(self):
         """
         Returns a LMHLocalArchive() instance representing this archive. 
+        
+        Returns: 
+            A LMHLocalArchive() instance
         """
         
         from lmh.archives import local
@@ -98,15 +97,14 @@ class LMHArchive(object):
             A boolean indicating if this archive is installed locally. 
         """
         
-        try:
-            self.resolve_remote()
-            return True
-        except resolver.RepositoryNotFound:
-            return False
+        return self.instance.remote_exists(self.group, self.name)
     
     def to_remote_archive(self):
         """
         Returns a LMHRemoteArchive() instance representing this archive. 
+        
+        Returns: 
+            A LMHRemoteArchive() instance
         """
         
         from lmh.archives import remote

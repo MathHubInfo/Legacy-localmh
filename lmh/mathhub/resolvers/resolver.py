@@ -185,7 +185,7 @@ class MathHubResolver(object):
                         repositories.add((g, n))
                         spec_copy.remove(s)
                         break
-
+        
         for (g, n) in self.get_all_repos():
             for s in spec_copy:
                 if self._match_full(s, g, n):
@@ -219,6 +219,27 @@ class MathHubResolver(object):
             raise RepositoryNotFound()
         else:
             return repositories[0]
+    
+    def repo_exists(self, group, name):
+        """
+        Checks if this Resolver can find the path to a repository. Should be 
+        overriden by subclass for speed advantages. By default checks the output
+        of get_all_repos(). 
+        
+        Arguments: 
+            group
+                Name of the group to check for repo. 
+            name
+                Name of the repository to check. 
+        Returns:
+            A boolean indicating if the repository exists or not. 
+        """
+        
+        try:
+            return ((group, name) in self.get_all_repos())
+        except exceptions.MathHubException:
+            return False
+        
 
 class RepositoryNotFound(exceptions.MathHubException):
     """

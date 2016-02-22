@@ -28,6 +28,9 @@ class LMHLocalArchive(archive.LMHArchive):
         
         super(LMHLocalArchive, self).__init__(instance, group, name)
         
+        if not self.is_local():
+            raise NoLocalArchive() 
+        
         try:
             self.__base = super(LMHLocalArchive, self).resolve_local()
         except resolver.RepositoryNotFound:
