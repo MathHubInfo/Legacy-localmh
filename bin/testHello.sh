@@ -1,5 +1,5 @@
 #!/bin/bash -e
-mkdir MathHub
+mkdir -p MathHub
 for i in coursematerials hwexam meta-inf smglom
 do
     lmh install -y HelloWorld/$i
