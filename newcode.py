@@ -13,13 +13,10 @@ lmh_cfg = config.LMHJSONFileConfig(lmh_cfg_spec, os.path.join(os.getcwd(), "bin"
 from lmh.logger import logger
 SL = logger.StandardLogger()
 
-# Step 4: Create a manager
-from lmh.manager import manager
+# Step 4: Create a manager and register all the standard actions
+from lmh.manager import manager, standard_actions
 lmh_manager = manager.LMHManager(SL, lmh_cfg, mh_manager)
-
-# Step 5: Add actions
-from lmh.actions.program import git
-lmh_manager.add_action(git.GitAction())
+standard_actions.StandardActions.register_to(lmh_manager)
 
 # Step 6: Configure MathHub instances
 from lmh.mathhub.resolvers import local, remote

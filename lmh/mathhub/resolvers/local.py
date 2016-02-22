@@ -62,7 +62,8 @@ class LocalMathHubResolver(resolver.MathHubResolver):
     def get_repo_path(self, group, name):
         """
         Gets the (full) path to a repository on disk. Never throws any 
-        excpetions.
+        excpetions. Needs to return a path even if the repository does not
+        yet exist locally. 
 
         Arguments:
             group
@@ -198,3 +199,9 @@ class LocalMathHubResolver(resolver.MathHubResolver):
                 return True
         except exceptions.MathHubException:
             return False
+    
+    def clear_repo_cache(self):
+        """
+        Clears the cache of this Resolver. Should be implemented by the subclass. 
+        """
+        self.__repos = None

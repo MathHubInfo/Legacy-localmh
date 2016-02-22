@@ -1,4 +1,5 @@
 from lmh.mathhub.resolvers import resolver
+from lmh.archives import archive
 class LMHManager(object):
     """
     An LMHManager is the main object instatiated by lmh. 
@@ -152,8 +153,9 @@ class LMHManager(object):
         
         Arguments:
             *spec
-                A list of strings or patterns contains *s that will be matched
-                against the full names of repositories of the form 'group/name'.
+                A list of strings, pairs, LMHArchive or patterns containing *s 
+                that will be matched against the full names of repositories of 
+                the form 'group/name'.
                 If empty and base_group is None, the full list of repositories 
                 will be returned. If empty and base_group has some value only
                 repositories from that group will be returned. 
@@ -167,10 +169,21 @@ class LMHManager(object):
             A list of LocalArchive() instances
         """
         
+        the_spec = []
+        the_archives = []
+        
+        for s in spec:
+            if isinstance(s, archive.LMHArchive):
+                the_archives.append(s.to_local_archive())
+            elif isinstance(s, tuple) and len(s) == 2:
+                the_spec.append('%s/%s' % s)
+            else:
+                the_spec.append(s)
+        
         return [
             self.get_archive(i, g, n).to_local_archive()
-            for (i, g, n) in self.mathhub.resolve_local(*spec, base_group = base_group, instance = instance)
-        ]
+            for (i, g, n) in self.mathhub.resolve_local(*the_spec, base_group = base_group, instance = instance)
+        ] + the_archives
     
     def resolve_local_archive(self, spec, base_group = None, instance = None):
         """
@@ -178,9 +191,10 @@ class LMHManager(object):
         Retrieves a single LocalArchive() instance that matches a specification or 
         throws RepositoryNotFound()
         Arguments:
-            *spec
-                A string or pattern that contains *s that will be matched
-                against the full names of repositories of the form 'group/name'.
+            spec
+                A string, pair, LMHArchive or pattern containing *s 
+                that will be matched against the full names of repositories of 
+                the form 'group/name'. 
             base_group
                 Optional. If given, before trying to match repositories globally
                 will try to match 'name' inside the group base_group. 
@@ -204,8 +218,9 @@ class LMHManager(object):
         
         Arguments:
             *spec
-                A list of strings or patterns contains *s that will be matched
-                against the full names of repositories of the form 'group/name'.
+                A list of strings, pairs, LMHArchive or patterns containing *s 
+                that will be matched against the full names of repositories of 
+                the form 'group/name'.
                 If empty and base_group is None, the full list of repositories 
                 will be returned. If empty and base_group has some value only
                 repositories from that group will be returned. 
@@ -219,10 +234,21 @@ class LMHManager(object):
             A list of RemoteArchive() instances
         """
         
+        the_spec = []
+        the_archives = []
+        
+        for s in spec:
+            if isinstance(s, archive.LMHArchive):
+                the_archives.append(s.to_remote_archive())
+            elif isinstance(s, tuple) and len(s) == 2:
+                the_spec.append('%s/%s' % s)
+            else:
+                the_spec.append(s)
+        
         return [
             self.get_archive(i, g, n).to_remote_archive()
-            for (i, g, n) in self.mathhub.resolve_remote(*spec, base_group = base_group, instance = instance)
-        ]
+            for (i, g, n) in self.mathhub.resolve_remote(*the_spec, base_group = base_group, instance = instance)
+        ] + the_archives
     
     def resolve_remote_archive(self, spec, base_group = None, instance = None):
         """
@@ -230,9 +256,10 @@ class LMHManager(object):
         Retrieves a single RemoteArchive() instance that matches a specification or 
         throws RepositoryNotFound()
         Arguments:
-            *spec
-                A string or pattern that contains *s that will be matched
-                against the full names of repositories of the form 'group/name'.
+            spec
+                A string, pair, LMHArchive or pattern containing *s 
+                that will be matched against the full names of repositories of 
+                the form 'group/name'. 
             base_group
                 Optional. If given, before trying to match repositories globally
                 will try to match 'name' inside the group base_group. 

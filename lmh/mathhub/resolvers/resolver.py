@@ -239,6 +239,12 @@ class MathHubResolver(object):
             return ((group, name) in self.get_all_repos())
         except exceptions.MathHubException:
             return False
+    
+    def clear_repo_cache(self):
+        """
+        Clears the cache of this Resolver. Should be implemented by the subclass. 
+        """
+        raise NotImplementedError
         
 
 class RepositoryNotFound(exceptions.MathHubException):

@@ -31,8 +31,8 @@ class MathHubInstance(object):
         
         self.name = name
         
-        self.__local_resolver = local_resolver
-        self.__remote_resolver = remote_resolver
+        self.local_resolver = local_resolver
+        self.remote_resolver = remote_resolver
     
     def __repr__(self):
         """
@@ -58,9 +58,9 @@ class MathHubInstance(object):
         return (
             self.name == name
         ) or (
-            self.__local_resolver.can_answer_for(name)
+            self.local_resolver.can_answer_for(name)
         ) or (
-            self.__remote_resolver.can_answer_for(name)
+            self.remote_resolver.can_answer_for(name)
         )
     
     def resolve_local(self, *spec, base_group = None):
@@ -82,7 +82,7 @@ class MathHubInstance(object):
             A list of pairs of strings (group, name) representing repositories.
         """
         
-        return self.__local_resolver.get_repos_matching(*spec, base_group = base_group)
+        return self.local_resolver.get_repos_matching(*spec, base_group = base_group)
     
     def get_local_path(self, group, name):
         """
@@ -96,7 +96,7 @@ class MathHubInstance(object):
         Returns:
                 A String representing the path to the repository. 
         """
-        return self.__local_resolver.get_repo_path(group, name)
+        return self.local_resolver.get_repo_path(group, name)
     
     def local_exists(self, group, name):
         """
@@ -111,7 +111,14 @@ class MathHubInstance(object):
             A boolean indicating if the repository exists or not. 
         """
         
-        return self.__local_resolver.repo_exists(group, name)
+        return self.local_resolver.repo_exists(group, name)
+    
+    def clear_local_cache(self):
+        """
+        Clears the cache of local repositories. 
+        """
+        
+        return self.local_resolver.clear_repo_cache()
     
     def resolve_remote(self, *spec, base_group = None):
         """
@@ -132,7 +139,7 @@ class MathHubInstance(object):
             A list of pairs of strings (group, name) representing repositories.
         """
         
-        return self.__remote_resolver.get_repos_matching(*spec, base_group = base_group)
+        return self.remote_resolver.get_repos_matching(*spec, base_group = base_group)
     
     def get_remote_path(self, group, name):
         """
@@ -146,7 +153,7 @@ class MathHubInstance(object):
         Returns:
                 A String representing the path to the repository. 
         """
-        return self.__remote_resolver.get_repo_path(group, name)
+        return self.remote_resolver.get_repo_path(group, name)
     
     def remote_exists(self, group, name):
         """
@@ -161,4 +168,11 @@ class MathHubInstance(object):
             A boolean indicating if the repository exists or not. 
         """
         
-        return self.__remote_resolver.repo_exists(group, name)
+        return self.remote_resolver.repo_exists(group, name)
+    
+    def clear_remote_cache(self):
+        """
+        Clears the cache of remote repositories. 
+        """
+        
+        return self.remote_resolver.clear_repo_cache()
