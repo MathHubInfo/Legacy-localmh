@@ -26,7 +26,7 @@ class AliasCommand(command.Command):
         self.__args = args
         
         self.__strargs = ' '.join(list(map(str, self.__args)))
-        self.__doc__ = 'alias for %s' % (self.__strargs, )
+        self.__doc__ = 'alias for %r' % (self.__strargs, )
     
     def call(self, *args, parsed_args=None):
         """

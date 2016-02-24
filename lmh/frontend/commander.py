@@ -138,7 +138,7 @@ class LMHCommander(object):
         """
         
         # Create the parser itself
-        parser = argparse.ArgumentParser(self.__doc__)
+        parser = argparse.ArgumentParser('lmh', description=self.__doc__)
         subparsers = parser.add_subparsers(dest='command', metavar='command')
         
         # TODO: Check if a command has a ._build_argparse
@@ -178,6 +178,11 @@ class LMHCommander(object):
         # extract the command
         command = parsed.command
         del parsed.command
+        
+        # If no arguments were given, print the help
+        if command == None:
+            parser.print_help()
+            return (None, [], None)
         
         # return a triple
         return (command, parsed, unknown)

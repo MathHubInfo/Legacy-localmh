@@ -5,5 +5,7 @@ To use it properly, run:
 python3 shell.py [arguments]
 """
 
+import sys
 from lmh.frontend import main
+
 main.LMHMain.main(*sys.argv[1:])
