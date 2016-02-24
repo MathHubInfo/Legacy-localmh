@@ -1,6 +1,7 @@
 from lmh.logger import levels, escape
 
 import sys
+import traceback
 
 class Logger(object):
     """
@@ -131,6 +132,20 @@ class Logger(object):
         """
         
         return self.log(*message, newline = newline, flush = flush, level = levels.FatalLogLevel())
+    
+    def get_exception_string(self, exception):
+        """
+        Returns a string representing the exception. 
+        
+        Arguments:
+            exception
+                Exception to format
+        Returns:
+            A string representing the exception and its traceback
+        """
+        
+        return ''.join(traceback.format_exception(exception.__class__, exception, exception.__traceback__))
+        
 
 class StandardLogger(Logger):
     """

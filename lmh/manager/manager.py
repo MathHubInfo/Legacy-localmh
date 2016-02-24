@@ -88,7 +88,7 @@ class LMHManager(object):
             name
                 Name of action to search for
         Returns:
-            A boolean indicating if the action is contained or not
+            A Action() instance
         """
         
         for k in self.__actions:

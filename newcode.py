@@ -25,3 +25,12 @@ lr = local.LocalMathHubResolver(lmh_manager('git'), os.path.join(os.getcwd(), "M
 rr = remote.GitLabResolver(lmh_manager('git'), "gl.mathhub.info")
 mhl = instance.MathHubInstance("mathhub.info", lr, rr)
 mh_manager.addMathHubInstance(mhl)
+
+# Step 7: Configure a commander
+from lmh.frontend import commander
+lmh_commander = commander.LMHCommander(lmh_manager)
+
+# and add commands
+from lmh.frontend import command
+dumb = command.Command('dumb')
+lmh_commander.add_command(dumb)
