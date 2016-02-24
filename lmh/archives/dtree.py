@@ -74,10 +74,7 @@ class DependencyNode(object):
         if not archive.is_local():
             return None
         else:
-            try:
-                return archive.to_local_archive().get_dependencies()
-            except:
-                return None
+            return archive.to_local_archive().get_dependencies()
         
     
     @staticmethod

@@ -9,6 +9,13 @@ class StandardCommands(object):
                 Commander() to register all standard commands to
         """
         
+        # other commands
+        from lmh.frontend.commands.management import dtree, listing
+        
+        commander.add_command(dtree.DTreeCommand())
+        commander.add_command(listing.LocalListCommand())
+        commander.add_command(listing.RemoteListCommand())
+        
         # legacy commands
         StandardCommands.register_legacy_commands_to(commander)
         
@@ -31,9 +38,6 @@ class StandardCommands(object):
         commander.add_command(alias.AliasCommand('ci', 'commit'))
         commander.add_command(alias.AliasCommand('si', 'status'))
         
-        # update
-        commander.add_command(alias.AliasCommand('update', 'pull', depracated = True))
-        
         # selfupdate
         commander.add_command(alias.AliasCommand('selfupdate', 'setup', '--update', 'self'))
         
@@ -44,7 +48,10 @@ class StandardCommands(object):
         commander.add_command(alias.AliasCommand('pdf', 'gen', 'pdflatex'))
         commander.add_command(alias.AliasCommand('alltex', 'gen', 'alltex'))
         commander.add_command(alias.AliasCommand('allpdf', 'gen', 'allpdf'))
-    
+        
+        # Depreacted Aliases
+        commander.add_command(alias.AliasCommand('update', 'pull', depracated = True))
+        commander.add_command(alias.AliasCommand('ls', 'ls-local', depracated = True))
     @staticmethod
     def register_legacy_commands_to(commander):
         """

@@ -2,25 +2,39 @@ from lmh.utils import exceptions
 from lmh.frontend import command
 
 import argparse
+import os
 
 class LMHCommander(object):
     """
     An LMHCommnder is an object that manages command used by lmh. 
     """
     
-    def __init__(self, manager):
+    def __init__(self, manager, base = None):
         """
         Creates a new LMHCommander() instance
         
         Arguments: 
             manager
                 LMHManager() object used by this Commander
+            base
+                Base relative to which this commander should run commands for
         """
         
         self.manager = manager
         self.__doc__ = "Local MathHub Tool"
         
         self.__commands = []
+        self.__base = os.getcwd() if base == None else base
+    
+    def get_base(self):
+        """
+        Returns the current base for repository resolution. 
+        
+        Returns:
+            a string representing the current base
+        """
+        
+        return self.__base
     
     def add_command(self, cmd):
         """

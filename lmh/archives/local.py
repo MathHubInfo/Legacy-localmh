@@ -91,6 +91,10 @@ class LMHLocalArchive(archive.LMHArchive):
         
         dependencies = set()
         
+        # if we have no dependency key, return the empty list
+        if not 'dependencies' in self.manifest:
+            return []
+        
         for d in (self.manifest['dependencies']).split(','):
             if '/' in d:
                 dependencies.add((d[:d.index("/")].strip(), d[d.index("/")+1:].strip()))
