@@ -110,7 +110,7 @@ class LMHCommander(object):
         """
         try:
             ret = command(*args, parsed_args = parsed_args)
-            if isinstance(ret, boolean):
+            if isinstance(ret, bool):
                 return 0 if ret else 1
             elif isinstance(ret, int):
                 return ret
@@ -146,7 +146,7 @@ class LMHCommander(object):
         for name in self.keys():
             c = self[name]
             try:
-                subparsers.add_parser(c._build_argparse())
+                c._build_argparse(subparsers)
             except NotImplementedError:
                 subparsers.add_parser(name, help=self[name].__doc__, add_help=False)
         

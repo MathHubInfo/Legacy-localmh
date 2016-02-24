@@ -47,7 +47,9 @@ class Action(object):
             if not c.name in config_spec:
                 config_spec.add_config_setting(c)
             else:
-                self.manager.logger.warn('Action %r: Setting %r already exists in Manager() instance. ' % (self.name, c.name))
+                # TODO: Re-enable warning about duplicate settings
+                # self.manager.logger.warn('Action %r: Setting %r already exists in Manager() instance. ' % (self.name, c.name))
+                pass
         
         self._register()
     

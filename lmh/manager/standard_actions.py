@@ -3,6 +3,10 @@ class StandardActions(object):
     def register_to(manager):
         """
         Registers all standard actions to the given Manager() instance. 
+        
+        Arguments:
+            manager
+                Manager() to register all standard actions to
         """
         
         # External Program Actions

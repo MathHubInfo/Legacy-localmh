@@ -1,52 +1,39 @@
-class Command(object):
+from lmh.frontend import command
+import argparse
+class LegacyCommand(command.Command):
     """
-    A Command represents a command that can be run from the Frontend of lmh
+    A command in the old format. Depracted, to be removed once no longer needed
     """
     
     def __init__(self, name):
         """
-        Creates a new Command() object. 
+        Creates a new LegacyCommand() object. 
         
         Arguments:
             name
-                Name of this Command
+                Name of this command
         """
-        self.name = name
         
-        self.commander = None
-        self.manager = None
-    
-    def _register(self):
-        """
-        Protected Function that is called when this command is registered. 
-        """
-        pass
+        super(LegacyCommand, self).__init__(name)
         
-    def register(self, commander):
-        """
-        Called when this command is registered with a commander. 
-        
-        Arguments:
-            commander
-                Commander that this command is registered with
-        """
-        self.commander = commander
-        self.manager = self.commander.manager
-        self._register()
+        self.__module = getattr(getattr(__import__("lmh.commands."+name), "commands"), name)
+        self.__command = self.__module.Command()
     
     def _build_argparse(self, subparsers):
         """
         Function that adds a new subparser representing this parser. 
-        May throw NotImplementedError if another parsing libary is used. 
-        
         
         Arguments:
             subparsers
                 Argparse subparsers object to add parsers to
         """
         
-        raise NotImplementedError
+        # Create the sub parser
+        new_parser = subparsers.add_parser(self.name, help=self.__command.help, description=self.__command.help, formatter_class=LMHFormatter, add_help=self.__command.allow_help_arg)
 
+        # and add some arguments.
+        self.__command.add_parser_args(new_parser)
+    
     def call(self, *args, parsed_args=None):
         """
         Calls this command with the given arguments. 
@@ -65,10 +52,6 @@ class Command(object):
             normally. 
         """
         
-        raise NotImplementedError
-    
-    def __call__(self, *args, **kwargs):
-        """
-        Same as self.call(*args, **kwargs)
-        """
-        return self.call(*args, **kwargs)
+        return self.__command.do(parsed_args, args)
+class LMHFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
+    pass
