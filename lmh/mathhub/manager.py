@@ -8,13 +8,7 @@ class MathHubManager(object):
     def __init__(self, config):
         """
         Initalises a new MathHubManager() instance. 
-        
-        Arguments:
-            config
-                lmh.config.Config() instance that holds all the settings for this
-                lmh instance
         """
-        self.config = config
         
         self.__mathhubs = {}
     

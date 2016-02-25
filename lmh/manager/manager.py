@@ -1,5 +1,7 @@
 from lmh.mathhub.resolvers import resolver
 from lmh.archives import archive
+import os
+
 class LMHManager(object):
     """
     An LMHManager is the main object instatiated by lmh. 
@@ -171,7 +173,7 @@ class LMHManager(object):
         
         the_spec = []
         the_archives = []
-        has_work = False
+        has_work = (len(spec) == 0)
         
         for s in spec:
             if isinstance(s, archive.LMHArchive):
@@ -243,7 +245,7 @@ class LMHManager(object):
         
         the_spec = []
         the_archives = []
-        has_work = False
+        has_work = (len(spec) == 0)
         
         for s in spec:
             if isinstance(s, archive.LMHArchive):
