@@ -19,6 +19,8 @@ def read_file(filename):
             return content
         except UnicodeDecodeError:
             pass
+        except KeyboardInterrupt:
+            raise
         except:
             return None
 
@@ -41,6 +43,8 @@ def read_file_lines(filename):
             return [c[:-1] if c.endswith("\n") else c for c in content]
         except UnicodeDecodeError:
             pass
+        except KeyboardInterrupt:
+            raise
         except:
             return None
 
@@ -63,6 +67,8 @@ def write_file(filename, text):
     try:
         with open(filename, 'w', encoding=__encodings__[0]) as text_file:
             text_file.write(text)
+    except KeyboardInterrupt:
+        raise
     except:
         return False
     
