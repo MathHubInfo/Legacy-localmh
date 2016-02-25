@@ -88,7 +88,7 @@ class ArchiveCommand(command.Command):
         
         raise NotImplementedError
     
-    def _return_unifier(self, codes):
+    def _join(self, codes):
         """
         Protected function used to turn a list of return codes (one per Archive)
         into a single return code for the function. This defaults to doing a
@@ -105,6 +105,29 @@ class ArchiveCommand(command.Command):
         for c in codes:
             andc &= c
         return andc
+    
+    def call_all(self, archives, *args, parsed_args=None):
+        """
+        Calls this command for the given archives with the given arguments. If 
+        not overriden by subclass simply calls self.call_single()
+        
+        Arguments:
+            archives
+                List of LMHArchive() instances to run the command over
+            *args
+                A list of strings passed to this command. In case an argparse 
+                object (with the parsed_args) is given, this corresponds to the 
+                arguments unknown to argparse. 
+            parsed_args
+                An argparse object representing the arguments passed to this 
+                command. In order to use this properly use self._build_argparse()
+        Returns:
+            None, a Boolean or an Integer representing the return code from this 
+            command. If the return code is None we assume that the command exited
+            normally. 
+        """
+        
+        return self._join([self.call_single(a, *args, parsed_args=parsed_args) for a in archives])
     
     def call(self, *args, parsed_args=None):
         """
@@ -151,11 +174,7 @@ class ArchiveCommand(command.Command):
             except resolver.GroupNotFound:
                 archives = resolve_command(*archivestrs, instance = instance)
         
-        # make a call for each of them
-        calls = [self.call_single(a, *args, parsed_args=parsed_args) for a in archives]
-        
-        # and return with the unifier
-        return self._return_unifier(calls)
+        return self.call_all(archives, *args, parsed_args=parsed_args)
 
 class LocalArchiveCommand(ArchiveCommand):
     """
