@@ -3,6 +3,11 @@
 if __name__ == '__main__':
     import os
     import sys
+    import codecs
+    
+    # hack: set stdout encoding to utf-8
+    sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+    sys.stderr = codecs.getwriter("utf-8")(sys.stderr.detach())
     
     sys.path.insert(1, os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))
     import shell
