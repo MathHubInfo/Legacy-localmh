@@ -140,5 +140,8 @@ class Manifest(object):
         return self.remove(key)
 
 class NoManifestFile(exceptions.LMHException):
+    """
+    Exception that is thrown when no manifest File exists
+    """
     def __init__(self):
         super(NoManifestFile, self).__init__('Specefied repository does not have a ManifestFile')

@@ -252,6 +252,43 @@ class Git(program.Program):
         """
 
         return self.do_quiet(dest, "rev-parse")
+    
+    def make_orphan_branch(self, dest, name):
+        """
+        Makes an orphaned branch. 
+        
+        Arguments:
+            dest
+                Git repository to create branch in
+            name
+                Name of the branch
+        
+        Returns:
+            a boolean indicating if creation was successfull. 
+        """
+        
+        # true | git mktree
+        proc = self.__do__(dest, 'mktree', stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        treeid = proc.communicate(input=b'')[0].decode('utf-8').rstrip("\n")
+        proc.wait()
+        
+        if proc.returncode != 0:
+            return False
+        
+        # ... | xargs git commit-tree
+        proc = self.__do__(dest, 'commit-tree', treeid, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        commid = proc.communicate(input=b'')[0].decode('utf-8').rstrip("\n")
+        proc.wait()
+        
+        if proc.returncode != 0:
+            return False
+        
+        # ... | xargs git branch $name
+        proc = self.__do__(dest, 'branch', name, commid, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        res = proc.communicate(input=b'')[0].decode('utf-8').rstrip("\n")
+        proc.wait()
+
+        return proc.returncode == 0
 
 class GitNotFound(Exception):
     def __init__(self):
