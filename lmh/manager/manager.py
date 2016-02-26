@@ -1,5 +1,7 @@
 from lmh.mathhub.resolvers import resolver
 from lmh.archives import archive
+import os
+
 class LMHManager(object):
     """
     An LMHManager is the main object instatiated by lmh. 
@@ -171,19 +173,26 @@ class LMHManager(object):
         
         the_spec = []
         the_archives = []
+        has_work = (len(spec) == 0)
         
         for s in spec:
             if isinstance(s, archive.LMHArchive):
                 the_archives.append(s.to_local_archive())
             elif isinstance(s, tuple) and len(s) == 2:
                 the_spec.append('%s/%s' % s)
+                has_work = True
             else:
                 the_spec.append(s)
+                has_work = True
         
-        return [
-            self.get_archive(i, g, n).to_local_archive()
-            for (i, g, n) in self.mathhub.resolve_local(*the_spec, base_group = base_group, instance = instance)
-        ] + the_archives
+        if has_work:
+            the_archives += [
+                self.get_archive(i, g, n).to_local_archive()
+                for (i, g, n) in self.mathhub.resolve_local(*the_spec, base_group = base_group, instance = instance)
+            ]
+        
+        the_archives.sort(key=lambda a:'%s/%s' % (a.group, a.name))
+        return the_archives
     
     def resolve_local_archive(self, spec, base_group = None, instance = None):
         """
@@ -236,19 +245,26 @@ class LMHManager(object):
         
         the_spec = []
         the_archives = []
+        has_work = (len(spec) == 0)
         
         for s in spec:
             if isinstance(s, archive.LMHArchive):
                 the_archives.append(s.to_remote_archive())
             elif isinstance(s, tuple) and len(s) == 2:
                 the_spec.append('%s/%s' % s)
+                has_work = True
             else:
                 the_spec.append(s)
+                has_work = True
         
-        return [
-            self.get_archive(i, g, n).to_remote_archive()
-            for (i, g, n) in self.mathhub.resolve_remote(*the_spec, base_group = base_group, instance = instance)
-        ] + the_archives
+        if has_work:
+            the_archives += [
+                self.get_archive(i, g, n).to_remote_archive()
+                for (i, g, n) in self.mathhub.resolve_remote(*the_spec, base_group = base_group, instance = instance)
+            ]
+        
+        the_archives.sort(key=lambda a:'%s/%s' % (a.group, a.name))
+        return the_archives
     
     def resolve_remote_archive(self, spec, base_group = None, instance = None):
         """

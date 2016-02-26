@@ -43,13 +43,14 @@ class DTreeCommand(archive.LocalArchiveCommand):
         sumcirc.add_argument('--keep-circular-nodes', dest='sumcirc', action='store_false', default=False, help='Do not group circular nodes. Default')
         sumcirc.add_argument('--summarize-circular-nodes', dest='sumcirc', action='store_true', help='Summarise (group together) circular nodes')
     
-    def call_single(self, archive, *args, parsed_args=None):
+    def call_all(self, archives, *args, parsed_args=None):
         """
-        Calls this command with the given arguments on a single archive
+        Calls this command for the given archives with the given arguments. If 
+        not overriden by subclass simply calls self.call_single()
         
         Arguments:
-            archive
-                Archive to run the command over
+            archives
+                List of LMHArchive() instances to run the command over
             *args
                 A list of strings passed to this command. In case an argparse 
                 object (with the parsed_args) is given, this corresponds to the 
@@ -58,13 +59,10 @@ class DTreeCommand(archive.LocalArchiveCommand):
                 An argparse object representing the arguments passed to this 
                 command. In order to use this properly use self._build_argparse()
         Returns:
-            A Boolean indicating if the command was succesfull
+            None, a Boolean or an Integer representing the return code from this 
+            command. If the return code is None we assume that the command exited
+            normally. 
         """
         
-        self.manager['print-deps-tree'].run_single(archive, 
-            shallow = parsed_args.shallow, 
-            sort_nodes = parsed_args.sort, 
-            summarize_unexpanded_nodes = parsed_args.sumunex, 
-            summarize_circular_nodes = parsed_args.sumcirc
-        )
+        self.manager('print-deps-tree', archives)
         return True

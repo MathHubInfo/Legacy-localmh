@@ -1,10 +1,8 @@
 #: The type of all types
 typetype = type(object)
+
 # The type of strings
-try:
-    strtype = basestring
-except:
-    strtype = str
+strtype = str
 
 
 def verify(args, types):

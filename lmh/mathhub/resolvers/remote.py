@@ -119,7 +119,8 @@ class GitLabResolver(RemoteMathHubResolver):
             try:
                 response = urlopen('%s?page=%s' % (base_url, i))
                 response = response.read()
-
+            except KeyboardInterrupt:
+                raise
             except Exception as e:
                 raise NetworkingError()
 
@@ -138,7 +139,8 @@ class GitLabResolver(RemoteMathHubResolver):
                     break
 
                 repositories.update([(p[0], p[1]) for p in new_projects])
-
+            except KeyboardInterrupt:
+                raise
             except Exception as e:
                 raise NetworkingError()
         

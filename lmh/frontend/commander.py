@@ -133,16 +133,19 @@ class LMHCommander(object):
             else:
                 self.manager.logger.warn('Command %r did not return a valid return code' % command.name)
                 return 0
+        except KeyboardInterrupt:
+            self.manager.logger.error('Operation interrupted by user, exiting')
+            return -1
         except exceptions.LMHException as e:
             self.manager.logger.fatal('LMH has encountered a fatal error and has crashed. ')
             self.manager.logger.fatal('This error is likely caused by lmh itself. ')
             self.manager.logger.fatal(self.manager.logger.get_exception_string(e))
-            return -1
+            return -2
         except Exception as e:
             self.manager.logger.fatal('LMH has encountered a fatal error and has crashed. ')
             self.manager.logger.fatal('This error is likely caused by something outside of lmh. ')
             self.manager.logger.fatal(self.manager.logger.get_exception_string(e))
-            return -2
+            return -3
     def _build_argparse(self):
         """
         Builds an argparse object representing this commander
@@ -155,8 +158,7 @@ class LMHCommander(object):
         parser = argparse.ArgumentParser('lmh', description=self.__doc__)
         subparsers = parser.add_subparsers(dest='command', metavar='command')
         
-        # TODO: Check if a command has a ._build_argparse
-        # and the name
+        # iterate through the keys and check if we have a _build_argparse method
         for name in self.keys():
             c = self[name]
             try:

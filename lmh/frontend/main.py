@@ -36,11 +36,12 @@ class LMHMain(object):
         # Step 3: Create a logger
         from lmh.logger import logger
         SL = logger.StandardLogger()
-
-        # Step 4: Create a manager and register all the standard actions
+        
+        # Step 4: Create a manager register all the standard actions
         from lmh.manager import manager, standard_actions
         lmh_manager = manager.LMHManager(SL, lmh_cfg, mh_manager)
         standard_actions.StandardActions.register_to(lmh_manager)
+        
 
         # Step 6: Configure MathHub instances
         from lmh.mathhub.resolvers import local, remote

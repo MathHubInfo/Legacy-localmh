@@ -4,9 +4,10 @@ from lmh.logger import escape
 from lmh.archives import manifest
 
 from collections import deque
+from lmh.utils import tree
 
 @caseclass
-class DependencyNode(object):
+class DependencyNode(tree.TreeNode):
     """
     Represents a single node in the dependency tree. 
     """
@@ -47,14 +48,14 @@ class DependencyNode(object):
         
         # sort nodes if requested
         if sort_nodes:
-            tree = tree.sort_children()
+            tree.sort_children()
         
         # summarize nodes if requested
         if summarize_unexpanded_nodes:
-            tree = tree.summarise_unexpanded_nodes()
+            tree.summarise_unexpanded_nodes()
         
         if summarize_circular_nodes:
-            tree = tree.summarise_circular_nodes()
+            tree.summarise_circular_nodes()
         
         # return the tree
         return tree
@@ -74,7 +75,10 @@ class DependencyNode(object):
         if not archive.is_local():
             return None
         else:
-            return archive.to_local_archive().get_dependencies()
+            try:
+                return archive.to_local_archive().get_dependencies()
+            except manifest.NoManifestFile:
+                return []
         
     
     @staticmethod
@@ -220,7 +224,7 @@ class DependencyNode(object):
     
     def summarise_circular_nodes(self):
         """
-        Summarises Circular Nodes
+        Summarises Circular Nodes in place
         
         Returns: 
             A new node object with the summarise circular nodes
@@ -230,61 +234,62 @@ class DependencyNode(object):
     
     def summarise_unexpanded_nodes(self):
         """
-        Summarises Circular Nodes
-        
-        Returns: 
-            A new node object with the summarise circular nodes
+        Summarises Unexpanded Nodes in place
         """
         
         return self.summarise_nodes(UnexpandedDependency, MultipleUnexpandedDependency)
     
     def summarise_nodes(self, haystack_class, replace_class):
         """
-        Summarises node of a Specific Calss in a Summarised Class. 
+        Summarises children of a specific class and groups instances together
+        in-place. 
         
         Arguments:
             haystack_class
                 Class of objects to group together
             replace_class
                 Class of objects that are grouped together
-        Returns: 
-            A new node object with the summarised nodes
         """
-        # Create a copy of the node
-        newnode = DependencyNode(self.data)
         
         # set some flags
         is_tp = False
         
-        # and iterate through them
-        for c in map(lambda n:n.summarise_nodes(haystack_class, replace_class), self.children):
-            if isinstance(c.data, haystack_class):
-                if not is_tp:
-                    cnode = DependencyNode(replace_class([c.data.archive]))
-                    cnode.children = c.children
-                    newnode.children.append(cnode)
-                else:
-                    cnode = newnode.children[-1]
-                    cnode.data.archives += [c.data.archive]
-                    cnode.children += c.children
-                
-                is_tp = True
-            else:
-                newnode.children.append(c)
-                
-                is_tp = False
+        # iterate through the children manually
+        i = 0
+        while i < len(self.children):
             
-        return newnode
+            # summarise nodes of the children first
+            self.children[i].summarise_nodes(haystack_class, replace_class)
+            
+            if isinstance(self.children[i].data, haystack_class):
+                if not is_tp:
+                    # replace the child with a summarised node
+                    child = self.children[i]
+                    self.children[i] = DependencyNode(replace_class([child.data.archive]))
+                    self.children[i].children = child.children
+                    del child
+                    
+                    # set the flag and increate the counter
+                    is_tp = True
+                    i = i + 1
+                else:
+                    # pop the current element and add it to the previous one
+                    child = self.children.pop(i)
+                    self.children[i - 1].data.archives += [child.data.archive]
+                    self.children[i - 1].children += child.children
+                    del child
+            else:
+                # reset the flag and continue to the next iteration
+                is_tp = False
+                i = i + 1
+    
     def sort_children(self):
         """
-        Recursively sorts the children of this node by type and then by name. 
-        
-        Returns: 
-            A new tree object representing the tree with the sorted nodes. 
+        Sorts the children of this node by type and then by name in-place
         """
         
-        # Create a copy of the node
-        newnode = DependencyNode(self.data)
+        # sort the children alphabetically
+        self.children.sort(key=lambda n:str(n.data))
         
         # initialise buckets for the children
         children_installed = []
@@ -292,68 +297,24 @@ class DependencyNode(object):
         children_unexpanded = []
         children_circular = []
         
-        # iterate over the children in sorted order
-        for c in sorted(map(lambda n:n.sort_children(), self.children), key=lambda n:str(n.data)):
+        # go over each of the child nodes
+        for (i, c) in enumerate(self.children):
+            
+            # sort them
+            c.sort_children()
+            
+            # and put their indexes into buckets
             if isinstance(c.data, InstalledDependency):
-                children_installed.append(c)
+                children_installed.append(i)
             elif isinstance(c.data, MissingDependency):
-                children_missing.append(c)
+                children_missing.append(i)
             elif isinstance(c.data, UnexpandedDependency) or isinstance(c.data, MultipleUnexpandedDependency):
-                children_unexpanded.append(c)
+                children_unexpanded.append(i)
             elif isinstance(c.data, CircularDependency) or isinstance(c.data, MultipleCircularDependency):
-                children_circular.append(c)
+                children_circular.append(i)
         
-        # and add them in this order
-        newnode.children += children_installed
-        newnode.children += children_missing
-        newnode.children += children_circular
-        newnode.children += children_unexpanded
-        
-        # and return the new node
-        return newnode
-    
-    def __str__(self):
-        """
-        Same as self.treestr()
-        """
-        return self.treestr()
-        
-    def treestr(self, prefix = '', other_prefix = ''):
-        """
-        Returns a nicely-formatted string representing this DependencyTree. 
-        
-        Arguments:
-            prefix, other_prefix
-                FOR INTERNAL USE ONLY. Prefixes to prepend to all lines of the tree. 
-        
-        Returns:
-            a string
-        """
-        
-        # Visualise the node itself
-        treestr = '%s%s' % (prefix, self.data)
-        
-        # if there are no children, we are done. 
-        if len(self.children) == 0:
-            return treestr
-        
-        # Prefixes for the not last lines
-        nll_prefix  = '%s├──'% (other_prefix,)
-        nll_oprefix = '%s│  ' % (other_prefix,)
-        
-        # now go through each of the children except the last one
-        for c in self.children[:-1]:
-            treestr += '\n' + c.treestr(prefix = nll_prefix, other_prefix = nll_oprefix)
-        
-        # Prefixes for the last line
-        ll_prefix  = '%s└──' % (other_prefix, )
-        ll_oprefix = '%s   ' % (other_prefix, )
-        
-        # Add the last line
-        treestr += '\n' + self.children[-1].treestr(prefix = ll_prefix, other_prefix = ll_oprefix)
-        
-        # and return it
-        return treestr
+        # reorder the children in place
+        self._reorder_children(children_installed + children_missing + children_circular + children_unexpanded)
     
 @caseclass
 class DependencyData(object):
