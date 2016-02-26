@@ -10,8 +10,9 @@ class StandardCommands(object):
         """
         
         # other commands
-        from lmh.frontend.commands.management import dtree, listing
+        from lmh.frontend.commands.management import dtree, listing, install
         
+        commander.add_command(install.InstallCommand())
         commander.add_command(dtree.DTreeCommand())
         commander.add_command(listing.LocalListCommand())
         commander.add_command(listing.RemoteListCommand())

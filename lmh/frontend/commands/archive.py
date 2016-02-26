@@ -6,20 +6,20 @@ class ArchiveCommand(command.Command):
     A command that is iterates over individual archives
     """
     
-    def __init__(self, name, local):
+    def __init__(self, name, support_all = True):
         """
         Creates a new ArchiveCommand() instance
         
         Arguments:
             name
                 The name of this command
-            local
-                If set to True will iterate over local archives. If set to False
-                will iterate over remote commands. 
+            support_all
+                Optional. Boolean indicating if the action is supported for all archives
+                at once by giving an empty list of archives. Default to True. 
         """
         super(ArchiveCommand, self).__init__(name)
         
-        self.__local = local
+        self.__support_all = support_all
         
     
     def _init_repo_argparse(self, subparsers):
@@ -62,9 +62,15 @@ class ArchiveCommand(command.Command):
         parser = self._init_repo_argparse(subparsers)
         
         archives = parser.add_argument_group('Archives')
-        archives.add_argument('archives', metavar='archive', nargs='*', help='a list of %s repositories' % ('local' if self.__local else 'remote'))
-        archives.add_argument('--all', "-a", default=False, const=True, action="store_const", help="select all repositories")
-        archives.add_argument('--instance', "-i", default=None, help="Use only repositories from the selected instance")
+        
+        if self.__support_all:
+            archives.add_argument('archives', metavar='archive', nargs='*', help='a list of repositories')
+            archives.add_argument('--all', "-a", default=False, const=True, action="store_const", help="select all repositories")
+        else:
+            archives.add_argument('archives', metavar='archive', nargs='+', help='a non-empty list of repositories')
+        
+        archives.add_argument('--instance', "-g", default=None, help="Use only repositories from the selected instance")
+        
         
         self._add_args_argparse(parser)
     
@@ -105,6 +111,30 @@ class ArchiveCommand(command.Command):
         for c in codes:
             andc &= c
         return andc
+    
+    def _resolve(self, *spec, base_group = None, instance = None):
+        """
+        Protected function used to resolve a list of archives. To be overidden
+        by subclass. 
+        
+        Arguments:
+            *spec
+                A list of strings, pairs, LMHArchive or patterns containing *s 
+                that will be matched against the full names of repositories of 
+                the form 'group/name'.
+                If empty and base_group is None, the full list of repositories 
+                will be returned. If empty and base_group has some value only
+                repositories from that group will be returned. 
+            base_group
+                Optional. If given, before trying to match repositories globally
+                will try to match 'name' inside the group base_group. 
+            instance
+                Optional. If set returns only repositories from the 
+                instance matching the given name. 
+        Returns:
+            A list of archives
+        """
+        raise NotImplementedError
     
     def call_all(self, archives, *args, parsed_args=None):
         """
@@ -149,30 +179,32 @@ class ArchiveCommand(command.Command):
         
         # take out the repository arguments
         archivestrs = parsed_args.archives
-        instance = parsed_args.instance
-        has_all = parsed_args.all
-        
         del parsed_args.archives
+        
+        instance = parsed_args.instance
         del parsed_args.instance
-        del parsed_args.all
+        
+        if self.__support_all:
+            has_all = parsed_args.all
+            del parsed_args.all
+        else:
+            has_all = False
+        
         
         # get the base
         the_base = self.commander.get_base()
         
-        # get the resolve command
-        resolve_command = self.manager.resolve_local_archives if self.__local else self.manager.resolve_remote_archives
-        
         # resolve the archives
         if has_all:
             try:
-                archives = resolve_command(base_group = the_base, instance = instance)
+                archives = self._resolve(base_group = the_base, instance = instance)
             except resolver.GroupNotFound:
-                archives = resolve_command(instance = instance)
+                archives = self._resolve(instance = instance)
         else:
             try:
-                archives = resolve_command(*archivestrs, base_group = the_base, instance = instance)
+                archives = self._resolve(*archivestrs, base_group = the_base, instance = instance)
             except resolver.GroupNotFound:
-                archives = resolve_command(*archivestrs, instance = instance)
+                archives = self._resolve(*archivestrs, instance = instance)
         
         return self.call_all(archives, *args, parsed_args=parsed_args)
 
@@ -181,27 +213,53 @@ class LocalArchiveCommand(ArchiveCommand):
     A command that is iterates over individual localarchives
     """
     
-    def __init__(self, name):
+    def _resolve(self, *spec, base_group = None, instance = None):
         """
-        Creates a new LocalArchiveCommand() instance
+        Protected function used to resolve a list of archives. 
         
         Arguments:
-            name
-                The name of this command
+            *spec
+                A list of strings, pairs, LMHArchive or patterns containing *s 
+                that will be matched against the full names of repositories of 
+                the form 'group/name'.
+                If empty and base_group is None, the full list of repositories 
+                will be returned. If empty and base_group has some value only
+                repositories from that group will be returned. 
+            base_group
+                Optional. If given, before trying to match repositories globally
+                will try to match 'name' inside the group base_group. 
+            instance
+                Optional. If set returns only repositories from the 
+                instance matching the given name. 
+        Returns:
+            A list of archives
         """
-        super(LocalArchiveCommand, self).__init__(name, True)
+        return self.manager.resolve_local_archives(*spec, base_group = base_group, instance = instance) 
 
 class RemoteArchiveCommand(ArchiveCommand):
     """
     A command that is iterates over individual remote archives
     """
     
-    def __init__(self, name):
+    def _resolve(self, *spec, base_group = None, instance = None):
         """
-        Creates a new RemoteArchiveCommand() instance
+        Protected function used to resolve a list of archives. 
         
         Arguments:
-            name
-                The name of this command
+            *spec
+                A list of strings, pairs, LMHArchive or patterns containing *s 
+                that will be matched against the full names of repositories of 
+                the form 'group/name'.
+                If empty and base_group is None, the full list of repositories 
+                will be returned. If empty and base_group has some value only
+                repositories from that group will be returned. 
+            base_group
+                Optional. If given, before trying to match repositories globally
+                will try to match 'name' inside the group base_group. 
+            instance
+                Optional. If set returns only repositories from the 
+                instance matching the given name. 
+        Returns:
+            A list of archives
         """
-        super(RemoteArchiveCommand, self).__init__(name, False)
+        return self.manager.resolve_remote_archives(*spec, base_group = base_group, instance = instance) 

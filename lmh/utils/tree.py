@@ -2,7 +2,7 @@ from lmh.utils.clsutils.caseclass import caseclass
 
 @caseclass
 class TreeNode(object):
-    def __init__(self, data, children = []):
+    def __init__(self, data = '╿', children = None):
         """
         Creates a new TreeNode. 
         
@@ -15,7 +15,7 @@ class TreeNode(object):
         """
         
         self.data = data
-        self.children = children
+        self.children = children if children != None else []
     def __str__(self):
         """
         Same as self.treestr()
@@ -86,4 +86,33 @@ class TreeNode(object):
                         break
                 
                 del c
+
+@caseclass
+class PrintableTreeObject(object):
+    """
+    Represents an object in a tree that has
+    a string representation and internal data. 
+    """
+    
+    def __init__(self, data, s):
+        """
+        Creates a new PrintableTreeObject()
         
+        Arguments:
+            Data
+                Data this node has
+            s
+                String representing this object
+        """
+        
+        self.data = data
+        self.s = s
+    
+    def __str__(self):
+        """
+        Turns this object into a string
+        
+        Returns:
+            a string
+        """
+        return str(self.s)

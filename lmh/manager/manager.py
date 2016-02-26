@@ -191,7 +191,7 @@ class LMHManager(object):
                 for (i, g, n) in self.mathhub.resolve_local(*the_spec, base_group = base_group, instance = instance)
             ]
         
-        the_archives.sort(key=lambda a:'%s/%s' % (a.group, a.name))
+        the_archives.sort(key=str)
         return the_archives
     
     def resolve_local_archive(self, spec, base_group = None, instance = None):
@@ -263,7 +263,7 @@ class LMHManager(object):
                 for (i, g, n) in self.mathhub.resolve_remote(*the_spec, base_group = base_group, instance = instance)
             ]
         
-        the_archives.sort(key=lambda a:'%s/%s' % (a.group, a.name))
+        the_archives.sort(key=str)
         return the_archives
     
     def resolve_remote_archive(self, spec, base_group = None, instance = None):

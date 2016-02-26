@@ -2,7 +2,7 @@ from lmh.frontend.commands import archive
 
 class DTreeCommand(archive.LocalArchiveCommand):
     """
-    Shows the depdendency tree of local repositories
+    Prints a dependency tree for local archives
     """
     
     def __init__(self):
@@ -26,22 +26,22 @@ class DTreeCommand(archive.LocalArchiveCommand):
         
         shallow = command.add_argument_group('Tree expansion').add_mutually_exclusive_group()
         shallow.add_argument('--shallow', dest='shallow', action='store_true', default=True, help='Generate a shallow tree by using a breadth-first approach. Default. ')
-        shallow.add_argument('--deep', dest='shallow', action='store_false', help='Generate a fully expanded tree')
+        shallow.add_argument('--deep', '-d', dest='shallow', action='store_false', help='Generate a fully expanded tree')
         
         sort = command.add_argument_group('Node sorting').add_mutually_exclusive_group()
         sort.add_argument('--sort', dest='sort', action='store_true', default=True, help='Sort dependencies alphabetically and by type. Default. ')
-        sort.add_argument('--no-sort', dest='sort', action='store_false', help='Do not sort dependencies')
+        sort.add_argument('--no-sort', '-k', dest='sort', action='store_false', help='Do not sort dependencies')
         
         
         sumnodes = command.add_argument_group('Summarising nodes')
         
         sumunex = sumnodes.add_mutually_exclusive_group()
         sumunex.add_argument('--summarize-unexpanded-nodes', dest='sumunex', action='store_true', default=True, help='Summarise (group together) unexpanded nodes. Default')
-        sumunex.add_argument('--keep--unexpanded-nodes', dest='sumunex', action='store_false', help='Do not group unexpanded nodes')
+        sumunex.add_argument('--keep--unexpanded-nodes', '-u', dest='sumunex', action='store_false', help='Do not group unexpanded nodes')
         
         sumcirc = sumnodes.add_mutually_exclusive_group()
         sumcirc.add_argument('--keep-circular-nodes', dest='sumcirc', action='store_false', default=False, help='Do not group circular nodes. Default')
-        sumcirc.add_argument('--summarize-circular-nodes', dest='sumcirc', action='store_true', help='Summarise (group together) circular nodes')
+        sumcirc.add_argument('--summarize-circular-nodes', '-c', dest='sumcirc', action='store_true', help='Summarise (group together) circular nodes')
     
     def call_all(self, archives, *args, parsed_args=None):
         """

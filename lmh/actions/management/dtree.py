@@ -39,7 +39,7 @@ class DependencyTreeAction(archive.LocalArchiveAction, management.ManagementActi
         Returns:
             a single tree representing all requested dependencies
         """
-        return tree.TreeNode('╿', children = results)
+        return tree.TreeNode(children = results)
 
 class DependencyTreePrintAction(archive.LocalArchiveAction, management.ManagementAction):
     """

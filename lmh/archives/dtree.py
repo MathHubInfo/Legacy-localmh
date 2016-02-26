@@ -163,7 +163,7 @@ class DependencyNode(tree.TreeNode):
         return root
     
     @staticmethod
-    def __build_deep(archive, dependency_key = None, known = []):
+    def __build_deep(archive, dependency_key = None, known = None):
         """
         Recursively builds a deep dependency tree for local archives with a 
         depth-first expansion. 
@@ -182,6 +182,9 @@ class DependencyNode(tree.TreeNode):
         Returns:
             A DependencyNode() object representing the deep dependency tree. 
         """
+        
+        if known == None:
+            known = []
         
         if dependency_key == None:
             dependency_key = DependencyNode.__default_dependency_key

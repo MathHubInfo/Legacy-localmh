@@ -21,3 +21,6 @@ class StandardActions(object):
         from lmh.actions.management import dtree
         manager.add_action(dtree.DependencyTreeAction())
         manager.add_action(dtree.DependencyTreePrintAction())
+        
+        from lmh.actions.management import install
+        manager.add_action(install.InstallAction())

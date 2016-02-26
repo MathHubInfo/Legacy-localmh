@@ -1,10 +1,28 @@
 from lmh.actions import action
+from lmh.utils import exceptions
 
 class ArchiveBasedAction(action.Action):
     """
     Common Base Class for ArchiveBasedActions. 
     """
-    
+    def __init__(self, name, config, support_all = True):
+        """
+        Creates a new ArchiveBasedAction() instance. 
+        
+        Arguments: 
+            name
+                Name of this action
+            config
+                A list of LMHConfigSettingSpec() instances representing 
+                configuration options needed by this action. 
+            support_all
+                Optional. Boolean indicating if the action is supported for all archives
+                at once by giving an empty list of archives. Default to True. 
+        """
+        
+        super(ArchiveBasedAction, self).__init__(name, config)        
+        self.__support_all = support_all
+        
     def run_single(self, archive, *args, **kwargs):
         """
         Runs this action on a single archive. Needs to be implemented
@@ -33,6 +51,19 @@ class ArchiveBasedAction(action.Action):
         """
         return results
     
+    def _resolve(self, *archives):
+        """
+        Protected function used to resolve a list of archives. To be overidden
+        by subclass. 
+        
+        Arguments:
+            *archives
+                A list of string, LMHArchive() or pairs to resolve
+        Returns:
+            A list of archives
+        """
+        raise NotImplementedError
+    
     def run_all(self, archives, *args, **kwargs):
         """
         Runs this action on a list of archives. By default forwards to self.run_single()
@@ -51,32 +82,6 @@ class ArchiveBasedAction(action.Action):
             self.run_single(ra, *args, **kwargs)
             for ra in archives
         ])
-
-class LocalArchiveAction(ArchiveBasedAction):
-    """
-    Represents an action that runs on individual local repositories. 
-    """
-    
-    def run(self, archives, *args, **kwargs):
-        """
-        Runs this action on a list of local archives. Needs to be implemented
-        by subclass. 
-        
-        Arguments:
-            archives
-                List of Strings, Pairs or LMHLocalArchive() instances to run over
-            *args, **kwargs
-                Arguments passed on to the action
-        Returns: 
-            Return value of this action
-        """
-        
-        return self.run_all(self.manager.resolve_local_archives(*archives), *args, **kwargs)
-
-class RemoteArchiveAction(ArchiveBasedAction):
-    """
-    Represents an action that runs on individual remote repositories. 
-    """
     
     def run(self, archives, *args, **kwargs):
         """
@@ -92,4 +97,52 @@ class RemoteArchiveAction(ArchiveBasedAction):
             Return value of this action
         """
         
-        return self.run_all(self.manager.resolve_remote_archives(*archives), *args, **kwargs)
+        if len(archives) == 0 and not self.__support_all:
+            raise AtLeastOneArchiveRequiredException
+        
+        return self.run_all(self._resolve(*archives), *args, **kwargs)
+
+class LocalArchiveAction(ArchiveBasedAction):
+    """
+    Represents an action that runs on individual local archives. 
+    """
+    
+    def _resolve(self, *archives):
+        """
+        Protected function used to resolve a list of archives. 
+        
+        Arguments:
+            archives
+                A list of string, LMHArchive() or pairs to resolve
+        Returns:
+            A list of archives
+        """
+        return self.manager.resolve_local_archives(*archives)
+
+class RemoteArchiveAction(ArchiveBasedAction):
+    """
+    Represents an action that runs on individual remote archives. 
+    """
+    
+    def _resolve(self, *archives):
+        """
+        Protected function used to resolve a list of archives. 
+        
+        Arguments:
+            archives
+                A list of string, LMHArchive() or pairs to resolve
+        Returns:
+            A list of archives
+        """
+        return self.manager.resolve_remote_archives(*archives)
+
+class AtLeastOneArchiveRequiredException(exceptions.LMHException):
+    """
+    Exception thrown to indicate that at least one archive argument is required. 
+    """
+    
+    def __init__(self):
+        """
+        Creates a new AtLeastOneArchiveRequiredException() instance
+        """
+        super(AtLeastOneArchiveRequiredException, self).__init__("at least one archive is required as argument. ")
