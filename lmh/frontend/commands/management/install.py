@@ -1,6 +1,7 @@
 from lmh.frontend.commands import archive
+from lmh.actions import archive as aarchive
 
-class InstallCommand(archive.LocalArchiveCommand):
+class InstallCommand(archive.RemoteArchiveCommand):
     """
     Install a set of archives and their dependencies. 
     """
@@ -34,7 +35,7 @@ class InstallCommand(archive.LocalArchiveCommand):
         
         confirm = command.add_argument_group('Confirmation').add_mutually_exclusive_group()
         confirm.add_argument('--confirm', dest='confirm', action='store_true', default=True, help='Wait and ask the user after repositories have been resolved. Default. ')
-        confirm.add_argument('--no-confirm', '-y', dest='rescan', action='store_false', help='Do not ask user for confirmation and install immediatly')
+        confirm.add_argument('--no-confirm', '-y', dest='confirm', action='store_false', help='Do not ask user for confirmation and install immediatly')
     
     def call_all(self, archives, *args, parsed_args=None):
         """
@@ -57,6 +58,5 @@ class InstallCommand(archive.LocalArchiveCommand):
             normally. 
         """
         
-        self.manager('install', archives, dependencies = parsed_args.deps, rescan = parsed_args.rescan, confirm = parsed_args.confirm)
-        
-        return True
+        r = self.manager('install', archives, dependencies = parsed_args.deps, rescan = parsed_args.rescan, confirm = parsed_args.confirm)
+        return r != None

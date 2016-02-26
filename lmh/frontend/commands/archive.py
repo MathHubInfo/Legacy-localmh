@@ -190,7 +190,6 @@ class ArchiveCommand(command.Command):
         else:
             has_all = False
         
-        
         # get the base
         the_base = self.commander.get_base()
         

@@ -134,6 +134,7 @@ class RemoteArchiveAction(ArchiveBasedAction):
         Returns:
             A list of archives
         """
+        
         return self.manager.resolve_remote_archives(*archives)
 
 class AtLeastOneArchiveRequiredException(exceptions.LMHException):

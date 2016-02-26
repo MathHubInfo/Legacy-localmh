@@ -157,6 +157,40 @@ class StandardLogger(Logger):
         Creates a new logger instance. 
         """
         super(StandardLogger, self).__init__('standard')
+        
+        self._lastlog = None
+    
+    def __write_std(self, msg):
+        """
+        Private function used to write to stdout. 
+        
+        Arguments:
+            msg
+                String to write to stdout
+        """
+        
+        if self._lastlog == 'stderr':
+            sys.stderr.flush()
+        
+        sys.stdout.write(msg)
+        
+        self._lastlog = 'stdout'
+    
+    def __write_err(self, msg):
+        """
+        Private function used to write to stderr. 
+        
+        Arguments:
+            msg
+                String to write to stdout
+        """
+        
+        if self._lastlog == 'stdout':
+            sys.stdout.flush()
+        
+        sys.stderr.write(msg)
+        
+        self._lastlog = 'stderr'
     
     def _log(self, *message, newline = True, level = levels.NoLogLevel()):
         """
@@ -180,19 +214,19 @@ class StandardLogger(Logger):
         
         # nothing special, just print
         if level == levels.NoLogLevel():
-            sys.stdout.write(msg)
+            self.__write_std(msg)
         
         # Info + Warn ==> STDOUT
         elif level == levels.InfoLogLevel():
-            sys.stdout.write('[%s] %s' % (escape.Green('info'), msg))
+            self.__write_std('[%s] %s' % (escape.Green('info'), msg))
         elif level == levels.WarnLogLevel():
-            sys.stdout.write('[%s] %s' % (escape.Yellow('warn'), msg))
+            self.__write_std('[%s] %s' % (escape.Yellow('warn'), msg))
         
         # Error + Fatal ==> STDERR
         elif level == levels.ErrorLogLevel():
-            sys.stderr.write('[%s] %s' % (escape.Red('error'), msg))
+            self.__write_err('[%s] %s' % (escape.Red('error'), msg))
         elif level == levels.FatalLogLevel():
-            sys.stderr.write('[%s] %s' % (escape.Magenta('fatal'), msg))
+            self.__write_err('[%s] %s' % (escape.Magenta('fatal'), msg))
     
     def flush(self):
         """
