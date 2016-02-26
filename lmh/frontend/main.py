@@ -63,7 +63,7 @@ class LMHMain(object):
     def main(*args):
         """
         Creates an lmh commander, runs it with the given commands and exits
-        with the given exit code. 
+        with the given exit code. Serves as the main entry point to localmh. 
         
         Arguments:
             *args
