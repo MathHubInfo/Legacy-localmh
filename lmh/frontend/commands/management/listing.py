@@ -77,7 +77,7 @@ class LocalListCommand(ListCommand, archive.LocalArchiveCommand):
 
 class RemoteListCommand(ListCommand, archive.RemoteArchiveCommand):
     """
-    Shows the depdendency tree of local repositories
+    Shows a list of archives that are available remotely. 
     """
     
     def __init__(self):
