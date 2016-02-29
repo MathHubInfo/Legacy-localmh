@@ -51,7 +51,7 @@ class GeneratedBranchManager(object):
             path
                 Optional. Path to create generated branch at. Defaults to name. 
         
-        Returns a new GeneratedBranch() instance
+        Returns a new GeneratedBranch() instance or False in case creation failed. 
         """
         
         # make sure the branch does not exist by catching
@@ -94,56 +94,29 @@ class GeneratedBranchManager(object):
         self.archive.manifest['generated_branches'] = ('%s %s' % (self.archive.manifest['generated_branches'], mns)).strip()
         
         # make an orphaned branch
-        
-        
-        
-
-        # Update the meta-inf
-        written = False
-        lines = get_metainf_lines(self.repo)
-
-        # try to append it to a line that already exists.
-        for (i, l) in enumerate(lines):
-            if l.startswith(gbranchstring):
-                lines[i] = lines[i].rstrip("\n") + " " + branch
-                written = True
-                break
-
-        # or make a new one.
-        if written == False:
-            lines.extend([gbranchstring+" "+ branch])
-
-        # and write that file.
-        write_file(meta_inf_path, lines)
-
-        # Create the orphaned branch.
-        if not make_orphan_branch(rpath, name):
+        if not self.git.make_orphan_branch(rpath, name):
             return False
-
-        # push it
-        if not do(rpath, "push", "-u", "origin", name):
-            err("Pushing branch to origin failed. ")
+        
+        # push it to origin
+        if not self.git.do(rpath, 'push', '-u', 'origin', name):
             return False
-
-        # Clear the deploy branch cache for this repository.
-        self.clear_branch_cache()
-
-        # install it.
-        if not self.install_branch(name):
+        
+        # get and install it
+        gbranch = self.get(name)
+        
+        # install it
+        if not gbranch.install():
             return False
 
         # change the commit message
-        if not do(dpath, "commit", "--amend", "--allow-empty", "-m", "Create deploy branch. "):
+        if not self.git.do(bpath, 'commit', '--amend', '--allow-empty', '-m', 'Create deploy branch %s at %s' % (name, deploy)):
             return False
 
         # and push it.
-        if not do(dpath, "push", "--force", "origin", name):
+        if not self.git.do(bpath, 'push', '--force', 'origin', name):
             return False
-
-        std("Generated files branch '"+name+"' created, installed and pushed. ")
-        std("Please commit and push META-INF/MANIFEST.MF and .gitignore to publish installation. ")
-
-        return True
+        
+        return gbranch
         
 
 class GeneratedBranch(object):
@@ -239,6 +212,21 @@ class GeneratedBranch(object):
         # and delete the branch from our repository
         return self.__git.do(self.__rpath, 'branch', '-D', self.name)
     
+    def __housekeeping(self):
+        """
+        Performs git housekeeping tasks that ensure this GeneratedBranch does not
+        waste disk space. 
+        
+        Returns:
+            A Boolean indicating if the housekeeping task was successfull. 
+        """
+        
+        if not self.__git.do(self.__bpath, 'gc', '--auto'):
+            return False
+        
+        return self.__git.do(self.__rpath, 'gc', '--auto')
+        
+    
     def pull(self):
         """
         Pulls this generated branch or throws BranchNotInstalled() if it is
@@ -260,10 +248,7 @@ class GeneratedBranch(object):
             return False
 
         # do some housekeeping in both repos
-        if not self.__git.do(self.__bpath "gc", "--auto"):
-            return False
-        
-        return self.__git.do(self.__rpath "gc", "--auto")
+        return self.__housekeeping()
     
     def push(self):
         """
@@ -290,10 +275,7 @@ class GeneratedBranch(object):
             return False
         
         # do some housekeeping in both repos
-        if not self.__git.do(self.__bpath "gc", "--auto"):
-            return False
-        
-        return self.__git.do(self.__rpath "gc", "--auto")
+        return self.__housekeeping()
 
 class NoSuchGeneratedBranch(exceptions.LMHException):
     """
