@@ -5,14 +5,14 @@ class MathHubManager(object):
     Represents a Manager that can contain multiple MathHub Instances. 
     """
     
-    def __init__(self, config):
+    def __init__(self):
         """
         Initalises a new MathHubManager() instance. 
         """
         
         self.__mathhubs = {}
     
-    def addMathHubInstance(self, mh_instance):
+    def add(self, mh_instance):
         """
         Adds a new MathHubInstance() to this MathHubManager(). 
         
@@ -31,7 +31,15 @@ class MathHubManager(object):
         
         self.__mathhubs[mh_instance.name] = mh_instance
     
-    def getMathHubInstance(self, name):
+    def __iadd__(self, mh_instance):
+        """
+        Same as self.add(mh_instance)
+        """
+        
+        self.add(mh_instance)
+        return self
+    
+    def get(self, name):
         """
         Returns a MathHubInstance() that can resolve queries for the given
         name or throws InstanceNotFound(). 
@@ -51,9 +59,9 @@ class MathHubManager(object):
     
     def __getitem__(self, name):
         """
-        Same as self.getMathHubInstance(name)
+        Same as self.get(name)
         """
-        return self.getMathHubInstance(name)
+        return self.get(name)
     
     def resolve_local(self, *spec, base_group = None, instance = None):
         """
@@ -81,7 +89,7 @@ class MathHubManager(object):
         
         if instance != None:
             return [
-                (instance, g, n) for (g, n) in self.getMathHubInstance(instance).resolve_local(*spec, base_group = base_group)
+                (instance, g, n) for (g, n) in self[instance].resolve_local(*spec, base_group = base_group)
             ]
         
         repos = set()
@@ -107,7 +115,7 @@ class MathHubManager(object):
             A string representing the full path to the given repository. 
         """
         
-        return self.getMathHubInstance(instance).get_repo_path(group, name)
+        return self[instance].get_repo_path(group, name)
     
         
     def resolve_remote(self, *spec, base_group = None, instance = None):
@@ -136,7 +144,7 @@ class MathHubManager(object):
         
         if instance != None:
             return [
-                (instance, g, n) for (g, n) in self.getMathHubInstance(instance).resolve_remote(*spec, base_group = base_group)
+                (instance, g, n) for (g, n) in self[instance].resolve_remote(*spec, base_group = base_group)
             ]
         
         repos = set()
@@ -162,8 +170,8 @@ class MathHubManager(object):
             A string representing the full path to the given repository. 
         """
         
-        return self.getMathHubInstance(instance).get_repo_path(group, name)
-        
+        return self[instance].get_repo_path(group, name)
+
 class InstanceAlreadyRegistered(exceptions.MathHubException):
     """
     Exception that is thrown when a given instance is already registered in this

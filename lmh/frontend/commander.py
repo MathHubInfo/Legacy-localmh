@@ -9,22 +9,51 @@ class LMHCommander(object):
     An LMHCommnder is an object that manages command used by lmh. 
     """
     
-    def __init__(self, manager, base = None):
+    def __init__(self, manager = None, base = None):
         """
         Creates a new LMHCommander() instance
         
         Arguments: 
             manager
-                LMHManager() object used by this Commander
+                Optional. LMHManager() object used by this Commander. If omitted
+                should be set before commands are registered by setting the 
+                manager property. 
             base
                 Base relative to which this commander should run commands for
         """
         
-        self.manager = manager
-        self.__doc__ = "Local MathHub Tool"
+        self.__manager = manager
+        self.__doc__ = 'Local MathHub Tool'
         
         self.__commands = []
         self.__base = os.getcwd() if base == None else base
+    
+    @property
+    def manager(self):
+        """
+        Gets the LMHManager instance belonging to this Commander() or throws 
+        CommanderWithoutManager(). 
+        
+        Returns:
+            A LMHManager() instance
+        """
+        
+        if self.__manager == None:
+            raise CommanderWithoutManager()
+        
+        return self.__manager
+    
+    @manager.setter
+    def manager(self, manager):
+        """
+        Sets the Manager instance to be used by this Commander(). 
+        
+        Arguments:
+            manager
+                Manager instance to set
+        """
+        
+        self.__manager = manager
     
     def get_base(self):
         """
@@ -36,7 +65,7 @@ class LMHCommander(object):
         
         return self.__base
     
-    def add_command(self, cmd):
+    def add(self, cmd):
         """
         Adds a Command to this LMHCommander() instance. 
         
@@ -53,6 +82,13 @@ class LMHCommander(object):
         
         cmd.register(self)
         self.__commands.append(cmd)
+    
+    def __iadd__(self, cmd):
+        """
+        Same as self.add(cmd)
+        """
+        self.add(cmd)
+        return self
     
     def keys(self):
         """
@@ -166,6 +202,9 @@ class LMHCommander(object):
             except NotImplementedError:
                 subparsers.add_parser(name, help=self[name].__doc__, add_help=False)
         
+        # add a version argument
+        parser.add_argument('--version', action='store_true', help='show version message and exit. Alias for %r' % ('about',))
+        
         # return the parser
         return parser
     def extract_arguments(self, *args):
@@ -189,11 +228,15 @@ class LMHCommander(object):
         try:
             (parsed, unknown) = parser.parse_known_args(args)
         except SystemExit:
-            return (None, [], None)
+            return (None, None, [])
         
         # extract the command
         command = parsed.command
         del parsed.command
+        
+        if parsed.version:
+            return ('about', None, [])
+        del parsed.version
         
         # If no arguments were given, print the help
         if command == None:
@@ -221,3 +264,15 @@ class LMHCommander(object):
             return 0
         else:
             return self.__safe_call(self[command], *unknown, parsed_args=parsed)
+    
+class CommanderWithoutManager(exceptions.LMHException):
+    """
+    Exception that is thrown when no LMHManager() is bound to an LMHCommander() instance
+    """
+    
+    def __init__(self):
+        """
+        Creates a new CommanderWithoutManager() instance
+        """
+        
+        super(CommanderWithoutManager, self).__init__('No LMHManager() is bound to this LMHCommander() instance')

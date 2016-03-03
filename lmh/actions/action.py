@@ -40,16 +40,16 @@ class Action(object):
         
         self.manager = manager
         
-        config_spec = self.manager.config.spec
-        
-        # add the config settings if they do not already exist
-        for c in self.config:
-            if not c.name in config_spec:
-                config_spec.add_config_setting(c)
-            else:
-                # TODO: Re-enable warning about duplicate settings
-                # self.manager.logger.warn('Action %r: Setting %r already exists in Manager() instance. ' % (self.name, c.name))
-                pass
+        #  try updating the config
+        if len(self.config) > 0:
+            config_spec = self.manager.config.spec
+            
+            # add the config settings if they do not already exist
+            for c in self.config:
+                if not c.name in config_spec:
+                    config_spec.add_config_setting(c)
+                else:
+                    self.manager.logger.warn('Action %r: Setting %r already exists in Manager() instance. ' % (self.name, c.name))
         
         self._register()
     

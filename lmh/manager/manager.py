@@ -1,4 +1,5 @@
 from lmh.mathhub.resolvers import resolver
+from lmh.utils import exceptions
 from lmh.archives import archive
 import os
 
@@ -7,31 +8,122 @@ class LMHManager(object):
     An LMHManager is the main object instatiated by lmh. 
     """
     
-    def __init__(self, logger, config, mathhub):
+    def __init__(self, logger = None, config = None, mathhub = None):
         """
         Creates a new LMHManager instance. 
         
         Arguments: 
             logger
-                Logger Instance to be used by this manager
+                Optional. Logger Instance to be used by this LMHManager(). If 
+                omitted should be set before any actions are registered by 
+                setting the logger property. 
             config
-                Configuration Instance to be used by this manager
+                Optional. Configuration Instance to be used by this 
+                LMHManager(). If omitted should be set before any actions are 
+                registered by setting the config property. 
             mathhub
-                MathHubManager used by this LMHManager()
+                Optional. MathHubManager used by this LMHManager(). If omitted 
+                should be set before any actions are registered by setting the 
+                mathhub property. 
         """
         
-        self.logger = logger
-        self.config = config
-        self.mathhub = mathhub
+        self.__logger = logger
+        self.__config = config
+        self.__mathhub = mathhub
         
         self.__actions = []
         self.__archives = {}
     
     #
+    # Properties
+    #
+    
+    @property
+    def logger(self):
+        """
+        Gets the Loggger instance belonging to this LMHManager() or throws 
+        ManagerWithoutLogger(). 
+        
+        Returns:
+            A LMHManager() instance
+        """
+        
+        if self.__logger == None:
+            raise ManagerWithoutLogger()
+        
+        return self.__logger
+    
+    @logger.setter
+    def logger(self, logger):
+        """
+        Sets the Logger instance to be used by this LMHManager(). 
+        
+        Arguments:
+            logger
+                Logger instance to be set
+        """
+        
+        self.__logger = logger
+    
+    @property
+    def config(self):
+        """
+        Gets the LMHConfig instance belonging to this LMHManager() or throws 
+        ManagerWithoutConfig(). 
+        
+        Returns:
+            An LMHConfig() instance
+        """
+        
+        if self.__config == None:
+            raise ManagerWithoutConfig()
+        
+        return self.__config
+    
+    @config.setter
+    def config(self, config):
+        """
+        Sets the LMHConfig instance to be used by this LMHManager(). 
+        
+        Arguments:
+            config
+                LMHConfig instance to be set
+        """
+        
+        self.__config = config
+    
+    @property
+    def mathhub(self):
+        """
+        Gets the MathHubManager instance belonging to this LMHManager() or throws 
+        ManagerWithoutMathhub(). 
+        
+        Returns:
+            An MathHubManager() instance
+        """
+        
+        if self.__mathhub == None:
+            raise ManagerWithoutMathhub()
+        
+        return self.__mathhub
+    
+    @mathhub.setter
+    def mathhub(self, mathhub):
+        """
+        Sets the MathHubManager instance to be used by this LMHManager(). 
+        
+        Arguments:
+            mathhub
+                MathHubManager instance to be set
+        """
+        
+        self.__mathhub = mathhub
+    
+    #
     # Action Functionality
     #
     
-    def add_action(self, act):
+    def add(self, act):
         """
         Adds an Action to this LMHManager() instance. 
         
@@ -50,6 +142,13 @@ class LMHManager(object):
         
         act.register(self)
         self.__actions.append(act)
+    
+    def __iadd__(self, act):
+        """
+        Same as self.add(act)
+        """
+        self.add(act)
+        return self
     
     def keys(self):
         """
@@ -292,3 +391,39 @@ class LMHManager(object):
             return repos[0]
         else:
             raise resolver.RepositoryNotFound()
+
+class ManagerWithoutLogger(exceptions.LMHException):
+    """
+    Exception that is thrown when no Logger() is bound to an LMHManager() instance
+    """
+    
+    def __init__(self):
+        """
+        Creates a new ManagerWithoutLogger() instance
+        """
+        
+        super(ManagerWithoutLogger, self).__init__('No Logger() is bound to this LMHManager() instance')
+
+class ManagerWithoutConfig(exceptions.LMHException):
+    """
+    Exception that is thrown when no LMHConfig() is bound to an LMHManager() instance
+    """
+    
+    def __init__(self):
+        """
+        Creates a new ManagerWithoutConfig() instance
+        """
+        
+        super(ManagerWithoutConfig, self).__init__('No LMHConfig() is bound to this LMHManager() instance')
+
+class ManagerWithoutMathhub(exceptions.LMHException):
+    """
+    Exception that is thrown when no MathHubManager() is bound to an LMHManager() instance
+    """
+    
+    def __init__(self):
+        """
+        Creates a new ManagerWithoutMathhub() instance
+        """
+        
+        super(ManagerWithoutMathhub, self).__init__('No MathHubManager() is bound to this LMHManager() instance')

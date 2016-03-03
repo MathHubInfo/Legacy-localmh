@@ -9,18 +9,22 @@ class StandardActions(object):
                 Manager() to register all standard actions to
         """
         
+        # Info action
+        from lmh.actions.core import info
+        manager += info.InfoAction()
+        
         # External Program Actions
         from lmh.actions.program import git
-        manager.add_action(git.GitAction())
+        manager += git.GitAction()
         
         # Managment Actions
         from lmh.actions.management import listing
-        manager.add_action(listing.LocalListAction())
-        manager.add_action(listing.RemoteListAction())
+        manager += listing.LocalListAction()
+        manager += listing.RemoteListAction()
         
         from lmh.actions.management import dtree
-        manager.add_action(dtree.DependencyTreeAction())
-        manager.add_action(dtree.DependencyTreePrintAction())
+        manager += dtree.DependencyTreeAction()
+        manager += dtree.DependencyTreePrintAction()
         
         from lmh.actions.management import install
-        manager.add_action(install.InstallAction())
+        manager += install.InstallAction()

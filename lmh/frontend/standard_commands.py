@@ -9,13 +9,17 @@ class StandardCommands(object):
                 Commander() to register all standard commands to
         """
         
+        from lmh.frontend.commands.core import about
+        
+        commander += about.AboutCommand()
+        
         # other commands
         from lmh.frontend.commands.management import dtree, listing, install
         
-        commander.add_command(install.InstallCommand())
-        commander.add_command(dtree.DTreeCommand())
-        commander.add_command(listing.LocalListCommand())
-        commander.add_command(listing.RemoteListCommand())
+        commander += install.InstallCommand()
+        commander += dtree.DTreeCommand()
+        commander += listing.LocalListCommand()
+        commander += listing.RemoteListCommand()
         
         # legacy commands
         StandardCommands.register_legacy_commands_to(commander)
@@ -36,23 +40,23 @@ class StandardCommands(object):
         from lmh.frontend.commands import alias
         
         # Aliases for Status + Commands
-        commander.add_command(alias.AliasCommand('ci', 'commit'))
-        commander.add_command(alias.AliasCommand('si', 'status'))
+        commander += alias.AliasCommand('ci', 'commit')
+        commander += alias.AliasCommand('si', 'status')
         
         # selfupdate
-        commander.add_command(alias.AliasCommand('selfupdate', 'setup', '--update', 'self'))
+        commander += alias.AliasCommand('selfupdate', 'setup', '--update', 'self')
         
         # lmh gen*
-        commander.add_command(alias.AliasCommand('gen', 'mmt', 'make'))
-        commander.add_command(alias.AliasCommand('sms', 'gen', 'sms'))
-        commander.add_command(alias.AliasCommand('omdoc', 'gen', 'latexml'))
-        commander.add_command(alias.AliasCommand('pdf', 'gen', 'pdflatex'))
-        commander.add_command(alias.AliasCommand('alltex', 'gen', 'alltex'))
-        commander.add_command(alias.AliasCommand('allpdf', 'gen', 'allpdf'))
+        commander += alias.AliasCommand('gen', 'mmt', 'make')
+        commander += alias.AliasCommand('sms', 'gen', 'sms')
+        commander += alias.AliasCommand('omdoc', 'gen', 'latexml')
+        commander += alias.AliasCommand('pdf', 'gen', 'pdflatex')
+        commander += alias.AliasCommand('alltex', 'gen', 'alltex')
+        commander += alias.AliasCommand('allpdf', 'gen', 'allpdf')
         
         # Depreacted Aliases
-        commander.add_command(alias.AliasCommand('update', 'pull', depracated = True))
-        commander.add_command(alias.AliasCommand('ls', 'ls-local', depracated = True))
+        commander += alias.AliasCommand('update', 'pull', depracated = True)
+        commander += alias.AliasCommand('ls', 'ls-local', depracated = True)
     @staticmethod
     def register_legacy_commands_to(commander):
         """
@@ -73,6 +77,6 @@ class StandardCommands(object):
         from lmh.frontend.commands import legacy
         
         for c in lc:
-            commander.add_command(legacy.LegacyCommand(c))
+            commander += legacy.LegacyCommand(c)
         
     

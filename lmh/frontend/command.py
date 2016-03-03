@@ -1,3 +1,5 @@
+from lmh.utils import exceptions
+
 class Command(object):
     """
     A Command represents a command that can be run from the Frontend of lmh
@@ -13,8 +15,35 @@ class Command(object):
         """
         self.name = name
         
-        self.commander = None
-        self.manager = None
+        self.__commander = None
+    
+    @property
+    def commander(self):
+        """
+        Gets the LMHCommander() instance used by this Command() or throws
+        CommandWithoutCommander. 
+        
+        Returns:
+            An LMHCommander() instance
+        """
+        
+        if self.__commander == None:
+            raise CommandWithoutCommander()
+        
+        return self.__commander
+    
+    @property
+    def manager(self):
+        """
+        Gets the LMHManager instance used by this Command() or throws
+        CommandWithoutCommander or CommanderWithoutManager when appropriate. 
+        
+        Returns:
+            A LMHManager() instance
+        """
+        
+        return self.commander.manager
+    
     
     def _register(self):
         """
@@ -30,8 +59,7 @@ class Command(object):
             commander
                 Commander that this command is registered with
         """
-        self.commander = commander
-        self.manager = self.commander.manager
+        self.__commander = commander
         self._register()
     
     def _build_argparse(self, subparsers):
@@ -72,3 +100,15 @@ class Command(object):
         Same as self.call(*args, **kwargs)
         """
         return self.call(*args, **kwargs)
+
+class CommandWithoutCommander(exceptions.LMHException):
+    """
+    Exception that is thrown when no LMHCommander() is bound to an Command() instance
+    """
+    
+    def __init__(self):
+        """
+        Creates a new CommandWithoutCommander() instance
+        """
+        
+        super(CommanderWithoutManager, self).__init__('No LMHCommander() is bound to this Command() instance')
