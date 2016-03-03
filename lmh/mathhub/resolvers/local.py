@@ -22,8 +22,6 @@ class LocalMathHubResolver(resolver.MathHubResolver):
             git_program
                 Git() instance that is used to interface with git
         """
-        if not isinstance(git_program, git.Git):
-            raise TypeError("git_program needs to be a git.Git() instance. ")
 
         self.__git = git_program
         self.__folder = os.path.realpath(folder)

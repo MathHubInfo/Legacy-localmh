@@ -190,7 +190,10 @@ class LMHConfig(object):
         
         self.__update_dict(force = True)
         
-        del self.__dict[name]
+        try:
+            del self.__dict[name]
+        except KeyError:
+            pass
         
         return self._write_dict(self.__dict)
     
@@ -261,7 +264,10 @@ class LMHJSONFileConfig(LMHConfig):
         
         # if there is nothing to write to the file, delete it. 
         if d_str == r'{}':
-            os.remove(self.__filename)
+            try:
+                os.remove(self.__filename)
+            except FileNotFoundError:
+                pass
             return True
         
         return fileio.write_file(self.__filename, d_str)

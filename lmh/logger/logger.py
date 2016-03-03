@@ -216,13 +216,13 @@ class StandardLogger(Logger):
         if level == levels.NoLogLevel():
             self.__write_std(msg)
         
-        # Info + Warn ==> STDOUT
+        # Info ==> STDOUT
         elif level == levels.InfoLogLevel():
             self.__write_std('[%s] %s' % (escape.Green('info'), msg))
-        elif level == levels.WarnLogLevel():
-            self.__write_std('[%s] %s' % (escape.Yellow('warn'), msg))
         
-        # Error + Fatal ==> STDERR
+        # Warn + Error + Fatal ==> STDERR
+        elif level == levels.WarnLogLevel():
+            self.__write_err('[%s] %s' % (escape.Yellow('warn'), msg))
         elif level == levels.ErrorLogLevel():
             self.__write_err('[%s] %s' % (escape.Red('error'), msg))
         elif level == levels.FatalLogLevel():

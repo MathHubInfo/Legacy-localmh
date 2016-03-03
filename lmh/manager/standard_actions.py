@@ -9,9 +9,14 @@ class StandardActions(object):
                 Manager() to register all standard actions to
         """
         
-        # Info action
-        from lmh.actions.core import info
+        # Core actions
+        from lmh.actions.core import info, config
         manager += info.InfoAction()
+        
+        manager += config.GetConfigInfoAction()
+        manager += config.GetConfigAction()
+        manager += config.SetConfigAction()
+        manager += config.ResetConfigAction()
         
         # External Program Actions
         from lmh.actions.program import git

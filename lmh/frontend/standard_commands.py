@@ -9,8 +9,9 @@ class StandardCommands(object):
                 Commander() to register all standard commands to
         """
         
-        from lmh.frontend.commands.core import about, root
+        from lmh.frontend.commands.core import about, config, root
         
+        commander += config.ConfigCommand()
         commander += about.AboutCommand()
         commander += root.RootCommand()
         

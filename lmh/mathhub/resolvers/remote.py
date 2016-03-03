@@ -25,8 +25,6 @@ class RemoteMathHubResolver(resolver.MathHubResolver):
             git
                 Git() instance that is used to interface with git
         """
-        if not isinstance(git_program, git.Git):
-            raise TypeError("git_program needs to be a git.Git() instance. ")
 
         self.git = git_program
 

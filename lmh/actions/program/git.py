@@ -24,4 +24,8 @@ class GitAction(program.ProgrammableAction):
         """
         Protected Function that is called when this action is registered. 
         """
-        self._program = git.Git(self.manager.config['env::git'])
+        try:
+            self._program = git.Git(self.manager('get-config', 'env::git'))
+        except:
+            self._program = None
+            self.manager.logger.warn('Git Executable not found. Please ensure that the %r setting is correct. ' % 'env::git')
