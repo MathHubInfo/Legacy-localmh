@@ -46,17 +46,13 @@ class LocalListCommand(ListCommand, archive.LocalArchiveCommand):
         
         return True
     
-    def call_all(self, archives, *args, parsed_args=None):
+    def call_all(self, archives, parsed_args=None):
         """
         Calls this command for the given archives with the given arguments. 
         
         Arguments:
             archives
                 List of LMHArchive() instances to run the command over
-            *args
-                A list of strings passed to this command. In case an argparse 
-                object (with the parsed_args) is given, this corresponds to the 
-                arguments unknown to argparse. 
             parsed_args
                 An argparse object representing the arguments passed to this 
                 command. In order to use this properly use self._build_argparse()
@@ -112,7 +108,7 @@ class RemoteListCommand(ListCommand, archive.RemoteArchiveCommand):
         
         return True
     
-    def call_all(self, archives, *args, parsed_args=None):
+    def call_all(self, archives, parsed_args=None):
         """
         Calls this command for the given archives with the given arguments. 
         

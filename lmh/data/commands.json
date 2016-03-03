@@ -1,29 +1,43 @@
-[
-  "clean",
-  "commit",
-  "config",
-  "depcrawl",
-  "find",
-  "gbranch",
-  "git",
-  "init",
+[  
   "install",
-  "issue",
-  "log",
-  "mine",
-  "mmt",
-  "multiling",
-  "mvmod",
-  "pshell",
+  "gbranch",
+  
+  "git",
   "pull",
   "push",
-  "remote",
-  "rename",
-  "setup",
-  "shell",
-  "status",
+  "commit",
+  
+  "status", 
+  "log",
+  "remote", 
+  
+  "init",
+  
+  "config",
+  
+  "depcrawl",
+  "find",
+  
   "symbols",
   "symcomplete",
+  
+  "multiling",
   "translate",
+  
+  "mvmod",
+  "rename",
+  
+  "mine",
+
+  "issue",
+  
+  "mmt",
+  "shell",
+  "pshell",
+  
+  
+  
+  "setup",
+  
   "up"
 ]

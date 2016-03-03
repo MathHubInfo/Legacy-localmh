@@ -12,13 +12,9 @@ class AboutCommand(command.Command):
         
         super(AboutCommand, self).__init__('about')
     
-    def call(self, parsed_args = None):
+    def call(self):
         """
         Calls this command
-        
-        Arguments:
-            parsed_args
-                Unused
         
         Returns:
             None, a Boolean or an Integer representing the return code from this 

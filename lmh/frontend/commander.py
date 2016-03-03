@@ -2,6 +2,7 @@ from lmh.utils import exceptions
 from lmh.frontend import command
 
 import argparse
+import inspect
 import os
 
 class LMHCommander(object):
@@ -158,8 +159,29 @@ class LMHCommander(object):
         Returns: 
             An integer representing the return code
         """
+        
+        # get the number of arguments required
+        spec = inspect.getfullargspec(command.call)
+        
+        # num_args
+        num_args = (len(spec.args) - 1)
+        
+        # has_parsed_args
+        has_parsed_args = ('parsed_args' in spec.args) or ('parsed_args' in spec.kwonlyargs)
+        
+        if 'parsed_args' in spec.args:
+            num_args -= 1
+        
+        # if we have the wrong number of arguments, exit
+        if spec.varargs == None and len(args) != num_args:
+            self.manager.logger.fatal('Got the wrong number of arguments for %r (got %s, expected %s)' % ('lmh %s' % command.name, len(args), num_args))
+            return -4
+        
         try:
-            ret = command(*args, parsed_args = parsed_args)
+            if has_parsed_args:
+                ret = command(*args, parsed_args = parsed_args)
+            else:
+                ret = command(*args)
             if isinstance(ret, bool):
                 return 0 if ret else 1
             elif isinstance(ret, int):

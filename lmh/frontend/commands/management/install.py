@@ -37,7 +37,7 @@ class InstallCommand(archive.RemoteArchiveCommand):
         confirm.add_argument('--confirm', dest='confirm', action='store_true', default=True, help='Wait and ask the user after repositories have been resolved. Default. ')
         confirm.add_argument('--no-confirm', '-y', dest='confirm', action='store_false', help='Do not ask user for confirmation and install immediatly')
     
-    def call_all(self, archives, *args, parsed_args=None):
+    def call_all(self, archives, parsed_args):
         """
         Calls this command for the given archives with the given arguments. If 
         not overriden by subclass simply calls self.call_single()
@@ -45,10 +45,6 @@ class InstallCommand(archive.RemoteArchiveCommand):
         Arguments:
             archives
                 List of LMHArchive() instances to run the command over
-            *args
-                A list of strings passed to this command. In case an argparse 
-                object (with the parsed_args) is given, this corresponds to the 
-                arguments unknown to argparse. 
             parsed_args
                 An argparse object representing the arguments passed to this 
                 command. In order to use this properly use self._build_argparse()

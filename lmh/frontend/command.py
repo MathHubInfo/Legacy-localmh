@@ -86,7 +86,8 @@ class Command(object):
                 arguments unknown to argparse. 
             parsed_args
                 An argparse object representing the arguments passed to this 
-                command. In order to use this properly use self._build_argparse()
+                command. In order to use this properly use self._build_argparse(). 
+                May be omitted from subclasses if not needed. 
         Returns:
             None, a Boolean or an Integer representing the return code from this 
             command. If the return code is None we assume that the command exited
