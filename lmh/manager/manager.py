@@ -8,7 +8,7 @@ class LMHManager(object):
     An LMHManager is the main object instatiated by lmh. 
     """
     
-    def __init__(self, logger = None, config = None, mathhub = None):
+    def __init__(self, logger = None, config = None, mathhub = None, systems = None):
         """
         Creates a new LMHManager instance. 
         
@@ -25,11 +25,16 @@ class LMHManager(object):
                 Optional. MathHubManager used by this LMHManager(). If omitted 
                 should be set before any actions are registered by setting the 
                 mathhub property. 
+            systems
+                Optional. SystemManager used by this LMHManager(). If omitted
+                should be set before any actions are registered by setting the
+                systems property. 
         """
         
         self.__logger = logger
         self.__config = config
         self.__mathhub = mathhub
+        self.__systems = systems
         
         self.__actions = []
         self.__archives = {}
@@ -118,6 +123,33 @@ class LMHManager(object):
         """
         
         self.__mathhub = mathhub
+    
+    @property
+    def systems(self):
+        """
+        Gets the SystemManager instance belonging to this LMHManager() or throws 
+        ManagerWithoutSystems(). 
+        
+        Returns:
+            An SystemManager() instance
+        """
+        
+        if self.__systems == None:
+            raise ManagerWithoutSystems()
+        
+        return self.__systems
+    
+    @systems.setter
+    def systems(self, systems):
+        """
+        Sets the SystemManager instance to be used by this LMHManager(). 
+        
+        Arguments:
+            systems
+                SystemManager instance to be set
+        """
+        
+        self.__systems = systems
     
     #
     # Action Functionality

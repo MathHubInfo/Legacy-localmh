@@ -34,16 +34,23 @@ class LMHMain(object):
         lmh_cfg = config.LMHJSONFileConfig(lmh_cfg_spec, lmh_manager('locate', 'spec', 'lmh.cfg'))
         lmh_manager.config = lmh_cfg
         
-        # Step 5: Add all standard actions
+        # Step 5: Create a SystemManager()
+        from lmh.systems import manager as smanager
+        lmh_manager.systems = smanager.SystemManager(lmh_manager)
+        
+        # Step 6: Add all standard actions and systems
         from lmh.manager import standard_actions
         standard_actions.StandardActions.register_to(lmh_manager)
         
-        # Step 6: Create a commander and register standard commands
+        from lmh.systems import standard_systems
+        standard_systems.StandardSystems.register_to(lmh_manager.systems)
+        
+        # Step 7: Create a commander and register standard commands
         from lmh.frontend import commander, standard_commands
         lmh_commander = commander.LMHCommander(lmh_manager)
         standard_commands.StandardCommands.register_to(lmh_commander)
         
-        # Step 7: Setup Resolvers + MathHub instance
+        # Step 8: Setup Resolvers + MathHub instance
         from lmh.mathhub.resolvers import local, remote
         from lmh.mathhub import instance
         lr = local.LocalMathHubResolver(lmh_manager('git'), lmh_manager('locate', 'MathHub'))

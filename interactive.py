@@ -12,3 +12,4 @@ commander = main.LMHMain.make_commander()
 manager = commander.manager
 config = manager.config
 mh_manager = manager.mathhub
+sys_manager = manager.systems
