@@ -1,0 +1,2 @@
+class SystemManager(object):
+    pass

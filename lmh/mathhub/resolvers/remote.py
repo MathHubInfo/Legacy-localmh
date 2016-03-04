@@ -1,7 +1,7 @@
 from lmh.mathhub.resolvers import resolver
 from lmh.utils import exceptions
 
-from lmh.external.programs import git
+from lmh.programs import git
 from functools import lru_cache
 
 

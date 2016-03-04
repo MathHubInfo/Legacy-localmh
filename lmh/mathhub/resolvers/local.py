@@ -1,5 +1,5 @@
 from lmh.mathhub.resolvers import resolver
-from lmh.external.programs import git
+from lmh.programs import git
 
 from fnmatch import fnmatch
 

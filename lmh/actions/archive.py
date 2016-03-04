@@ -85,7 +85,7 @@ class ArchiveBasedAction(action.Action):
     
     def run(self, archives, *args, **kwargs):
         """
-        Runs this action on a single remote archive. Needs to be implemented
+        Runs this action on a list of remote archives. Needs to be implemented
         by subclass. 
         
         Arguments:
@@ -96,6 +96,10 @@ class ArchiveBasedAction(action.Action):
         Returns: 
             Return value of this action
         """
+        
+        # if the archives did not resolve, return
+        if archives == None:
+            return None
         
         if len(archives) == 0 and not self.__support_all:
             raise AtLeastOneArchiveRequiredException

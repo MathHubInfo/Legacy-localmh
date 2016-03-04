@@ -1,4 +1,4 @@
-from lmh.external.programs import program
+from lmh.programs import program
 
 import sys
 import os, os.path

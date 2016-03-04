@@ -2,6 +2,8 @@ from lmh.frontend.commands import archive
 from lmh.frontend import command
 from lmh.logger import escape
 
+from lmh.mathhub.resolvers import remote
+
 class ListCommand(command.Command):
     def _add_args_argparse(self, command):
         """
@@ -127,22 +129,27 @@ class RemoteListCommand(ListCommand, archive.RemoteArchiveCommand):
             command. If the return code is None we assume that the command exited
             normally. 
         """
-        
-        if parsed_args.plain:
-            for a in archives:
-                self.call_single(a)
-        else:
-            tree = self.manager('ls-remote', archives)
+        try:
             
-            for ic in tree.children:
-                for gc in ic.children:
-                    for ac in gc.children:
-                        archive = ac.data.data
-                        if archive.is_local():
-                            ac.data.s = escape.Green(archive.name)
-                        else:
-                            ac.data.s = escape.Red(archive.name)
+            if parsed_args.plain:
+                for a in archives:
+                    self.call_single(a)
+            else:
+                tree = self.manager('ls-remote', archives)
+                
+                for ic in tree.children:
+                    for gc in ic.children:
+                        for ac in gc.children:
+                            archive = ac.data.data
+                            if archive.is_local():
+                                ac.data.s = escape.Green(archive.name)
+                            else:
+                                ac.data.s = escape.Red(archive.name)
             
             self.manager.logger.log(tree)
+            
+            return True
         
-        return True
+        except remote.NetworkingError:
+            self.manager.logger.fatal('Networking Error when attempting to resolve remote archives')
+            return False

@@ -1,5 +1,5 @@
 from lmh.frontend import command
-from lmh.mathhub.resolvers import resolver
+from lmh.mathhub.resolvers import resolver, remote
 
 class ArchiveCommand(command.Command):
     """
@@ -213,6 +213,9 @@ class ArchiveCommand(command.Command):
             except resolver.GroupNotFound:
                 archives = self._resolve(*archivestrs, instance = instance)
         
+        if archives == None:
+            return False
+        
         if self.__single:
             if len(archives) != 1:
                 self.logger.error('Expected exactly one repository. Please check that the spelling is correct. ')
@@ -271,6 +274,12 @@ class RemoteArchiveCommand(ArchiveCommand):
                 Optional. If set returns only repositories from the 
                 instance matching the given name. 
         Returns:
-            A list of archives
+            A list of archives or None if resolution failed
         """
-        return self.manager.resolve_remote_archives(*spec, base_group = base_group, instance = instance) 
+        
+        try:
+            return self.manager.resolve_remote_archives(*spec, base_group = base_group, instance = instance) 
+        except remote.NetworkingError:
+            self.manager.logger.error('NetworkingError when attempting to resolve remote archives')
+            return None
+        

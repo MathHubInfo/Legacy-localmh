@@ -1,5 +1,5 @@
 from lmh.actions.program import program
-from lmh.external.programs import git
+from lmh.programs import git
 from lmh.config import spec
 
 class GitAction(program.ProgrammableAction):
