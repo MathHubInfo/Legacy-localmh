@@ -19,8 +19,9 @@ class StandardActions(object):
         manager += config.ResetConfigAction()
         
         # External Program Actions
-        from lmh.actions.program import git
+        from lmh.actions.program import git, cpanm
         manager += git.GitAction()
+        manager += cpanm.CPANMAction()
         
         # Managment Actions
         from lmh.actions.management import listing

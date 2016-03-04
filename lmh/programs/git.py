@@ -291,5 +291,9 @@ class Git(program.Program):
         return proc.returncode == 0
 
 class GitNotFound(Exception):
+    """
+    Exception that is thrown when git is not found
+    """
+    
     def __init__(self):
         super(GitNotFound, self).__init__("Can not find git")

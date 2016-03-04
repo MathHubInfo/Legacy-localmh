@@ -131,6 +131,12 @@ class SystemManager(object):
         Same as self.get(name)
         """
         return self.get(name)
+    
+    def __call__(self, name):
+        """
+        Same as self[name]()
+        """
+        return self[name]()
 
 class SystemWithoutManager(exceptions.LMHException):
     """
