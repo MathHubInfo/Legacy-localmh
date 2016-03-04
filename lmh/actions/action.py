@@ -6,14 +6,14 @@ class Action(object):
     An Action represents something that can be performed by lmh
     """
     
-    def __init__(self, name, config):
+    def __init__(self, name, *config):
         """
         Creates a new Action() instance. 
         
         Arguments: 
             name
                 Name of this action
-            config
+            *config
                 A list of LMHConfigSettingSpec() instances representing 
                 configuration options needed by this action. 
         """

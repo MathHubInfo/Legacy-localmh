@@ -11,7 +11,7 @@ class GetConfigAction(action.Action):
         """
         Creates a new GetConfigAction() instance
         """
-        super(GetConfigAction, self).__init__('get-config', [])
+        super(GetConfigAction, self).__init__('get-config')
     
     def run(self, name):
         """
@@ -34,7 +34,7 @@ class GetConfigInfoAction(action.Action):
         """
         Creates a new GetConfigInfoAction() instance
         """
-        super(GetConfigInfoAction, self).__init__('get-config-info', [])
+        super(GetConfigInfoAction, self).__init__('get-config-info')
     
     def color_type(self, tp):
         """
@@ -130,7 +130,7 @@ class SetConfigAction(action.Action):
         """
         Creates a new SetConfigAction() instance
         """
-        super(SetConfigAction, self).__init__('set-config', [])
+        super(SetConfigAction, self).__init__('set-config')
     
     def run(self, name, value):
         """
@@ -154,7 +154,7 @@ class ResetConfigAction(action.Action):
         """
         Creates a new ResetConfigAction() instance
         """
-        super(ResetConfigAction, self).__init__('reset-config', [])
+        super(ResetConfigAction, self).__init__('reset-config')
     
     def run(self, name):
         """

@@ -5,14 +5,14 @@ class ArchiveBasedAction(action.Action):
     """
     Common Base Class for ArchiveBasedActions. 
     """
-    def __init__(self, name, config, support_all = True):
+    def __init__(self, name, *config, support_all = True):
         """
         Creates a new ArchiveBasedAction() instance. 
         
         Arguments: 
             name
                 Name of this action
-            config
+            *config
                 A list of LMHConfigSettingSpec() instances representing 
                 configuration options needed by this action. 
             support_all
@@ -20,7 +20,7 @@ class ArchiveBasedAction(action.Action):
                 at once by giving an empty list of archives. Default to True. 
         """
         
-        super(ArchiveBasedAction, self).__init__(name, config)        
+        super(ArchiveBasedAction, self).__init__(name, *config)        
         self.__support_all = support_all
         
     def run_single(self, archive, *args, **kwargs):

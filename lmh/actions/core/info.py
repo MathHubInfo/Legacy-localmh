@@ -10,7 +10,7 @@ class InfoAction(action.Action):
         """
         Creates a new InfoAction() instance
         """
-        super(InfoAction, self).__init__('info', [])
+        super(InfoAction, self).__init__('info')
     
     
     def license(self):

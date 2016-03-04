@@ -63,7 +63,7 @@ class LocalListAction(archive.LocalArchiveAction, ListAction):
         """
         Creates a new LocalListAction() instance. 
         """
-        super(LocalListAction, self).__init__('ls-local', [])
+        super(LocalListAction, self).__init__('ls-local')
     
     def run_all(self, archives):
         """
@@ -85,7 +85,7 @@ class RemoteListAction(archive.RemoteArchiveAction, ListAction):
         """
         Creates a new RemoteListAction() instance. 
         """
-        super(RemoteListAction, self).__init__('ls-remote', [])
+        super(RemoteListAction, self).__init__('ls-remote')
         
     def run_all(self, archives):
         """

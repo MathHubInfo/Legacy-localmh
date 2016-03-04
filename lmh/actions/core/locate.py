@@ -26,7 +26,7 @@ class LocateAction(action.Action):
         self._config = os.path.abspath(os.path.join(self._base, config_dir))
         self._spec = os.path.abspath(os.path.join(self._base, spec_dir))
         
-        super(LocateAction, self).__init__('locate', [])
+        super(LocateAction, self).__init__('locate')
     
     def run(self, *paths):
         """

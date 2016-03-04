@@ -11,14 +11,14 @@ class GitAction(program.ProgrammableAction):
         """
         Creates a new Git() action
         """
-        super(GitAction, self).__init__('git', [
+        super(GitAction, self).__init__('git', 
             spec.LMHConfigSettingSpec(
                 'env::git', 
                 'string', 
                 'git', 
                 'Path to the git executable'
             )
-        ])
+        )
     
     def _register(self):
         """
@@ -26,6 +26,6 @@ class GitAction(program.ProgrammableAction):
         """
         try:
             self._program = git.Git(self.manager('get-config', 'env::git'))
-        except:
+        except git.GitNotFound:
             self._program = None
             self.manager.logger.warn('Git Executable not found. Please ensure that the %r setting is correct. ' % 'env::git')

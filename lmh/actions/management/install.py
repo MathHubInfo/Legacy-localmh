@@ -15,7 +15,7 @@ class InstallAction(archive.RemoteArchiveAction, management.ManagementAction):
         """
         Creates a new InstallAction() instance. 
         """
-        super(InstallAction, self).__init__('install', [])
+        super(InstallAction, self).__init__('install')
     
     def run_all(self, archives, dependencies = True, rescan = True, confirm = True):
         """

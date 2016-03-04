@@ -12,7 +12,7 @@ class DependencyTreeAction(archive.LocalArchiveAction, management.ManagementActi
         """
         Creates a new LocalListAction() instance. 
         """
-        super(DependencyTreeAction, self).__init__('deps-tree', [])
+        super(DependencyTreeAction, self).__init__('deps-tree')
     
     def run_single(self, archive, **kwargs):
         """
@@ -50,7 +50,7 @@ class DependencyTreePrintAction(archive.LocalArchiveAction, management.Managemen
         """
         Creates a new LocalListAction() instance. 
         """
-        super(DependencyTreePrintAction, self).__init__('print-deps-tree', [])
+        super(DependencyTreePrintAction, self).__init__('print-deps-tree')
     
     def run_all(self, archives, **kwargs):
         """
