@@ -68,7 +68,7 @@ class ArchiveCommand(command.Command):
         archives = parser.add_argument_group('Archives')
         
         if self.__single:
-            archives.add_argument('archives', metavar='archive', nargs='1', help='a single repository')
+            archives.add_argument('archives', metavar='archive', nargs=1, help='a single repository')
         elif self.__support_all:
             archives.add_argument('archives', metavar='archive', nargs='*', help='a list of repositories')
             archives.add_argument('--all', "-a", default=False, const=True, action="store_const", help="select all repositories")
@@ -218,8 +218,9 @@ class ArchiveCommand(command.Command):
         
         if self.__single:
             if len(archives) != 1:
-                self.logger.error('Expected exactly one repository. Please check that the spelling is correct. ')
+                self.manager.logger.error('Expected exactly one repository. Please check that the spelling is correct. ')
                 return False
+            return self.call_single(archives[0], *args, parsed_args=parsed_args)
         return self.call_all(archives, *args, parsed_args=parsed_args)
 
 class LocalArchiveCommand(ArchiveCommand):

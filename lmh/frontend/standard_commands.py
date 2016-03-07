@@ -15,13 +15,23 @@ class StandardCommands(object):
         commander += about.AboutCommand()
         commander += root.RootCommand()
         
-        # other commands
-        from lmh.frontend.commands.management import dtree, listing, install
+        # listing
+        from lmh.frontend.commands.management import listing
         
-        commander += install.InstallCommand()
-        commander += dtree.DTreeCommand()
         commander += listing.LocalListCommand()
         commander += listing.RemoteListCommand()
+        
+        # dtree
+        from lmh.frontend.commands.management import dtree
+        commander += dtree.DTreeCommand()
+        
+        from lmh.frontend.commands.management import gbranch
+        commander += gbranch.GBranchCommand()
+        
+        # git stuff
+        from lmh.frontend.commands.management import install
+        commander += install.InstallCommand()
+        
         
         # legacy commands
         StandardCommands.register_legacy_commands_to(commander)

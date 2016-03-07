@@ -5,7 +5,7 @@ class ArchiveBasedAction(action.Action):
     """
     Common Base Class for ArchiveBasedActions. 
     """
-    def __init__(self, name, *config, support_all = True):
+    def __init__(self, name, *config, support_all = True, exactly_one = False):
         """
         Creates a new ArchiveBasedAction() instance. 
         
@@ -18,10 +18,13 @@ class ArchiveBasedAction(action.Action):
             support_all
                 Optional. Boolean indicating if the action is supported for all archives
                 at once by giving an empty list of archives. Default to True. 
+            exactly_one
+                Optional. If set to True EXACTLY ONE archive will be returned
         """
         
         super(ArchiveBasedAction, self).__init__(name, *config)        
         self.__support_all = support_all
+        self.__exactly_one = exactly_one
         
     def run_single(self, archive, *args, **kwargs):
         """
@@ -104,6 +107,13 @@ class ArchiveBasedAction(action.Action):
         if len(archives) == 0 and not self.__support_all:
             raise AtLeastOneArchiveRequiredException
         
+        if self.__exactly_one:
+            resolved_archives = self._resolve(*archives)
+            if len(resolved_archives) == 0:
+                raise AtLeastOneArchiveRequiredException
+            
+            return self.run_single(resolved_archives[0], *args, **kwargs)
+            
         return self.run_all(self._resolve(*archives), *args, **kwargs)
 
 class LocalArchiveAction(ArchiveBasedAction):

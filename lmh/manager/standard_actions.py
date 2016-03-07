@@ -19,18 +19,29 @@ class StandardActions(object):
         manager += config.ResetConfigAction()
         
         # External Program Actions
-        from lmh.actions.program import git, cpanm
+        from lmh.actions.program import git
         manager += git.GitAction()
-        manager += cpanm.CPANMAction()
         
-        # Managment Actions
+        # Listing
         from lmh.actions.management import listing
         manager += listing.LocalListAction()
         manager += listing.RemoteListAction()
         
+        # Dependencies
         from lmh.actions.management import dtree
         manager += dtree.DependencyTreeAction()
         manager += dtree.DependencyTreePrintAction()
         
+        # Gbranch
+        from lmh.actions.management import gbranch
+        manager += gbranch.GBranchManagerAction()
+        manager += gbranch.CreateGBranchAction()
+        manager += gbranch.GetGBranchAction()
+        
+        manager += gbranch.InstallGBranchAction()
+        manager += gbranch.PushGBranchAction()
+        manager += gbranch.PullGBranchAction()
+        
+        # Install and generic git stuff
         from lmh.actions.management import install
         manager += install.InstallAction()

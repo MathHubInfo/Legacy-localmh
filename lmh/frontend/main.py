@@ -26,7 +26,7 @@ class LMHMain(object):
         
         # Step 3: Add the LocateAction()
         from lmh.actions.core import locate
-        lmh_manager += locate.LocateAction(systems_dir = 'ext', config_dir = 'bin', spec_dir = 'lmh/data')
+        lmh_manager += locate.LocateAction(systems_dir = 'ext', config_dir = 'bin', spec_dir = 'lmh/data', sty_dir = 'sty')
         
         # Step 4: Setup configuration
         from lmh.config import config, spec

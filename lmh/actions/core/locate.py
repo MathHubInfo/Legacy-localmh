@@ -6,7 +6,7 @@ class LocateAction(action.Action):
     An action that can locate core files within lmh
     """
     
-    def __init__(self, systems_dir = '..', config_dir = 'data/config', spec_dir = 'data/spec'):
+    def __init__(self, systems_dir = '..', config_dir = 'data/config', spec_dir = 'data/spec', sty_dir = 'data/sty'):
         """
         Creates a new LocateAction() instance. 
         
@@ -18,13 +18,18 @@ class LocateAction(action.Action):
                 'data/config'. 
             spec_dir
                 Directory to find spec files in. Defaults to 'data/spec'. 
+            sty_dir
+                Directory to find sTeX sty files in. Defaults to 'data/sty'
         """
         
-        # Setup all the directories
+        # Base directory - HARD CODED
         self._base = os.path.abspath(os.path.join(os.path.dirname(__file__), '..',  '..',  '..'))
+        
+        # ALL THE OTHERS
         self._systems = os.path.abspath(os.path.join(self._base, systems_dir))
         self._config = os.path.abspath(os.path.join(self._base, config_dir))
         self._spec = os.path.abspath(os.path.join(self._base, spec_dir))
+        self._sty = os.path.abspath(os.path.join(self._base, sty_dir))
         
         super(LocateAction, self).__init__('locate')
     
@@ -39,6 +44,8 @@ class LocateAction(action.Action):
             specifcation dependencies
             3. 'config' the path will be resolved relative to the directory that contains
             the config files
+            4. 'sty' the path will be resolved relative to the directory that contains
+            the sty files
         
         Arguments: 
             *paths
@@ -56,6 +63,8 @@ class LocateAction(action.Action):
                 paths[0] = self._spec
             elif paths[0] == 'config':
                 paths[0] = self._config
+            elif paths[0] == 'sty':
+                paths[0] = self._sty
         
         # and return
         return os.path.join(self._base, *paths)

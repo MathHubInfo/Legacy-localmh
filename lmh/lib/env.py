@@ -105,52 +105,8 @@ if cpanm_executable == "":
     else:
         cpanm_executable = which("cpanm")
 
+# for backwards compatibility
 def check_deps():
-    """
-    Checks if all required lmh dependencies are installed. Prints warning(s) to
-    stderr if a dependency is not found.
-    """
-
-    if git_executable == None:
-        err("Unable to locate the git executable. ")
-        err("Please make sure it is in the $PATH environment variable. ")
-        err("On a typical Ubuntu system you may install this with:")
-        err("    sudo apt-get install git")
-        return False
-
-    if pdflatex_executable == None:
-        err("Unable to locate latex executable 'pdflatex'. ")
-        err("Please make sure it is in the $PATH environment variable. ")
-        err("It is recommened to use TeXLive 2013 or later. ")
-        err("On Ubtuntu 13.10 or later you can install this with: ")
-        err("    sudo apt-get install texlive")
-        err("For older Ubtuntu versions please see: ")
-        err("    http://askubuntu.com/a/163683")
-        return False
-
-    if perl_executable == None:
-        err("Unable to locate perl executable. ")
-        err("Please make sure it is in the $PATH environment variable. ")
-        err("On Ubtuntu 13.10 or later you can install this with: ")
-        err("    sudo apt-get install perl")
-        return False
-
-    if cpanm_executable == None:
-        err("Unable to locate cpanm executable. ")
-        err("Please make sure it is in the $PATH environment variable. ")
-        err("On Ubtuntu 13.10 or later you can install this with: ")
-        err("    sudo apt-get install cpanminus")
-        return False
-
-    #try:
-    #    import psutil
-    #except:
-    #    err("Unable to locate python module 'psutil'. ")
-    #    err("Please make sure it is installed. ")
-    #    err("You may be able to install it with: ")
-    #    err("    pip install psutil")
-    #    return False
-
     return True
 
 #

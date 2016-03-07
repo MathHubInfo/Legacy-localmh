@@ -11,20 +11,23 @@ class Git(program.Program):
     """
     Represents an interface to git.
     """
-    def __init__(self, git_executable = "git"):
+    def __init__(self, systems_dir, sty_dir, git_executable = "git"):
         """
         Creates a new Git() instance.
 
         Arguments:
             git_executable
                 Optional. Name of the git executable. Defaults to "git".
+            systems_dir
+                Directory to find systems in
+            sty_dir
+                Directory to find sty files in
         """
-
-        self.__executable = program.Program.which(git_executable)
+        
         self.__encoding = "utf-8" # TODO: We might not want to hardcode
-
-        if self.__executable == None:
-            raise GitNotFound()
+        self.__executable = git_executable
+        
+        super(Git, self).__init__(systems_dir, sty_dir)
 
     #
     # GENERAL commands
@@ -45,18 +48,13 @@ class Git(program.Program):
                 Optional arguments to pass to subprocess.Popen
 
         Returns:
-            A boolean indicating if the return code of the command was 0 or not
+            A subprocess.Popen handle
         """
-
-        proc = subprocess.Popen(
-            [self.__executable, cmd] + list(args),
-            cwd=dest, **kwargs
-        )
-
-        return proc
-
-
-        return (proc.returncode == 0)
+        
+        try:
+            return self._popen(self.__executable, cmd, *args, cwd=dest, **kwargs)
+        except program.ExecutableNotFound:
+            raise GitNotFound()
 
     def do(self, dest, cmd, *args):
         """
@@ -290,7 +288,7 @@ class Git(program.Program):
 
         return proc.returncode == 0
 
-class GitNotFound(Exception):
+class GitNotFound(program.ExecutableNotFound):
     """
     Exception that is thrown when git is not found
     """

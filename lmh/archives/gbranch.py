@@ -23,6 +23,33 @@ class GeneratedBranchManager(object):
         self.__branches = {}
         self.git = git
     
+    def keys(self):
+        """
+        Gets a list of generated branch names. 
+        
+        Returns:
+            a list containing the names of all generated branches for this 
+            GeneratedBranchManager()
+        """
+        
+        kd = []
+        
+        # load the string representing the branches
+        try:
+            bstr = self.archive.manifest['generated_branches']
+        except KeyError:
+            bstr = ''
+        
+        # and make sure to split it properly
+        for k in bstr.split(' '):
+            if ':' in k:
+                kd.append(k[:k.index(':')].strip())
+            else:
+                kd.append(k.strip())
+        
+        # and return
+        return list(filter(lambda k:k!='', kd))
+    
     def get(self, name):
         """
         Gets a GeneratedBranch with the given name or throws 
@@ -41,6 +68,12 @@ class GeneratedBranchManager(object):
         self.__branches[name] = GeneratedBranch(self, name)
         return self.__branches[name]
     
+    def __getitem__(self, name):
+        """
+        Same as self.get(name)
+        """
+        return self.get(name)
+    
     def create(self, name, path = None):
         """
         Creates a generated branch with the given name or throws 
@@ -54,11 +87,10 @@ class GeneratedBranchManager(object):
         Returns a new GeneratedBranch() instance or False in case creation failed. 
         """
         
-        # make sure the branch does not exist by catching
-        # NoSuchGeneratedBranch
+        # make sure the branch does not exist by catching NoSuchGeneratedBranch
         try:
             self.get(name)
-            raise BranchAlreadyExists
+            raise BranchAlreadyExists()
         except NoSuchGeneratedBranch:
             pass
         
@@ -70,8 +102,9 @@ class GeneratedBranchManager(object):
         rpath = self.archive.to_path()
         bpath = self.archive.to_path(path)
         
+        # if the path already exists we can not continue
         if os.path.isdir(bpath):
-            raise BranchAlreadyInstalled()
+            raise PathAlreadyExists()
         
         # update the gitignore
         gi_path = self.archive.to_path('.gitignore')
@@ -90,8 +123,13 @@ class GeneratedBranchManager(object):
         # make a string representing a path
         mns = name if name == path else ('%s:%s' % (name, path))
         
+        try:
+            gen_branch_current = self.archive.manifest['generated_branches']
+        except KeyError:
+            gen_branch_current = ''
+        
         # update manifest with the name
-        self.archive.manifest['generated_branches'] = ('%s %s' % (self.archive.manifest['generated_branches'], mns)).strip()
+        self.archive.manifest['generated_branches'] = ('%s %s' % (gen_branch_current, mns)).strip()
         
         # make an orphaned branch
         if not self.git.make_orphan_branch(rpath, name):
@@ -109,7 +147,7 @@ class GeneratedBranchManager(object):
             return False
 
         # change the commit message
-        if not self.git.do(bpath, 'commit', '--amend', '--allow-empty', '-m', 'Create deploy branch %s at %s' % (name, deploy)):
+        if not self.git.do(bpath, 'commit', '--amend', '--allow-empty', '-m', 'Created generated content branch %s at %s' % (name, path)):
             return False
 
         # and push it.
@@ -117,7 +155,6 @@ class GeneratedBranchManager(object):
             return False
         
         return gbranch
-        
 
 class GeneratedBranch(object):
     """
@@ -143,8 +180,18 @@ class GeneratedBranch(object):
         
         # and try to get the path
         try:
-            self.path = self.__archive.manifest['generated_branches'].split(' ')
+            paths = self.__archive.manifest['generated_branches'].split(' ')
+            for p in paths:
+                if p == name:
+                    self.path = name
+                    break
+                elif p.contains(':') and p[:p.index(':')] == name:
+                    self.path = p[p.index(':')+1:]
+                    break
+            
         except manifest.NoManifestFile:
+            raise NoSuchGeneratedBranch()
+        except KeyError:
             raise NoSuchGeneratedBranch()
         
         self.__rpath = self.__archive.to_path()
@@ -185,7 +232,7 @@ class GeneratedBranch(object):
         already is. 
         """
         
-        if self.is_installed:
+        if self.is_installed():
             raise BranchAlreadyInstalled()
         
         # read the origin url
@@ -202,11 +249,11 @@ class GeneratedBranch(object):
             return False
 
         # set up .git/objects/info/alternates relatively
-        if not fielio.write_file(os.path.join(self.__bpath, '.git', 'objects', 'info', 'alternates'), '../../../.git/objects'):
+        if not fileio.write_file(os.path.join(self.__bpath, '.git', 'objects', 'info', 'alternates'), '../../../.git/objects'):
             return False
 
         # set the origin
-        if not self.__git.do(self.__bpath, 'remote', 'set-url', 'origin', o.rstrip('\n')):
+        if not self.__git.do(self.__bpath, 'remote', 'set-url', 'origin', origin.rstrip('\n')):
             return False
         
         # and delete the branch from our repository
@@ -297,11 +344,18 @@ class BranchAlreadyExists(exceptions.LMHException):
     Exception that is thrown when a generated branch already exists. 
     """
     def __init__(self):
-        super(BranchNotInstalled, self).__init__('A generated branch with the given name already exists')
+        super(BranchAlreadyExists, self).__init__('A generated branch with the given name already exists')
+
+class PathAlreadyExists(exceptions.LMHException):
+    """
+    Exception that is thrown when a generated branch can not be created at the given path
+    """
+    def __init__(self):
+        super(PathAlreadyExists, self).__init__('A folder with the given path already exists')
 
 class BranchAlreadyInstalled(exceptions.LMHException):
     """
     Exception that is thrown when the generated branch is already installed. 
     """
     def __init__(self):
-        super(BranchNotInstalled, self).__init__('Specefied Generated Branch is already installed')
+        super(BranchAlreadyInstalled, self).__init__('Specefied Generated Branch is already installed')
