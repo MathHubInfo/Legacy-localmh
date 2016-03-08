@@ -33,6 +33,10 @@ class InstallCommand(archive.RemoteArchiveCommand):
         rescan.add_argument('--rescan-existing', dest='rescan', action='store_true', default=True, help='(Re-)scan installed repositories for missing dependencies. Default. ')
         rescan.add_argument('--ignore-existing', '-i', dest='rescan', action='store_false', help='Ignore existing archives')
         
+        generated = command.add_argument_group('Generated Branches').add_mutually_exclusive_group()
+        generated.add_argument('--install-gbranch', dest='generated_branches', action='store_true', default=True, help='Install all generated branches of all repositories. Default. ')
+        generated.add_argument('--no-install-gbranch', '-n', dest='generated_branches', action='store_false', help='Ignore existing archives')
+        
         confirm = command.add_argument_group('Confirmation').add_mutually_exclusive_group()
         confirm.add_argument('--confirm', dest='confirm', action='store_true', default=True, help='Wait and ask the user after repositories have been resolved. Default. ')
         confirm.add_argument('--no-confirm', '-y', dest='confirm', action='store_false', help='Do not ask user for confirmation and install immediatly')
@@ -54,5 +58,5 @@ class InstallCommand(archive.RemoteArchiveCommand):
             normally. 
         """
         
-        r = self.manager('install', archives, dependencies = parsed_args.deps, rescan = parsed_args.rescan, confirm = parsed_args.confirm)
+        r = self.manager('install', archives, generated_branches = parsed_args.generated_branches, dependencies = parsed_args.deps, rescan = parsed_args.rescan, confirm = parsed_args.confirm)
         return r != None

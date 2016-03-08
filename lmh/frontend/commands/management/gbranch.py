@@ -24,16 +24,19 @@ class GBranchCommand(archive.LocalArchiveCommand):
             command
                 Argparse object representing this command. 
         """
-        
-        command.add_argument('branch', nargs='?', help='Name of generated files branch. Mandatory for everything but --list.', default=None)
 
-        mode = command.add_argument_group('Mode').add_mutually_exclusive_group(required=True)
-        mode.add_argument('--init', help='Create a new deploy branch, install it locally and push it to the remote. ', action='store_true')
-        mode.add_argument('--install', help='Install deploy branch mentioned in META-INF/MANIFEST.MF from remote. ', action='store_true')
-        mode.add_argument('--pull', help='Pull updates on the generated content branch. ', action='store_true')
-        mode.add_argument('--push', help='Push updates on the generated content branch. ', action='store_true')
-        mode.add_argument('--list', help='List all generated content branches available. ', action='store_true')
-        mode.add_argument('--status', help='Show status of a generated content branch. ', action='store_true')
+        mode = command.add_argument_group('Mode').add_mutually_exclusive_group()
+        
+        mode.add_argument('--status', nargs=1, metavar='branch', help='Show status of a generated content branch. ')
+        
+        mode.add_argument('--init', nargs=1, metavar='branch', default=False, help='Create a new deploy branch, install it locally and push it to the remote. ')
+        
+        mode.add_argument('--install', nargs=1, metavar='branch', default=False, help='Install deploy branch mentioned in META-INF/MANIFEST.MF from remote. ')
+        
+        mode.add_argument('--pull', nargs=1, metavar='branch', default=False, help='Pull updates on the generated content branch. ')
+        mode.add_argument('--push', nargs=1, metavar='branch', default=False, help='Push updates on the generated content branch. ')
+        
+        mode.add_argument('--list', help='List all generated content branches available. Default. ', action='store_true')
     
     def call_single(self, archive, *args, parsed_args=None):
         """
@@ -52,69 +55,70 @@ class GBranchCommand(archive.LocalArchiveCommand):
         # get the manager
         manager = self.manager['gbranch-manager'].run_single(archive)
         
-        # check what we need to do
-        if parsed_args.branch == None and not parsed_args.list:
-            self.manager.logger.fatal('Branch argument is required unless --list is given. ')
-            return False
-        
         # if we want to create it
         if parsed_args.init:
+            branch = parsed_args.init[0]
             try:
-                return self.manager['gbranch-create'].run_single(archive, parsed_args.branch)
+                gb = self.manager['gbranch-create'].run_single(archive, branch)
+                return gb != False
             except gbranch.BranchAlreadyExists:
-                self.manager.logger.fatal('Can not create generated branch %s: A branch with the given name already exists' % parsed_args.branch)
+                self.manager.logger.fatal('Can not create generated branch %s: A branch with the given name already exists' % branch)
                 return False
             except gbranch.PathAlreadyExists:
-                self.manager.logger.fatal('Can not create generated branch %s: A folder at that path already exists' % args.branch)
+                self.manager.logger.fatal('Can not create generated branch %s: A folder at that path already exists' % branch)
                 return False
             except ValueError as v:
-                self.manager.logger.fatal('Can not create generated branch %s: %s' % (parsed_args.branch, v))
+                self.manager.logger.fatal('Can not create generated branch %s: %s' % (branch, v))
                 return False
             except manifest.NoManifestFile:
-                self.manager.logger.fatal('Can not create generated branch %s: Missing manifest file' % parsed_args.branch)
+                self.manager.logger.fatal('Can not create generated branch %s: Missing manifest file' % branch)
                 return False
 
         if parsed_args.install:
+            branch = parsed_args.install[0]
             try:
-                return self.manager['gbranch-install'].run_single(archive, parsed_args.branch) 
+                return self.manager['gbranch-install'].run_single(archive, branch) 
             except gbranch.NoSuchGeneratedBranch:
-                self.manager.logger.fatal('Can not install generated branch %s: No such generated branch' % parsed_args.branch)
+                self.manager.logger.fatal('Can not install generated branch %s: No such generated branch' % branch)
                 return False
             except gbranch.BranchAlreadyInstalled:
-                self.manager.logger.fatal('Can not install generated branch %s: Branch already installed' % parsed_args.branch)
+                self.manager.logger.fatal('Can not install generated branch %s: Branch already installed' % branch)
                 return False
 
         if parsed_args.push:
+            branch = parsed_args.push[0]
             try:
-                return self.manager['gbranch-push'].run_single(archive, parsed_args.branch) 
+                return self.manager['gbranch-push'].run_single(archive, branch) 
             except gbranch.NoSuchGeneratedBranch:
-                self.manager.logger.fatal('Can not push generated branch %s: No such generated branch' % parsed_args.branch)
+                self.manager.logger.fatal('Can not push generated branch %s: No such generated branch' % branch)
                 return False
             except gbranch.BranchNotInstalled:
-                self.manager.logger.fatal('Can not push generated branch %s: Branch not installed' % parsed_args.branch)
+                self.manager.logger.fatal('Can not push generated branch %s: Branch not installed' % branch)
                 return False
 
         if parsed_args.pull:
+            branch = parsed_args.pull[0]
             try:
-                return self.manager['gbranch-pull'].run_single(archive, parsed_args.branch) 
+                return self.manager['gbranch-pull'].run_single(archive, branch) 
             except gbranch.NoSuchGeneratedBranch:
-                self.manager.logger.fatal('Can not pull generated branch %s: No such generated branch' % parsed_args.branch)
+                self.manager.logger.fatal('Can not pull generated branch %s: No such generated branch' % branch)
                 return False
             except gbranch.BranchNotInstalled:
-                self.manager.logger.fatal('Can not pull generated branch %s: Branch not installed' % parsed_args.branch)
+                self.manager.logger.fatal('Can not pull generated branch %s: Branch not installed' % branch)
                 return False
         
         if parsed_args.status:
+            branch = parsed_args.status[0]
             try:
-                branch = self.manager['gbranch-get'].run_single(archive, parsed_args.branch)
+                gbranch = self.manager['gbranch-get'].run_single(archive, branch)
                 
-                self.manager.logger.log('Name: %s' % branch.name)
-                self.manager.logger.log('Path: %s' % branch.path)
-                self.manager.logger.log('Installed: %s' % branch.is_installed())
+                self.manager.logger.log('Name: %s' % gbranch.name)
+                self.manager.logger.log('Path: %s' % gbranch.path)
+                self.manager.logger.log('Installed: %s' % gbranch.is_installed())
                 
                 return True
             except gbranch.NoSuchGeneratedBranch:
-                self.manager.logger.fatal('Could not display generated branch %s: No such generated branch' % parsed_args.branch)
+                self.manager.logger.fatal('Could not display generated branch %s: No such generated branch' % branch)
                 return False
         
         for k in manager.keys():

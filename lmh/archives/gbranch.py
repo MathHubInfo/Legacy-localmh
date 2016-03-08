@@ -155,7 +155,33 @@ class GeneratedBranchManager(object):
             return False
         
         return gbranch
-
+    
+    def install_all(self):
+        """
+        Installs all generated branches that are not yet installed. 
+        
+        Returns:
+            a list of pairs (n, s) indicating the name of each generated branch 
+            and if its installation was successfull or not
+        """
+        
+        status = []
+        
+        # iterate through all the branches
+        for k in self.keys():
+            gb = self[k]
+            
+            # if a branch is not installed, try to install it
+            if not gb.is_installed():
+                try:
+                    rt = gb.install()
+                    status.append((k, rt))
+                except gbranch.BranchAlreadyInstalled:
+                    status.append((k, False))
+        
+        # return the code of statusses
+        return status
+        
 class GeneratedBranch(object):
     """
     Represents a single Generated Branch

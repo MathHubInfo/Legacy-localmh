@@ -25,6 +25,9 @@ class ArchiveCommand(command.Command):
         self.__support_all = support_all
         self.__single = single
         
+        if self.__single:
+            self.__support_all = False
+        
     
     def _init_repo_argparse(self, subparsers):
         """
@@ -65,10 +68,14 @@ class ArchiveCommand(command.Command):
         
         parser = self._init_repo_argparse(subparsers)
         
+        # for single, we add all the important arguments first
+        if self.__single:
+            self._add_args_argparse(parser)
+        
         archives = parser.add_argument_group('Archives')
         
         if self.__single:
-            archives.add_argument('archives', metavar='archive', nargs=1, help='a single repository')
+            archives.add_argument('archives', metavar='archive', nargs='?', help='a single repository')
         elif self.__support_all:
             archives.add_argument('archives', metavar='archive', nargs='*', help='a list of repositories')
             archives.add_argument('--all', "-a", default=False, const=True, action="store_const", help="select all repositories")
@@ -77,8 +84,9 @@ class ArchiveCommand(command.Command):
         
         archives.add_argument('--instance', "-g", default=None, help="Use only repositories from the selected instance")
         
-        
-        self._add_args_argparse(parser)
+        # if we have not yet added the repo argument
+        if not self.__single:
+            self._add_args_argparse(parser)
     
     def call_single(self, archive, *args, parsed_args=None):
         """
@@ -187,6 +195,12 @@ class ArchiveCommand(command.Command):
         archivestrs = parsed_args.archives
         del parsed_args.archives
         
+        # set sensible defaults for single
+        if archivestrs == None:
+            archivestrs = ['.']
+        elif not isinstance(archivestrs, list):
+            archivestrs = [archivestrs]
+        
         instance = parsed_args.instance
         del parsed_args.instance
         
@@ -216,11 +230,16 @@ class ArchiveCommand(command.Command):
         if archives == None:
             return False
         
+        if len(archives) == 0 and len(archivestrs) != 0:
+            self.manager.logger.warn('Did not find any matching archives. Please check that your spelling is correct. ')
+            return False
+        
         if self.__single:
             if len(archives) != 1:
                 self.manager.logger.error('Expected exactly one repository. Please check that the spelling is correct. ')
                 return False
             return self.call_single(archives[0], *args, parsed_args=parsed_args)
+        
         return self.call_all(archives, *args, parsed_args=parsed_args)
 
 class LocalArchiveCommand(ArchiveCommand):

@@ -1,7 +1,7 @@
 from lmh.actions.management import management
 from lmh.actions import archive
 from lmh.logger import escape
-from lmh.archives import manifest, local
+from lmh.archives import manifest, local, gbranch
 from lmh.utils import tree
 
 from collections import deque
@@ -17,13 +17,17 @@ class InstallAction(archive.RemoteArchiveAction, management.ManagementAction):
         """
         super(InstallAction, self).__init__('install')
     
-    def run_all(self, archives, dependencies = True, rescan = True, confirm = True):
+    def run_all(self, archives, generated_branches = True, dependencies = True, rescan = True, confirm = True):
         """
         Installs the given (remote) archives including dependencies. 
         
         Arguments:
             archives
                 List of LMHArchive() remote instances to print tree of
+            generated_branches
+                Boolean indicating if generated content branches should be 
+                installed automatically. If set to False, they can be manually
+                installed using the appropriate actions. 
             dependencies
                 Optional. If set to False will not scan for dependencies. 
             rescan
@@ -93,15 +97,32 @@ class InstallAction(archive.RemoteArchiveAction, management.ManagementAction):
             if not item.is_local():
                 self.manager.logger.info('Installing %s from %s' % (item, item.resolve_remote()), flush = True)
                 item.to_remote_archive().install(self.manager('git'))
-                # TODO: Post-install hooks
             
+            # get the local archive
+            la = item.to_local_archive()
+            
+            # Install all generated branches if requested
+            if generated_branches:
+                
+                self.manager.logger.info('Installing generated branches for %s' % item, flush = True)
+                
+                # get the generated branch manager
+                status = self.manager['gbranch-manager'].run_single(la).install_all()
+                
+                # for each of them print some info
+                for (k, s) in status:
+                    if not s:
+                        self.manager.logger.warn('Failed to install generated branch %s of %s: Already installed' % (k, item))
+                    else:
+                        self.manager.logger.info('Installed generated content branch %s of %s' % (k, item))
+                
             # add it to the touched repositories
-            touched.append(item.to_local_archive())
+            touched.append(la)
             
             # check for dependencies
             if dependencies:
                 try:
-                    deps = item.to_local_archive().get_dependencies()
+                    deps = la.get_dependencies()
                     for d in deps:
                         aq.append(d)
                     

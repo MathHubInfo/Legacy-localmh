@@ -168,17 +168,30 @@ class MathHubResolver(object):
             A list of pairs of strings (group, name) representing repositories.
         """
         
+        # if we have nothing to resolve, return all the repositories
+        # in the appropriate base group
         if len(spec) == 0:
             if base_group == None:
                 return self.get_all_repos()
             else:
                 return self.get_repos_in(base_group)
-
-        spec_copy = list(spec)[:]
+        
+        # get ready to resolve each of them
+        spec_copy = set(spec)
         repositories = set()
-
+        
+        # for all the specs, check if a repository with the exact name exists
+        # first. 
+        for s in spec_copy.copy():
+            (g, n) = self.name_to_pair(s)
+            if g != None and self.repo_exists(g, n):
+                repositories.add((g, n))
+                spec_copy.remove(s)
+        
+        # next, try to resolve relative to the base group
         if base_group != None:
             base_group = self._resolve_group(base_group)
+            
             for (g, n) in self.get_repos_in(base_group):
                 for s in spec_copy:
                     if self._match_name(s, g, n):
@@ -245,6 +258,23 @@ class MathHubResolver(object):
         Clears the cache of this Resolver. Should be implemented by the subclass. 
         """
         raise NotImplementedError
+    
+    def name_to_pair(self, name):
+        """
+        Turns the name of a repository into a pair (group, name). 
+        
+        Areguments:
+            name
+                Name to split
+        Returns:
+            a pair (name, group) or (None, None)
+        """
+        
+        comp = name.split('/')
+        if len(comp) != 2:
+            return (None, None)
+        else:
+            return (comp[0], comp[1])
         
 
 class RepositoryNotFound(exceptions.MathHubException):
