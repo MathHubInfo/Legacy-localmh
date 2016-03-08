@@ -11,7 +11,7 @@ class InstallCommand(archive.RemoteArchiveCommand):
         Creates a new InstallCommand() object. 
         """
         
-        super(InstallCommand, self).__init__('install-new', support_all = False)
+        super(InstallCommand, self).__init__('install', support_all = False)
     
     def _add_args_argparse(self, command):
         """
