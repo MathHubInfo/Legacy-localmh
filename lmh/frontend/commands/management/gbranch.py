@@ -4,7 +4,7 @@ from lmh.archives import manifest
 
 class GBranchCommand(archive.LocalArchiveCommand):
     """
-    Prints a dependency tree for local archives
+    Manages generated content branches for a repository
     """
     
     def __init__(self):
