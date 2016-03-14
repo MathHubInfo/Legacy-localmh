@@ -251,6 +251,45 @@ class Git(program.Program):
 
         return self.do_quiet(dest, "rev-parse")
     
+    def get_remote_status(self, dest):
+        """
+        Gets the status of a remote repository in dest
+        
+        Arguments:
+            dest
+                Folder to find repository in
+        Returns:
+             one of 'ok', 'pull', 'push', 'divergence' or None indicating the
+             status of the remote
+        """
+        
+        # update the remote status
+        if not self.do_quiet(dest, 'remote', 'update'):
+            return None
+        
+        # figure out my current branch
+        my_branch = self.do_data(dest, 'rev-parse', '--abbrev-ref', 'HEAD')[0].split('\n')[0]
+        
+        # figure out the upstream branch
+        my_upstream = self.do_data(dest, 'symbolic-ref', '--abbrev-ref', 'HEAD')[0].split('\n')[0]
+        my_upstream = self.do_data(dest, 'for-each-ref', '--format=%(upstream:short)', my_upstream)[0].split('\n')[0]
+        
+        # find local and remote hashes
+        local = self.do_data(dest, 'rev-parse', my_branch)[0].split('\n')[0]
+        remote = self.do_data(dest, 'rev-parse', my_upstream)[0].split('\n')[0]
+        
+        # as well as the merge base
+        base = self.do_data(where, 'merge-base', my_branch, my_upstream)[0].split('\n')[0]
+
+        if local == remote:
+            return 'ok'
+        elif local == base:
+            return 'pull'
+        elif remote == base:
+            return 'push'
+        else:
+            return 'divergence'
+    
     def make_orphan_branch(self, dest, name):
         """
         Makes an orphaned branch. 

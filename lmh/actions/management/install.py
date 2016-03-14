@@ -122,7 +122,7 @@ class InstallAction(archive.RemoteArchiveAction, management.ManagementAction):
             # check for dependencies
             if dependencies:
                 try:
-                    deps = la.get_dependencies()
+                    deps = la.dependencies
                     for d in deps:
                         aq.append(d)
                     

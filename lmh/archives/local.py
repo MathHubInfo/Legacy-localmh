@@ -61,6 +61,10 @@ class LMHLocalArchive(archive.LMHArchive):
         
         return os.path.join(self.__base, *paths)
     
+    #
+    # MANIFEST
+    #
+    
     @property
     def manifest(self):
         """
@@ -77,7 +81,12 @@ class LMHLocalArchive(archive.LMHArchive):
         
         return self.__manifest
     
-    def get_dependencies(self):
+    #
+    # DEPENDENCIES
+    #
+    
+    @property
+    def dependencies(self):
         """
         Gets the dependencies of this archive
         
@@ -102,8 +111,9 @@ class LMHLocalArchive(archive.LMHArchive):
                 raise MalformedDependenciesError()
         
         return [archive.LMHArchive(self.instance, g, n) for (g, n) in dependencies]
-        
-    def set_dependencies(self, dependencies):
+    
+    @dependencies.setter
+    def dependencies(self, dependencies):
         """
         Sets the dependencies of this archive
         
@@ -114,7 +124,24 @@ class LMHLocalArchive(archive.LMHArchive):
         """
         
         self.manifest['dependencies'] = ','.join(list(map(str, dependencies)))
+    
+    #
+    # MANAGMENET ACTIONS
+    #
+    def remote_status(self, git):
+        """
+        Gets the remote status of this repository. 
         
+        Arguments:
+            git
+                a Git() instance to be used to resolve the remote status
+        Returns:
+             one of 'ok', 'pull', 'push', 'divergence' or None indicating the
+             status of the remote
+        """
+        
+        return git.get_remote_status(self.__base)
+    
     #
     # LOCAL ARCHIVE RESOLUTION
     #

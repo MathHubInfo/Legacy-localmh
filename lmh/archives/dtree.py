@@ -22,7 +22,7 @@ class DependencyNode(tree.TreeNode):
                 LMHArchive() instance to build tree of
             dependency_key
                 Optional. By default dependencies will be resolved by calling
-                archive.get_dependencies(). If you want to have custom dependency
+                archive.dependencies. If you want to have custom dependency
                 resolution, a function which takes an archive and returns a list
                 of dependent archives can be given here. If the function should
                 return None. 
@@ -76,7 +76,7 @@ class DependencyNode(tree.TreeNode):
             return None
         else:
             try:
-                return archive.to_local_archive().get_dependencies()
+                return archive.to_local_archive().dependencies
             except manifest.NoManifestFile:
                 return []
         
@@ -92,7 +92,7 @@ class DependencyNode(tree.TreeNode):
                 LMHArchive() instance to build tree of
             dependency_key
                 Optional. By default dependencies will be resolved by calling
-                archive.get_dependencies(). If you want to have custom dependency
+                archive.dependencies. If you want to have custom dependency
                 resolution, a function which takes an archive and returns a list
                 of dependent archives can be given here. If the function should
                 return None. 
@@ -173,7 +173,7 @@ class DependencyNode(tree.TreeNode):
                 LMHArchive() instance to build tree of
             dependency_key
                 Optional. By default dependencies will be resolved by calling
-                archive.get_dependencies(). If you want to have custom dependency
+                archive.dependencies. If you want to have custom dependency
                 resolution, a function which takes an archive and returns a list
                 of dependent archives can be given here. If the function should
                 return None. 

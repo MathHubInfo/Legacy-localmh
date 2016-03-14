@@ -156,9 +156,15 @@ class GeneratedBranchManager(object):
         
         return gbranch
     
-    def install_all(self):
+    def install_all(self, pull = False):
         """
         Installs all generated branches that are not yet installed. 
+        
+        Arguments:
+            pull
+                By default nothing is done with already installed generated 
+                branches. If set to True, updates all existing generted 
+                branches.  
         
         Returns:
             a list of pairs (n, s) indicating the name of each generated branch 
@@ -178,6 +184,13 @@ class GeneratedBranchManager(object):
                     status.append((k, rt))
                 except gbranch.BranchAlreadyInstalled:
                     status.append((k, False))
+            elif pull:
+                try:
+                    rt = gb.pull()
+                    status.append((k, rt))
+                except gbranch.BranchAlreadyInstalled:
+                    status.append((k, False))
+                
         
         # return the code of statusses
         return status
