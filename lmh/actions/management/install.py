@@ -23,7 +23,7 @@ class InstallAction(archive.RemoteArchiveAction, management.ManagementAction):
         
         Arguments:
             archives
-                List of LMHArchive() remote instances to print tree of
+                List of LMHArchive() remote instances to install
             generated_branches
                 Boolean indicating if generated content branches should be 
                 installed automatically. If set to False, they can be manually
