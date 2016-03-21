@@ -49,9 +49,9 @@ class LMHArchive(object):
     
     def __hash__(self):
         """
-        Same as str(self)
+        Same as hash(str(self))
         """
-        return str(self)
+        return hash(str(self))
         
     def resolve_local(self):
         """

@@ -1,8 +1,6 @@
 from lmh.actions.management import management
 from lmh.actions import archive
-from lmh.logger import escape
 from lmh.archives import manifest, local, gbranch
-from lmh.utils import tree
 
 from collections import deque
 
@@ -26,7 +24,7 @@ class PullAction(archive.LocalArchiveAction, management.ManagementAction):
                 List of LMHArchive() local instances to pull
             generated_branches
                 Boolean indicating if generated content branches should be 
-                updated / installed automatically. Defaults to True. 
+                updated / installed automatically. Defaults to False. 
             dependencies
                 Boolean indicating if dependencies should be updated as well. 
                 Defaults to True
@@ -35,7 +33,7 @@ class PullAction(archive.LocalArchiveAction, management.ManagementAction):
                 automatically. Defaults to True. 
             print_tree
                 Optional. Boolean indicating if a tree of installed
-                archives should be printed after completion of installation. 
+                archives should be printed after completion of pulling. 
                 Defaults to True. 
             confirm
                 Optional. If set to False will not prompt before updating archives. 
@@ -64,10 +62,8 @@ class PullAction(archive.LocalArchiveAction, management.ManagementAction):
                 self.manager.logger.error('Operation aborted by user')
                 return None
         
-        # list of archives we installed
+        # init some lists
         touched = []
-        
-        # List of missing archives
         missing = []
         
         while len(aq) != 0:
@@ -145,7 +141,9 @@ class PullAction(archive.LocalArchiveAction, management.ManagementAction):
         
         # print a list of trees if requested
         if print_tree:
-            tree = self.manager('highlight-archive-tree', touched + install_touched, 'Archives that are now up-to-date locally', archives)
+            
+            treenodes = list(set(touched + install_touched))
+            tree = self.manager('highlight-archive-tree', treenodes, 'Archives that are now up-to-date locally', archives)
             self.manager.logger.log(tree)
         
         return touched

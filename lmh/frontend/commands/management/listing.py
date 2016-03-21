@@ -15,7 +15,6 @@ class ListCommand(command.Command):
                 Argparse object representing this command. 
         """
         
-        
         plain = command.add_argument_group().add_mutually_exclusive_group()
         plain.add_argument('--fancy', dest='plain', action='store_false', default=False, help='Print a fancy tree. Default. ')
         plain.add_argument('--plain', '-p', dest='plain', action='store_true', help='Print a plain list of archives')

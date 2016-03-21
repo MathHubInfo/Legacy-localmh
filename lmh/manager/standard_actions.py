@@ -44,6 +44,7 @@ class StandardActions(object):
         manager += gbranch.PullGBranchAction()
         
         # Install and generic git stuff
-        from lmh.actions.management import install, pull
+        from lmh.actions.management import install, pull, push
         manager += install.InstallAction()
         manager += pull.PullAction()
+        manager += push.PushAction()
