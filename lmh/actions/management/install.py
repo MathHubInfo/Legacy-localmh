@@ -1,8 +1,6 @@
 from lmh.actions.management import management
 from lmh.actions import archive
-from lmh.logger import escape
 from lmh.archives import manifest, local, gbranch
-from lmh.utils import tree
 
 from collections import deque
 
@@ -17,7 +15,7 @@ class InstallAction(archive.RemoteArchiveAction, management.ManagementAction):
         """
         super(InstallAction, self).__init__('install')
     
-    def run_all(self, archives, generated_branches = True, dependencies = True, rescan = True, confirm = True):
+    def run_all(self, archives, generated_branches = True, dependencies = True, rescan = True, confirm = True, print_tree = True):
         """
         Installs the given (remote) archives including dependencies. 
         
@@ -36,6 +34,10 @@ class InstallAction(archive.RemoteArchiveAction, management.ManagementAction):
                 to archives given to the function directly. 
             confirm
                 Optional. If set to False will not prompt before installing archives. 
+            print_tree
+                Optional. Boolean indicating if a tree of installed
+                archives should be printed after completion of installation. 
+                Defaults to True. 
         Returns:
             A list of archives that were checked during the process
         """
@@ -131,31 +133,10 @@ class InstallAction(archive.RemoteArchiveAction, management.ManagementAction):
                 except manifest.NoManifestFile:
                     self.manager.logger.info('Archive %s has no MANIFEST.MF, skipping dependency scanning. ' % (item,), flush = True)
         
-        
-        # make a nice tree of installed repositories
-        root = self.manager('ls-local', touched)
-        root.data += ' Archives that are now installed locally'
-        
-        # get a list of originally requested archives
-        requested_archive_names = list(map(str, archives))
-        
-        # Mark the requested archives green and put them on top of the tree
-        for ic in root.children:
-            for gc in ic.children:
-                gc.data = tree.PrintableTreeObject(0, gc.data)
-                for (i, ac) in enumerate(gc.children):
-                    archive = ac.data.data
-                    if str(archive) in requested_archive_names:
-                        ac.data.s = escape.Green(archive.name)
-                        ac.data.data = -1
-                        gc.data.data += 1
-                    else:
-                        ac.data.data = 1
-                gc.children.sort(key = lambda n:n.data.data)
-            ic.children.sort(key = lambda n:n.data.data)
-        
-        # and print it
-        self.manager.logger.log(root)
+        # print a nice tree of things that are now installed
+        if print_tree:
+            tree = self.manager('highlight-archive-tree', touched, 'Archives that are now installed locally', archives)
+            self.manager.logger.log(tree)
         
         return touched
         

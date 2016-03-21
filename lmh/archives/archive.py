@@ -46,6 +46,12 @@ class LMHArchive(object):
         """
         
         return '%s/%s' % (self.group, self.name)
+    
+    def __hash__(self):
+        """
+        Same as str(self)
+        """
+        return str(self)
         
     def resolve_local(self):
         """

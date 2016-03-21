@@ -60,7 +60,7 @@ class LMHLocalArchive(archive.LMHArchive):
         """
         
         return os.path.join(self.__base, *paths)
-    
+        
     #
     # MANIFEST
     #
@@ -141,6 +141,32 @@ class LMHLocalArchive(archive.LMHArchive):
         """
         
         return git.get_remote_status(self.__base)
+    
+    def pull(self, git):
+        """
+        Pulls this archive from the remote. 
+        
+        Arguments:
+            git
+                a Git() instance to pull the archive
+        Returns:
+            a boolean indicating if the pull was successfull
+        """
+        
+        return git.pull(self.resolve_local())
+    
+    def push(self, git):
+        """
+        Pushes this archive to the remote. 
+        
+        Arguments:
+            git
+                a Git() instance to push the archive
+        Returns:
+            a boolean indicating if the push was successfull
+        """
+        
+        return git.push(self.resolve_local())
     
     #
     # LOCAL ARCHIVE RESOLUTION

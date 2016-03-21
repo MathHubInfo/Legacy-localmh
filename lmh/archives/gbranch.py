@@ -39,6 +39,8 @@ class GeneratedBranchManager(object):
             bstr = self.archive.manifest['generated_branches']
         except KeyError:
             bstr = ''
+        except manifest.NoManifestFile:
+            bstr = ''
         
         # and make sure to split it properly
         for k in bstr.split(' '):

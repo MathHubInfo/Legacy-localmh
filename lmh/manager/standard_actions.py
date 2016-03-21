@@ -26,6 +26,7 @@ class StandardActions(object):
         from lmh.actions.management import listing
         manager += listing.LocalListAction()
         manager += listing.RemoteListAction()
+        manager += listing.HighlightedArchiveTreeAction()
         
         # Dependencies
         from lmh.actions.management import dtree
@@ -43,5 +44,6 @@ class StandardActions(object):
         manager += gbranch.PullGBranchAction()
         
         # Install and generic git stuff
-        from lmh.actions.management import install
+        from lmh.actions.management import install, pull
         manager += install.InstallAction()
+        manager += pull.PullAction()

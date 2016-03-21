@@ -29,8 +29,9 @@ class StandardCommands(object):
         commander += gbranch.GBranchCommand()
         
         # git stuff
-        from lmh.frontend.commands.management import install
+        from lmh.frontend.commands.management import install, pull
         commander += install.InstallCommand()
+        commander += pull.PullCommand()
         
         
         # legacy commands
