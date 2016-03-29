@@ -95,13 +95,10 @@ def create_multi(modname, pre_terms, *langs):
 
 
 
-def transmod(modname, org_lang, dest_lang, pre_terms = None):
+def transmod(modname, org_lang, dest_lang, pre_terms = {}):
     """Translate a module from one language to another. """
 
-    if pre_terms == None:
-        pre_terms = {}
-
-    # Load a file or JSON if it exists
+    # Load json from a file if pre_terms is a string
     if type(pre_terms) == str:
         try:
             pre_terms = json.loads(read_file(pre_terms))
@@ -109,11 +106,11 @@ def transmod(modname, org_lang, dest_lang, pre_terms = None):
             try:
                 pre_terms = json.loads(pre_terms)
             except:
-                err("Unable to load json: ", pre_terms)
+                err("Unable to load json in file %r" % pre_terms)
                 err("Make sure you have given a valid JSON-encoded string or path to a valid .json file. ")
                 return False
 
-    # Load the language
+    # Load the set of pre-translated terms
     if org_lang in pre_terms:
         pre_terms = pre_terms[org_lang]
         if dest_lang in pre_terms:
@@ -124,18 +121,27 @@ def transmod(modname, org_lang, dest_lang, pre_terms = None):
         pre_terms = {}
 
 
-    orfn = modname+"."+org_lang+".tex"
-    newfn = modname+"."+dest_lang+".tex"
+    # filenames for the original + translated modules
+    orfn = "%s.%s.tex" % (modname, org_lang)
+    newfn = "%s.%s.tex" % (modname, dest_lang)
 
+    # read the original file
     try:
         content = read_file(orfn)
     except:
         err("Unable to read original module", orfn)
         return False
 
-    # Replace modnl and viewnl 3rd argument
+    #
+    # STEP 1: Replace the third argument to the modnl + viewnl environments
+    #
+
     content = re.sub(r"(\\begin\{modnl\}\[[^\]]*\]\{[^\}]*\})\{"+org_lang+r"\}", r"\1{"+dest_lang+"}", content)
     content = re.sub(r"(\\begin\{viewnl\}\[[^\]]*\]\{[^\}]*\})\{"+org_lang+r"\}", r"\1{"+dest_lang+"}", content)
+
+    #
+    # STEP 2: Update everything inside the environments
+    #
 
     def replacer(match):
         content = match.group(2)
@@ -180,14 +186,19 @@ def transmod(modname, org_lang, dest_lang, pre_terms = None):
                 toreplace = re.sub(r"(((\w)+\s+)*((\w)+\s*))([\.\!\?\,\;]?)", inner_supper, toreplace)
             return m.group(1)+toreplace+m.group(5)
 
-        # All the text
+        # Replace non-wrapped text fragments
         content = re.sub(r"((\]|\}|\$[^\$]*\$)(\w*))([^\\\{\}\$\]\[]+)(\s*)", supper, content)
 
+        # and return the content
         return match.group(1)+content+match.group(4)
 
-    # Run it over viewnl and modnl environments
+    # Replace text inside the environments of modnl and viewnl
     content = re.sub(r"(\\begin{modnl})((.|\n)*)(\\end{modnl})", replacer, content)
     content = re.sub(r"(\\begin{viewnl})((.|\n)*)(\\end{viewnl})", replacer, content)
+
+    #
+    # STEP 3: Apply the pre-translated directory to \ttl{...}
+    #
 
     # Replace all the technical terms
     def replacer2(match):
@@ -233,16 +244,19 @@ def transmod(modname, org_lang, dest_lang, pre_terms = None):
 
     content = re.sub(r"\\ttl\{([^\}]*)\}", replacer2, content)
 
+    # write back the file
     try:
         write_file(newfn, content)
     except:
         err("Unable to write new module", newfn)
         return False
 
+    # and do some logging
     std("Prepared translation of", modname, "from")
     std(orfn)
     std("to")
     std(newfn)
     std("Please finish the translation and then commit the module. ")
 
+    # we need it for the return code
     return True
