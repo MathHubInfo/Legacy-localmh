@@ -1,37 +1,34 @@
+from typing import Optional, List, Any
+
 from lmh.utils.clsutils.caseclass import caseclass
+
 
 @caseclass
 class TreeNode(object):
-    def __init__(self, data = '╿', children = None):
+    """ Represents a printable tree node. """
+    def __init__(self, data : Any = '╿', children : Optional[List] = None):
         """
-        Creates a new TreeNode. 
-        
-        Arguments:
-            data
-                Data Node for this TreeNode
-            children
-                List of children of this TreeNode. Optional, defaults to the empty
-                list. 
+        Creates a new tree node.
+
+        :param data: Data associated to this TreeNode.
+        :param children: List of children of this treeNode or none.
         """
-        
+
         self.data = data
         self.children = children if children != None else []
-    def __str__(self):
+
+    def __str__(self) -> str:
         """
-        Same as self.treestr()
+        Turns this TreeNode into a nicely formatted string.
         """
-        return self.treestr()
+        return self.__treestring()
         
-    def treestr(self, prefix = '', other_prefix = ''):
+    def __treestring(self, prefix : str ='', other_prefix : str ='') -> str:
         """
-        Returns a nicely-formatted string representing this DependencyTree. 
-        
-        Arguments:
-            prefix, other_prefix
-                FOR INTERNAL USE ONLY. Prefixes to prepend to all lines of the tree. 
-        
-        Returns:
-            a string
+        Returns a nicely-formatted string representing this TreeNode.
+
+        :param prefix: Prefix to preprend to the first line of the output.
+        :param other_prefix: Prefix to prepend to other lines of the output.
         """
         
         # Visualise the node itself
@@ -47,24 +44,23 @@ class TreeNode(object):
         
         # now go through each of the children except the last one
         for c in self.children[:-1]:
-            treestr += '\n' + c.treestr(prefix = nll_prefix, other_prefix = nll_oprefix)
+            treestr += '\n' + c.__treestring(prefix = nll_prefix, other_prefix = nll_oprefix)
         
         # Prefixes for the last line
         ll_prefix  = '%s└──' % (other_prefix, )
         ll_oprefix = '%s   ' % (other_prefix, )
         
         # Add the last line
-        treestr += '\n' + self.children[-1].treestr(prefix = ll_prefix, other_prefix = ll_oprefix)
+        treestr += '\n' + self.children[-1].__treestring(prefix = ll_prefix, other_prefix = ll_oprefix)
         
         # and return it
         return treestr
-    def _reorder_children(self, order):
+
+    def reorder_children(self, order : List[int]) -> None:
         """
-        Changes the order of the children of this tree node in place. 
-        
-        Arguments:
-            order
-                List of index mappings for the new children
+        Changes the order of the children of this TreeNode in place.
+
+        :param order: List of indexes to use for new order.
         """
         
         # adapted from http://stackoverflow.com/a/1683662
@@ -89,30 +85,20 @@ class TreeNode(object):
 
 @caseclass
 class PrintableTreeObject(object):
-    """
-    Represents an object in a tree that has
-    a string representation and internal data. 
-    """
+    """ Represents an object in a tree that has a string representation and internal data. """
     
-    def __init__(self, data, s):
+    def __init__(self, data : Any, s : str):
         """
-        Creates a new PrintableTreeObject()
-        
-        Arguments:
-            Data
-                Data this node has
-            s
-                String representing this object
+        Creates a new PrintableTreeObject().
+
+        :param data: Data associated to this PrintableTreeObject.
+        :param s: String representing this object.
         """
         
         self.data = data
         self.s = s
     
     def __str__(self):
-        """
-        Turns this object into a string
-        
-        Returns:
-            a string
-        """
+        """ Turns this PrintableTreeObject into a string. """
+
         return str(self.s)

@@ -4,7 +4,8 @@ LocalMH is an infrastructure for local (in a working tree) management of the con
 
 ## Install
 
-The only supported way to install localmh is to use [localmh_docker](https://github.com/KWARC/localmh_docker).
+Currently, the only supported way to install localmh is to use [localmh_docker](https://github.com/KWARC/localmh_docker).
+You need Python 3.5+ in order to run this tool.
 
 ## Documentation
 

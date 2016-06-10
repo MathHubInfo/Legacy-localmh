@@ -1,34 +1,30 @@
+"""
+Implements scala-like caseclass functionality
+"""
+
+from typing import List, Dict, Any
+
+
 class CaseClass(object):
-    """
-    Class that implements all CaseClass methods.
-    """
+    """ Super-class for CaseClasses. """
 
-    def __init__(self, *cargs, **kcwargs):
-        """
-        Initialises case class parameters
-        """
+    def __init__(self, *cargs : List[Any], **kcwargs : Dict[str, Any]):
+        """ Initialises case class parameters """
 
-        #: The name of this case class
+        # The name of this case class
         self.__cc_name__ = self.__class__.__name__
 
-        #: The arguments given to this case class
+        # The arguments given to this case class
         self.__cc_args__ = cargs
 
-        #: The keyword arguments given to this case class
+        # The keyword arguments given to this case class
         self.__cc_kwargs__ = kcwargs
 
-        # return the new instance
-        return self
-    def __uninit__(self):
+    def __eq__(self, other) -> bool:
+        """ Implements equality between case classes. Two case class instances are equal if their parameters are equal
+        and their classes are equal.
         """
-        Unpacks the parameters originally given to this case class.
-        """
-        return tuple(self.__cc_args__)
-    def __eq__(self, other):
-        """
-        Implements equality between case classes. Two case class instances are
-        equal if their parameters are equal and their classes are equal.
-        """
+
         # check if the given object  is indeed an instance of this case class
         if not isinstance(other, CaseClass):
             return False
@@ -52,11 +48,8 @@ class CaseClass(object):
                 return False
 
         return True
-    def __ne__(self, other):
-        return not self.__eq__(other)
-    def __repr__(self):
-        """
-        Implements a representation for Case classes. This is given by the class
+    def __repr__(self) -> str:
+        """ Implements a representation for Case classes. This is given by the class
         name and the representation of all the parameters.
         """
 
@@ -70,9 +63,9 @@ class CaseClass(object):
         # and put them after the name of the class
         return "%s(%s)" % (self.__cc_name__, arepr)
 
-def caseclass(cls):
-    """
-    Class Decorator the makes a class a CaseClass
+
+def caseclass(cls : Any) -> Any:
+    """ Class Decorator the makes a class a CaseClass
     """
 
     # get the name of the super class

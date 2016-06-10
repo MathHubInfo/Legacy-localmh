@@ -317,7 +317,7 @@ class DependencyNode(tree.TreeNode):
                 children_circular.append(i)
         
         # reorder the children in place
-        self._reorder_children(children_installed + children_missing + children_circular + children_unexpanded)
+        self.reorder_children(children_installed + children_missing + children_circular + children_unexpanded)
     
 @caseclass
 class DependencyData(object):
