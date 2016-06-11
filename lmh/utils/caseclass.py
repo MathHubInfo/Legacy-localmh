@@ -8,7 +8,7 @@ from typing import List, Dict, Any
 class CaseClass(object):
     """ Super-class for CaseClasses. """
 
-    def __init__(self, *cargs : List[Any], **kcwargs : Dict[str, Any]):
+    def __init__(self, *cargs: List[Any], **kcwargs: Dict[str, Any]):
         """ Initialises case class parameters """
 
         # The name of this case class
@@ -20,9 +20,11 @@ class CaseClass(object):
         # The keyword arguments given to this case class
         self.__cc_kwargs__ = kcwargs
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other : Any) -> bool:
         """ Implements equality between case classes. Two case class instances are equal if their parameters are equal
         and their classes are equal.
+
+        :param other: Other instance to compare object to.
         """
 
         # check if the given object  is indeed an instance of this case class
@@ -48,6 +50,7 @@ class CaseClass(object):
                 return False
 
         return True
+
     def __repr__(self) -> str:
         """ Implements a representation for Case classes. This is given by the class
         name and the representation of all the parameters.
@@ -64,7 +67,7 @@ class CaseClass(object):
         return "%s(%s)" % (self.__cc_name__, arepr)
 
 
-def caseclass(cls : Any) -> Any:
+def caseclass(cls: type) -> type:
     """ Class Decorator the makes a class a CaseClass
     """
 

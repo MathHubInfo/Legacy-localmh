@@ -55,6 +55,9 @@ For the full license text, please see [gpl-3.0.txt](gpl-3.0.txt).
     * **NEVER** access private members outside of their class
         * turn them into a property instead
     * use underscores for file names, CamelCase for class names
+    * try to import at specific as possible
+        * **NEVER** use ```from module import *```
+        * if neccessary, use ```import module```
 
 Example:
 ```python

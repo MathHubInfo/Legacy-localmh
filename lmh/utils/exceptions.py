@@ -4,9 +4,7 @@ Exceptions for lmh
 
 
 class LMHException(Exception):
-    """
-    Common base class for all exceptions used by LMH
-    """
+    """ Common base class for all exceptions used by LMH. """
     
     def __init__(self, msg : str):
         """
@@ -19,7 +17,5 @@ class LMHException(Exception):
 
 
 class MathHubException(LMHException):
-    """
-    Common base class for all Exceptions caused by the lmh.mathhub module
-    """
+    """ Common base class for all Exceptions caused by the lmh.mathhub module. """
     pass

@@ -6,9 +6,8 @@ from lmh.utils.caseclass import caseclass
 @caseclass
 class TreeNode(object):
     """ Represents a printable tree node. """
-    def __init__(self, data : Any = '╿', children : Optional[List] = None):
-        """
-        Creates a new tree node.
+    def __init__(self, data: Any = '╿', children: Optional[List] = None):
+        """ Creates a new tree node.
 
         :param data: Data associated to this TreeNode.
         :param children: List of children of this treeNode or none.
@@ -18,14 +17,11 @@ class TreeNode(object):
         self.children = children if children != None else []
 
     def __str__(self) -> str:
-        """
-        Turns this TreeNode into a nicely formatted string.
-        """
+        """ Turns this TreeNode into a nicely formatted string. """
         return self.__treestring()
         
-    def __treestring(self, prefix : str ='', other_prefix : str ='') -> str:
-        """
-        Returns a nicely-formatted string representing this TreeNode.
+    def __treestring(self, prefix: str ='', other_prefix: str ='') -> str:
+        """ Returns a nicely-formatted string representing this TreeNode.
 
         :param prefix: Prefix to preprend to the first line of the output.
         :param other_prefix: Prefix to prepend to other lines of the output.
@@ -56,9 +52,8 @@ class TreeNode(object):
         # and return it
         return treestr
 
-    def reorder_children(self, order : List[int]) -> None:
-        """
-        Changes the order of the children of this TreeNode in place.
+    def reorder_children(self, order: List[int]) -> None:
+        """ Changes the order of the children of this TreeNode in place.
 
         :param order: List of indexes to use for new order.
         """
@@ -88,9 +83,8 @@ class TreeNode(object):
 class PrintableTreeObject(object):
     """ Represents an object in a tree that has a string representation and internal data. """
     
-    def __init__(self, data : Any, s : str):
-        """
-        Creates a new PrintableTreeObject().
+    def __init__(self, data: Any, s: str):
+        """ Creates a new PrintableTreeObject().
 
         :param data: Data associated to this PrintableTreeObject.
         :param s: String representing this object.
