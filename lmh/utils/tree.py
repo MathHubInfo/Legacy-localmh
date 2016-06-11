@@ -1,6 +1,6 @@
 from typing import Optional, List, Any
 
-from lmh.utils.clsutils.caseclass import caseclass
+from lmh.utils.caseclass import caseclass
 
 
 @caseclass
@@ -82,6 +82,7 @@ class TreeNode(object):
                         break
                 
                 del c
+
 
 @caseclass
 class PrintableTreeObject(object):

@@ -1,11 +1,9 @@
-from lmh.mathhub.resolvers import resolver
-from lmh.programs import git
-
+import os
+import os.path
 from fnmatch import fnmatch
 
-import os, os.path
-
-from lmh.utils.clsutils.caseclass import caseclass
+from lmh.mathhub.resolvers import resolver
+from lmh.utils.caseclass import caseclass
 
 @caseclass
 class LocalMathHubResolver(resolver.MathHubResolver):

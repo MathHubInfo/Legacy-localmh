@@ -1,35 +1,29 @@
 from lmh.utils import exceptions
 
+
 class Command(object):
-    """
-    A Command represents a command that can be run from the Frontend of lmh
-    """
+    """ A Command represents a command that can be run from the Frontend of lmh. """
     
-    def __init__(self, name):
-        """
-        Creates a new Command() object. 
-        
-        Arguments:
-            name
-                Name of this Command
+    def __init__(self, name : str):
+        """ Creates a new Command() object.
+
+        :param str: Name of this command
         """
         self.name = name
-        
+
         self.__commander = None
+        """:type : lmh.frontend.commander.LMHCommander"""
     
     @property
     def commander(self):
+        """ Gets the LMHCommander() instance used by this Command() or throws CommandWithoutCommander.
+        :rtype: lmh.frontend.commander.LMHCommander
         """
-        Gets the LMHCommander() instance used by this Command() or throws
-        CommandWithoutCommander. 
-        
-        Returns:
-            An LMHCommander() instance
-        """
-        
-        if self.__commander == None:
+
+        # if it is empty
+        if self.__commander is None:
             raise CommandWithoutCommander()
-        
+
         return self.__commander
     
     @property
@@ -112,4 +106,4 @@ class CommandWithoutCommander(exceptions.LMHException):
         Creates a new CommandWithoutCommander() instance
         """
         
-        super(CommanderWithoutManager, self).__init__('No LMHCommander() is bound to this Command() instance')
+        super(CommandWithoutCommander, self).__init__('No LMHCommander() is bound to this Command() instance')

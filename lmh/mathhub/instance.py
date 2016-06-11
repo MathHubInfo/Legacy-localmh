@@ -1,5 +1,5 @@
 from lmh.mathhub.resolvers import local, remote
-from lmh.utils.clsutils.caseclass import caseclass
+from lmh.utils.caseclass import caseclass
 
 @caseclass
 class MathHubInstance(object):

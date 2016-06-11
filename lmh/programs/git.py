@@ -1,10 +1,10 @@
-from lmh.programs import program
-
-import sys
-import os, os.path
+import os
+import os.path
 import subprocess
+import sys
 
-from lmh.utils.clsutils.caseclass import caseclass
+from lmh.programs import program
+from lmh.utils.caseclass import caseclass
 
 @caseclass
 class Git(program.Program):

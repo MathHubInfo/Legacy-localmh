@@ -1,5 +1,5 @@
-from lmh.utils.clsutils.caseclass import caseclass
-from lmh.utils.exceptions import LMHException
+from lmh.utils.caseclass import caseclass
+
 
 @caseclass
 class LMHConfigSpec(object):

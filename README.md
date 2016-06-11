@@ -32,3 +32,48 @@ LMH is split up into serveral directories:
 GPL, version 3.0
 
 For the full license text, please see [gpl-3.0.txt](gpl-3.0.txt).
+
+## Documentation + Code Standard (for developers)
+* Documentation standard
+    * every function gets type annotations
+        * every argument should get a type annotation
+            * may be omitted if it would create circular imports
+                * in that case it must be documented in the docstring
+        * the return type should also be annotated
+            * may be omitted for constructors
+            * may be omitted if it would create circular imports
+                * in that case it must be documented in the docstring
+    * every function + class must have a docstring
+        * there should be a blank line between the description and the parameters
+        * each parameter should get a human readable description
+            * self may be omitted
+        * the return value should get a description if it is not clear from the description
+    * every private class property should get a type annotation
+    * every documentation string should end with a dot
+* Code Standard
+    * we should conform to PEP8
+    * **NEVER** access private members outside of their class
+        * turn them into a property instead
+    * use underscores for file names, CamelCase for class names
+
+Example:
+```python
+class Example(object):
+    """ An example class. """
+
+    def __init__(self, name : str):
+        """ Creates a new Example instance.
+
+        :param name: The name of this object.
+        """
+
+        self.name = name
+
+        self.__secret = 16
+        """:type : int"""
+
+    @property
+    def secret(self) -> int:
+        """ Returns the secret contained in this example. """
+        return self.__secret
+```

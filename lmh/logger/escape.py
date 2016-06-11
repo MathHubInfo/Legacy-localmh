@@ -1,5 +1,3 @@
-from lmh.utils.clsutils.caseclass import caseclass
-
 class EscapeCode(str):
     """
     An EscapeCode object represents an escapable color sequence. 

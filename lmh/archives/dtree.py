@@ -1,10 +1,9 @@
-from lmh.utils.clsutils.caseclass import caseclass
-
-from lmh.logger import escape
-from lmh.archives import manifest
-
 from collections import deque
+
+from lmh.archives import manifest
+from lmh.logger import escape
 from lmh.utils import tree
+from lmh.utils.caseclass import caseclass
 
 @caseclass
 class DependencyNode(tree.TreeNode):

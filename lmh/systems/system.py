@@ -1,7 +1,8 @@
-from lmh.utils.clsutils.caseclass import caseclass
-
-import shutil
 import os
+import shutil
+
+from lmh.utils.caseclass import caseclass
+
 
 @caseclass
 class System(object):

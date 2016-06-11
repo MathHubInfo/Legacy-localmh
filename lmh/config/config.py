@@ -203,10 +203,13 @@ class LMHConfig(object):
         """
         return self.reset(name)
 
-import os.path
+
 import json
+import os.path
+
 from lmh.utils import fileio
-from lmh.utils.clsutils.caseclass import caseclass
+from lmh.utils.caseclass import caseclass
+
 
 @caseclass
 class LMHJSONFileConfig(LMHConfig):
@@ -271,8 +274,6 @@ class LMHJSONFileConfig(LMHConfig):
             return True
         
         return fileio.write_file(self.__filename, d_str)
-
-from lmh.utils.clsutils.caseclass import caseclass
 
 @caseclass
 class LMHReadOnlyConfig(LMHConfig):

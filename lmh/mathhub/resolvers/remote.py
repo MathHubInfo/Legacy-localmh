@@ -1,14 +1,11 @@
-from lmh.mathhub.resolvers import resolver
-from lmh.utils import exceptions
-
-from lmh.programs import git
-from functools import lru_cache
-
-
 from urllib.request import urlopen
+
 import lxml.html
 
-from lmh.utils.clsutils.caseclass import caseclass
+from lmh.mathhub.resolvers import resolver
+from lmh.utils import exceptions
+from lmh.utils.caseclass import caseclass
+
 
 @caseclass
 class RemoteMathHubResolver(resolver.MathHubResolver):

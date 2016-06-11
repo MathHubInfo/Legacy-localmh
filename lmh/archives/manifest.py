@@ -1,8 +1,7 @@
-from lmh.utils import fileio, exceptions
-
 import os.path
 
-from lmh.utils.clsutils.caseclass import caseclass
+from lmh.utils import fileio, exceptions
+from lmh.utils.caseclass import caseclass
 
 @caseclass
 class Manifest(object):
