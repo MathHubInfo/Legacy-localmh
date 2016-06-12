@@ -1,3 +1,5 @@
+from typing import List, Dict, Any, Tuple, Optional
+
 import os
 import os.path
 import subprocess
@@ -6,26 +8,22 @@ import sys
 from lmh.programs import program
 from lmh.utils.caseclass import caseclass
 
+
 @caseclass
 class Git(program.Program):
-    """
-    Represents an interface to git.
-    """
-    def __init__(self, systems_dir, sty_dir, git_executable = "git"):
-        """
-        Creates a new Git() instance.
+    """ Represents an interface to git. """
 
-        Arguments:
-            git_executable
-                Optional. Name of the git executable. Defaults to "git".
-            systems_dir
-                Directory to find systems in
-            sty_dir
-                Directory to find sty files in
+    def __init__(self, systems_dir: str, sty_dir: str, git_executable: str = "git"):
+        """ Creates a new Git() instance.
+
+        :param systems_dir: Directory to find systems in.
+        :param sty_dir: Directory to find sty files in.
+        :param git_executable: Path to the Git Executable to use. Defaults to "git".
         """
-        
-        self.__encoding = "utf-8" # TODO: We might not want to hardcode
-        self.__executable = git_executable
+
+        # TODO: We might not want to hard-code the encoding
+        self.__encoding = "utf-8"  # type: str
+        self.__executable = git_executable  # type: str
         
         super(Git, self).__init__(systems_dir, sty_dir)
 
@@ -33,22 +31,13 @@ class Git(program.Program):
     # GENERAL commands
     #
 
-    def __do__(self, dest, cmd, *args, **kwargs):
-        """
-        Performs an arbitrary git command and returns a proc handle
+    def __do__(self, dest: str, cmd: str, *args: List[str], **kwargs: Dict[str, Any]) -> subprocess.Popen:
+        """ Performs an arbitrary git command and returns subprocess.Popen handle.
 
-        Arguments:
-            cmd
-                Git command to run
-            dest
-                Directory to run command in
-            *args
-                Optional arguments to pass to the command
-            **kwargs
-                Optional arguments to pass to subprocess.Popen
-
-        Returns:
-            A subprocess.Popen handle
+        :param cmd: Git command to run.
+        :param dest: Directory to run command in.
+        :param args: Optional arguments to pass to the command.
+        :param kwargs: Optional arguments to pass to subprocess.Popen.
         """
         
         try:
@@ -56,40 +45,30 @@ class Git(program.Program):
         except program.ExecutableNotFound:
             raise GitNotFound()
 
-    def do(self, dest, cmd, *args):
-        """
-        Performs an arbitrary git command and returns if the command succeeded.
+    def do(self, dest: str, cmd: str, *args: List[str]) -> bool:
+        """ Performs an arbitrary git command and returns if the command succeeded.
 
-        Arguments:
-            cmd
-                Git command to run
-            dest
-                Directory to run command in
-            *args
-                Optional arguments to pass to the command
-
-        Returns:
-            A boolean indicating if the return code of the command was 0 or not
+        :param cmd: Git command to run.
+        :param dest: Directory to run command in.
+        :param args: Optional arguments to pass to the command.
         """
+
         proc = self.__do__(dest, cmd, *args, stderr=sys.stderr, stdout=sys.stdout)
         proc.wait()
 
-        return (proc.returncode == 0)
+        return proc.returncode == 0
 
-    def do_quiet(self, dest, cmd, *args):
-        """
-        Same as do() but surpresses any output from the command
-        """
+    def do_quiet(self, dest, cmd, *args) -> bool:
+        """ Same as do() but suppresses command output. """
 
         proc = self.__do__(dest, cmd, *args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
         proc.wait()
 
-        return (proc.returncode == 0)
+        return proc.returncode == 0
 
-    def do_data(self, dest, cmd, *args):
-        """
-        Same as do() but instead of returning a boolean returns a pair of
-        strings representing stdout and stderr output of the command.
+    def do_data(self, dest, cmd, *args) -> Tuple[str, str]:
+        """ Same as do() but instead of returning a boolean returns a pair of strings representing STDOUT and STDERR
+        output of the command.
         """
 
         proc = self.__do__(dest, cmd, *args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -97,108 +76,62 @@ class Git(program.Program):
 
         data = proc.communicate()
 
-        return (data[0].decode(self.__encoding), data[1].decode(self.__encoding))
+        return data[0].decode(self.__encoding), data[1].decode(self.__encoding)
 
     #
     # SIMPLE ALIASES
     #
 
-    def clone(self, dest, *args):
-        """
-        Clones a git repository to a given folder.
+    def clone(self, dest: str, *args: List[str]) -> bool:
+        """ Clones a git repository to a given folder and returns if the command succeeded.
 
-        Arguments:
-            dest
-                Folder to clone repository to
-            *arg
-                Optional arguments to pass to the git clone command
-
-        Returns:
-            A boolean indicating if the return code of the git clone command
-            was 0 or not
+        :param dest: Folder to clone repository to.
+        :param arg: Optional arguments to pass to the git clone command.
         """
+
         return self.do(dest, "clone", *args)
 
-    def pull(self, dest, *args):
-        """
-        Pulls a git repository.
+    def pull(self, dest: str, *args: List[str]) -> bool:
+        """ Pulls a git repository and returns if the command succeeded.
 
-        Arguments:
-            dest
-                Folder to pull repository in
-            *arg
-                Optional arguments to pass to the git clone command
-
-        Returns:
-            A boolean indicating if the return code of the git pull command
-            was 0 or not
+        :param dest: Folder to pull repository in.
+        :param args: Optional arguments to pass to the git pull command.
         """
+
         return self.do(dest, "pull", *args)
 
-    def commit(self, dest, *args):
-        """
-        Commits a git repository.
+    def commit(self, dest: str, *args: List[str]) -> bool:
+        """Commits a git repository and returns if the command succeeded.
 
-        Arguments:
-            dest
-                repository to commit
-            *arg
-                Optional arguments to pass to the git commit command
-
-        Returns:
-            A boolean indicating if the return code of the git commit command
-            was 0 or not
+        :param dest: repository to commit
+        :param args: Optional arguments to pass to the git commit command.
         """
 
         return self.do(dest, "commit", *args)
 
+    def push(self, dest: str, *args: List[str]) -> bool:
+        """ Pushes a git repository and returns if the command succeeded.
 
-    def push(self, dest, *args):
-        """
-        Pushes a git repository.
-
-        Arguments:
-            dest
-                repository to push
-            *args
-                Optional arguments to pass to the git push command
-
-        Returns:
-            A boolean indicating if the return code of the git push command
-            was 0 or not
+        :param dest: Folder to push repository in.
+        :param args: Optional arguments to pass to the git push command.
         """
 
         return self.do(dest, "push", *args)
 
-    def status(self, dest, *args):
-        """
-        Runs git status on a git repository.
+    def status(self, dest: str, *args: List[str]) -> bool:
+        """ Runs git status on a git repository and returns if the command succeeded.
 
-        Arguments:
-            dest
-                repository to status
-            *args
-                Optional arguments to pass to the git status command
-
-        Returns:
-            A boolean indicating if the return code of the git status command
-            was 0 or not
+        :param dest: Folder to run git status in.
+        :param args: Optional arguments to pass to the git status command.
         """
 
         return self.do(dest, "status", *args)
 
-    def status_message(dest, *arg):
-        """
-        Runs git status and returns the status message or None
+    def status_message(self, dest: str, *args: List[str]) -> Optional[str]:
+        """ Runs git status on a git repository and retuns the status message or None.
 
-        Arguments:
-            dest
-                repository to run git status in
-            *args
-                Optional arguments to pass to the git status command
-
-        Returns:
-            A string containing the status message or None
+        :param dest: Folder to run git status in.
+        :param args: Optional arguments to pass to the git status command.
         """
 
         proc = self.__do__(dest, "status", *args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -213,22 +146,17 @@ class Git(program.Program):
     #
     # SPECIFIC COMMANDS (non-standard)
     #
-    def exists_remote(self, dest, askpass=False):
-        """
-        Checks if a remote git repository exists
 
-        Arguments:
-            dest
-                remote repository to check
-            askpass
-                Optional. If set to True enables asking for passwords.
+    def exists_remote(self, dest: str, ask_pass: bool=False) -> bool:
+        """ Checks if a remote git repository exists.
 
-        Returns:
-            A boolean indicating if the remote repository exists or not.
+        :param dest: Remote repository to check.
+        :param ask_pass: Optional. If set to True enables asking for passwords.
         """
 
+        # disable asking for passwords if configured
         env = os.environ.copy()
-        if not askpass:
+        if not ask_pass:
             env["GIT_TERMINAL_PROMPT"] = "0"
             env["GIT_ASKPASS"] = "/bin/echo"
 
@@ -237,30 +165,25 @@ class Git(program.Program):
 
         return proc.returncode == 0
 
-    def exists_local(self, dest, askpass=False):
-        """
-        Checks if a local git repository exists
+    def exists_local(self, dest: str) -> bool:
+        """ Checks if a local git repository exists.
 
-        Arguments:
-            dest
-                local repository to check
-
-        Returns:
-            A boolean indicating if the local repository exists or not.
+        :param dest: Local repository to check.
         """
 
         return self.do_quiet(dest, "rev-parse")
-    
-    def get_remote_status(self, dest):
-        """
-        Gets the status of a remote repository in dest
-        
-        Arguments:
-            dest
-                Folder to find repository in
-        Returns:
-             one of 'ok', 'pull', 'push', 'divergence' or None indicating the
-             status of the remote
+
+    # TODO: Migrate these to integers to be nicer
+    UP_TO_DATE = "ok"
+    REMOTE_AHEAD = "pull"
+    LOCAL_AHEAD = "push"
+    DIVERGENCE = "divergence"
+
+    def get_remote_status(self, dest: str) -> str:
+        """ Gets the status of a remote repository in dest as compared to the local one.
+
+        :param dest: Folder to find repository in.
+        :return: One of the constants Git.UP_TO_DATE, Git.REMOTE_AHEAD, Git.LOCAL_AHEAD, Git.DIVERGENCE
         """
         
         # update the remote status
@@ -279,29 +202,23 @@ class Git(program.Program):
         remote = self.do_data(dest, 'rev-parse', my_upstream)[0].split('\n')[0]
         
         # as well as the merge base
-        base = self.do_data(where, 'merge-base', my_branch, my_upstream)[0].split('\n')[0]
+        base = self.do_data(dest, 'merge-base', my_branch, my_upstream)[0].split('\n')[0]
 
+        # and then return the appropriate constant
         if local == remote:
-            return 'ok'
+            return Git.UP_TO_DATE
         elif local == base:
-            return 'pull'
+            return Git.REMOTE_AHEAD
         elif remote == base:
-            return 'push'
+            return Git.LOCAL_AHEAD
         else:
-            return 'divergence'
+            return Git.DIVERGENCE
     
-    def make_orphan_branch(self, dest, name):
-        """
-        Makes an orphaned branch. 
-        
-        Arguments:
-            dest
-                Git repository to create branch in
-            name
-                Name of the branch
-        
-        Returns:
-            a boolean indicating if creation was successfull. 
+    def make_orphan_branch(self, dest: str, name: str) -> bool:
+        """ Creates an orphaned branch and returns a boolean indicating if creation was successfull.
+
+        :param dest: Git repository to create orphaned branch in.
+        :param name: Name of branch to create.
         """
         
         # true | git mktree
@@ -327,10 +244,10 @@ class Git(program.Program):
 
         return proc.returncode == 0
 
+
 class GitNotFound(program.ExecutableNotFound):
-    """
-    Exception that is thrown when git is not found
-    """
+    """ Exception that is thrown when git is not found. """
     
     def __init__(self):
+        """ Creates a new GitNotFound() instance. """
         super(GitNotFound, self).__init__("Can not find git")

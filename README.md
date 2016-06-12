@@ -50,6 +50,7 @@ For the full license text, please see [gpl-3.0.txt](gpl-3.0.txt).
         * the return value should get a description if it is not clear from the description
     * every class attribute should get a PEP484 type annotation via ```# type: something```
     * every documentation string should end with a dot
+    * after a docstring there should be a new line
 * Code Standard
     * we should conform to PEP8
     * **NEVER** access private members outside of their class
@@ -82,5 +83,6 @@ class Example(object):
     @property
     def secret(self) -> int:
         """ Returns the secret contained in this example. """
+
         return self.__secret
 ```
