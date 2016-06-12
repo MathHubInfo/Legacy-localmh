@@ -124,7 +124,7 @@
 	"setup::mmtjar::source": {
 		"type": "string",
 		"help": "Default Source for the MMT jar source. ",
-		"default": "https://github.com/KWARC/MMT/raw/gh-pages/deploy/mmt.jar"
+		"default": "https://github.com/KWARC/MMT/raw/master-binaries/deploy/mmt.jar"
 	},
 	"setup::unmanaged": {
 		"type": "string",
