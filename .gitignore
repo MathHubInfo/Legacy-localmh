@@ -15,3 +15,5 @@ auto
 *.log
 test.*
 
+# IntelliJ files
+.idea
