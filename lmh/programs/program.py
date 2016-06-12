@@ -111,8 +111,6 @@ class Program(object):
         # set the default
         if env is None:
             env = os.environ.copy()
-
-        print(self.perl5env)
         
         # mixin the new values
         for (k, v) in self.perl5env.items():
