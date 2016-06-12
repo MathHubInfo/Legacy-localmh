@@ -56,7 +56,7 @@ class LMHRemoteArchive(archive.LMHArchive):
         
         # run the clone command
         g.clone(
-            self.instance.local_resolver.to_path(),
+            self.instance.local.to_path(),
             self.resolve_remote(),
             self.resolve_local()
         )
