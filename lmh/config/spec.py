@@ -1,4 +1,7 @@
+import json
+
 from lmh.utils.caseclass import caseclass
+from lmh.utils.fileio import FileIO
 
 
 @caseclass
@@ -101,8 +104,7 @@ class LMHConfigSpec(object):
         """
         return self.get(name)
 
-import json
-from lmh.utils import fileio
+
 class LMHFileConfigSpec(LMHConfigSpec):
     """
     Represents the specification of an LMHConfigSpec instance that is read
@@ -119,7 +121,7 @@ class LMHFileConfigSpec(LMHConfigSpec):
         """
         
         super(LMHFileConfigSpec, self).__init__([
-            LMHConfigSettingSpec(k, v["type"], v["default"], v["help"]) for (k, v) in json.loads(fileio.read_file(filename)).items()
+            LMHConfigSettingSpec(k, v["type"], v["default"], v["help"]) for (k, v) in json.loads(FileIO.read_file(filename)).items()
         ])
         
 @caseclass

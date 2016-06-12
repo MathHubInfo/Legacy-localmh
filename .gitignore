@@ -1,10 +1,17 @@
-MathHub/*
+# Python caching
 *.pyc
+__pycache__
+
+
+# Installed MathHub content
+MathHub/*
+
+# Installed extra software
 ext/*
+
+# Other things
 *.cfg
 auto
 *.log
 test.*
-.DS_Store
-bin/lmhc
-__pycache__
+

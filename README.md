@@ -35,7 +35,7 @@ For the full license text, please see [gpl-3.0.txt](gpl-3.0.txt).
 
 ## Documentation + Code Standard (for developers)
 * Documentation standard
-    * every function gets type annotations
+    * every function gets type annotations according to PEP484
         * every argument should get a type annotation
             * may be omitted if it would create circular imports
                 * in that case it must be documented in the docstring
@@ -48,16 +48,21 @@ For the full license text, please see [gpl-3.0.txt](gpl-3.0.txt).
         * each parameter should get a human readable description
             * self may be omitted
         * the return value should get a description if it is not clear from the description
-    * every private class property should get a type annotation
+    * every class attribute should get a PEP484 type annotation via ```# type: something```
     * every documentation string should end with a dot
 * Code Standard
     * we should conform to PEP8
     * **NEVER** access private members outside of their class
         * turn them into a property instead
-    * use underscores for file names, CamelCase for class names
+    * use underscores for file and method names, CamelCase for class names
+    * do not use standalone functions, use ```@staticmethod``` instead
     * try to import at specific as possible
         * **NEVER** use ```from module import *```
         * if neccessary, use ```import module```
+    * avoiding circular imports with Managers
+        * The Manager imports the object in the last line
+        * The Objects import the manager normally
+        * The __init__.py in the appropriate package imports both and then loads the manager
 
 Example:
 ```python
@@ -70,10 +75,9 @@ class Example(object):
         :param name: The name of this object.
         """
 
-        self.name = name
+        self.name = name # type: str
 
-        self.__secret = 16
-        """:type : int"""
+        self.__secret = 16 # type: int
 
     @property
     def secret(self) -> int:

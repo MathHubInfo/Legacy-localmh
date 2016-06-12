@@ -1,8 +1,6 @@
-"""
-Implements scala-like caseclass functionality
-"""
-
 from typing import List, Dict, Any
+
+# TODO: Turn this into a meta-class
 
 
 class CaseClass(object):
@@ -12,13 +10,13 @@ class CaseClass(object):
         """ Initialises case class parameters """
 
         # The name of this case class
-        self.__cc_name__ = self.__class__.__name__
+        self.__cc_name__ = self.__class__.__name__  # type: str
 
         # The arguments given to this case class
-        self.__cc_args__ = cargs
+        self.__cc_args__ = cargs  # type: List[Any]
 
         # The keyword arguments given to this case class
-        self.__cc_kwargs__ = kcwargs
+        self.__cc_kwargs__ = kcwargs  # type: Dict[str, Any]
 
     def __eq__(self, other : Any) -> bool:
         """ Implements equality between case classes. Two case class instances are equal if their parameters are equal
@@ -69,6 +67,8 @@ class CaseClass(object):
 
 def caseclass(cls: type) -> type:
     """ Class Decorator the makes a class a CaseClass
+
+    :param cls: Class that should be decorated
     """
 
     # get the name of the super class

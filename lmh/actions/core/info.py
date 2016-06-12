@@ -1,5 +1,5 @@
 from lmh.actions import action
-from lmh.utils import fileio
+from lmh.utils.fileio import FileIO
 
 class InfoAction(action.Action):
     """
@@ -22,14 +22,14 @@ class InfoAction(action.Action):
         """
         
         # just read the license file
-        return fileio.read_file(self.manager('locate', 'spec', 'license'))
+        return FileIO.read_file(self.manager('locate', 'spec', 'license'))
     
     def version(self):
         """
         Returns version information of lmh. 
         """
         
-        version = fileio.read_file(self.manager('locate', 'spec', 'version')).strip()
+        version = FileIO.read_file(self.manager('locate', 'spec', 'version')).strip()
         try:
             git_version = self.manager('git').do_data(self.manager('locate'), 'rev-parse', 'HEAD')[0].rstrip()
         except:

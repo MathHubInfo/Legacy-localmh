@@ -1,5 +1,7 @@
 from lmh.archives import manifest
-from lmh.utils import exceptions, fileio
+from lmh.utils import exceptions
+
+from lmh.utils.fileio import FileIO
 
 import os.path
 
@@ -113,13 +115,13 @@ class GeneratedBranchManager(object):
         
         # either create or append
         if os.path.isfile(gi_path):
-            gi_c = fileio.read_file(gi_path)
+            gi_c = FileIO.read_file(gi_path)
         else:
             gi_c = ''
         
         gi_c += '/%s\n' % (path,)
         
-        if not fileio.write_file(gi_path, gi_c):
+        if not FileIO.write_file(gi_path, gi_c):
             raise ValueError('unable to write .gitignore')
         
         # make a string representing a path
@@ -290,7 +292,7 @@ class GeneratedBranch(object):
             return False
 
         # set up .git/objects/info/alternates relatively
-        if not fileio.write_file(os.path.join(self.__bpath, '.git', 'objects', 'info', 'alternates'), '../../../.git/objects'):
+        if not FileIO.write_file(os.path.join(self.__bpath, '.git', 'objects', 'info', 'alternates'), '../../../.git/objects'):
             return False
 
         # set the origin

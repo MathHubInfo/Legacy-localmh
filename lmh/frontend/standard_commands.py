@@ -1,3 +1,7 @@
+import json
+
+from lmh.utils.fileio import FileIO
+
 class StandardCommands(object):
     @staticmethod
     def register_to(commander):
@@ -81,12 +85,9 @@ class StandardCommands(object):
                 Commander() to register all standard commands to
         """
         
-        from lmh.utils import fileio
-        import json
-        
         from lmh.lib.dirs import lmh_locate
         
-        lc = json.loads(fileio.read_file(lmh_locate("lmh", "data", "commands.json")))
+        lc = json.loads(FileIO.read_file(lmh_locate("lmh", "data", "commands.json")))
         
         from lmh.frontend.commands import legacy
         

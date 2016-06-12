@@ -1,12 +1,7 @@
-"""
-Exceptions for lmh
-"""
-
-
 class LMHException(Exception):
     """ Common base class for all exceptions used by LMH. """
     
-    def __init__(self, msg : str):
+    def __init__(self, msg: str):
         """
         Creates a new LMHException() instance.
 

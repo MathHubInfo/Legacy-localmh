@@ -1,6 +1,7 @@
 import os.path
 
-from lmh.utils import fileio, exceptions
+from lmh.utils import exceptions
+from lmh.utils.fileio import FileIO
 from lmh.utils.caseclass import caseclass
 
 @caseclass
@@ -33,7 +34,7 @@ class Manifest(object):
         
         keys = set()
         
-        for line in fileio.read_file_lines(self.__filename):
+        for line in FileIO.read_file_lines(self.__filename):
             try:
                 keys.add(line[:line.index(":")])
             except ValueError:
@@ -73,7 +74,7 @@ class Manifest(object):
         
         the_line_start = "%s:" % (key,)
         
-        for line in fileio.read_file_lines(self.__filename):
+        for line in FileIO.read_file_lines(self.__filename):
             if line.startswith(the_line_start):
                 return line[line.index(":")+1:].strip()
         
