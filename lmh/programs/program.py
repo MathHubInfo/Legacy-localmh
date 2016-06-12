@@ -51,8 +51,8 @@ class Program(object):
     def perl5env(self) -> Dict[str, str]:
 
         # if we have it cached, return it
-        if self.__perl5env is not None:
-            return self.__perl5env
+        if self.__p5env is not None:
+            return self.__p5env
 
         self.__p5env = self.__perl5env()
         return self.__p5env
@@ -111,6 +111,8 @@ class Program(object):
         # set the default
         if env is None:
             env = os.environ.copy()
+
+        print(self.perl5env)
         
         # mixin the new values
         for (k, v) in self.perl5env.items():
