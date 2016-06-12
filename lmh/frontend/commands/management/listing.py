@@ -145,7 +145,7 @@ class RemoteListCommand(ListCommand, archive.RemoteArchiveCommand):
                             else:
                                 ac.data.s = escape.Red(archive.name)
             
-            self.manager.logger.log(tree)
+                self.manager.logger.log(tree)
             
             return True
         

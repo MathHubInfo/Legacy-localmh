@@ -1,7 +1,6 @@
-from lmh.utils.caseclass import caseclass
+from lmh.utils.caseclass import AbstractCaseClass
 
-@caseclass
-class Action(object):
+class Action(AbstractCaseClass):
     """
     An Action represents something that can be performed by lmh
     """

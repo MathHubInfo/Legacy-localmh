@@ -1,46 +1,36 @@
-from lmh.utils.caseclass import caseclass
+from lmh.utils.caseclass import AbstractCaseClass
 
-@caseclass
-class LogLevel(object):
-    """
-    Class used to represent different log levels for lmh
-    """
-    pass
+class LogLevel(AbstractCaseClass):
+    """ Class used to represent different log levels for lmh. """
+    def __init__(self):
+        super(LogLevel, self).__init__()
 
-@caseclass
+
 class NoLogLevel(LogLevel):
-    """
-    Represents the None LogLevel for lmh - i. e. If only a message is written. 
-    """
+    """ Represents the None LogLevel for lmh - i.e. If only a message is written. """
     pass
 
-@caseclass
+
 class InfoLogLevel(LogLevel):
-    """
-    Represents the Info LogLevel for lmh - i. e. If if an information is given
-    """
+    """ Represents the Info LogLevel for lmh - i.e. If if an information is given. """
+
     pass
 
-@caseclass
+
 class WarnLogLevel(LogLevel):
-    """
-    Represents the Warning LogLevel for lmh - i. e. if something is not entirely
-    as intended
-    """
+    """ Represents the Warning LogLevel for lmh - i.e. if something is not entirely as intended. """
+
     pass
 
-@caseclass
+
 class ErrorLogLevel(LogLevel):
-    """
-    Represents the Error LogLevel for lmh - i. e. if something went wrong and 
-    lmh had to abort its current operation
-    """
+    """ Represents the Error LogLevel for lmh - i.e. if something went wrong and lmh had to abort its current
+    operation. """
     pass
 
-@caseclass
+
 class FatalLogLevel(LogLevel):
-    """
-    Represents the Fatal LogLevel for lmh - i. e. if something went wrong and 
-    lmh had to stop completly. Used only in case of uncaught exceptions. 
+    """ Represents the Fatal LogLevel for lmh - i.e. if something went wrong and lmh had to stop completly. Used only
+    in case of uncaught exceptions.
     """
     pass

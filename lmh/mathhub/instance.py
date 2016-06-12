@@ -3,13 +3,12 @@ from typing import Optional, List, Tuple
 from lmh.mathhub.resolvers.local import LocalMathHubResolver
 from lmh.mathhub.resolvers.remote import RemoteMathHubResolver
 
-from lmh.utils.caseclass import caseclass
+from lmh.utils.caseclass import CaseClass
 
 from lmh.mathhub.manager import MathHubManager
 
 
-@caseclass
-class MathHubInstance(object):
+class MathHubInstance(CaseClass):
     """ Represents a single MathHub instance that has a localResolver and a matching remote resolver. """
 
     def __init__(self, name: str, local_resolver: LocalMathHubResolver, remote_resolver: RemoteMathHubResolver):

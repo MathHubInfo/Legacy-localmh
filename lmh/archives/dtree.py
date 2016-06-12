@@ -3,9 +3,9 @@ from collections import deque
 from lmh.archives import manifest
 from lmh.logger import escape
 from lmh.utils import tree
-from lmh.utils.caseclass import caseclass
+from lmh.utils.caseclass import AbstractCaseClass
 
-@caseclass
+
 class DependencyNode(tree.TreeNode):
     """
     Represents a single node in the dependency tree. 
@@ -221,6 +221,9 @@ class DependencyNode(tree.TreeNode):
             data
                 DependencyData() contained in this DependencyNode()
         """
+
+        super(DependencyNode, self).__init__(data, [])
+
         self.data = data
         self.children = []
     
@@ -318,14 +321,14 @@ class DependencyNode(tree.TreeNode):
         # reorder the children in place
         self.reorder_children(children_installed + children_missing + children_circular + children_unexpanded)
     
-@caseclass
-class DependencyData(object):
+
+class DependencyData(AbstractCaseClass):
     """
     BaseClass for all items inside the dependency node
     """
     pass
 
-@caseclass
+
 class DependentArchive(DependencyData):
     """
     Base Class representing a single dependent archive. 
@@ -338,9 +341,12 @@ class DependentArchive(DependencyData):
             archive
                 LMHArchive() instance that is wrapped
         """
+
+        super(DependentArchive, self).__init__(archive)
+
         self.archive = archive
 
-@caseclass
+
 class InstalledDependency(DependentArchive):
     """
     Represents an installed dependency
@@ -354,7 +360,7 @@ class InstalledDependency(DependentArchive):
         """
         return '[%s]' % (escape.Green(self.archive),)
 
-@caseclass
+
 class MissingDependency(DependentArchive):
     """
     Represents a missing dependency
@@ -368,7 +374,7 @@ class MissingDependency(DependentArchive):
         """
         return '[%s] (missing)' % (escape.Red(self.archive),)
 
-@caseclass
+
 class CircularDependency(DependentArchive):
     """
     Represents a dependency that was skipped because it would be circular
@@ -382,7 +388,7 @@ class CircularDependency(DependentArchive):
         """
         return '[%s] (circular)' % (escape.Yellow(self.archive),)
 
-@caseclass
+
 class UnexpandedDependency(DependentArchive):
     """
     Represents a dependency that was not expanded to keep the tree shallow. 
@@ -396,7 +402,7 @@ class UnexpandedDependency(DependentArchive):
         """
         return '[%s] (unexpanded)' % (escape.Blue(self.archive),)
 
-@caseclass
+
 class SummarizedDependency(DependencyData):
     """
     Base Class representing a multiple dependent archives that have been summarized
@@ -410,6 +416,7 @@ class SummarizedDependency(DependencyData):
                 LMHArchive() instance that is wrapped
         """
         self.archives = archives
+
 
 class MultipleUnexpandedDependency(SummarizedDependency):
     """
@@ -430,7 +437,7 @@ class MultipleUnexpandedDependency(SummarizedDependency):
         
         return '[%s] (%d unexpanded)' % (names,len(self.archives))
 
-@caseclass
+
 class MultipleCircularDependency(MultipleUnexpandedDependency):
     """
     Represents multiple circular dependencies

@@ -7,11 +7,9 @@ from fnmatch import fnmatch
 from lmh.programs.git import Git
 
 from lmh.mathhub.resolvers import resolver
-from lmh.utils.caseclass import caseclass
 from lmh.utils import exceptions
 
 
-@caseclass
 class LocalMathHubResolver(resolver.MathHubResolver):
     """ Represents a MathHubResolver() that can resolve local git repositories from a given folder. """
 

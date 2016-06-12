@@ -7,10 +7,8 @@ from lmh.programs.git import Git
 
 from lmh.mathhub.resolvers import resolver
 from lmh.utils import exceptions
-from lmh.utils.caseclass import caseclass
 
 
-@caseclass
 class RemoteMathHubResolver(resolver.MathHubResolver):
     """ Represents a MathHubResolver() that can resolve (git) repositories from a remote GitHub or GitLab server. """
     

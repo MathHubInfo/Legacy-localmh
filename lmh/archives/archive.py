@@ -1,7 +1,7 @@
-from lmh.utils.caseclass import caseclass
+from lmh.utils.caseclass import InheritableCaseClass
 
-@caseclass
-class LMHArchive(object):
+
+class LMHArchive(InheritableCaseClass):
     """
     Represents an LMH Archive that can be local or remote. 
     """

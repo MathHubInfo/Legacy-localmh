@@ -6,10 +6,7 @@ import subprocess
 import sys
 
 from lmh.programs import program
-from lmh.utils.caseclass import caseclass
 
-
-@caseclass
 class Git(program.Program):
     """ Represents an interface to git. """
 

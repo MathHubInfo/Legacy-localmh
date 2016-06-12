@@ -2,10 +2,10 @@ import os.path
 
 from lmh.utils import exceptions
 from lmh.utils.fileio import FileIO
-from lmh.utils.caseclass import caseclass
+from lmh.utils.caseclass import CaseClass
 
-@caseclass
-class Manifest(object):
+
+class Manifest(CaseClass):
     """
     Represents the Manifest.MF file of an archive
     """
@@ -18,6 +18,8 @@ class Manifest(object):
             filename
                 Name of file to read meta-inf from
         """
+
+        super(Manifest, self).__init__(filename)
         
         if not os.path.isfile(filename):
             raise NoManifestFile()

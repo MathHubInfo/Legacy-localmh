@@ -1,7 +1,7 @@
 from lmh.mathhub.resolvers import resolver
 from lmh.utils import exceptions
 from lmh.archives import archive
-import os
+
 
 class LMHManager(object):
     """

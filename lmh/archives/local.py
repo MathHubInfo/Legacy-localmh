@@ -3,10 +3,8 @@ import os.path
 from lmh.archives import archive, manifest
 from lmh.mathhub.resolvers import resolver
 from lmh.utils import exceptions
-from lmh.utils.caseclass import caseclass
 
 
-@caseclass
 class LMHLocalArchive(archive.LMHArchive):
     """
     Represents an LMH Archive that is locally available. 

@@ -1,10 +1,9 @@
 from typing import Optional, List, Any
 
-from lmh.utils.caseclass import caseclass
+from lmh.utils.caseclass import CaseClass, InheritableCaseClass
 
 
-@caseclass
-class TreeNode(object):
+class TreeNode(InheritableCaseClass):
     """ Represents a printable tree node. """
     def __init__(self, data: Any = '╿', children = None):
         """ Creates a new tree node.
@@ -79,8 +78,7 @@ class TreeNode(object):
                 del c
 
 
-@caseclass
-class PrintableTreeObject(object):
+class PrintableTreeObject(CaseClass):
     """ Represents an object in a tree that has a string representation and internal data. """
     
     def __init__(self, data: Any, s: str):

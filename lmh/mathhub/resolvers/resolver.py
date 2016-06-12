@@ -3,11 +3,10 @@ from typing import List, Tuple, Optional
 from fnmatch import fnmatch
 
 from lmh.utils import exceptions
-from lmh.utils.caseclass import caseclass
+from lmh.utils.caseclass import AbstractCaseClass
 
 
-@caseclass
-class MathHubResolver(object):
+class MathHubResolver(AbstractCaseClass):
     """ Represents a (local or remote) Resolver that can resolve specifications of repositories. """
     
     def can_answer_for(self, name: str) -> bool:

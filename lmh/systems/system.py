@@ -3,14 +3,13 @@ import shutil
 from typing import Optional, List
 
 from lmh.utils import exceptions
-from lmh.utils.caseclass import caseclass
+from lmh.utils.caseclass import CaseClass
 from lmh.systems.manager import SystemManager
 from lmh.manager.manager import LMHManager
 from lmh.programs.program import Program
 
 
-@caseclass
-class System(object):
+class System(CaseClass):
     """ Empty BaseClass for systems external to lmh. """
     
     def __init__(self, name: str, base: Optional[str] = None):
@@ -19,6 +18,8 @@ class System(object):
         :param name: Name of the system to create.
         :param base: Optional. Base directory to install system in. Defaults to self.manager.locate('systems', name).
         """
+
+        super(System, self).__init__(name, base)
         
         self.name = name  # type: str
         self.__base = base  # type: str

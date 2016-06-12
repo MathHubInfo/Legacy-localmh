@@ -2,10 +2,10 @@ import json
 import os.path
 
 from lmh.utils.fileio import FileIO
-from lmh.utils.caseclass import caseclass
+from lmh.utils.caseclass import AbstractCaseClass
 
 
-class LMHConfig(object):
+class LMHConfig(AbstractCaseClass):
     """
     Represents an LMH Configuration that can be read and written by lmh
     """
@@ -16,8 +16,7 @@ class LMHConfig(object):
         
         Arguments:
             spec
-                LMHConfigSpec() instance representing the given configuration
-                settings
+                LMHConfigSpec() instance representing the given configuration settings.
         """
         
         self.spec = spec
@@ -211,7 +210,6 @@ class LMHConfig(object):
         return self.reset(name)
 
 
-@caseclass
 class LMHJSONFileConfig(LMHConfig):
     """
     Represents an LMHConfig instance that can read from a file
@@ -275,7 +273,7 @@ class LMHJSONFileConfig(LMHConfig):
         
         return FileIO.write_file(self.__filename, d_str)
 
-@caseclass
+
 class LMHReadOnlyConfig(LMHConfig):
     """
     Represents a read-only LMH Config instance

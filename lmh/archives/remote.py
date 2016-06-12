@@ -1,9 +1,6 @@
 from lmh.archives import archive
 from lmh.utils import exceptions
-from lmh.utils.caseclass import caseclass
 
-
-@caseclass
 class LMHRemoteArchive(archive.LMHArchive):
     """
     Represents an LMH Archive that is remotely available. 

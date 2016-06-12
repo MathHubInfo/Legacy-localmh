@@ -3,11 +3,10 @@ from typing import Dict, Optional, List, Any
 import os.path
 import subprocess
 
-from lmh.utils.caseclass import caseclass
+from lmh.utils.caseclass import AbstractCaseClass
 
 
-@caseclass
-class Program(object):
+class Program(AbstractCaseClass):
     """ BaseClass for interfaces to external programs used by lmh. """
 
     @staticmethod

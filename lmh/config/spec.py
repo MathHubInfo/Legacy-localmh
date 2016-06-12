@@ -1,11 +1,10 @@
 import json
 
-from lmh.utils.caseclass import caseclass
+from lmh.utils.caseclass import AbstractCaseClass, CaseClass
 from lmh.utils.fileio import FileIO
 
 
-@caseclass
-class LMHConfigSpec(object):
+class LMHConfigSpec(AbstractCaseClass):
     """
     Represents the specififcation for a list of LMH Config Values
     """
@@ -124,8 +123,8 @@ class LMHFileConfigSpec(LMHConfigSpec):
             LMHConfigSettingSpec(k, v["type"], v["default"], v["help"]) for (k, v) in json.loads(FileIO.read_file(filename)).items()
         ])
         
-@caseclass
-class LMHConfigSettingSpec(object):
+
+class LMHConfigSettingSpec(CaseClass):
     """
     Represents the specification for a single lmh config settting. 
     """
