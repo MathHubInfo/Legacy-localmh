@@ -58,8 +58,9 @@ For the full license text, please see [gpl-3.0.txt](gpl-3.0.txt).
     * use underscores for file and method names, CamelCase for class names
     * do not use standalone functions, use ```@staticmethod``` instead
     * try to import at specific as possible
-        * **NEVER** use ```from module import *```
-        * if neccessary, use ```import module```
+        * **Do not** use ```from module import *``` without an ```__all__``` in
+        the imported module.
+        * whenever possible, add an ```__all__``` at then end of a module
     * avoiding circular imports with Managers
         * The Manager imports the object in the last line
         * The Objects import the manager normally

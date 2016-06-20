@@ -1,6 +1,8 @@
 from typing import List, Any, Optional
 
-from lmh.logger import levels, escape
+from lmh.logger import escape
+from lmh.logger.levels import LogLevel, NoLogLevel, InfoLogLevel, \
+    WarnLogLevel, ErrorLogLevel, FatalLogLevel
 
 import sys
 import traceback
@@ -23,24 +25,31 @@ class Logger(object):
 
         return self.__name
     
-    def _log(self, *message: List[Any], newline: bool = True, level: levels.LogLevel = levels.NoLogLevel()) -> None:
+    def _log(self, *message: List[Any], newline: bool = True,
+             level: LogLevel = NoLogLevel()) -> None:
         """ Protected method used to log output. Should be overridden by subclass.
 
         :param message: List of objects that should be written to the log.
-        :param newline: Should a newline be added at the end of the log message? Defaults to true.
-        :param level: LogLevel() object representing the logLevel of this message. Defaults to levels.NoLogLevel().
+        :param newline: Should a newline be added at the end of the log message?
+        Defaults to true.
+        :param level: LogLevel() object representing the logLevel of this
+        message. Defaults to levels.NoLogLevel().
         """
 
         raise NotImplementedError
     
-    def log(self, *message: List[Any], newline: bool = True, flush: bool = False,
-            level: levels.LogLevel = levels.NoLogLevel()) -> None:
+    def log(self, *message: List[Any], newline: bool = True,
+            flush: bool = False, level: LogLevel = NoLogLevel())\
+            -> None:
         """ Writes a message to the log.
 
         :param message: List of objects that should be written to the log.
-        :param newline: Should a newline be added at the end of the log message? Defaults to true.
-        :param flush: Should output be flushed automatically? If set to True automatically calls self.flush().
-        :param level: LogLevel() object representing the logLevel of this message. Defaults to levels.NoLogLevel().
+        :param newline: Should a newline be added at the end of the log message?
+         Defaults to true.
+        :param flush: Should output be flushed automatically? If set to True
+        automatically calls self.flush().
+        :param level: LogLevel() object representing the logLevel of this
+        message. Defaults to levels.NoLogLevel().
         """
         
         self._log(*message, newline = newline, level = level)
@@ -55,45 +64,61 @@ class Logger(object):
 
         raise NotImplementedError
     
-    def info(self, *message: List[Any], newline: bool = True, flush: bool = False) -> None:
+    def info(self, *message: List[Any], newline: bool = True,
+             flush: bool = False) -> None:
         """ Writes a message to the log with the level InfoLogLevel().
         
         :param message: List of objects that should be written to the log.
-        :param newline: Should a newline be added at the end of the log message? Defaults to true.
-        :param flush: Should output be flushed automatically? If set to True automatically calls self.flush().
+        :param newline: Should a newline be added at the end of the log
+        message? Defaults to true.
+        :param flush: Should output be flushed automatically? If set to True
+        automatically calls self.flush().
         """
         
-        return self.log(*message, newline=newline, flush=flush, level=levels.InfoLogLevel())
+        return self.log(*message, newline=newline, flush=flush,
+                        level=InfoLogLevel())
     
-    def warn(self, *message: List[Any], newline: bool = True, flush: bool = False) -> None:
+    def warn(self, *message: List[Any], newline: bool = True,
+             flush: bool = False) -> None:
         """ Writes a message to the log with the WarnLogLevel().
         
         :param message: List of objects that should be written to the log.
-        :param newline: Should a newline be added at the end of the log message? Defaults to true.
-        :param flush: Should output be flushed automatically? If set to True automatically calls self.flush().
+        :param newline: Should a newline be added at the end of the log message?
+         Defaults to true.
+        :param flush: Should output be flushed automatically? If set to True
+        automatically calls self.flush().
         """
         
-        return self.log(*message, newline=newline, flush=flush, level=levels.WarnLogLevel())
+        return self.log(*message, newline=newline, flush=flush,
+                        level=WarnLogLevel())
     
-    def error(self, *message: List[Any], newline: bool = True, flush: bool = False) -> None:
+    def error(self, *message: List[Any], newline: bool = True,
+              flush: bool = False) -> None:
         """ Writes a message to the log with the ErrorLogLevel().
 
         :param message: List of objects that should be written to the log.
-        :param newline: Should a newline be added at the end of the log message? Defaults to true.
-        :param flush: Should output be flushed automatically? If set to True automatically calls self.flush().
+        :param newline: Should a newline be added at the end of the log message?
+         Defaults to true.
+        :param flush: Should output be flushed automatically? If set to True
+        automatically calls self.flush().
         """
         
-        return self.log(*message, newline=newline, flush=flush, level=levels.ErrorLogLevel())
+        return self.log(*message, newline=newline, flush=flush,
+                        level=ErrorLogLevel())
     
-    def fatal(self, *message: List[Any], newline: bool = True, flush: bool = False) -> None:
+    def fatal(self, *message: List[Any], newline: bool = True,
+              flush: bool = False) -> None:
         """ Writes a message to the log with the FatalLogLevel().
 
         :param message: List of objects that should be written to the log.
-        :param newline: Should a newline be added at the end of the log message? Defaults to true.
-        :param flush: Should output be flushed automatically? If set to True automatically calls self.flush().
+        :param newline: Should a newline be added at the end of the log message?
+         Defaults to true.
+        :param flush: Should output be flushed automatically? If set to True
+        automatically calls self.flush().
         """
         
-        return self.log(*message, newline=newline, flush=flush, level=levels.FatalLogLevel())
+        return self.log(*message, newline=newline, flush=flush,
+                        level=FatalLogLevel())
     
     @staticmethod
     def get_exception_string(exception: Exception) -> str:
@@ -103,7 +128,9 @@ class Logger(object):
         :return: A string representing the exception and its traceback.
         """
         
-        return ''.join(traceback.format_exception(exception.__class__, exception, exception.__traceback__))
+        return ''.join(traceback.format_exception(exception.__class__,
+                                                  exception,
+                                                  exception.__traceback__))
         
 
 class StandardLogger(Logger):
@@ -116,13 +143,10 @@ class StandardLogger(Logger):
 
         self._lastlog = None  # type: Optional[str]
     
-    def __write_std(self, msg):
-        """
-        Private function used to write to stdout. 
+    def __write_std(self, msg: str) -> None:
+        """ Private function used to write to stdout.
         
-        Arguments:
-            msg
-                String to write to stdout
+        :param msg: String to write to stdout.
         """
         
         if self._lastlog == 'stderr':
@@ -132,13 +156,10 @@ class StandardLogger(Logger):
         
         self._lastlog = 'stdout'
     
-    def __write_err(self, msg):
-        """
-        Private function used to write to stderr. 
+    def __write_err(self, msg: str) -> None:
+        """ Private function used to write to stderr.
         
-        Arguments:
-            msg
-                String to write to stdout
+        :param msg: String to write to stdout.
         """
         
         if self._lastlog == 'stdout':
@@ -148,19 +169,16 @@ class StandardLogger(Logger):
         
         self._lastlog = 'stderr'
     
-    def _log(self, *message, newline = True, level = levels.NoLogLevel()):
-        """
-        Protected method used to log output. Should be overridden by subclass. 
-        
-        Arguments:
-            *message
-                List of objects that should be written to the log
-            newline
-                Should a newline be added at the end of the log message? Defaults
-                to true. 
-            level
-                LogLevel() object representing the logLevel of this message. 
-                Defaults to NoLogLevel()
+    def _log(self, *message : List[Any], newline : bool = True,
+             level: LogLevel = NoLogLevel()) -> None:
+        """ Protected method used to log output. Should be overridden by
+        subclass.
+
+        :param message: List of objects that should be written to the log
+        :param newline: Should a newline be added at the end of the log message?
+         Defaults to true.
+         :param level: LogLevel() object representing the logLevel of this
+         message. Defaults to NoLogLevel()
         """
         
         msg = ' '.join(list(map(str, message)))
@@ -169,25 +187,23 @@ class StandardLogger(Logger):
             msg += '\n'
         
         # nothing special, just print
-        if level == levels.NoLogLevel():
+        if level == NoLogLevel():
             self.__write_std(msg)
         
         # Info ==> STDOUT
-        elif level == levels.InfoLogLevel():
+        elif level == InfoLogLevel():
             self.__write_std('[%s] %s' % (escape.Green('info'), msg))
         
         # Warn + Error + Fatal ==> STDERR
-        elif level == levels.WarnLogLevel():
+        elif level == WarnLogLevel():
             self.__write_err('[%s] %s' % (escape.Yellow('warn'), msg))
-        elif level == levels.ErrorLogLevel():
+        elif level == ErrorLogLevel():
             self.__write_err('[%s] %s' % (escape.Red('error'), msg))
-        elif level == levels.FatalLogLevel():
+        elif level == FatalLogLevel():
             self.__write_err('[%s] %s' % (escape.Magenta('fatal'), msg))
     
-    def flush(self):
-        """
-        Flushes output of this logger. Should be overridden by subclass. 
-        """
+    def flush(self) -> None:
+        """ Flushes output of this logger. Should be overridden by subclass. """
         
         sys.stdout.flush()
         sys.stderr.flush()
