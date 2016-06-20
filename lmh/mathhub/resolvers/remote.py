@@ -10,7 +10,8 @@ from lmh.utils import exceptions
 
 
 class RemoteMathHubResolver(resolver.MathHubResolver):
-    """ Represents a MathHubResolver() that can resolve (git) repositories from a remote GitHub or GitLab server. """
+    """ Represents a MathHubResolver() that can resolve (git) repositories
+    from a remote GitHub or GitLab server. """
     
     def __init__(self, git: Git):
         """ Creates a new RemoteMathHubResolver() instance.
@@ -26,7 +27,8 @@ class RemoteMathHubResolver(resolver.MathHubResolver):
         return self.__git
 
     def get_repo_path(self, group: str, name: str) -> str:
-        """ Gets the full path to a repository or throws NotImplementedError. May also throw RepositoryNotFound. Should
+        """ Gets the full path to a repository or throws NotImplementedError.
+        May also throw RepositoryNotFound. Should
         be overridden by the subclass.
 
         :param group: Group of repository to resolve.
@@ -36,22 +38,26 @@ class RemoteMathHubResolver(resolver.MathHubResolver):
         raise NotImplementedError
 
     def get_all_repos(self) -> List[Tuple[str, str]]:
-        """ Gets a (possibly cached) list of repositories or throws NotImplementedError if not available. Should be
+        """ Gets a (possibly cached) list of repositories or throws
+        NotImplementedError if not available. Should be
         overridden by the subclass.
 
-        :return: A list of pairs of strings (group, name) representing repositories.
+        :return: A list of pairs of strings (group, name) representing
+        repositories.
         """
 
         raise NotImplementedError
 
     def clear_repo_cache(self) -> None:
-        """ Clears the cache of this Resolver. Should be implemented by the subclass. """
+        """ Clears the cache of this Resolver. Should be implemented by the
+        subclass. """
 
         raise NotImplementedError
 
 
 class GitLabResolver(RemoteMathHubResolver):
-    """ Represents a RemoteMathHubResolver() that checks a remote GitLab instance. """
+    """ Represents a RemoteMathHubResolver() that checks a remote GitLab
+    instance. """
 
     def __init__(self, git: Git, hostname: str):
         """ Creates a new GitLabResolver() instance.
@@ -72,9 +78,11 @@ class GitLabResolver(RemoteMathHubResolver):
         return self.__hostname
     
     def can_answer_for(self, name: str) -> bool:
-        """ Performs a partial check if this resolver can answer queries for the given instance name. If this method
-        returns true, the MathHubResolver can answer queries, for all other cases the behaviour is unspecified. By
-        default returns False, so it should be overridden in a subclass.
+        """ Performs a partial check if this resolver can answer queries
+        for the given instance name. If this method returns true, the
+        MathHubResolver can answer queries, for all other cases the behaviour
+        is unspecified. By default returns False, so it should be overridden
+        in a subclass.
 
         :param name: Name to check
         """
@@ -82,7 +90,8 @@ class GitLabResolver(RemoteMathHubResolver):
         return name == self.hostname
 
     def get_repo_path(self, group: str, name: str) -> str:
-        """ Gets the remote for a single remote repository or throws RepositoryNotFound().
+        """ Gets the remote for a single remote repository or throws
+        RepositoryNotFound().
 
         :param group: Group of repository to resolve.
         :param name: Name of repository to resolve.
@@ -99,9 +108,11 @@ class GitLabResolver(RemoteMathHubResolver):
             raise resolver.RepositoryNotFound()
     
     def get_all_repos(self) -> List[Tuple[str, str]]:
-        """ Gets a (possibly cached) list of repositories or throws NotImplementedError if not available.
+        """ Gets a (possibly cached) list of repositories or throws
+        NotImplementedError if not available.
 
-        :return: A list of pairs of strings (group, name) representing repositories.
+        :return: A list of pairs of strings (group, name) representing
+        repositories.
         """
 
         # Fill the cache
@@ -117,9 +128,11 @@ class GitLabResolver(RemoteMathHubResolver):
         self.__repos = None
 
     def _get_all_repos(self) -> List[Tuple[str, str]]:
-        """ Gets a non-cached list of repositories or throws NotImplementedError if not available.
+        """ Gets a non-cached list of repositories or throws
+        NotImplementedError if not available.
 
-        :return: A list of pairs of strings (group, name) representing repositories.
+        :return: A list of pairs of strings (group, name) representing
+        repositories.
         """
 
         base_url = "http://%s/public/" % self.hostname
@@ -140,11 +153,13 @@ class GitLabResolver(RemoteMathHubResolver):
                 project_list_page = lxml.html.fromstring(response)
 
                 # find all <a class='project'> .hrefs
-                new_projects = project_list_page.xpath("//a[@class='project']/@href")
+                new_projects = project_list_page.\
+                    xpath("//a[@class='project']/@href")
 
                 # and remove the starting /s
                 new_projects = list(
-                    map(lambda s: s[1:].split("/") if s.startswith("/") else s.split("/"), new_projects))
+                    map(lambda s: s[1:].split("/") if s.startswith("/")
+                    else s.split("/"), new_projects))
 
                 # if we have fewer projects then the max, we can exit now
                 if len(new_projects) < projects_per_page:
@@ -175,7 +190,8 @@ class GitLabResolver(RemoteMathHubResolver):
         except exceptions.MathHubException:
             pass
 
-        # fallback to checking the git url directory -- maybe it is private and the user needs ssh access
+        # fallback to checking the git url directory -- maybe it is private
+        # and the user needs ssh access
         try:
             self.get_repo_path(group, name)
             return True
@@ -189,4 +205,7 @@ class NetworkingError(exceptions.MathHubException):
     def __init__(self):
         """ Creates a new NetworkingError() instance. """
 
-        super(NetworkingError, self).__init__('Unable to establish connection. ')
+        super(NetworkingError, self).__init__('Unable to establish ' +
+                                              'connection. ')
+
+__all__ = ["RemoteMathHubResolver", "GitLabResolver", "NetworkingError"]

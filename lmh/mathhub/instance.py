@@ -5,25 +5,29 @@ from lmh.mathhub.resolvers.remote import RemoteMathHubResolver
 
 from deps.PythonCaseClass.case_class import CaseClass
 
-from lmh.mathhub.manager import MathHubManager
-
-
 class MathHubInstance(CaseClass):
-    """ Represents a single MathHub instance that has a localResolver and a matching remote resolver. """
+    """ Represents a single MathHub instance that has a localResolver and a
+    matching remote resolver. """
 
-    def __init__(self, name: str, local_resolver: LocalMathHubResolver, remote_resolver: RemoteMathHubResolver):
+    def __init__(self, name: str, local_resolver: LocalMathHubResolver,
+                 remote_resolver: RemoteMathHubResolver):
         """ Creates a new MathHubInstance().
 
-        :param name: A string representing the unique name of this MathHubInstance.
-        :param local_resolver: A LocalMathHubResolver() instance used to resolve local MathHub respositories.
-        :param remote_resolver: A RemoteMathHubResolver() instance used to resolve remote MathHub respositories.
+        :param name: A string representing the unique name of this
+        MathHubInstance.
+        :param local_resolver: A LocalMathHubResolver() instance used to resolve
+        local MathHub respositories.
+        :param remote_resolver: A RemoteMathHubResolver() instance used to
+        resolve remote MathHub respositories.
         """
 
         if not isinstance(local_resolver, LocalMathHubResolver):
-            raise TypeError('local_resolver needs to be an instance of local.LocalMathHubResolver()')
+            raise TypeError('local_resolver needs to be an instance of ' +
+                            'local.LocalMathHubResolver()')
 
         if not isinstance(remote_resolver, RemoteMathHubResolver):
-            raise TypeError('remote_resolver needs to be an instance of remote.RemoteMathHubResolver()')
+            raise TypeError('remote_resolver needs to be an instance of ' +
+                            'remote.RemoteMathHubResolver()')
         
         self.__name = name  # type: str
         
@@ -38,13 +42,15 @@ class MathHubInstance(CaseClass):
 
     @property
     def local(self) -> LocalMathHubResolver:
-        """ Returns the LocalMathHubResolver() associated to this MathHubInstance(). """
+        """ Returns the LocalMathHubResolver() associated to this
+        MathHubInstance(). """
 
         return self.__local_resolver
 
     @property
     def remote(self) -> RemoteMathHubResolver:
-        """ Returns the RemoteMathHubResolver() associated to this MathHubInstance(). """
+        """ Returns the RemoteMathHubResolver() associated to this
+        MathHubInstance(). """
 
         return self.__remote_resolver
     
@@ -67,22 +73,28 @@ class MathHubInstance(CaseClass):
             self.remote.can_answer_for(name)
         )
     
-    def resolve_local(self, *spec: List[str], base_group: Optional[str] = None) -> List[Tuple[str, str]]:
-        """ Resolves the specification to a local repository by calling local_resolver.get_repos_matching().
+    def resolve_local(self, *spec: List[str], base_group: Optional[str] = None)\
+            -> List[Tuple[str, str]]:
+        """ Resolves the specification to a local repository by calling
+        local_resolver.get_repos_matching().
 
-        :param spec: A list of strings or patterns contains *s that will be matched against the full names of
-        repositories of the form 'group/name'. If empty and base_group is None, the full list of repositories will be
-        returned. If empty and base_group has some value only repositories from that group will be returned.
-        :param base_group: Optional. If given, before trying to match repositories globally will try to match 'name'
-        inside the group base_group.
-        :return: A list of pairs of strings (group, name) representing repositories.
+        :param spec: A list of strings or patterns contains *s that will be
+        matched against the full names of repositories of the form 'group/name'.
+        If empty and base_group is None, the full list of repositories will be
+        returned. If empty and base_group has some value only repositories from
+        that group will be returned.
+        :param base_group: Optional. If given, before trying to match
+        repositories globally will try to match 'name' inside the group
+        base_group.
+        :return: A list of pairs of strings (group, name) representing
+        repositories.
         """
         
         return self.local.get_repos_matching(*spec, base_group=base_group)
     
     def get_local_path(self, group: str, name: str) -> str:
-        """ Returns the full path to a local repository. Never throws any exceptions, even if the repository does not
-        yet exist locally.
+        """ Returns the full path to a local repository. Never throws any
+        exceptions, even if the repository does not yet exist locally.
 
         :param group: The name of the group to find the repository.
         :param name: Name of the repository to find.
@@ -100,19 +112,27 @@ class MathHubInstance(CaseClass):
         return self.local.repo_exists(group, name)
     
     def clear_local_cache(self) -> None:
-        """ Clears the cache of repositories of the associated local_resolver. """
+        """ Clears the cache of repositories of the associated
+        local_resolver. """
         
         return self.local.clear_repo_cache()
     
-    def resolve_remote(self, *spec: List[str], base_group: Optional[str] = None) -> List[Tuple[str, str]]:
-        """ Resolves the specification to a remote repository by calling remote_resolver.get_repos_matching().
+    def resolve_remote(self, *spec: List[str],
+                       base_group: Optional[str] = None)\
+            -> List[Tuple[str, str]]:
+        """ Resolves the specification to a remote repository by calling
+        remote_resolver.get_repos_matching().
         
-        :param spec: A list of strings or patterns contains *s that will be matched against the full names of
-        repositories of the form 'group/name'. If empty and base_group is None, the full list of repositories will be
-        returned. If empty and base_group has some value only repositories from that group will be returned.
-        :param base_group: Optional. If given, before trying to match repositories globally will try to match 'name'
-        inside the group base_group.
-        :return: A list of pairs of strings (group, name) representing repositories.
+        :param spec: A list of strings or patterns contains *s that will be
+        matched against the full names of  repositories of the form
+        'group/name'. If empty and base_group is None, the full list of
+        repositories will be returned. If empty and base_group has some value
+        only repositories from that group will be returned.
+        :param base_group: Optional. If given, before trying to match
+        repositories globally will try to match 'name' inside the group
+        base_group.
+        :return: A list of pairs of strings (group, name) representing
+        repositories.
         """
         
         return self.remote.get_repos_matching(*spec, base_group = base_group)
@@ -139,3 +159,5 @@ class MathHubInstance(CaseClass):
         """ Clears the cache of repositories of the associated remote_resolver. """
         
         return self.remote.clear_repo_cache()
+
+__all__ = ["MathHubInstance"]

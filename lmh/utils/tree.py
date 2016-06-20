@@ -95,3 +95,5 @@ class PrintableTreeObject(CaseClass):
         """ Turns this PrintableTreeObject into a string. """
 
         return str(self.s)
+
+__all__ = ["TreeNode", "PrintableTreeObject"]

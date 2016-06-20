@@ -12,3 +12,5 @@ class StandardSystems(object):
         """
         
         pass
+
+__all__ = ["StandardSystems"]

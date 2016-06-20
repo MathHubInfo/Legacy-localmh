@@ -11,7 +11,8 @@ from lmh.utils import exceptions
 
 
 class LocalMathHubResolver(resolver.MathHubResolver):
-    """ Represents a MathHubResolver() that can resolve local git repositories from a given folder. """
+    """ Represents a MathHubResolver() that can resolve local git repositories
+    from a given folder. """
 
     def __init__(self, git_program: Git, root: str):
         """ Creates a new LocalMathHubResolver() instance.
@@ -31,7 +32,8 @@ class LocalMathHubResolver(resolver.MathHubResolver):
         return self.__root
 
     def to_path(self, *paths: List[str]) -> str:
-        """ Resolves a path relative to the root folder of this LocalMathHubResolver().
+        """ Resolves a path relative to the root folder of this
+        LocalMathHubResolver().
 
         :param paths: Path components to resolve.
         """
@@ -39,17 +41,21 @@ class LocalMathHubResolver(resolver.MathHubResolver):
         return os.path.join(self.root, *paths)
 
     def from_path(self, path: str, *prefixes: List[str]) -> str:
-        """ Returns a path relative to the base path of this LocalMathHubResolver().
+        """ Returns a path relative to the base path of this
+        LocalMathHubResolver().
 
         :param path: Path to start with.
-        :param prefixes: Optional. Change the base path by calling to_path(*prefixes).
+        :param prefixes: Optional. Change the base path by calling
+        to_path(*prefixes).
         """
 
         return os.path.relpath(os.path.realpath(path), self.to_path(*prefixes))
 
     def can_answer_for(self, name: str) -> bool:
-        """ Performs a partial check if this resolver can answer queries for the given instance name. If this method
-        returns true, the MathHubResolver can answer queries, for all other cases the behaviour is unspecified.
+        """ Performs a partial check if this resolver can answer queries for
+        the given instance name. If this method returns true, the
+        MathHubResolver can answer queries, for all other cases the behaviour
+        is unspecified.
 
         :param name: Name to check.
         """
@@ -57,7 +63,8 @@ class LocalMathHubResolver(resolver.MathHubResolver):
         return not self.from_path(name).startswith("..")
     
     def get_repo_path(self, group: str, name: str) -> str:
-        """Gets the full path to a repository or throws NotImplementedError. May also throw RepositoryNotFound.
+        """Gets the full path to a repository or throws NotImplementedError.
+        May also throw RepositoryNotFound.
 
         :param group: Group of repository to resolve.
         :param name: Name of repository to resolve.
@@ -66,7 +73,8 @@ class LocalMathHubResolver(resolver.MathHubResolver):
         return self.to_path(group, name)
 
     def _resolve_group(self, group: str) -> str:
-        """ Protected function used to resolve a group name. By default does nothing.
+        """ Protected function used to resolve a group name. By default does
+        nothing.
 
         :param group: Group name to resolve.
         """
@@ -77,7 +85,8 @@ class LocalMathHubResolver(resolver.MathHubResolver):
             return self.from_path(group)
 
     def _match_name(self, spec: str, group: str, name: str) -> bool:
-        """ Protected function used to check if a single name matches a specification.
+        """ Protected function used to check if a single name matches a
+        specification.
 
         :param spec: Spec to check against.
         :param group: Group in which the name is to be resolved.
@@ -94,7 +103,8 @@ class LocalMathHubResolver(resolver.MathHubResolver):
 
     def _match_full(self, spec: str, group: str, name: str) -> bool:
         """
-        Protected function used to check if a full repository name matches a specification.
+        Protected function used to check if a full repository name matches a
+        specification.
 
         :param spec: Spec to check against.
         :param group: Group of repository to check against.
@@ -110,9 +120,11 @@ class LocalMathHubResolver(resolver.MathHubResolver):
             return fnmatch('%s/%s' % (group, name), self.from_path(spec))
 
     def get_all_repos(self) -> List[Tuple[str, str]]:
-        """ Gets a (possibly cached) list of repositories or throws NotImplementedError if not available.
+        """ Gets a (possibly cached) list of repositories or throws
+        NotImplementedError if not available.
 
-        :return: A list of pairs of strings (group, name) representing repositories.
+        :return: A list of pairs of strings (group, name) representing
+        repositories.
         """
 
         # fill the cache
@@ -128,19 +140,23 @@ class LocalMathHubResolver(resolver.MathHubResolver):
         self.__repos = None
 
     def _get_all_repos(self) -> List[Tuple[str, str]]:
-        """ Gets a non-cached list of repositories or throws NotImplementedError if not available.
+        """ Gets a non-cached list of repositories or throws
+        NotImplementedError if not available.
 
-        :return: A list of pairs of strings (group, name) representing repositories.
+        :return: A list of pairs of strings (group, name) representing
+        repositories.
         """
 
         repositories = set()
 
-        groups = [name for name in os.listdir(self.root) if os.path.isdir(self.to_path(name))]
+        groups = [name for name in os.listdir(self.root) if
+                  os.path.isdir(self.to_path(name))]
 
         for g in groups:
             for name in os.listdir(self.to_path(g)):
                 full_path = self.to_path(g, name)
-                if os.path.isdir(full_path) and self.__git.exists_local(full_path):
+                if os.path.isdir(full_path) and \
+                        self.__git.exists_local(full_path):
                     repositories.add((g, name))
 
         return list(sorted(repositories))
@@ -162,3 +178,5 @@ class LocalMathHubResolver(resolver.MathHubResolver):
             return False
 
         return False
+
+__all__ = ["LocalMathHubResolver"]

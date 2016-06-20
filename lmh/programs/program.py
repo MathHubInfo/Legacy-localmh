@@ -11,10 +11,13 @@ class Program(AbstractCaseClass):
 
     @staticmethod
     def which(program: str) -> str:
-        """ Returns the full path to a program that can be found in the users $PATH variable. Similar to the *nix
-        command which (or the windows command where). Throws ExecutableNotFound if the executable can not be found.
+        """ Returns the full path to a program that can be found in the users
+        $PATH variable. Similar to the *nix
+        command which (or the windows command where). Throws ExecutableNotFound
+        if the executable can not be found.
 
-        :param program: A string containing the name of a program. May or may not be a full path.
+        :param program: A string containing the name of a program. May or may
+        not be a full path.
         """
 
         def is_exe(pth: str) -> bool:
@@ -86,7 +89,8 @@ class Program(AbstractCaseClass):
         env['STEXSTYDIR'] = stexstydir
         
         # Set up the latexmlstydir
-        latexmlstydir = os.path.join(self._systems, 'LaTeXML', 'lib', 'LaTeXML', 'texmf')
+        latexmlstydir = os.path.join(self._systems, 'LaTeXML', 'lib',
+                                     'LaTeXML', 'texmf')
         
         # inputs for tex
         texinputs = ['.', self._sty]
@@ -104,7 +108,8 @@ class Program(AbstractCaseClass):
     def _env(self, env: Optional[Dict[str, str]]=None) -> Dict[str, str]:
         """ Sets up a proper environment for all build processes to run.
 
-        :param env: Optional. Base environment to start with. Defaults to os.environ.copy().
+        :param env: Optional. Base environment to start with. Defaults to
+        os.environ.copy().
         """
         
         # set the default
@@ -121,8 +126,10 @@ class Program(AbstractCaseClass):
         # and return
         return env
     
-    def _popen(self, exc: str, *args: List[str], **kwargs: Dict[str, Any]) -> subprocess.Popen:
-        """ Creates a subprocess.Popen handle with proper configuration for the environment or throws ExecutableNotFound.
+    def _popen(self, exc: str, *args: List[str], **kwargs: Dict[str, Any])\
+            -> subprocess.Popen:
+        """ Creates a subprocess.Popen handle with proper configuration for
+        the environment or throws ExecutableNotFound.
 
         :param exc: Executable to run. Will be searched for in $PATH.
         :param args: Arguments to pass to the executable
@@ -159,4 +166,7 @@ class ExecutableNotFound(Exception):
     
     def __init__(self):
         """ Creates a new ExecutableNotFound() instance. """
-        super(ExecutableNotFound, self).__init__("Could not find the specefied executable")
+        super(ExecutableNotFound, self).__init__("Could not find the " +
+                                                 "specefied executable")
+
+__all__ = ["Program", "ExecutableNotFound"]

@@ -1,13 +1,14 @@
 from typing import Optional
 
-from lmh.systems import system
+from lmh.systems import System
 from lmh.programs.git import Git
 
 
-class GitBasedSystem(system.System):
+class GitBasedSystem(System):
     """ Represents a system managed by Git. """
     
-    def __init__(self, name: str, source: str, branch: Optional[str] = None, base: Optional[str] = None):
+    def __init__(self, name: str, source: str, branch: Optional[str] = None,
+                 base: Optional[str] = None):
         """ Creates a new GitBasedSystem() instance.
 
         :param name: Name of the system to create.
@@ -51,3 +52,5 @@ class GitBasedSystem(system.System):
         """ Protected Function used to update this system. """
         
         return self.git.pull(self.base)
+
+__all__ = ["GitBasedSystem"]

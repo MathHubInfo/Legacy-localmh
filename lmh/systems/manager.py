@@ -75,8 +75,8 @@ class SystemManager(object):
         return self
     
     def keys(self) -> List[str]:
-        """ Returns the names of all systems in this SystemManager. A list of strings representing the names of the
-        actions in this SystemManager,
+        """ Returns the names of all systems in this SystemManager. A list of
+        strings representing the names of the actions in this SystemManager.
         """
         
         return list(map(lambda s:s.name, self.__systems))
@@ -95,7 +95,8 @@ class SystemManager(object):
         return self.has_system(name)
     
     def get(self, name: str):
-        """ Gets the system with the given name or throws KeyError if it does not exist.
+        """ Gets the system with the given name or throws KeyError if it does
+        not exist.
         
         :param name: Name of system to search for.
         :rtype: System
@@ -122,13 +123,18 @@ class SystemManager(object):
 
 
 class SystemWithoutManager(exceptions.LMHException):
-    """ Exception that is thrown when no LMHManager() is bound to an SystemManager() instance. """
+    """ Exception that is thrown when no LMHManager() is bound to an
+    SystemManager() instance. """
     
     def __init__(self):
         """ Creates a new SystemWithoutManager() instance. """
         
-        super(SystemWithoutManager, self).__init__('No LMHManager() is bound to this SystemManager() instance')
+        super(SystemWithoutManager, self).__init__('No LMHManager() is bound' +
+                                                   ' to this SystemManager() ' +
+                                                   'instance')
 
 # avoiding the circular import
 from lmh.systems.system import System
 from lmh.manager.manager import LMHManager
+
+__all__ = ["SystemManager", "SystemWithoutManager"]

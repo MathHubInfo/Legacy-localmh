@@ -5,12 +5,16 @@ class LMHException(Exception):
         """
         Creates a new LMHException() instance.
 
-        :param msg: Message describing this exception
+        :param msg: Message describing this exception.
         """
 
         super(LMHException, self).__init__(msg)
 
 
 class MathHubException(LMHException):
-    """ Common base class for all Exceptions caused by the lmh.mathhub module. """
+    """ Common base class for all Exceptions caused by the lmh.mathhub
+    module. """
+
     pass
+
+__all__ = ["LMHException", "MathHubException"]

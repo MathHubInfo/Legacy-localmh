@@ -421,3 +421,6 @@ class ManagerWithoutSystems(exceptions.LMHException):
 
         super(ManagerWithoutSystems, self).__init__(
             'No SystemManager() is bound to this LMHManager() instance')
+
+__all__ = ["LMHManager", "ManagerWithoutLogger", "ManagerWithoutConfig",
+           "ManagerWithoutMathhub", "ManagerWithoutSystems"]

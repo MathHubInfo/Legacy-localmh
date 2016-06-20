@@ -49,3 +49,5 @@ class StandardActions(object):
         manager += install.InstallAction()
         manager += pull.PullAction()
         manager += push.PushAction()
+
+__all__ = ["StandardActions"]

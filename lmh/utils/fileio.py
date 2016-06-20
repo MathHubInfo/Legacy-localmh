@@ -11,7 +11,8 @@ class FileIO(object):
         """ Reads text from a file on disk.
 
         :param filename: Name of file to read.
-        :return:  A string representing the file content or None if reading failed.
+        :return:  A string representing the file content or None if reading
+        failed.
         """
 
         for enc in FileIO.encodings:
@@ -27,7 +28,8 @@ class FileIO(object):
 
     @staticmethod
     def read_file_lines(filename: str) -> List[str]:
-        """ Same as read_file except that it reads file lines and returns a list of strings.
+        """ Same as read_file except that it reads file lines and returns a
+        list of strings.
 
         :param filename: Name of file to read.
         :return: A list of lines in the file.
@@ -74,3 +76,5 @@ class FileIO(object):
         """
 
         return FileIO.write_file(filename, '\n'.join(lines))
+
+__all__ = ["FileIO"]

@@ -16,10 +16,11 @@ class System(CaseClass):
         """ Creates a new System() instance.
 
         :param name: Name of the system to create.
-        :param base: Optional. Base directory to install system in. Defaults to self.manager.locate('systems', name).
+        :param base: Optional. Base directory to install system in.
+        Defaults to self.manager.locate('systems', name).
         """
 
-        super(System, self).__init__(name, base)
+        super(System, self).__init__()
         
         self.name = name  # type: str
         self.__base = base  # type: str
@@ -51,27 +52,31 @@ class System(CaseClass):
         return self.system_manager.manager
     
     def _register(self) -> None:
-        """ Function called when this System is registered with a SystemManager() """
+        """ Function called when this System is registered with a
+        SystemManager() """
         
         pass
 
     def register(self, system_manager : SystemManager) -> None:
         """ Registers this system with a SystemManager() instance.
 
-        :param system_manager: SystemsManager Instance to register this system with
+        :param system_manager: SystemsManager Instance to register this system
+        with
         """
 
         # TODO: Do we need to call a .register() function?
         self.system_manager = system_manager
 
     def is_installed(self) -> bool:
-        """ Checks if this system is currently installed. The default implementation checks if the directory self.base
+        """ Checks if this system is currently installed. The default
+        implementation checks if the directory self.base.
         exists. """
         
         return os.path.exists(self.base)
     
     def _install(self) -> bool:
-        """ Protected Function used to install this system. Should be overridden by subclass. """
+        """ Protected Function used to install this system. Should be
+        overridden by subclass. """
         
         raise NotImplementedError
     
@@ -82,13 +87,15 @@ class System(CaseClass):
         """
         
         if self.is_installed():
-            self.manager.logger.info('System %r is already installed, will not install again. ' % self.name)
+            self.manager.logger.info('System %r is already installed, will ' +
+                                     'not install again. ' % self.name)
             return True
         
         return self._install()
     
     def _update(self) -> bool:
-        """ Protected Function used to update this system. Should be overridden by subclass. """
+        """ Protected Function used to update this system. Should be overridden
+        by subclass. """
         
         raise NotImplementedError
     
@@ -104,8 +111,8 @@ class System(CaseClass):
         return self._update()
     
     def _remove(self) -> bool:
-        """ Protected Function used to remove this system. The default implementation just removes the directory
-        self.base. """
+        """ Protected Function used to remove this system. The default
+        implementation just removes the directory self.base. """
 
         try:
             shutil.rmtree(self.base)
@@ -121,14 +128,15 @@ class System(CaseClass):
         """
         
         if self.is_installed():
-            self.manager.logger.info('System %r is not installed, will not remove. ' % self.name)
+            self.manager.logger.info('System %r is not installed, will ' +
+                                     'not remove. ' % self.name)
             return True
         
         return self._remove()
     
     def get(self) -> Program:
-        """ Returns a program instance representing this System() or throws SystemNotInstalled().
-        Should be overridden by subclass. """
+        """ Returns a program instance representing this System() or throws
+        SystemNotInstalled(). Should be overridden by subclass. """
         
         raise NotImplementedError
     
@@ -143,4 +151,7 @@ class SystemNotInstalled(exceptions.LMHException):
     def __init__(self):
         """ Creates a new SystemNotInstalled() instance. """
         
-        super(SystemNotInstalled, self).__init__('System is not installed, can not interact with it')
+        super(SystemNotInstalled, self).__init__('System is not installed, ' +
+                                                 'can not interact with it')
+
+__all__ = ["System", "SystemNotInstalled"]
