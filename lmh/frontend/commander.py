@@ -1,42 +1,43 @@
-from lmh.utils import exceptions
-from lmh.frontend import command
+from typing import Optional, List, Any, Tuple
+
+from lmh.manager.manager import LMHManager
+from lmh.utils.exceptions import LMHException
+from lmh.frontend.command import Command
 
 import argparse
 import inspect
 import os
 
+
 class LMHCommander(object):
-    """
-    An LMHCommnder is an object that manages command used by lmh. 
-    """
+    """ Manages all commands used by LMH. """
     
-    def __init__(self, manager = None, base = None):
-        """
-        Creates a new LMHCommander() instance
+    def __init__(self, manager: Optional[LMHManager] = None,
+                 base: Optional[str] = None):
+        """ Creates a new LMHCommander() instance.
         
-        Arguments: 
-            manager
-                Optional. LMHManager() object used by this Commander. If omitted
-                should be set before commands are registered by setting the 
-                manager property. 
-            base
-                Base relative to which this commander should run commands for
+        :param manager: Optional. LMHManager() object used by this Commander.
+        If omitted should be set before commands are registered by setting the
+        manager property.
+        :param base: Optional. Base relative to which this commander should run
+        commands for.
         """
         
-        self.__manager = manager
-        self.__doc__ = 'Local MathHub Tool'
+        self.__manager = manager  # type: Optional[LMHManager]
         
-        self.__commands = []
-        self.__base = os.getcwd() if base == None else base
+        self.__commands = []  # type: List[Command]
+        self.__base = os.getcwd() if base == None else base  # type: str
+
+    @property
+    def base(self) -> str:
+        """ Returns the current base for repository resolution. """
+
+        return self.__base
     
     @property
-    def manager(self):
-        """
-        Gets the LMHManager instance belonging to this Commander() or throws 
-        CommanderWithoutManager(). 
-        
-        Returns:
-            A LMHManager() instance
+    def manager(self) -> LMHManager:
+        """ Gets the LMHManager instance belonging to this Commander() or throws
+        CommanderWithoutManager().
         """
         
         if self.__manager == None:
@@ -45,37 +46,21 @@ class LMHCommander(object):
         return self.__manager
     
     @manager.setter
-    def manager(self, manager):
-        """
-        Sets the Manager instance to be used by this Commander(). 
+    def manager(self, manager: LMHManager) -> None:
+        """ Sets the Manager instance to be used by this Commander().
         
-        Arguments:
-            manager
-                Manager instance to set
+        :param manager:  Manager instance to be set.
         """
         
         self.__manager = manager
     
-    def get_base(self):
-        """
-        Returns the current base for repository resolution. 
+    def add(self, cmd: Command) -> None:
+        """ Adds a Command to this LMHCommander() instance.
         
-        Returns:
-            a string representing the current base
+        :param cmd: Command that should be added to this LMHCommander().
         """
         
-        return self.__base
-    
-    def add(self, cmd):
-        """
-        Adds a Command to this LMHCommander() instance. 
-        
-        Arguments: 
-            cmd
-                Command that should be added to this LMHCommander()
-        """
-        
-        if not isinstance(cmd, command.Command):
+        if not isinstance(cmd, Command):
             raise TypeError("cmd must be an instance of Command()")
         
         if cmd.name in self:
@@ -84,53 +69,39 @@ class LMHCommander(object):
         cmd.register(self)
         self.__commands.append(cmd)
     
-    def __iadd__(self, cmd):
+    def __iadd__(self, cmd: Command):
+        """ Same as self.add(cmd).
+
+        :rtype: LMHCommander
         """
-        Same as self.add(cmd)
-        """
+
         self.add(cmd)
         return self
     
-    def keys(self):
-        """
-        Returns the names of all commands in this LMHCommander. 
-        
-        Returns: 
-            A list of strings representing the names of the actions in this LMHCommander
-        """
+    def keys(self) -> List[str]:
+        """ Returns the names of all commands in this LMHCommander. """
         
         return list(map(lambda c:c.name, self.__commands))
     
-    def has_command(self, name):
-        """
-        Checks if this LMHCommander contains a command with the given name. 
+    def has_command(self, name: str) -> bool:
+        """ Checks if this LMHCommander contains a command with the given name.
         
-        Arguments:
-            name
-                Name of command to search for
-        Returns:
-            A boolean indicating if the command is contained or not
+        :param name: Name of command to check.
         """
         
         return name in self.keys()
     
-    def __contains__(self, name):
-        """
-        Same as self.has_command(name)
+    def __contains__(self, name: str) -> bool:
+        """ Same as self.has_command(name).
         """
         
         return self.has_command(name)
     
-    def get(self, name):
-        """
-        Gets the command with the given name or throws KeyError if it does not
-        exist. 
+    def get(self, name: str) -> Command:
+        """ Gets the command with the given name or throws KeyError if it does
+        not exist.
         
-        Arguments:
-            name
-                Name of command to search for
-        Returns:
-            A Command() instance
+        :param name: Name of command to search for,
         """
         
         for k in self.__commands:
@@ -139,25 +110,20 @@ class LMHCommander(object):
         
         raise KeyError
     
-    def __getitem__(self, name):
-        """
-        Same as self.get(name)
-        """
+    def __getitem__(self, name: str) -> Command:
+        """ Same as self.get(name). """
+
         return self.get(name)
     
-    def __safe_call(self, command, *args, parsed_args=None):
-        """
-        Internal function used to safely call a command. 
+    def __safe_call(self, command: Command, *args: List[Any],
+                    parsed_args: Optional[argparse.Namespace]=None) -> int:
+        """ Internal function used to safely call a command.
         
-        Arguments:
-            command
-                Command() instance to call
-            args
-                Arguments to forward to the call of the command. 
-            parsed_args
-                Parsed Arguments to forward to the call of this command. 
-        Returns: 
-            An integer representing the return code
+        :param command: Command() instance to call.
+        :param args: Arguments to forward to the call of the command.
+        :param parsed_args: Parsed Arguments to forward to the call of this
+        command.
+        :return: An integer representing the return code.
         """
         
         # get the number of arguments required
@@ -174,7 +140,10 @@ class LMHCommander(object):
         
         # if we have the wrong number of arguments, exit
         if spec.varargs == None and len(args) != num_args:
-            self.manager.logger.fatal('Got the wrong number of arguments for %r (got %s, expected %s)' % ('lmh %s' % command.name, len(args), num_args))
+            self.manager.logger.fatal(
+                'Got the wrong number of arguments for ' +
+                '%r (got %s, expected %s)' % (
+                    'lmh %s' % command.name, len(args), num_args))
             return -4
         
         try:
@@ -189,28 +158,31 @@ class LMHCommander(object):
             elif ret == None:
                 return 0
             else:
-                self.manager.logger.warn('Command %r did not return a valid return code' % command.name)
+                self.manager.logger.warn('Command %r ' % (command.name, ) +
+                                         'did not return a valid return code')
                 return 0
         except KeyboardInterrupt:
             self.manager.logger.error('Operation interrupted by user, exiting')
             return -1
         except exceptions.LMHException as e:
-            self.manager.logger.fatal('LMH has encountered a fatal error and has crashed. ')
-            self.manager.logger.fatal('This error is likely caused by lmh itself. ')
-            self.manager.logger.fatal(self.manager.logger.get_exception_string(e))
+            self.manager.logger.fatal('LMH has encountered a fatal '
+                                      'error and has crashed. ')
+            self.manager.logger.fatal('This error is likely caused by '
+                                      'lmh itself. ')
+            self.manager.logger.fatal(self.manager.logger\
+                                      .get_exception_string(e))
             return -2
         except Exception as e:
-            self.manager.logger.fatal('LMH has encountered a fatal error and has crashed. ')
-            self.manager.logger.fatal('This error is likely caused by something outside of lmh. ')
-            self.manager.logger.fatal(self.manager.logger.get_exception_string(e))
+            self.manager.logger.fatal('LMH has encountered a fatal error '
+                                      'and has crashed. ')
+            self.manager.logger.fatal('This error is likely caused by '
+                                      'something outside of lmh. ')
+            self.manager.logger.fatal(self.manager.logger\
+                                      .get_exception_string(e))
             return -3
-    def _build_argparse(self):
-        """
-        Builds an argparse object representing this commander
-        
-        Returns:
-            an argparse object
-        """
+
+    def _build_argparse(self) -> argparse.ArgumentParser:
+        """ Builds an argparse object representing this commander. """
         
         # Create the parser itself
         parser = argparse.ArgumentParser('lmh', description=self.__doc__)
@@ -222,25 +194,28 @@ class LMHCommander(object):
             try:
                 c._build_argparse(subparsers)
             except NotImplementedError:
-                subparsers.add_parser(name, help=self[name].__doc__, add_help=False)
+                subparsers.add_parser(name, help=self[name].__doc__,
+                                      add_help=False)
         
         # add a version argument
-        parser.add_argument('--version', action='store_true', help='show version message and exit. Alias for %r' % ('about',))
+        parser.add_argument('--version',
+                            action='store_true',
+                            help='show version message and exit. ' +
+                                 'Alias for %r' % ('about',))
         
         # return the parser
         return parser
-    def extract_arguments(self, *args):
+
+    def extract_arguments(self, *args: List[str])\
+            -> Tuple[Optional[str], argparse.Namespace, List[str]]:
         """
-        Extracts command to run and list of arguments from a command line
-        
-        Arguments:
-            *args
-                Arguments to parse
-        Returns:
-            A triple (command, args, parsed_args). command is the name of the
-            command to be run or None (if a top-level action is performed). 
-            args is a list of (unparsed) arguments and parsed_args is an 
-            arparse object representing the parsed arguments or None. 
+        Extracts command to run and list of arguments from a command line.
+
+        :param args: Arguments to parse.
+        :return: A triple (command, parsed, unknown). command is the name of
+        the command to be run or None (if a top-level action is performed).
+        parsed is an arparse object representing the parsed arguments or None.
+        unknown is a list of (unparsed) arguments.
         """
         
         # build the parser
@@ -261,40 +236,37 @@ class LMHCommander(object):
         del parsed.version
         
         # If no arguments were given, print the help
-        if command == None:
+        if command is None:
             parser.print_help()
             return (None, [], None)
         
         # return a triple
         return (command, parsed, unknown)
         
-    def __call__(self, *args):
-        """
-        Runs this LMHCommander() on the given arguments
-        
-        Arguments:
-            *args
-                Arbirtrary string arguments to pass to the commander
-        Returns:
-            An integer representing the return code of the command
+    def __call__(self, *args: List[str]) -> int:
+        """ Runs this LMHCommander() on the given arguments.
+
+        :param args: Arbitrary string arguments to pass to the commander.
+        :return: An integer representing the return code of the command.
         """
         
         # extract the command
         (command, parsed, unknown) = self.extract_arguments(*args)
         
-        if command == None:
+        if command is None:
             return 0
         else:
             return self.__safe_call(self[command], *unknown, parsed_args=parsed)
     
-class CommanderWithoutManager(exceptions.LMHException):
-    """
-    Exception that is thrown when no LMHManager() is bound to an LMHCommander() instance
-    """
+class CommanderWithoutManager(LMHException):
+    """ Exception that is thrown when no LMHManager() is bound to an
+    LMHCommander() instance. """
     
     def __init__(self):
-        """
-        Creates a new CommanderWithoutManager() instance
-        """
+        """ Creates a new CommanderWithoutManager() instance. """
         
-        super(CommanderWithoutManager, self).__init__('No LMHManager() is bound to this LMHCommander() instance')
+        super(CommanderWithoutManager, self).__init__('No LMHManager() ' +
+                                                      'is bound to this ' +
+                                                      'LMHCommander() instance')
+
+__all__ = ["LMHCommander", "CommanderWithoutManager"]

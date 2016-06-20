@@ -1,16 +1,19 @@
 import json
 
+from lmh.frontend.commander import LMHCommander
+
 from lmh.utils.fileio import FileIO
 
+
 class StandardCommands(object):
+    """Contains logic for all standard commands. """
+
     @staticmethod
-    def register_to(commander):
+    def register_to(commander: LMHCommander) -> None:
         """
-        Registers all standard commands to the given Commander() instance. 
+        Registers all standard commands to the given LMHCommander() instance.
         
-        Arguments:
-            commander
-                Commander() to register all standard commands to
+        :param commander: LMHCommander() to register all standard commands to.
         """
         
         from lmh.frontend.commands.core import about, config, root
@@ -46,13 +49,11 @@ class StandardCommands(object):
         StandardCommands.register_standard_aliases_to(commander)
     
     @staticmethod
-    def register_standard_aliases_to(commander):
+    def register_standard_aliases_to(commander: LMHCommander) -> None:
         """
-        Registers all standard aliases to the given Commander() instance. 
+        Registers all standard aliases to the given LMHCommander() instance.
         
-        Arguments:
-            commander
-                Commander() to register all standard commands to
+        :param commander: LMHCommander() to register all standard aliases to.
         """
         
         from lmh.frontend.commands import alias
@@ -62,7 +63,8 @@ class StandardCommands(object):
         commander += alias.AliasCommand('si', 'status')
         
         # selfupdate
-        commander += alias.AliasCommand('selfupdate', 'setup', '--update', 'self')
+        commander += alias.AliasCommand('selfupdate', 'setup', '--update',
+                                        'self')
         
         # lmh gen*
         commander += alias.AliasCommand('gen', 'mmt', 'make')
@@ -75,14 +77,12 @@ class StandardCommands(object):
         # Depreacted Aliases
         commander += alias.AliasCommand('update', 'pull', depracated = True)
         commander += alias.AliasCommand('ls', 'ls-local', depracated = True)
+
     @staticmethod
-    def register_legacy_commands_to(commander):
-        """
-        Registers all legacy commands to the given Commander() instance. 
+    def register_legacy_commands_to(commander: LMHCommander) -> None:
+        """ Registers all legacy commands to the given LMHCommander() instance.
         
-        Arguments:
-            commander
-                Commander() to register all standard commands to
+        :param commander: LMHCommander() to register all standard commands to
         """
         
         from lmh.lib.dirs import lmh_locate
@@ -93,5 +93,5 @@ class StandardCommands(object):
         
         for c in lc:
             commander += legacy.LegacyCommand(c)
-        
-    
+
+__all__ = ["StandardCommands"]

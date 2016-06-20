@@ -7,6 +7,8 @@ from typing import List
 from lmh.frontend.commander import LMHCommander
 from lmh.frontend.standard_commands import StandardCommands
 
+from lmh.logger.logger import StandardLogger
+
 from lmh.manager.manager import LMHManager
 from lmh.manager.standard_actions import StandardActions
 
@@ -29,23 +31,26 @@ class LMHMain(object):
     
     @staticmethod
     def make_commander() -> LMHCommander:
-        """Creates Creates a new LMHCommander object with the standard configuration. """
+        """Creates Creates a new LMHCommander object with the standard
+        configuration. """
         
         # Step 1 : Create an lmh manager
         lmh_manager = LMHManager()
         
         # Step 2: Add a logger and MathHubManager
-        from lmh.logger import logger
-        lmh_manager.logger = logger.StandardLogger()
+        lmh_manager.logger = StandardLogger()
 
         lmh_manager.mathhub = MathHubManager()
         
         # Step 3: Add the LocateAction()
-        lmh_manager += LocateAction(systems_dir = 'ext', config_dir = 'bin', spec_dir = 'lmh/data', sty_dir = 'sty')
+        lmh_manager += LocateAction(systems_dir = 'ext', config_dir = 'bin',
+                                    spec_dir = 'lmh/data', sty_dir = 'sty')
         
         # Step 4: Setup configuration
-        lmh_cfg_spec = LMHFileConfigSpec(lmh_manager('locate', 'spec', 'config.json'))
-        lmh_cfg = LMHJSONFileConfig(lmh_cfg_spec, lmh_manager('locate', 'spec', 'lmh.cfg'))
+        lmh_cfg_spec = LMHFileConfigSpec(
+            lmh_manager('locate', 'spec', 'config.json'))
+        lmh_cfg = LMHJSONFileConfig(lmh_cfg_spec,
+                                    lmh_manager('locate', 'spec', 'lmh.cfg'))
         lmh_manager.config = lmh_cfg
         
         # Step 5: Create a SystemManager()
@@ -60,7 +65,8 @@ class LMHMain(object):
         StandardCommands.register_to(lmh_commander)
         
         # Step 8: Setup Resolvers + MathHub instance
-        lr = LocalMathHubResolver(lmh_manager('git'), lmh_manager('locate', 'MathHub'))
+        lr = LocalMathHubResolver(lmh_manager('git'),
+                                  lmh_manager('locate', 'MathHub'))
         rr = GitLabResolver(lmh_manager('git'), "gl.mathhub.info")
         mhl = MathHubInstance("mathhub.info", lr, rr)
         lmh_manager.mathhub += mhl
@@ -70,10 +76,11 @@ class LMHMain(object):
     
     @staticmethod
     def main(*args : List[str]) -> None:
-        """ Creates an lmh commander, runs it with the given given commands and exits
-        with the given exit code. Serves as the main entry point to localmh.
+        """ Creates an lmh commander, runs it with the given given commands and
+        exits with the given exit code. Serves as the main entry point to
+        localmh.
 
-        :arg args: List of parameters to be given to lmh
+        :arg args: List of parameters to be given to lmh.
         """
         import sys
         
@@ -85,3 +92,5 @@ class LMHMain(object):
         
         # and exit with the given code
         sys.exit(code)
+
+__all__ = ["LMHMain"]

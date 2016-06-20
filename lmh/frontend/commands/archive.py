@@ -213,7 +213,7 @@ class ArchiveCommand(command.Command):
             has_all = False
         
         # get the base
-        the_base = self.commander.get_base()
+        the_base = self.commander.base
         
         # resolve the archives
         if has_all:
