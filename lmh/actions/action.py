@@ -1,4 +1,4 @@
-from lmh.utils.caseclass import AbstractCaseClass
+from deps.PythonCaseClass.case_class import AbstractCaseClass
 
 class Action(AbstractCaseClass):
     """

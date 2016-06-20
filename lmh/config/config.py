@@ -2,7 +2,7 @@ import json
 import os.path
 
 from lmh.utils.fileio import FileIO
-from lmh.utils.caseclass import AbstractCaseClass
+from deps.PythonCaseClass.case_class import AbstractCaseClass
 
 
 class LMHConfig(AbstractCaseClass):

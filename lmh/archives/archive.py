@@ -1,4 +1,4 @@
-from lmh.utils.caseclass import InheritableCaseClass
+from deps.PythonCaseClass.case_class import InheritableCaseClass
 
 
 class LMHArchive(InheritableCaseClass):

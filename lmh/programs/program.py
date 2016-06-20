@@ -3,7 +3,7 @@ from typing import Dict, Optional, List, Any
 import os.path
 import subprocess
 
-from lmh.utils.caseclass import AbstractCaseClass
+from deps.PythonCaseClass.case_class import AbstractCaseClass
 
 
 class Program(AbstractCaseClass):

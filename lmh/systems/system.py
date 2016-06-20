@@ -3,7 +3,7 @@ import shutil
 from typing import Optional, List
 
 from lmh.utils import exceptions
-from lmh.utils.caseclass import CaseClass
+from deps.PythonCaseClass.case_class import CaseClass
 from lmh.systems.manager import SystemManager
 from lmh.manager.manager import LMHManager
 from lmh.programs.program import Program

@@ -3,7 +3,7 @@ from typing import List, Tuple, Optional
 from fnmatch import fnmatch
 
 from lmh.utils import exceptions
-from lmh.utils.caseclass import AbstractCaseClass
+from deps.PythonCaseClass.case_class import AbstractCaseClass
 
 
 class MathHubResolver(AbstractCaseClass):

@@ -3,7 +3,7 @@ from typing import Optional, List, Tuple
 from lmh.mathhub.resolvers.local import LocalMathHubResolver
 from lmh.mathhub.resolvers.remote import RemoteMathHubResolver
 
-from lmh.utils.caseclass import CaseClass
+from deps.PythonCaseClass.case_class import CaseClass
 
 from lmh.mathhub.manager import MathHubManager
 

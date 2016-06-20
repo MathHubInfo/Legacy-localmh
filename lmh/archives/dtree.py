@@ -3,7 +3,7 @@ from collections import deque
 from lmh.archives import manifest
 from lmh.logger import escape
 from lmh.utils import tree
-from lmh.utils.caseclass import AbstractCaseClass
+from deps.PythonCaseClass.case_class import AbstractCaseClass
 
 
 class DependencyNode(tree.TreeNode):

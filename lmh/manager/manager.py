@@ -1,43 +1,41 @@
+from typing import Optional, Dict, List
+
 from lmh.mathhub.resolvers import resolver
 from lmh.utils import exceptions
-from lmh.archives import archive
+from lmh.archives.archive import LMHArchive
+
+from lmh.logger.logger import Logger
+from lmh.mathhub.manager import MathHubManager
+from lmh.config.config import LMHConfig
 
 
 class LMHManager(object):
-    """
-    An LMHManager is the main object instatiated by lmh. 
-    """
+    """ The main object that is instantiated by lmh. """
     
-    def __init__(self, logger = None, config = None, mathhub = None, systems = None):
-        """
-        Creates a new LMHManager instance. 
-        
-        Arguments: 
-            logger
-                Optional. Logger Instance to be used by this LMHManager(). If 
-                omitted should be set before any actions are registered by 
-                setting the logger property. 
-            config
-                Optional. Configuration Instance to be used by this 
-                LMHManager(). If omitted should be set before any actions are 
-                registered by setting the config property. 
-            mathhub
-                Optional. MathHubManager used by this LMHManager(). If omitted 
-                should be set before any actions are registered by setting the 
-                mathhub property. 
-            systems
-                Optional. SystemManager used by this LMHManager(). If omitted
-                should be set before any actions are registered by setting the
-                systems property. 
+    def __init__(self, logger: Optional[Logger] = None, config: Optional[LMHConfig] = None, mathhub : Optional[MathHubManager] = None, systems= None):
+        """ Creates a new LMHManager() instance.
+
+        :param logger: Optional. Logger Instance to be used by this
+        LMHManager(). If omitted should be set before any actions are
+        registered by setting the logger property.
+        :param config: Optional. Configuration Instance to be used by this
+        LMHManager(). If omitted should be set before any actions are
+        registered by setting the config property.
+        :param mathhub: Optional. MathHubManager used by this LMHManager(). If
+        omitted should be set before any actions are registered by setting the
+        mathhub property.
+        :param systems: Optional. SystemManager used by this LMHManager(). If
+        omitted should be set before any actions are registered by setting the
+        systems property.
         """
         
-        self.__logger = logger
-        self.__config = config
-        self.__mathhub = mathhub
-        self.__systems = systems
-        
-        self.__actions = []
-        self.__archives = {}
+        self.__logger = logger  # type: Optional[Logger]
+        self.__config = config  # type: Optional[LMHConfig]
+        self.__mathhub = mathhub  # type: Optional[MathHubManager]
+        self.__systems = systems  # type: Optional[SystemManager]
+
+        self.__actions = []  # type: List[Action]
+        self.__archives = {}  # type: Dict[str, LMHArchive]
     
     #
     # Properties
@@ -274,8 +272,7 @@ class LMHManager(object):
             return self.__archives[(instance, group, name)]
         
         # put it into the cache
-        from lmh.archives import archive
-        self.__archives[(instance, group, name)] = archive.LMHArchive(self.mathhub[instance], group, name)
+        self.__archives[(instance, group, name)] = LMHArchive(self.mathhub[instance], group, name)
         
         # and return it
         return self.__archives[(instance, group, name)]
@@ -307,7 +304,7 @@ class LMHManager(object):
         has_work = (len(spec) == 0)
         
         for s in spec:
-            if isinstance(s, archive.LMHArchive):
+            if isinstance(s, LMHArchive):
                 the_archives.append(s.to_local_archive())
             elif isinstance(s, tuple) and len(s) == 2:
                 the_spec.append('%s/%s' % s)
@@ -459,3 +456,7 @@ class ManagerWithoutMathhub(exceptions.LMHException):
         """
         
         super(ManagerWithoutMathhub, self).__init__('No MathHubManager() is bound to this LMHManager() instance')
+
+# avoiding circular import
+from lmh.systems.manager import SystemManager
+from lmh.actions.action import Action

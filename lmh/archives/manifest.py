@@ -2,7 +2,7 @@ import os.path
 
 from lmh.utils import exceptions
 from lmh.utils.fileio import FileIO
-from lmh.utils.caseclass import CaseClass
+from deps.PythonCaseClass.case_class import CaseClass
 
 
 class Manifest(CaseClass):

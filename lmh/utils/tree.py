@@ -1,6 +1,6 @@
 from typing import Optional, List, Any
 
-from lmh.utils.caseclass import CaseClass, InheritableCaseClass
+from deps.PythonCaseClass.case_class import CaseClass, InheritableCaseClass
 
 
 class TreeNode(InheritableCaseClass):

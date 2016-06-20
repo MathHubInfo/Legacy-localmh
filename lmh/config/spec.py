@@ -1,6 +1,6 @@
 import json
 
-from lmh.utils.caseclass import AbstractCaseClass, CaseClass
+from deps.PythonCaseClass.case_class import AbstractCaseClass, CaseClass
 from lmh.utils.fileio import FileIO
 
 
