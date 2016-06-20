@@ -326,7 +326,7 @@ class LMHManager(object):
         has_work = (len(spec) == 0)
         
         for s in spec:
-            if isinstance(s, archive.LMHArchive):
+            if isinstance(s, Archive):
                 the_archives.append(s.to_remote_archive())
             elif isinstance(s, tuple) and len(s) == 2:
                 the_spec.append('%s/%s' % s)
