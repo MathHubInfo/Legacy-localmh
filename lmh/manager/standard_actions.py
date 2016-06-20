@@ -1,12 +1,13 @@
+from lmh.manager.manager import LMHManager
+
 class StandardActions(object):
+    """ Contains logic for all standard actions. """
+
     @staticmethod
-    def register_to(manager):
-        """
-        Registers all standard actions to the given Manager() instance. 
+    def register_to(manager : LMHManager):
+        """ Registers all standard actions to the given Manager() instance.
         
-        Arguments:
-            manager
-                Manager() to register all standard actions to
+        :param manager: Manager() to register all standard actions to.
         """
         
         # Core actions

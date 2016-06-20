@@ -1,29 +1,32 @@
 from typing import Optional, List
 from lmh.utils import exceptions
 
-from lmh.manager.manager import LMHManager
 from lmh.programs.program import Program
 
 
 class SystemManager(object):
     """ A Manager that manages all systems known to lmh. """
 
-    def __init__(self, manager: Optional[LMHManager] = None):
+    def __init__(self, manager = None):
         """ Creates a new SystemManager instance.
 
         :param manager: Optional. LMHManager() Instance to be used by this SystemManager(). If omitted should be set
         before any actions are registered by setting the manager property.
+        :type manager: Optional[LMHManager]
         """
         
-        self.__manager = manager  # type: LMHManager
+        self.__manager = manager  # type: Optional[LMHManager]
         self.__systems = []  # type: List[System]
     #
     # Properties
     #
     
     @property
-    def manager(self) -> LMHManager:
-        """ Gets the LMHManager() instance belonging to this SystemManager() """
+    def manager(self):
+        """ Gets the LMHManager() instance belonging to this SystemManager().
+
+        :rtype: LMHManager
+        """
 
         if self.__manager is None:
             raise SystemWithoutManager()
@@ -31,10 +34,11 @@ class SystemManager(object):
         return self.__manager
     
     @manager.setter
-    def manager(self, manager : LMHManager) -> None:
+    def manager(self, manager) -> None:
         """ Sets the LMHManager instance to be used by this SystemManager().
 
         :param manager: Manager instance to be set.
+        :type manager: LMHManager
         """
         
         self.__manager = manager
@@ -127,3 +131,4 @@ class SystemWithoutManager(exceptions.LMHException):
 
 # avoiding the circular import
 from lmh.systems.system import System
+from lmh.manager.manager import LMHManager

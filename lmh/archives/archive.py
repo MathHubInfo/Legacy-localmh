@@ -1,7 +1,7 @@
 from deps.PythonCaseClass.case_class import InheritableCaseClass
 
 
-class LMHArchive(InheritableCaseClass):
+class Archive(InheritableCaseClass):
     """
     Represents an LMH Archive that can be local or remote. 
     """
@@ -79,7 +79,7 @@ class LMHArchive(InheritableCaseClass):
         """
         
         from lmh.archives import local
-        return local.LMHLocalArchive(self.instance, self.group, self.name)
+        return local.LocalArchive(self.instance, self.group, self.name)
     
     def resolve_remote(self):
         """
@@ -111,4 +111,4 @@ class LMHArchive(InheritableCaseClass):
         """
         
         from lmh.archives import remote
-        return remote.LMHRemoteArchive(self.instance, self.group, self.name)
+        return remote.RemoteArchive(self.instance, self.group, self.name)

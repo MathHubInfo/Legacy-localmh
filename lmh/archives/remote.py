@@ -1,7 +1,7 @@
 from lmh.archives import archive
 from lmh.utils import exceptions
 
-class LMHRemoteArchive(archive.LMHArchive):
+class RemoteArchive(archive.Archive):
     """
     Represents an LMH Archive that is remotely available. 
     """
@@ -20,7 +20,7 @@ class LMHRemoteArchive(archive.LMHArchive):
                 The name of this archive
         """
         
-        super(LMHRemoteArchive, self).__init__(instance, group, name)
+        super(RemoteArchive, self).__init__(instance, group, name)
         
         if not self.is_remote():
             raise NoRemoteArchive()

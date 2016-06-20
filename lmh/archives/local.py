@@ -5,7 +5,7 @@ from lmh.mathhub.resolvers import resolver
 from lmh.utils import exceptions
 
 
-class LMHLocalArchive(archive.LMHArchive):
+class LocalArchive(archive.Archive):
     """
     Represents an LMH Archive that is locally available. 
     """
@@ -24,13 +24,13 @@ class LMHLocalArchive(archive.LMHArchive):
                 The name of this archive
         """
         
-        super(LMHLocalArchive, self).__init__(instance, group, name)
+        super(LocalArchive, self).__init__(instance, group, name)
         
         if not self.is_local():
             raise NoLocalArchive() 
         
         try:
-            self.__base = super(LMHLocalArchive, self).resolve_local()
+            self.__base = super(LocalArchive, self).resolve_local()
         except resolver.RepositoryNotFound:
             raise NoLocalArchive()
         
@@ -108,7 +108,7 @@ class LMHLocalArchive(archive.LMHArchive):
             elif d.strip() != '':
                 raise MalformedDependenciesError()
         
-        return [archive.LMHArchive(self.instance, g, n) for (g, n) in dependencies]
+        return [archive.Archive(self.instance, g, n) for (g, n) in dependencies]
     
     @dependencies.setter
     def dependencies(self, dependencies):
