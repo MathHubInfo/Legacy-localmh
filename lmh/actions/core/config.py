@@ -1,5 +1,5 @@
 from lmh.actions import action
-from lmh.utils import fileio
+from lmh.config.types import String, Bool, Int, PositiveInt
 from lmh.logger import escape
 
 class GetConfigAction(action.Action):
@@ -25,6 +25,8 @@ class GetConfigAction(action.Action):
         """
         
         return self.manager.config[name]
+
+
 class GetConfigInfoAction(action.Action):
     """
     An action that returns info about a config setting
@@ -35,7 +37,7 @@ class GetConfigInfoAction(action.Action):
         Creates a new GetConfigInfoAction() instance
         """
         super(GetConfigInfoAction, self).__init__('get-config-info')
-    
+
     def color_type(self, tp):
         """
         Colorizes a type of a config setting
@@ -47,14 +49,14 @@ class GetConfigInfoAction(action.Action):
             a colored string representing the tyüe
         """
         
-        if tp == 'string':
-            return escape.Yellow(tp)
-        elif tp == 'bool':
-            return escape.Green(tp)
-        elif tp == 'int':
-            return escape.Blue(tp)
-        elif tp == 'int+':
-            return escape.Blue(tp)
+        if tp is String():
+            return escape.Yellow('string')
+        elif tp is Bool():
+            return escape.Green('bool')
+        elif tp is Int():
+            return escape.Blue('int')
+        elif tp == PositiveInt():
+            return escape.Blue('int+')
         else:
             return tp
     
@@ -71,13 +73,15 @@ class GetConfigInfoAction(action.Action):
         """
         
         try:
-            value = self.manager.config[name]
+            value = repr(self.manager.config[name]) \
+                if self.manager.config.is_set(name) else \
+                escape.Grey(repr(self.manager.config[name]))
             spec = self.manager.config.get_spec(name)
         except KeyError:
             self.manager.logger.fatal('No such setting %r' % name)
             return None
         
-        return '<%s> %s = %r' % (self.color_type(spec.tp), name, value)
+        return '<%s> %s = %s' % (self.color_type(spec.tp), name, value)
     
     def get_info(self, name):
         """
@@ -92,7 +96,9 @@ class GetConfigInfoAction(action.Action):
         """
         
         try:
-            value = self.manager.config[name]
+            value = repr(self.manager.config[name]) \
+                if self.manager.config.is_set(name) else \
+                escape.Grey(repr(self.manager.config[name]))
             spec = self.manager.config.get_spec(name)
         except KeyError:
             self.manager.logger.fatal('No such setting %r' % name)
@@ -101,7 +107,7 @@ class GetConfigInfoAction(action.Action):
         return '\n'.join([
             '<%s> %s' % (self.color_type(spec.tp), name), 
             spec.help_text or '', 
-            'Current value: %r' % value, 
+            'Current value: %s' % value,
             'Default value: %r' % spec.default
         ])
     

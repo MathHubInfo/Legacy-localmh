@@ -164,7 +164,7 @@ class LMHCommander(object):
         except KeyboardInterrupt:
             self.manager.logger.error('Operation interrupted by user, exiting')
             return -1
-        except exceptions.LMHException as e:
+        except LMHException as e:
             self.manager.logger.fatal('LMH has encountered a fatal '
                                       'error and has crashed. ')
             self.manager.logger.fatal('This error is likely caused by '
