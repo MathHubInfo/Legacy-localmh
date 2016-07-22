@@ -18,8 +18,6 @@ class Manifest(CaseClass):
             filename
                 Name of file to read meta-inf from
         """
-
-        super(Manifest, self).__init__(filename)
         
         if not os.path.isfile(filename):
             raise NoManifestFile()
