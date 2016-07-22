@@ -66,6 +66,7 @@ class _Utilities(object):
         """ Extract a signature from a function.
 
         :param f: Function to extract signature from.
+
         :return: A pair of (arguments, mapping) as a list of arguments and a
         mapping from names to finding the variables.
         :rtype: tuple
@@ -111,7 +112,6 @@ class _Utilities(object):
                     {}
                 )
 
-
         # STEP 2: Merge the defaults
         defaults = kwdef.copy() if kwdef is not None else {}
 
@@ -126,7 +126,8 @@ class _Utilities(object):
         # Positionals
         for (i, a) in enumerate(pa):
             arg = {'name': a}
-            mapping[a] = (_Utilities.ARGUMENT_POS, i)
+            mapping[a] = (_Utilities.ARGUMENT_POS, i,
+                          defaults[a] if a in defaults else None)
 
             if a in defaults:
                 arg['type'] = _Utilities.ARGUMENT_KW
@@ -144,7 +145,7 @@ class _Utilities(object):
         # VARARG
         if van is not None:
             arg = {'name': van, 'type': _Utilities.VAR_POS}
-            mapping[van] = (_Utilities.VAR_POS, len(pa))
+            mapping[van] = (_Utilities.VAR_POS, len(pa), None)
 
             if van in annots:
                 arg['annot'] = annots[van]
@@ -156,7 +157,7 @@ class _Utilities(object):
             arg = {'name': a, 'type': _Utilities.ARGUMENT_KW,
                    'default': defaults[a]}
 
-            mapping[a] = (_Utilities.ARGUMENT_KW, a)
+            mapping[a] = (_Utilities.ARGUMENT_KW, a, defaults[a])
             nkwvar.append(a)
 
             if a in annots:
@@ -167,7 +168,7 @@ class _Utilities(object):
         # KW VARAGR
         if kwvan is not None:
             arg = {'name': kwvan, 'type': _Utilities.VAR_KW}
-            mapping[kwvan] = (_Utilities.VAR_KW, nkwvar)
+            mapping[kwvan] = (_Utilities.VAR_KW, nkwvar, None)
 
             if kwvan in annots:
                 arg['annot'] = annots[kwvan]
@@ -194,7 +195,7 @@ class _Utilities(object):
         name_prefix = ''.join(map(lambda arg: arg['name'], arguments)) + name
         func_name = '%sorig' % (name_prefix,)
 
-        # dictonary of default variables
+        # dictionary of default variables
         default_vars = {}
         default_var_name = '%sdefaults' % (name_prefix, )
 
@@ -243,6 +244,54 @@ class _Utilities(object):
         return wrapper
 
     @staticmethod
+    def get_init_signature(cls):
+        """ Gets the signature of an init function of a class.
+
+        :param cls: Class to get init signature of.
+        :type cls: type
+
+        :return: A pair of (arguments, mapping) as a list of arguments and a
+        mapping from names to finding the variables.
+        :rtype: tuple
+        """
+
+        # get the init method
+        init_method = \
+            _Utilities.get_method("__init__", cls.__dict__, cls.__bases__)
+
+        # HACK: Do not allow object.__init
+        if init_method is object.__init__:
+            def init_method(self):
+                return None
+
+        return _Utilities.get_signature(init_method)
+
+    @staticmethod
+    def get_class_parameters(cls, *args, **kwargs):
+        """ Substitutes parameters passed to a class with the correct defaults.
+
+        :param cls: Class parameters to clean up.
+        :type cls: type
+
+        :param args: Arguments passed to class.
+        :type args: list
+
+        :param kwargs: Keyword arguments passed to class
+        :type kwargs: dict
+
+        :return: a tuple (args, kwargs) of normal and keyword arguments.
+        :rtype: tuple
+        """
+
+        init_sig = _Utilities.get_init_signature(cls)
+
+        @_Utilities.with_signature('__init__', init_sig)
+        def get_signature(*a, **kw):
+            return a, kw
+
+        return get_signature(None, *args, **kwargs)
+
+    @staticmethod
     def get_argument_by_name(name, mapping, args, kwargs):
         """ Gets a function argument by name. """
 
@@ -251,7 +300,7 @@ class _Utilities(object):
             raise AttributeError
 
         # look up where it is
-        (tp, spec) = mapping[name]
+        (tp, spec, default) = mapping[name]
 
         # positional argument ==> return it
         if tp == _Utilities.ARGUMENT_POS:
@@ -259,6 +308,8 @@ class _Utilities(object):
                 return args[spec]
             except IndexError:
                 return kwargs[name]
+            except KeyError:
+                return default
 
         # VARARG ==> take the ones that are not others
         elif tp == _Utilities.VAR_POS:
@@ -266,7 +317,10 @@ class _Utilities(object):
 
         # KEYWORD_ARGUMENTS ==> return it.
         elif tp == _Utilities.ARGUMENT_KW:
-            return kwargs[spec]
+            try:
+                return kwargs[spec]
+            except KeyError:
+                return default
 
         # KWVARARG ==> remove all the others.
         elif tp == _Utilities.VAR_KW:
@@ -393,59 +447,13 @@ class CaseClassMeta(type):
         :rtype: CaseClassMeta
         """
 
-        # skip the CaseClass and AbstractCaseClass
-        if _CaseClass in bases:
-            return super(CaseClassMeta, mcs).__new__(mcs, name, bases, attrs)
-
-        # no case-to-case inheritance
-        if CaseClassMeta.inherits_from_case_class(bases):
+        # no case-to-case inheritance outside of the base classes
+        if _CaseClass not in bases and \
+                CaseClassMeta.inherits_from_case_class(bases):
             raise NoCaseToCaseInheritanceException(name)
 
-        # store the reference to the old __init__ class in a variable old_init
-
-        old_init = _Utilities.get_method("__init__", attrs, bases)
-
-        # Extract the old signature
-        initsig = _Utilities.get_signature(old_init)
-
-        # Define a new __init__ function that (1) makes sure the cc is
-        # instantiated and (2) calls the old_init function.
-        @_Utilities.with_signature('__init__', initsig)
-        def __init__(self, *args, **kwargs):
-
-            # check if we should run the CaseClass init
-            should_run_cc_init = True
-
-            # by checking if this instance is currently initialising
-            for instance in CaseClassMeta.instance_list:
-                if instance is self:
-                    should_run_cc_init = False
-
-            # add ourselves and block future cc inits
-            idx = len(CaseClassMeta.instance_list)
-            CaseClassMeta.instance_list.append(self)
-
-            # run cc init if we should
-            if should_run_cc_init:
-                CaseClass.__case_class_init__(self, initsig, *args, **kwargs)
-
-            # Run the old init
-            val = old_init(self, *args, **kwargs)
-
-            # and we are no longer and remove ourselves from the block list
-            CaseClassMeta.instance_list.pop(idx)
-
-            # return the inited value
-            return val
-
-        # set that as the __init__
-        attrs["__init__"] = __init__
-
-        # create the class
-        cls = super(CaseClassMeta, mcs).__new__(mcs, name, bases, attrs)
-
-        # and return it
-        return cls
+        # now we can just create it normally.
+        return super(CaseClassMeta, mcs).__new__(mcs, name, bases, attrs)
 
     def __call__(cls, *args, **kwargs):
         """ Creates a new CaseClass() instance.
@@ -480,7 +488,7 @@ class CaseClassMeta(type):
         cval = CaseClassMeta.instance_values[cls]
 
         # key we will use for this instance.
-        key = (args, kwargs)
+        key = _Utilities.get_class_parameters(cls, *args, **kwargs)
 
         # try and return an existing instance.
         try:
@@ -587,30 +595,45 @@ class _CaseClass(object):
 class CaseClass(_CaseClass):
     """ Represents a normal CaseClass. """
 
-    def __case_class_init__(self, init_sig, *args, **kwargs):
-        """ Initialises case class parameters.
-
-        :param init_sig: Signature of the original __init__ function
-        :type init_sig: tuple
+    def __new__(cls, *args, **kwargs):
+        """ Creates a new CaseClass instance.
 
         :param args: Parameters for this CaseClass instance.
         :type args: list
 
         :param kwargs: Keyword Arguments for this CaseClass instance.
         :type kwargs: dict
+
+        :rtype: CaseClass
         """
 
+        # create a new instance
+        inst = super(CaseClass, cls).__new__(cls)
+
+        # get the init signature
+        init_sig = _Utilities.get_init_signature(inst.__class__)
+
+        # cleanup the arguments
+        (cargs, kwcargs) = _Utilities.\
+            get_class_parameters(inst.__class__, *args, **kwargs)
+
+        # HACK: remove the first element
+        cargs = cargs[1:]
+
         # Name of the class
-        self.__name = self.__class__.__name__
+        inst.__name = inst.__class__.__name__
 
         # The signature of the original function
-        self.__init_sig = init_sig
+        inst.__init_sig = init_sig
 
         # The arguments given to this case class
-        self.__args = list(args)
+        inst.__args = list(cargs)
 
         # The keyword arguments given to this case class
-        self.__kwargs = kwargs
+        inst.__kwargs = kwcargs
+
+        # and return the instance
+        return inst
 
     def __hash__(self):
         """ Returns a hash representing this case class.
