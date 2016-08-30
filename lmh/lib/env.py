@@ -90,6 +90,9 @@ wget_executable = get_config("env::wget")
 if wget_executable == "":
     wget_executable =  which("wget")
 
+""" Path to java. """
+java_executable = which("java")
+
 """Path to the MMT executable. """
 mmt_executable = get_config("env::mmt")
 
