@@ -124,7 +124,7 @@
 	"setup::mmtjar::source": {
 		"type": "string",
 		"help": "Default Source for the MMT jar source. ",
-		"default": "https://github.com/UniFormal/MMT/releases/download/27-Jun-2016/mmt.jar"
+		"default": "https://github.com/UniFormal/MMT/releases/download/28-Jul-2016/mmt.jar"
 	},
 	"setup::unmanaged": {
 		"type": "string",
