@@ -16,8 +16,7 @@ def run(args, path=None, quiet=False):
     # setup path
     if path == None:
         path = os.getcwd()
-
-    print(mmt_executable)
+    
 
     # run the mmt script, wait and return.
     try:
