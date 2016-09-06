@@ -28,9 +28,9 @@ class MMTPack(classes.Pack):
 
         # Make the directory
         mkdir_p(mmt_jar_dir)
-
+        
         # and wget it, overwriting the existing jar
-        proc = subprocess.Popen([wget_executable, "-q", self.mmt_jar_source, "-O", mmt_jar_path], stderr=sys.stderr, stdout=sys.stdout)
+        proc = subprocess.Popen([wget_executable, self.mmt_jar_source, "-O", mmt_jar_path], stderr=sys.stderr, stdout=sys.stdout)
         proc.wait()
 
         # chmod +x mmt_jar_path
