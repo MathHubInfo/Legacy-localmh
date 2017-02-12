@@ -4,12 +4,13 @@ if __name__ == '__main__':
     import os
     import sys
     import codecs
-    
+
     # hack: set stdout encoding to utf-8
     sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
     sys.stderr = codecs.getwriter("utf-8")(sys.stderr.detach())
-    
-    sys.path.insert(1, os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))
+
+    sys.path.insert(1, os.path.realpath(os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), '..')))
     import shell
 else:
     raise ValueError('please run as __main__')
