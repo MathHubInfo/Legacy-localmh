@@ -1,5 +1,11 @@
 # LocalMH
 
+---
+
+**DEPRECATED - Use functionality available in [MMT](https://github.com/Uniformal/MMT) instead**
+
+---
+
 LocalMH is an infrastructure for local (in a working tree) management of the content in http://mathhub.info.
 
 ## Install
